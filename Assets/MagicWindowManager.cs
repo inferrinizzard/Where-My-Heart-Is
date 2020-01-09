@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class MagicWindowManager : InteractableObject
 {
+    public bool useTwin;
+    public MagicWindowManager twin;
+
     public List<ClipableObject> toClip;
     public GameObject bounds;
+    public float offset;
+    public Vector3 rotationOffset;
 
     private bool held;
 
@@ -13,7 +18,7 @@ public class MagicWindowManager : InteractableObject
     void Start()
     {
         held = false;
-        Apply();
+        ApplyAll();
     }
 
     // Update is called once per frame
@@ -21,16 +26,19 @@ public class MagicWindowManager : InteractableObject
     {
     }
 
-    public void Apply()
+    public void ApplyAll()
     {
+        if(useTwin)
+        {
+            twin.ApplyAll();
+        }
         foreach(ClipableObject target in toClip)
         {
             if(target.gameObject.activeSelf)
             {
-                GetComponent<ClipToBounds>().Clip(target.gameObject, bounds, target.result);
+                GetComponent<CSG.Operations>().Union(target.gameObject, bounds, target.result);
             }
         }
-
     }
 
     public override void Interact(PlayerManager player)
@@ -38,12 +46,14 @@ public class MagicWindowManager : InteractableObject
         if(held)
         {
             transform.parent = null;
-            Apply();
+            ApplyAll();
             held = false;
         }
         else
         {
             transform.parent = player.transform;
+            transform.position = player.transform.position + player.transform.forward * offset;
+            transform.rotation = Quaternion.Euler(player.transform.rotation.eulerAngles + rotationOffset);
             held = true;
         }
     }

@@ -17,7 +17,7 @@ public class GameMaster : MonoBehaviour
     public void Collect(CollectableObject collectable)
     {
         collections.Add(collectable);
-        // send interact text to dialog machine
+        GetComponent<MessageWriter>().WriteMessage(collectable.interactText);
 
     }
 }

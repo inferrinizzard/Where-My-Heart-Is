@@ -14,16 +14,32 @@ public class Widget : InteractableObject
     public List<string> messages;
     public AudioClip sound;
 
+    private int messageChoice = 0;
+
     public override void Interact(PlayerManager player)
     {
         if(messages.Count > 0)
         {
-            // send messages to dialog system
+            FindObjectOfType<MessageWriter>().WriteMessage(SelectMessage());
         }
 
         if(sound != null)
         {
             GetComponent<AudioSource>().PlayOneShot(sound);
         }
+    }
+
+    private string SelectMessage()
+    {
+        if(messageChoice == 0)
+        {
+            messageChoice = 1;
+        }
+        else
+        {
+            messageChoice = 0;
+        }
+        return messages[messageChoice];
+        //return messages[Mathf.RoundToInt(Random.Range(0, messages.Count))];
     }
 }

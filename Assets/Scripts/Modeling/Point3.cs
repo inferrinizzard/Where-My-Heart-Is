@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Point3
+namespace CSG
 {
-    public float x;
-    public float y;
-    public float z;
-
-    public Vector3 ToVector3()
+    public class Point3
     {
-        return new Vector3(x, y, z);
+        public Vector3 value;
+
+        public Point3(Vector3 value)
+        {
+            this.value = value;
+        }
     }
 }
+
+

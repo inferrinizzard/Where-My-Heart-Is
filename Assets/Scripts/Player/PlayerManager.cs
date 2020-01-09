@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    public List<MagicWindowManager> windows;
+
     public KeyCode moveUp;
     public KeyCode moveDown;
 
@@ -18,14 +20,20 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             Grab();
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            FindObjectOfType<MessageWriter>().Interrupt();
         }
 
         Move();
@@ -36,12 +44,10 @@ public class PlayerManager : MonoBehaviour
     {
         if(heldObject == null)
         {
-            Debug.Log("here");
             RaycastHit hit;
             if(Physics.Raycast(transform.position, transform.forward, out hit, grabDistance))
             {
                 heldObject = hit.collider.gameObject;
-                Debug.Log(heldObject);
                 if (heldObject.GetComponent<InteractableObject>())
                 {
                     heldObject.GetComponent<InteractableObject>().Interact(this);
