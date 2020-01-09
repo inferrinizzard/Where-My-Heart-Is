@@ -48,6 +48,7 @@ namespace CSG
 
         public Mesh ClipAToB(GameObject toClip, GameObject bounds, GameObject result, bool flipNormals = false)
         {
+            //Debug.Log("hello");
             // get a list of all triangles of the bounding mesh
             List<Triangle> boundsTriangles = GetBoundsTriangles(toClip, bounds);
 
@@ -71,6 +72,13 @@ namespace CSG
                 foreach (EdgeLoop loop in edgeLoops)
                 {
                     if (loop.filled) triangles.AddRange(TriangulateEdgeLoop(loop));
+                    EdgeLoop nestedLoop = loop.nestedLoop;
+                    while (nestedLoop != null)
+                    {
+                        if (nestedLoop.filled) triangles.AddRange(TriangulateEdgeLoop(nestedLoop));
+                        nestedLoop = nestedLoop.nestedLoop;
+                    }
+
                 }
             }
             else if (triangleCount < meshTriangles.Count)
@@ -83,6 +91,13 @@ namespace CSG
                 foreach (EdgeLoop loop in edgeLoops)
                 {
                     if (loop.filled) triangles.AddRange(TriangulateEdgeLoop(loop));
+                    EdgeLoop nestedLoop = loop.nestedLoop;
+                    while (nestedLoop != null)
+                    {
+                        Debug.Log("here");
+                        if (nestedLoop.filled) triangles.AddRange(TriangulateEdgeLoop(nestedLoop));
+                        nestedLoop = nestedLoop.nestedLoop;
+                    }
                 }
             }
             else
@@ -128,6 +143,8 @@ namespace CSG
                 }
             }
 
+            //Debug.Log(triangles.Count);
+
             foreach (Triangle triangle in triangles)
             {
                 newTriangles[index] = triangle.vertices[0].index;
@@ -160,6 +177,7 @@ namespace CSG
 
         private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, List<Triangle> boundsTriangles, List<Vertex> vertices, bool debug = false)
         {
+
             List<Egress> aToBEgresses = new List<Egress>();
             List<Egress> bToCEgresses = new List<Egress>();
             List<Egress> cToAEgresses = new List<Egress>();
@@ -437,11 +455,13 @@ namespace CSG
                     unusedVertices.Add(intersection);
                 }
             }
-
+            int foo = 0;
             while(unusedVertices.Count > 0)
             {
                 EdgeLoop currentLoop = new EdgeLoop();
                 Vertex currentVertex = unusedVertices[unusedVertices.Count - 1];
+                unusedVertices.RemoveAt(unusedVertices.Count - 1);
+
                 foreach(EdgeLoop loop in loops)
                 {
                     if(currentVertex.LiesWithinLoop(loop))
@@ -468,6 +488,9 @@ namespace CSG
                                 }
                             } while (currentLoop.nestedLoop != null);
                         }
+
+                        // we've found the loop we're contained by, break out
+                        break;
                     }
                 }
 
@@ -476,6 +499,7 @@ namespace CSG
                 bool foundNext = false;
                 do
                 {
+                    foundNext = false;
                     for (int i = unusedVertices.Count - 2; i >= 0; i--)
                     {
                         if (unusedVertices[i].SharesTriangle(currentVertex))
@@ -486,8 +510,28 @@ namespace CSG
                             foundNext = true;
                         }
                     }
+                    foo++;
+                    if (foo > 100)
+                    {
+                        Debug.Log("yeet");
+                        return null;
+                    }
                 } while (foundNext);
+
             }
+
+            foreach(EdgeLoop loop in loops)
+            {
+                EdgeLoop nestedLoop = loop.nestedLoop;
+                EdgeLoop previousLoop = loop;
+                while(nestedLoop != null)
+                {
+                    nestedLoop.filled = !previousLoop.filled;
+                    previousLoop = nestedLoop;
+                    nestedLoop = nestedLoop.nestedLoop;
+                }
+            }
+
 
             return loops;
         }
