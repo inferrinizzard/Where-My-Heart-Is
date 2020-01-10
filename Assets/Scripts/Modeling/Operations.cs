@@ -94,7 +94,6 @@ namespace CSG
                     EdgeLoop nestedLoop = loop.nestedLoop;
                     while (nestedLoop != null)
                     {
-                        Debug.Log("here");
                         if (nestedLoop.filled) triangles.AddRange(TriangulateEdgeLoop(nestedLoop));
                         nestedLoop = nestedLoop.nestedLoop;
                     }
@@ -455,69 +454,13 @@ namespace CSG
                     unusedVertices.Add(intersection);
                 }
             }
-            int foo = 0;
+
+            Debug.Log(unusedVertices.Count);
             while(unusedVertices.Count > 0)
             {
-                EdgeLoop currentLoop = new EdgeLoop();
                 Vertex currentVertex = unusedVertices[unusedVertices.Count - 1];
                 unusedVertices.RemoveAt(unusedVertices.Count - 1);
-
-                foreach(EdgeLoop loop in loops)
-                {
-                    if(currentVertex.LiesWithinLoop(loop))
-                    {
-                        if (loop.nestedLoop == null)
-                        {
-                            loop.nestedLoop = currentLoop;
-                        }
-                        else
-                        {
-                            currentLoop.nestedLoop = loop.nestedLoop;
-                            EdgeLoop previousLoop = loop;
-                            do
-                            {
-                                if (currentVertex.LiesWithinLoop(currentLoop.nestedLoop))
-                                {
-                                    previousLoop.nestedLoop = currentLoop.nestedLoop;
-                                    currentLoop.nestedLoop = currentLoop.nestedLoop.nestedLoop;
-                                    previousLoop.nestedLoop.nestedLoop = currentLoop;
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            } while (currentLoop.nestedLoop != null);
-                        }
-
-                        // we've found the loop we're contained by, break out
-                        break;
-                    }
-                }
-
-                //TODO: discovery of loops
-                currentLoop.vertices.Add(currentVertex);
-                bool foundNext = false;
-                do
-                {
-                    foundNext = false;
-                    for (int i = unusedVertices.Count - 2; i >= 0; i--)
-                    {
-                        if (unusedVertices[i].SharesTriangle(currentVertex))
-                        {
-                            currentLoop.vertices.Add(unusedVertices[i]);
-                            unusedVertices.RemoveAt(i);
-                            currentVertex = unusedVertices[i];
-                            foundNext = true;
-                        }
-                    }
-                    foo++;
-                    if (foo > 100)
-                    {
-                        Debug.Log("yeet");
-                        return null;
-                    }
-                } while (foundNext);
-
+                DiscoverInternalLoop(currentVertex, unusedVertices, loops);
             }
 
             foreach(EdgeLoop loop in loops)
@@ -534,6 +477,120 @@ namespace CSG
 
 
             return loops;
+        }
+
+        private EdgeLoop DiscoverInternalLoop (Vertex initialVertex, List<Vertex> unusedVertices, List<EdgeLoop> loops)
+        {
+            //TODO: discovery of loops
+            Queue<EdgeLoop> potentialLoops = new Queue<EdgeLoop>();
+            List<EdgeLoop> completedLoops = new List<EdgeLoop>();
+
+            potentialLoops.Enqueue(new EdgeLoop());
+            potentialLoops.Peek().vertices.Add(initialVertex);
+            int k = 0;
+            Debug.Log("before");
+            while(potentialLoops.Count > 0)
+            {
+                Debug.Log("as");
+                Vertex nextVertex;
+                do
+                {
+                    nextVertex = null;
+                    // foundNext = false;
+                    //Debug.Log(potentialLoops.Count);
+                    List<Vertex> loopVertices = potentialLoops.Peek().vertices;
+                    for (int i = unusedVertices.Count - 1; i >= 0; i--)
+                    {
+                        if (unusedVertices[i].SharesTriangle(loopVertices[loopVertices.Count - 1]) && 
+                            !loopVertices.Contains(unusedVertices[i]))
+                        {
+                            if(nextVertex == null)
+                            {
+                                Debug.Log("found next in path");
+                                nextVertex = unusedVertices[i];
+                            }
+                            else
+                            {
+                                Debug.Log("found additional possible path");
+                                EdgeLoop newLoop = new EdgeLoop(potentialLoops.Peek().vertices);
+                                //Debug.Log(newLoop.vertices);
+                                potentialLoops.Enqueue(newLoop);
+                                foreach(EdgeLoop vertex in potentialLoops)
+                                {
+                                    //Debug.Log(vertex);
+                                }
+                            }
+                            k++;
+                            if(k > 100)
+                            {
+                                throw new System.Exception();
+                            }
+                            //unusedVertices.RemoveAt(i);
+                            //initialVertex = unusedVertices[i];
+                            //foundNext = true;
+                        }
+                    }
+                    if (nextVertex != null)
+                    {
+                        Debug.Log(nextVertex.value);
+                        loopVertices.Add(nextVertex);
+                        
+                        Debug.Log(loopVertices.Count);
+                        Debug.Log(potentialLoops.Peek().vertices.Count);
+                    }
+                } while (nextVertex != null);
+                completedLoops.Add(potentialLoops.Dequeue());
+            }
+
+           // Debug.Log(potentialLoops.Peek().vertices.Count);
+
+            // the loop with the greatest number of vertices is the correct loop
+            EdgeLoop finalLoop = completedLoops[0];
+            foreach(EdgeLoop loop in completedLoops)
+            {
+                if(loop.vertices.Count > finalLoop.vertices.Count)
+                {
+                    finalLoop = loop;
+                }
+            }
+            Debug.Log(finalLoop.vertices.Count);
+
+            // determine which external loop contains this new loop
+            foreach (EdgeLoop loop in loops)
+            {
+                if (initialVertex.LiesWithinLoop(loop))
+                {
+
+                    if (loop.nestedLoop == null)
+                    {
+                        loop.nestedLoop = finalLoop;
+
+                    }
+                    else
+                    {
+                        finalLoop.nestedLoop = loop.nestedLoop;
+                        EdgeLoop previousLoop = loop;
+                        do
+                        {
+                            if (initialVertex.LiesWithinLoop(finalLoop.nestedLoop))
+                            {
+                                previousLoop.nestedLoop = finalLoop.nestedLoop;
+                                finalLoop.nestedLoop = finalLoop.nestedLoop.nestedLoop;
+                                previousLoop.nestedLoop.nestedLoop = finalLoop;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        } while (finalLoop.nestedLoop != null);
+                    }
+
+                    // we've found the loop we're contained by, break out
+                    break;
+                }
+            }
+
+            return finalLoop;
         }
 
         private int TraverseCut(Cut cut, EdgeLoop loop, List<Vertex> perimeter, int currentVertexIndex)

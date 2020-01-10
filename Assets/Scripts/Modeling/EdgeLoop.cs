@@ -14,6 +14,11 @@ namespace CSG
         {
             vertices = new List<Vertex>();
         }
+
+        public EdgeLoop(List<Vertex> vertices)
+        {
+            this.vertices = new List<Vertex>(vertices);
+        }
     }
 
 }
