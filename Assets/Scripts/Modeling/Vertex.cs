@@ -56,7 +56,7 @@ namespace CSG
             Vector3 castDirection = (loop.vertices[0].value - loop.vertices[1].value).normalized;
             List<Vector3> positiveIntersections = new List<Vector3>();
             List<Vector3> negativeIntersections = new List<Vector3>();
-            for (int i = 0; i < loop.vertices.Count - 1; i++)
+            for (int i = 0; i < loop.vertices.Count; i++)
             {
                 Point3 intersection = IntersectLineWithEdge(
                     this.value, 
@@ -84,7 +84,6 @@ namespace CSG
 
             // count # above, below
             // if both odd, return true, else return false
-            //Debug.Log(positiveIntersections.Count + " :: " + negativeIntersections.Count);
             return positiveIntersections.Count % 2 == 1 && negativeIntersections.Count % 2 == 1;
         }
 
