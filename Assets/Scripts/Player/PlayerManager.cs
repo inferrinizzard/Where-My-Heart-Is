@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
-    public List<MagicWindowManager> windows;
 
     public KeyCode moveUp;
     public KeyCode moveDown;
