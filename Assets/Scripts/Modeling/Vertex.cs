@@ -66,8 +66,7 @@ namespace CSG
                 if (intersection != null)
                 {
                     Vector3 directionToIntersection = (intersection.value - this.value).normalized;
-                    //Debug.Log("found intersection");
-                    if(Vector3.Dot(directionToIntersection, castDirection) == 1)
+                    if (Vector3.Dot(directionToIntersection, castDirection) > 0)
                     {
                         positiveIntersections.Add(intersection.value);
                     }

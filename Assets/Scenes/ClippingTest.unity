@@ -747,7 +747,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 791713796}
   m_LocalRotation: {x: -0.37014583, y: 0.21412078, z: -0.82592136, w: -0.3674213}
-  m_LocalPosition: {x: 1.415, y: 1.057, z: 0.085}
+  m_LocalPosition: {x: 1.431, y: 1.057, z: 0.194}
   m_LocalScale: {x: 0.5392301, y: 1.2674155, z: 0.54453933}
   m_Children: []
   m_Father: {fileID: 0}
@@ -765,7 +765,6 @@ GameObject:
   - component: {fileID: 1302693726}
   - component: {fileID: 1302693725}
   - component: {fileID: 1302693724}
-  - component: {fileID: 1302693729}
   - component: {fileID: 1302693728}
   - component: {fileID: 1302693723}
   m_Layer: 0
@@ -784,11 +783,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1302693722}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c68f21c8edfa8cf44aa7ca0ec83dbcde, type: 3}
+  m_Script: {fileID: 11500000, guid: 56b2a7f8389870a4eb482fb6ba680c49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   test: 0
-  testRolling: 0
+  testRolling: 1
   model: {fileID: 449954966}
   bounds: {fileID: 791713796}
   output: {fileID: 1302693722}
@@ -882,24 +881,6 @@ MonoBehaviour:
   error: 0.001
   intersectionError: 0.001
   triangleCount: -1
---- !u!114 &1302693729
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1302693722}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3c0747f49cd6e8438caf12aac489b6d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useTwin: 0
-  twin: {fileID: 0}
-  toClip: []
-  bounds: {fileID: 0}
-  offset: 0
-  rotationOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &1649778230
 GameObject:
   m_ObjectHideFlags: 0

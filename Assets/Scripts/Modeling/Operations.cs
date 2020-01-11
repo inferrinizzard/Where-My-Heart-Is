@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace CSG
 {
@@ -455,12 +456,11 @@ namespace CSG
                 }
             }
 
-            Debug.Log(unusedVertices.Count);
             while(unusedVertices.Count > 0)
             {
                 Vertex currentVertex = unusedVertices[unusedVertices.Count - 1];
-                unusedVertices.RemoveAt(unusedVertices.Count - 1);
-                DiscoverInternalLoop(currentVertex, unusedVertices, loops);
+                EdgeLoop result = DiscoverInternalLoop(currentVertex, unusedVertices, loops);
+                unusedVertices = (unusedVertices.Where(vertex => !result.vertices.Contains(vertex))).ToList();
             }
 
             foreach(EdgeLoop loop in loops)
@@ -487,59 +487,51 @@ namespace CSG
 
             potentialLoops.Enqueue(new EdgeLoop());
             potentialLoops.Peek().vertices.Add(initialVertex);
-            int k = 0;
-            Debug.Log("before");
             while(potentialLoops.Count > 0)
             {
-                Debug.Log("as");
+                Vertex secondVertex = null;
                 Vertex nextVertex;
                 do
                 {
                     nextVertex = null;
                     // foundNext = false;
-                    //Debug.Log(potentialLoops.Count);
                     List<Vertex> loopVertices = potentialLoops.Peek().vertices;
                     for (int i = unusedVertices.Count - 1; i >= 0; i--)
                     {
                         if (unusedVertices[i].SharesTriangle(loopVertices[loopVertices.Count - 1]) && 
-                            !loopVertices.Contains(unusedVertices[i]))
+                            (!loopVertices.Contains(unusedVertices[i]) || (unusedVertices[i] == initialVertex && secondVertex != null)))
                         {
                             if(nextVertex == null)
                             {
-                                Debug.Log("found next in path");
                                 nextVertex = unusedVertices[i];
+
+                                if(secondVertex == null)
+                                {
+                                    secondVertex = nextVertex;
+                                }
                             }
                             else
                             {
-                                Debug.Log("found additional possible path");
-                                EdgeLoop newLoop = new EdgeLoop(potentialLoops.Peek().vertices);
-                                //Debug.Log(newLoop.vertices);
+                                EdgeLoop newLoop = new EdgeLoop(loopVertices);
+                                newLoop.vertices.Add(unusedVertices[i]);
                                 potentialLoops.Enqueue(newLoop);
-                                foreach(EdgeLoop vertex in potentialLoops)
-                                {
-                                    //Debug.Log(vertex);
-                                }
                             }
-                            k++;
-                            if(k > 100)
-                            {
-                                throw new System.Exception();
-                            }
-                            //unusedVertices.RemoveAt(i);
-                            //initialVertex = unusedVertices[i];
-                            //foundNext = true;
                         }
                     }
-                    if (nextVertex != null)
+                    if (nextVertex != null && nextVertex != initialVertex)
                     {
-                        Debug.Log(nextVertex.value);
                         loopVertices.Add(nextVertex);
-                        
-                        Debug.Log(loopVertices.Count);
-                        Debug.Log(potentialLoops.Peek().vertices.Count);
                     }
-                } while (nextVertex != null);
-                completedLoops.Add(potentialLoops.Dequeue());
+                } while (nextVertex != null && nextVertex != initialVertex);
+
+                if (nextVertex != null)
+                {
+                    completedLoops.Add(potentialLoops.Dequeue());
+                }
+                else
+                {
+                    potentialLoops.Dequeue();// we did not arrive back at the initial vertex, discard the potential loop
+                }
             }
 
            // Debug.Log(potentialLoops.Peek().vertices.Count);
@@ -553,14 +545,12 @@ namespace CSG
                     finalLoop = loop;
                 }
             }
-            Debug.Log(finalLoop.vertices.Count);
 
             // determine which external loop contains this new loop
             foreach (EdgeLoop loop in loops)
             {
                 if (initialVertex.LiesWithinLoop(loop))
                 {
-
                     if (loop.nestedLoop == null)
                     {
                         loop.nestedLoop = finalLoop;
