@@ -5,10 +5,11 @@ using System.Linq;
 
 namespace CSG
 {
+    /// <summary>
+    /// Supplies methods for 
+    /// </summary>
     public class Operations : MonoBehaviour
     {
-        public bool foo;
-
         public float egressSimilarity;
         public float error;
         public float intersectionError;
@@ -18,7 +19,6 @@ namespace CSG
 
         public void Union(GameObject toClip, GameObject bounds, GameObject output)
         {
-            //Debug.Log("==========================UNION============================");
             CombineInstance[] combine = new CombineInstance[2];
             combine[0].mesh = ClipAToB(toClip, bounds, output);
             combine[0].transform = Matrix4x4.identity;

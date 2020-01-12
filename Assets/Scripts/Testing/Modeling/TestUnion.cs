@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+/// <summary>
+/// Test summary
+/// </summary>
 public class TestUnion : MonoBehaviour
 {
     public bool test;
