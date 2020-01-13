@@ -16,40 +16,40 @@ namespace CSG
 
         public int triangleCount;
 
-
-        public void Union(GameObject toClip, GameObject bounds, GameObject output)
+        /// <summary>
+        /// Generates the union of two shapes
+        /// </summary>
+        /// <param name="shapeA">The first shape to union</param>
+        /// <param name="shapeB">The second shape to union</param>
+        /// <returns>The union of the two shapes</returns>
+        public Mesh Union(GameObject shapeA, GameObject shapeB)
         {
             CombineInstance[] combine = new CombineInstance[2];
-            combine[0].mesh = ClipAToB(toClip, bounds, output);
+            combine[0].mesh = ClipAToB(shapeA, shapeB);
             combine[0].transform = Matrix4x4.identity;
-            combine[1].mesh = ClipAToB(bounds, toClip, output);
+            combine[1].mesh = ClipAToB(shapeB, shapeA);
             combine[1].transform = Matrix4x4.identity;
 
-            ConvertCoords(bounds, toClip, combine[1].mesh);
+            ConvertMeshCoordinates(combine[1].mesh, shapeB, shapeA);
 
             Mesh completedMesh = new Mesh();
             completedMesh.CombineMeshes(combine);
-            output.GetComponent<MeshFilter>().mesh = completedMesh;
+            completedMesh.RecalculateNormals();
+            completedMesh.RecalculateTangents();
+
+            return completedMesh;
         }
 
-        private void ConvertCoords(GameObject from, GameObject to, Mesh mesh)
+        /// <summary>
+        /// Generates a mesh that matches the portion of the given "toClip" object's mesh contained by the 
+        /// bounding object "bounds"
+        /// </summary>
+        /// <param name="toClip">The GameObject containing the Mesh to clip</param>
+        /// <param name="bounds">The GameObject containing the Mesh to clip "toClip" to</param>
+        /// <param name="flipNormals">Whether the normals of the resulting mesh should be flipped</param>
+        /// <returns>The clipped Mesh</returns>
+        public Mesh ClipAToB(GameObject toClip, GameObject bounds, bool flipNormals = false)
         {
-            List<Vector3> newVertices = new List<Vector3>();
-            foreach (Vector3 vector in mesh.vertices)
-            {
-                newVertices.Add(BoundsSpaceToModelSpace(vector, to, from));
-            }
-
-            mesh.SetVertices(newVertices);
-        }
-
-        // classify existing verticies
-        // perform new cut operation on each face of the bounded shape
-        // add back to mesh
-
-        public Mesh ClipAToB(GameObject toClip, GameObject bounds, GameObject result, bool flipNormals = false)
-        {
-            //Debug.Log("hello");
             // get a list of all triangles of the bounding mesh
             List<Triangle> boundsTriangles = GetBoundsTriangles(toClip, bounds);
 
@@ -65,44 +65,22 @@ namespace CSG
             // to create the triangles, we'll need a list of edge loops to triangluate
             List<EdgeLoop> edgeLoops = new List<EdgeLoop>();
 
-            //TODO: this is debug code that I need for now
+            // clip each triangle to only the portion contained by the bound
+            foreach (Triangle triangle in meshTriangles)
+            {
+                edgeLoops.AddRange(ClipTriangleToBound(triangle, boundsTriangles, vertices));
+            }
+
             // fill the edge loops that need to be filled, add the result to the list of triangles
-            if (triangleCount > -1 && triangleCount < meshTriangles.Count)
+            foreach (EdgeLoop loop in edgeLoops)
             {
-                edgeLoops.AddRange(ClipTriangleToBound(meshTriangles[triangleCount], boundsTriangles, vertices, true));
-                foreach (EdgeLoop loop in edgeLoops)
+                if (loop.filled) triangles.AddRange(loop.Trianglulate());
+                EdgeLoop nestedLoop = loop.nestedLoop;
+                while (nestedLoop != null)
                 {
-                    if (loop.filled) triangles.AddRange(TriangulateEdgeLoop(loop));
-                    EdgeLoop nestedLoop = loop.nestedLoop;
-                    while (nestedLoop != null)
-                    {
-                        if (nestedLoop.filled) triangles.AddRange(TriangulateEdgeLoop(nestedLoop));
-                        nestedLoop = nestedLoop.nestedLoop;
-                    }
-
+                    if (nestedLoop.filled) triangles.AddRange(nestedLoop.Trianglulate());
+                    nestedLoop = nestedLoop.nestedLoop;
                 }
-            }
-            else if (triangleCount < meshTriangles.Count)
-            {
-                foreach (Triangle triangle in meshTriangles)
-                {
-                    edgeLoops.AddRange(ClipTriangleToBound(triangle, boundsTriangles, vertices));
-                }
-
-                foreach (EdgeLoop loop in edgeLoops)
-                {
-                    if (loop.filled) triangles.AddRange(TriangulateEdgeLoop(loop));
-                    EdgeLoop nestedLoop = loop.nestedLoop;
-                    while (nestedLoop != null)
-                    {
-                        if (nestedLoop.filled) triangles.AddRange(TriangulateEdgeLoop(nestedLoop));
-                        nestedLoop = nestedLoop.nestedLoop;
-                    }
-                }
-            }
-            else
-            {
-                return null;
             }
 
             if(flipNormals)
@@ -113,9 +91,18 @@ namespace CSG
                 }
             }
 
-            Mesh completedMesh = new Mesh();
+            return CreateMesh(vertices, triangles);
+        }
 
-            result.GetComponent<MeshFilter>().mesh = completedMesh;
+        /// <summary>
+        /// Creates a unity Mesh from a list of CSG.Vertex and a list of CSG.Triangle
+        /// </summary>
+        /// <param name="vertices">The vertices of the mesh</param>
+        /// <param name="triangles">The triangles of the mesh</param>
+        /// <returns>The parsed Mesh</returns>
+        private Mesh CreateMesh(List<Vertex> vertices, List<Triangle> triangles)
+        {
+            Mesh mesh = new Mesh();
 
             // reindex vertices and add them to the mesh
             List<Vector3> createdVertices = new List<Vector3>();
@@ -126,7 +113,7 @@ namespace CSG
                 vertices[i].index = i;
                 createdVertices.Add(vertices[i].value);
             }
-            completedMesh.SetVertices(createdVertices);
+            mesh.SetVertices(createdVertices);
 
             // add triangles to mesh
             int[] newTriangles = new int[triangles.Count * 3];
@@ -143,8 +130,6 @@ namespace CSG
                 }
             }
 
-            //Debug.Log(triangles.Count);
-
             foreach (Triangle triangle in triangles)
             {
                 newTriangles[index] = triangle.vertices[0].index;
@@ -155,29 +140,20 @@ namespace CSG
                 index++;
             }
 
-            completedMesh.SetTriangles(newTriangles, 0);
+            mesh.SetTriangles(newTriangles, 0);
 
-            completedMesh.RecalculateTangents();
-            completedMesh.RecalculateNormals();
-
-            return completedMesh;
+            return mesh;
         }
 
-        private List<Triangle> TriangulateEdgeLoop(EdgeLoop loop, bool debug = false)
+        /// <summary>
+        /// Clips a single Triangle to just its parts contained by the bound
+        /// </summary>
+        /// <param name="triangle">The triangle to clip</param>
+        /// <param name="boundsTriangles">A list of triangles defining the bounding object</param>
+        /// <param name="vertices">A list of the vertices of the object the triangle belongs to</param>
+        /// <returns>A list of edge loops which define the clipped version of the triangle</returns>
+        private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, List<Triangle> boundsTriangles, List<Vertex> vertices)
         {
-            List<Triangle> triangles = new List<Triangle>();
-
-            for (int i = 1; i < loop.vertices.Count - 1; i++)
-            {
-                triangles.Add(new Triangle(loop.vertices[0], loop.vertices[i], loop.vertices[(i + 1) % loop.vertices.Count]));
-            }
-
-            return triangles;
-        }
-
-        private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, List<Triangle> boundsTriangles, List<Vertex> vertices, bool debug = false)
-        {
-
             List<Egress> aToBEgresses = new List<Egress>();
             List<Egress> bToCEgresses = new List<Egress>();
             List<Egress> cToAEgresses = new List<Egress>();
@@ -186,34 +162,11 @@ namespace CSG
             // find all intersections between the triangle and the bound
             foreach (Triangle boundsTriangle in boundsTriangles)
             {
-                IntersectTriangleEdge(triangle.vertices[0].value, triangle.vertices[1].value, aToBEgresses, boundsTriangle, debug);
-                IntersectTriangleEdge(triangle.vertices[1].value, triangle.vertices[2].value, bToCEgresses, boundsTriangle, debug);
-                IntersectTriangleEdge(triangle.vertices[2].value, triangle.vertices[0].value, cToAEgresses, boundsTriangle, debug);
+                IdentifyEgress(triangle.vertices[0].value, triangle.vertices[1].value, boundsTriangle, aToBEgresses);
+                IdentifyEgress(triangle.vertices[1].value, triangle.vertices[2].value, boundsTriangle, bToCEgresses);
+                IdentifyEgress(triangle.vertices[2].value, triangle.vertices[0].value, boundsTriangle, cToAEgresses);
                 internalIntersections.AddRange(FindTriangleIntersections(boundsTriangle, triangle));
-
-                if (debug)
-                {
-                    foreach (Vertex intersection in internalIntersections)
-                    {
-                        Debug.DrawRay(transform.localToWorldMatrix.MultiplyPoint3x4(intersection.value), Vector3.back * 0.1f, Color.green, Time.deltaTime);
-                    }
-                }
             }
-
-            if (debug)
-            {
-                foreach (Vertex vertex in triangle.vertices)
-                {
-                    Color color = Color.blue;
-                    if (vertex.containedByBound) color = Color.cyan;
-                    Debug.DrawRay(transform.localToWorldMatrix.MultiplyPoint3x4(vertex.value), Vector3.back * 0.1f, color, Time.deltaTime);
-                }
-            }
-
-            List<Egress> allEgresses = new List<Egress>();
-            allEgresses.AddRange(aToBEgresses);
-            allEgresses.AddRange(bToCEgresses);
-            allEgresses.AddRange(cToAEgresses);
 
             // combine duplicate internal intersections
             for (int i = internalIntersections.Count - 1; i > 0; i--)
@@ -235,19 +188,24 @@ namespace CSG
             vertices.AddRange(cToAEgresses);
             vertices.AddRange(internalIntersections);
 
+            // create an aggregate list of egresses for use creating cuts
+            List<Egress> allEgresses = new List<Egress>();
+            allEgresses.AddRange(aToBEgresses);
+            allEgresses.AddRange(bToCEgresses);
+            allEgresses.AddRange(cToAEgresses);
+
             // organize the intersections into cuts
             CreateCuts(allEgresses, internalIntersections);
 
-            //TODO: soon. deal with floating islands by collecting up loops without egresses
-            // (they won't be a part of any cuts)
 
-            // organize all triangle vertices and egress intersections in an ordered list around the perimeter
-            List<Vertex> perimeter = new List<Vertex>();
-
+            // sorting egresses to be in order of consecutive appearence around the edge of the triangle
             aToBEgresses.Sort((a, b) => (int)Mathf.Sign(Vector3.Distance(a.value, triangle.vertices[0].value) - Vector3.Distance(b.value, triangle.vertices[0].value)));
             bToCEgresses.Sort((a, b) => (int)Mathf.Sign(Vector3.Distance(a.value, triangle.vertices[1].value) - Vector3.Distance(b.value, triangle.vertices[1].value)));
             cToAEgresses.Sort((a, b) => (int)Mathf.Sign(Vector3.Distance(a.value, triangle.vertices[2].value) - Vector3.Distance(b.value, triangle.vertices[2].value)));
 
+            // organize all triangle vertices and egress intersections in an ordered list around the perimeter
+            List<Vertex> perimeter = new List<Vertex>();
+            
             perimeter.Add(triangle.vertices[0]);
             perimeter.AddRange(aToBEgresses);
             perimeter.Add(triangle.vertices[1]);
@@ -258,65 +216,27 @@ namespace CSG
 
 
             // find all edge loops and classify whether they should be retopologized or not
-
             List<EdgeLoop> loops = new List<EdgeLoop>();
-            // while there are still entries in that list for which we haven't identified all loops (1 for triangle vertices, 2 for egresses)
-            //Debug.Log("Beginning classification of edge loops");
+
             foreach (Vertex vertex in triangle.vertices)
             {
                 vertex.loops = new List<EdgeLoop>();
             }
 
-            while (true)
+            // while there are still entries in that list for which we haven't identified all loops (1 for triangle vertices, 2 for egresses)
+            int currentVertexIndex = FindEarliestUnsatisfied(perimeter);
+            while (currentVertexIndex != -1)
             {
-                // find the earliest entry whose loops aren't satisfied   
-                int currentVertexIndex = 0;
-                //Debug.Log("~~FINDING NEW STARTING POINT~~");
-                for (currentVertexIndex = 0; currentVertexIndex < perimeter.Count - 2; currentVertexIndex++)
-                {
-                    //Debug.Log("Index: " + currentVertexIndex + ", Is Egress = " + (perimeter[currentVertexIndex] is Egress) + ", loop count: " + perimeter[currentVertexIndex].loops.Count);
-
-                    // for egresses:
-                    if (perimeter[currentVertexIndex] is Egress)
-                    {
-                        //Debug.Log(((Egress)perimeter[currentVertexIndex]).cuts.Count);
-
-                        // if this one is unsatisfied, break. We've found the earliest
-                        if (perimeter[currentVertexIndex].loops.Count < ((Egress)perimeter[currentVertexIndex]).cuts.Count + 1)
-                        {
-                            break;
-                        }
-                    }
-                    else // for original vertices
-                    {
-                        // if this one is unsatisfied, break. We've found the earliest
-                        if (perimeter[currentVertexIndex].loops.Count < 1)
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                string parString = "perimeter:";
-                foreach (Vertex vertex in perimeter)
-                {
-                    parString += " " + perimeter.IndexOf(vertex) + ": (" + (vertex is Egress) + ")" + vertex.value;
-                }
-                //Debug.Log(parString);
-                //Debug.Log("finished with: " + currentVertexIndex);
-                //Debug.Log("perimeter size: " + perimeter.Count);
-
                 // we've satisfied all loops, which is our exit condition
-                if (currentVertexIndex == perimeter.Count - 2)
+                if (currentVertexIndex == -1)
                 {
                     break;
                 }
 
-                // now that we've found the beginning of a loop, it's time to find the rest
-                Vertex initialVertex = perimeter[currentVertexIndex];
-
                 // determine whether this loop should be filled or not
                 EdgeLoop loop = new EdgeLoop();
+
+                Vertex initialVertex = perimeter[currentVertexIndex];
 
                 // the loop defines either a surface or a hole, and we can determine that by looking at our starting entry
                 // the starting entry can be one of two cases:
@@ -325,14 +245,6 @@ namespace CSG
                 {
                     // in this case, the new loop is the opposite of whatever the previous loop is
                     loop.filled = !initialVertex.loops[initialVertex.loops.Count - 1].filled;
-
-                    // also, if the initial vertex is an egress, we should add it and move on to the next perimeter value, 
-                    // so as not to traverse backwards along the cut
-                    /*Cut furthestCut = ((Egress)initialVertex).GetFurthestCut(perimeter);
-
-                    loop.vertices.Add(perimeter[currentVertexIndex]);
-                    perimeter[currentVertexIndex].loops.Add(loop);
-                    currentVertexIndex++;*/
                 }
                 else // 2. a vertex of the original triangle
                 {
@@ -342,21 +254,8 @@ namespace CSG
 
                 // traverse forward in the ordered list, following each cut, until we reach the initial point
                 // once the inital entry is reached again, we have identified a loop, and can add it to the pile
-                int tooMuch = 0;
-                //Debug.Log("starting new loop");
                 do
                 {
-                    // if the current vertex is an egress
-                    tooMuch++;
-                    if (tooMuch > 100)
-                    {
-                        Debug.Log("too long");
-                        throw new System.ApplicationException();
-                        break;
-                    }
-
-                    //Debug.Log(currentVertexIndex);
-
                     Cut furthestCut = null;
 
                     if (perimeter[currentVertexIndex] is Egress)
@@ -374,10 +273,8 @@ namespace CSG
                             break;
                         }
 
-                        // if there's more than one cut on the vertex, we need to potentially
                         while (((Egress)perimeter[currentVertexIndex]).cuts.Count > 1)
                         {
-                            //Debug.Log("Double traversal");
                             // select cut
                             Cut toIgnore = null;
                             foreach (Cut cut in ((Egress)perimeter[currentVertexIndex]).cuts)
@@ -396,14 +293,13 @@ namespace CSG
                             }
                             else
                             {
-                                //Debug.Log("Couldn't find double traversal");
                                 break;
                             }
 
                             if (perimeter[currentVertexIndex] == initialVertex)// if we arrived at the initial vertex
                             {
                                 loop.vertices.RemoveAt(loop.vertices.Count - 1);
-                                goto EndOfDoWhile;
+                                goto FinalStep;
                             }
                         }
                     }
@@ -414,47 +310,20 @@ namespace CSG
                         perimeter[currentVertexIndex].loops.Add(loop);
                     }
 
-                    // increment the current index by 1
                     currentVertexIndex++;
 
-                    if (currentVertexIndex >= perimeter.Count)
-                    {
-                        string listString = "";
-                        foreach (Vertex vertex in loop.vertices)
-                        {
-                            listString += " " + perimeter.IndexOf(vertex);
-                        }
-                        Debug.Log("Failed to create loop, (Filled: " + loop.filled + ") :: " + listString);
-                    }
                     // once the current vertex loops around to the start, we're done
                 } while (perimeter[currentVertexIndex] != initialVertex);
-                EndOfDoWhile:
 
-                //Debug.Log("terminated");
+                FinalStep:
+
                 loops.Add(loop);
-            }
-            if (debug)
-            {
-                foreach (EdgeLoop loop in loops)
-                {
-                    string listString = "";
-                    foreach (Vertex vertex in loop.vertices)
-                    {
-                        listString += " " + perimeter.IndexOf(vertex);
-                    }
-                    Debug.Log("Created loop, (Filled: " + loop.filled + ") :: " + listString);
-                }
+
+                currentVertexIndex = FindEarliestUnsatisfied(perimeter);
             }
 
             // now that we've created all loops that intersect the edge of the triangle, we can start on loops that float as islands
-            List<Vertex> unusedVertices = new List<Vertex>();
-            foreach (Vertex intersection in internalIntersections)
-            {
-                if(!intersection.usedInLoop)
-                {
-                    unusedVertices.Add(intersection);
-                }
-            }
+            List<Vertex> unusedVertices = internalIntersections.Where(intersection => !intersection.usedInLoop).ToList();
 
             while(unusedVertices.Count > 0)
             {
@@ -463,6 +332,7 @@ namespace CSG
                 unusedVertices = (unusedVertices.Where(vertex => !result.vertices.Contains(vertex))).ToList();
             }
 
+            // configure the filledness of the discovered nested loops
             foreach(EdgeLoop loop in loops)
             {
                 EdgeLoop nestedLoop = loop.nestedLoop;
@@ -479,9 +349,62 @@ namespace CSG
             return loops;
         }
 
+        /// <summary>
+        /// Finds the earliest appearing Vertex in a triangle's perimeter that hasn't had all it's loops identified.
+        /// Returns -1 if no unsatisfied vertices are left
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Each of the original vertices of a triangle always appear in exactly 1 loop each
+        /// </para>
+        /// <para>
+        /// Each Egress appears in one more loop than it has Cuts
+        /// </para>
+        /// </remarks>
+        /// <param name="perimeter">The perimeter to examine for incomplete vertices</param>
+        /// <returns>The index of the earliest unsatisfied vertex in the loop, or -1 if none are left.</returns>
+        private int FindEarliestUnsatisfied(List<Vertex> perimeter)
+        {
+            // find the earliest entry whose loops aren't satisfied   
+            int index = 0;
+            for (index = 0; index < perimeter.Count - 2; index++)
+            {
+                // for egresses:
+                if (perimeter[index] is Egress)
+                {
+                    // if this one is unsatisfied, break. We've found the earliest
+                    if (perimeter[index].loops.Count < ((Egress)perimeter[index]).cuts.Count + 1)
+                    {
+                        break;
+                    }
+                }
+                else // for original vertices
+                {
+                    // if this one is unsatisfied, break. We've found the earliest
+                    if (perimeter[index].loops.Count < 1)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (index == perimeter.Count - 2)
+            {
+                return -1;
+            }
+
+            return index;
+        }
+
+        /// <summary>
+        /// Finds the loop associated with the given intersection with a triangle and places it as a child of the correct containing edge loop
+        /// </summary>
+        /// <param name="initialVertex">A vertex on the loop to find</param>
+        /// <param name="unusedVertices">A list of vertices that could possibly be part of the loop</param>
+        /// <param name="loops">A list of all non-internal loops found for the current triangle</param>
+        /// <returns>An edge loop defining the loop associated with the given vertex</returns>
         private EdgeLoop DiscoverInternalLoop (Vertex initialVertex, List<Vertex> unusedVertices, List<EdgeLoop> loops)
         {
-            //TODO: discovery of loops
             Queue<EdgeLoop> potentialLoops = new Queue<EdgeLoop>();
             List<EdgeLoop> completedLoops = new List<EdgeLoop>();
 
@@ -494,7 +417,6 @@ namespace CSG
                 do
                 {
                     nextVertex = null;
-                    // foundNext = false;
                     List<Vertex> loopVertices = potentialLoops.Peek().vertices;
                     for (int i = unusedVertices.Count - 1; i >= 0; i--)
                     {
@@ -583,6 +505,14 @@ namespace CSG
             return finalLoop;
         }
 
+        /// <summary>
+        /// Marks the given Cut as traversed and adds its vertices to the greater loop being traversed
+        /// </summary>
+        /// <param name="cut">The Cut being traversed</param>
+        /// <param name="loop">The EdgeLoop being traversed</param>
+        /// <param name="perimeter">The parimeter of the current triangle</param>
+        /// <param name="currentVertexIndex">The index of the vertex at the beginning of the Cut</param>
+        /// <returns>The index of the vertex arrived at by traversing the Cut</returns>
         private int TraverseCut(Cut cut, EdgeLoop loop, List<Vertex> perimeter, int currentVertexIndex)
         {
             cut.traversed = true;
@@ -595,23 +525,20 @@ namespace CSG
             currentVertexIndex = perimeter.IndexOf(cut[cut.Count - 1]);
             perimeter[currentVertexIndex].loops.Add(loop);
 
-            string cutString = "";
-            foreach (Vertex vertex in cut)
-            {
-                cutString += " ";
-                if (perimeter.Contains(vertex))
-                {
-                    cutString += perimeter.IndexOf(vertex) + ": ";
-                }
-                cutString += vertex;
-            }
-            //Debug.Log("Traversing egress: " + cutString);
-            //Debug.Log("Egress traversed. Arrived at " + currentVertexIndex);
-
             return currentVertexIndex;
         }
 
-        private void IntersectTriangleEdge(Vector3 pointA, Vector3 pointB, List<Egress> egresses, Triangle boundsTriangle, bool debug = false)
+        /// <summary>
+        /// Identifies a new egress created by the intersection of the edge defined by points A and B and a given bounds triangle if there is one
+        /// </summary>
+        /// <remarks>
+        /// Sometimes an Egress is identified multiple times. In these cases, the Egress is not double counted
+        /// </remarks>
+        /// <param name="pointA">The first point of the intersecting edge</param>
+        /// <param name="pointB">The second point of the intersecting edge</param>
+        /// <param name="boundsTriangle">The Triangle to intersect the edge with</param>
+        /// <param name="egresses">A list of existing egresses to store the new Egress in</param>
+        private void IdentifyEgress(Vector3 pointA, Vector3 pointB, Triangle boundsTriangle, List<Egress> egresses)
         {
             Vertex intersectionPoint;
 
@@ -634,14 +561,14 @@ namespace CSG
                     intersectionPoint.triangles.Add(boundsTriangle);
                     egresses.Add(Egress.CreateFromVertex(intersectionPoint));
                 }
-
-                if (debug)
-                {
-                    Debug.DrawRay(transform.localToWorldMatrix.MultiplyPoint3x4(intersectionPoint.value), Vector3.back * 0.1f, Color.red, Time.deltaTime);
-                }
             }
         }
 
+        /// <summary>
+        /// Takes a list of Egresses and finds all Cuts that join them
+        /// </summary>
+        /// <param name="egresses">The list of Egresses to find cuts for</param>
+        /// <param name="intersections">The list of internal intersections that form the intermediate points in the created cuts</param>
         private void CreateCuts(List<Egress> egresses, List<Vertex> intersections)
         {
             foreach (Egress egress in egresses)
@@ -649,11 +576,11 @@ namespace CSG
                 Cut cut = new Cut();
                 cut.Add(egress);
                 Vertex currentVertex = egress;
-                int tooMuch = 0;
                 bool foundNext = false;
                 do
                 {
                     foundNext = false;
+
                     // prioritize progressing along internal intersections first
                     foreach (Vertex intersection in intersections)
                     {
@@ -697,18 +624,11 @@ namespace CSG
 
                         if (vertex.SharesTriangle(currentVertex) && !cut.Contains(vertex) && !alreadyExists)
                         {
-                            //Debug.Log("I share a triangle");
                             foundNext = true;
                             cut.Add(vertex);
                             currentVertex = vertex;
                             break;
                         }
-                    }
-
-                    tooMuch++;
-                    if (tooMuch > 100)
-                    {
-                        throw new System.ApplicationException();
                     }
                 } while (!(currentVertex is Egress) && foundNext);
 
@@ -716,26 +636,40 @@ namespace CSG
                 {
                     egress.cuts.Add(cut);
                     ((Egress)currentVertex).cuts.Add(cut.GetReversedCopy());
-                    string cutString = "";
-                    foreach (Vertex vertex in cut)
-                    {
-                        cutString += " ";
-                        if (vertex is Egress)
-                        {
-                            cutString += "Egress: ";
-                        }
-                        cutString += vertex;
-                    }
                 }
-
             }
         }
 
-        private Vector3 BoundsSpaceToModelSpace(Vector3 toTransform, GameObject toClip, GameObject bounds)
+        /// <summary>
+        /// Converts a Vector 3 from the local coordinate system defined by "from" to a target coordinate system defined by "to"
+        /// </summary>
+        /// <param name="toTransform">The point to convert</param>
+        /// <param name="from">The GameObject defining the initial coordinate space</param>
+        /// <param name="to">The GameObject defining the target coordinate space</param>
+        /// <returns>The converted point</returns>
+        private Vector3 ConvertPointCoordinates(Vector3 toTransform, GameObject from, GameObject to)
         {
-            Vector3 point = bounds.transform.localToWorldMatrix.MultiplyPoint3x4(toTransform);
-            point = toClip.transform.worldToLocalMatrix.MultiplyPoint3x4(point);
+            Vector3 point = from.transform.localToWorldMatrix.MultiplyPoint3x4(toTransform);
+            point = to.transform.worldToLocalMatrix.MultiplyPoint3x4(point);
             return point;
+        }
+
+        /// <summary>
+        /// Converts all vertex locations of the given mesh from their local coordinate system defined by "from" to a
+        /// target coordinate system defined by "to"
+        /// </summary>
+        /// <param name="mesh">The Mesh whose coordinates will be converted</param>
+        /// <param name="from">The GameObject defining the initial coordinate space</param>
+        /// <param name="to">The GameObject defining the target coordinate space</param>
+        private void ConvertMeshCoordinates(Mesh mesh, GameObject from, GameObject to)
+        {
+            List<Vector3> newVertices = new List<Vector3>();
+            foreach (Vector3 vector in mesh.vertices)
+            {
+                newVertices.Add(ConvertPointCoordinates(vector, from, to));
+            }
+
+            mesh.SetVertices(newVertices);
         }
 
         // only finds the intersections of a's edges with b's surface
@@ -758,11 +692,9 @@ namespace CSG
             return vertices;
         }
 
-
-
         private Vertex EdgeIntersectsTriangle(Vector3 pointA, Vector3 pointB, Triangle triangle)
         {
-            Vertex raycastIntersection = NewRaycastToTriangle(pointA, pointA - pointB, triangle);
+            Vertex raycastIntersection = RaycastToTriangle(pointA, pointA - pointB, triangle);
             if (raycastIntersection != null)
             {
                 if (PointLiesOnEdge(raycastIntersection.value, pointA, pointB))
@@ -778,26 +710,6 @@ namespace CSG
         {
             float temp = Vector3.Distance(edgeA, point) + Vector3.Distance(point, edgeB);
             return Mathf.Abs(Vector3.Distance(edgeA, edgeB) - temp) < error;
-        }
-
-        private List<Vertex> GetBoundsVertices(GameObject bounds)
-        {
-            List<Vertex> vertices = new List<Vertex>();
-            Vector3[] meshVertices = bounds.GetComponent<MeshFilter>().mesh.vertices;
-
-            for (int i = 0; i < meshVertices.Length; i++)
-            {
-                vertices.Add(new Vertex(i, meshVertices[i], true));
-            }
-
-            return vertices;
-        }
-
-        // assumes that there is one
-        private Vector3 FindIntersectionOfTwoLines(Vector3 oT, Vector3 dT, Vector3 oU, Vector3 dU)
-        {
-            float u = (oT.y + oU.x - oU.y - oT.x) / (1 - dU.x);
-            return oU + dU * u;
         }
 
         private List<Vertex> ClassifyVertices(GameObject toClip, GameObject bounds, List<Triangle> boundsTriangles)
@@ -822,7 +734,7 @@ namespace CSG
 
             foreach (Triangle boundsTriangle in boundsTriangles)
             {
-                Vertex intersectionPoint = NewRaycastToTriangle(point, Vector3.up, boundsTriangle);
+                Vertex intersectionPoint = RaycastToTriangle(point, Vector3.up, boundsTriangle);
                 if (intersectionPoint != null)
                 {
                     intersections.Add(intersectionPoint.value);
@@ -861,7 +773,7 @@ namespace CSG
         }
 
         // solution from https://stackoverflow.com/questions/42740765/intersection-between-line-and-triangle-in-3d
-        private Vertex NewRaycastToTriangle(Vector3 origin, Vector3 direction, Triangle triangle)
+        private Vertex RaycastToTriangle(Vector3 origin, Vector3 direction, Triangle triangle)
         {
             Vector3 q1 = origin + direction * 5;
             Vector3 q2 = origin - direction * 5;
@@ -896,63 +808,6 @@ namespace CSG
             return (int)Mathf.Sign(Vector3.Dot(Vector3.Cross(b - a, c - a), d - a));
         }
 
-        // old triangle raycast
-        /*
-        private Vertex RaycastToTriangle(Vector3 origin, Vector3 direction, Triangle triangle)
-        {
-            // determine equation of plane
-            Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
-            Vector3 planePoint = triangle.vertices[0].value;
-            //Debug.Log(normal + " :: " + direction + " == " + (Vector3.Cross(normal, direction).magnitude < error));
-            if(Mathf.Abs(Vector3.Dot(normal, direction)) < error)
-            {
-                //Debug.Log("this one's parellel");
-                //Debug.Log(normal + " :: " + direction);
-                return null;
-            }
-            //Debug.Log(origin);
-            //Debug.Log(direction);
-
-            // get ray intersection with plane,
-            float numerator = normal.x * (planePoint.x - origin.x) + normal.y * (planePoint.y - origin.y) + normal.z * (planePoint.z - origin.z);
-            float denominator = normal.x * direction.x + normal.y * direction.y + normal.z * direction.z;
-            Vector3 intersectionPoint = ((numerator / denominator) * direction) + origin;
-
-            // determine if that point is in the triangle
-            float areaOfInternalTriangle = FindAreaOfTriangle(triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value);
-
-            float areaOfPointTriangles = 0;
-
-            for(int i = 0; i < 3; i++)
-            {
-                areaOfPointTriangles += FindAreaOfTriangle(intersectionPoint, triangle.vertices[i].value, triangle.vertices[(i + 1) % 3].value);
-            }
-
-
-            // if the point is on the triangle
-            //Debug.Log(areaOfInternalTriangle + " :: " + areaOfPointTriangles);
-            if(Mathf.Abs(areaOfInternalTriangle - areaOfPointTriangles) < error)
-            {
-                //Debug.Log("this one did");
-                //Debug.Log("intersection: " + intersectionPoint);
-                Vertex result = new Vertex(0, intersectionPoint, true);
-                return result;
-            }
-            //Debug.Log("this one didn't");
-            return null;// if we don't find anything, return null
-        }
-
-        private float FindAreaOfTriangle(Vector3 pointA, Vector3 pointB, Vector3 pointC)
-        {
-            //Debug.Log(pointA + " : " + pointB + " : " + pointC);
-            float aToB = (pointB - pointA).magnitude;
-            float bToC = (pointC - pointB).magnitude;
-            float cToA = (pointA - pointC).magnitude;
-            float s = (aToB + bToC + cToA) / 2;
-            return Mathf.Sqrt(s * (s - aToB) * (s - bToC) * (s - cToA));
-        }
-        */
-
         private List<Triangle> GetAllTriangles(GameObject toClip, List<Vertex> vertices)
         {
             List<Triangle> triangles = new List<Triangle>();
@@ -975,16 +830,11 @@ namespace CSG
             for (int i = 0; i < mesh.triangles.Length; i += 3)
             {
                 Triangle triangle = new Triangle(
-                    new Vertex(i, BoundsSpaceToModelSpace(mesh.vertices[mesh.triangles[i]], toClip, bounds), true),
-                    new Vertex(i + 1, BoundsSpaceToModelSpace(mesh.vertices[mesh.triangles[i + 1]], toClip, bounds), true),
-                    new Vertex(i + 2, BoundsSpaceToModelSpace(mesh.vertices[mesh.triangles[i + 2]], toClip, bounds), true));
+                    new Vertex(i, ConvertPointCoordinates(mesh.vertices[mesh.triangles[i]], bounds, toClip), true),
+                    new Vertex(i + 1, ConvertPointCoordinates(mesh.vertices[mesh.triangles[i + 1]], bounds, toClip), true),
+                    new Vertex(i + 2, ConvertPointCoordinates(mesh.vertices[mesh.triangles[i + 2]], bounds, toClip), true));
 
                 triangles.Add(triangle);
-            }
-
-            for (int i = 0; i < mesh.vertices.Length; i++)
-            {
-                //Debug.Log(BoundsSpaceToModelSpace(mesh.vertices[i], toClip) + " :: " + mesh.vertices[i]);
             }
 
             return triangles;
