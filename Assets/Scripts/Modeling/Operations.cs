@@ -299,7 +299,8 @@ namespace CSG
         /// </remarks>
         /// <param name="perimeter">The perimeter to examine for incomplete vertices</param>
         /// <returns>The index of the earliest unsatisfied vertex in the loop, or -1 if none are left.</returns>
-        private int FindEarliestUnsatisfied(List<Vertex> perimeter) => perimeter.FindIndex(vertex => vertex is Egress ? vertex.loops.Count < ((Egress)vertex).cuts.Count + 1 : vertex.loops.Count < 1);
+        private int FindEarliestUnsatisfied(List<Vertex> perimeter) => 
+            perimeter.FindIndex(vertex => vertex is Egress ? vertex.loops.Count < ((Egress)vertex).cuts.Count + 1 : vertex.loops.Count < 1);
 
         /// <summary>
         /// Finds the loop associated with the given intersection with a triangle and places it as a child of the correct containing edge loop
@@ -376,7 +377,6 @@ namespace CSG
                     if (loop.nestedLoop == null)
                     {
                         loop.nestedLoop = finalLoop;
-
                     }
                     else
                     {
@@ -395,13 +395,11 @@ namespace CSG
                         } while (finalLoop.nestedLoop != null && initialVertex.LiesWithinLoop(finalLoop.nestedLoop));
                     }
 
-                        // we've found the loop we're contained by, break out
-                        break;
-                    }
-                }
-
-                return finalLoop;
+                    // we've found the loop we're contained by, break out
+                    break;
+                } 
             }
+            return finalLoop;
         }
         /// <summary>
         /// Marks the given Cut as traversed and adds its vertices to the greater loop being traversed
