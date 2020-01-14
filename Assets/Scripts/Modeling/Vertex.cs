@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-
 
 namespace CSG
 {
@@ -61,7 +61,7 @@ namespace CSG
         /// </summary>
         /// <param name="vertex">The vertex to compare against</param>
         /// <returns>Whether this vertex and the given vertex both appear on the same triangle</returns>
-        public bool SharesTriangle(Vertex vertex)
+        public bool SharesTriangle(Vertex vertex) // public bool SharesTriangle(Vertex vertex) => triangles.Contains(t => vertex.triangles.Contains(t));
         {
             //Debug.Log("Do I even have a triangle? " + triangles.Count);
             foreach (Triangle myTriangle in triangles)
@@ -97,9 +97,9 @@ namespace CSG
             for (int i = 0; i < loop.vertices.Count; i++)
             {
                 Point3 intersection = Raycast.RayToLineSegment(
-                    this.value, 
-                    castDirection, 
-                    loop.vertices[i].value, 
+                    this.value,
+                    castDirection,
+                    loop.vertices[i].value,
                     loop.vertices[(i + 1) % loop.vertices.Count].value);
                 if (intersection != null)
                 {
@@ -128,6 +128,7 @@ namespace CSG
         /// Takes a List and merges any vertices that are too similar
         /// </summary>
         /// <param name="list">The list to remove duplicates from</param>
+        // LINQ private void RemoveDuplicates(List<Vector3> list) => list.RemoveAll(a => list.Contains(b => Vector3.Distance(a, b) < 0.0001));
         private void RemoveDuplicates(List<Vector3> list)
         {
             for (int i = list.Count - 1; i > 0; i--)
@@ -142,6 +143,6 @@ namespace CSG
                 }
             }
         }
+        // ENDLINQ
     }
 }
-

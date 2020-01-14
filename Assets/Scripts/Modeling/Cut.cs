@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CSG
@@ -18,7 +19,10 @@ namespace CSG
         /// Creates a shallow copy of this Cut in reverse order
         /// </summary>
         /// <returns>The reversed copy</returns>
-        public Cut GetReversedCopy()
+
+        // ↓ also kinda redundant
+
+        public Cut GetReversedCopy() // public Cut GetReversedCopy() => this.Reverse();
         {
             Cut copy = new Cut();
             for (int i = this.Count - 1; i >= 0; i--)
@@ -29,7 +33,7 @@ namespace CSG
             return copy;
         }
 
-        public string ToString(List<Vertex> perimeter)
+        public string ToString(List<Vertex> perimeter) // public string ToString(List<Vertex> perimeter) => $"Cut: {String.Join(" ",this.Select(v=>$"{perimeter.IndexOf(v)}: {v.value}"))}";
         {
             string output = "Cut:";
             foreach (Vertex vertex in this)
@@ -42,5 +46,3 @@ namespace CSG
     }
 
 }
-
-

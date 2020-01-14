@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CSG
@@ -27,11 +28,13 @@ namespace CSG
         /// <param name="mesh">The Mesh to parse</param>
         public Model(Mesh mesh)
         {
+            // LINQ vertices = mesh.vertices.Select((v, i) => new Vertex(i, v));
             vertices = new List<Vertex>();
             for (int i = 0; i < mesh.vertices.Length; i++)
             {
                 vertices.Add(new Vertex(i, mesh.vertices[i]));
             }
+            // ENDLINQ
 
             triangles = new List<Triangle>();
 
@@ -55,29 +58,31 @@ namespace CSG
             Mesh mesh = new Mesh();
 
             // reindex vertices and add them to the mesh
+            // LINQ List<Vector3> createdVertices = vertices.Select(v => v.value);
             List<Vector3> createdVertices = new List<Vector3>();
 
             // add vertices to mesh
             for (int i = 0; i < vertices.Count; i++)
             {
-                vertices[i].index = i;
+                vertices[i].index = i; // vertices.ForEach((v, i) => v.index = i);
                 createdVertices.Add(vertices[i].value);
             }
+            //ENDLINQ
+
             mesh.SetVertices(createdVertices);
 
             // add triangles to mesh
+            // LINQ int[] newTriangles = triangles.SelectMany(t => t.vertices.Select(v => v.index)).ToArray();
             int[] newTriangles = new int[triangles.Count * 3];
             int index = 0;
 
             foreach (Triangle triangle in triangles)
             {
-                newTriangles[index] = triangle.vertices[0].index;
-                index++;
-                newTriangles[index] = triangle.vertices[1].index;
-                index++;
-                newTriangles[index] = triangle.vertices[2].index;
-                index++;
+                newTriangles[index++] = triangle.vertices[0].index;
+                newTriangles[index++] = triangle.vertices[1].index;
+                newTriangles[index++] = triangle.vertices[2].index;
             }
+            //ENDLINQ
 
             mesh.SetTriangles(newTriangles, 0);
 
@@ -91,12 +96,10 @@ namespace CSG
         /// <param name="to">The transform representing the coordinate system to convert to</param>
         public void ConvertCoordinates(Transform from, Transform to)
         {
-            foreach(Vertex vertex in vertices)
+            foreach (Vertex vertex in vertices)
             {
                 vertex.value = to.worldToLocalMatrix.MultiplyPoint3x4(from.localToWorldMatrix.MultiplyPoint3x4(vertex.value));
             }
         }
     }
 }
-
-

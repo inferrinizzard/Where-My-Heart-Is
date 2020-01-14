@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CSG
-{
+namespace CSG {
     /// <summary>
     /// An ordered list of vertices representing an edge loop
     /// </summary>
-    public class EdgeLoop
-    {
+    public class EdgeLoop {
         /// <summary>
         /// The vertices of this edge loop in order
         /// </summary>
@@ -27,8 +25,7 @@ namespace CSG
         /// <summary>
         /// Creates an empty EdgeLoop
         /// </summary>
-        public EdgeLoop()
-        {
+        public EdgeLoop() {
             vertices = new List<Vertex>();
         }
 
@@ -36,8 +33,7 @@ namespace CSG
         /// Creates an EdgeLoop with a shallow copy of the given List of vertices
         /// </summary>
         /// <param name="vertices"></param>
-        public EdgeLoop(List<Vertex> vertices)
-        {
+        public EdgeLoop(List<Vertex> vertices) {
             this.vertices = new List<Vertex>(vertices);
         }
 
@@ -45,12 +41,10 @@ namespace CSG
         /// Creates a series of Triangles that cover the surface of this EdgeLoop
         /// </summary>
         /// <returns>The created triangles</returns>
-        public List<Triangle> Trianglulate()
-        {
+        public List<Triangle> Triangulate() {
             List<Triangle> triangles = new List<Triangle>();
 
-            for (int i = 1; i < this.vertices.Count - 1; i++)
-            {
+            for (int i = 1; i < this.vertices.Count - 1; i++) {
                 triangles.Add(new Triangle(this.vertices[0], this.vertices[i], this.vertices[(i + 1) % this.vertices.Count]));
             }
 
@@ -59,5 +53,3 @@ namespace CSG
     }
 
 }
-
-
