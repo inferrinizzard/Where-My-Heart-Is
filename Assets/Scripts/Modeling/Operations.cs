@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 namespace CSG
 {
@@ -62,11 +62,11 @@ namespace CSG
             // fill the edge loops that need to be filled, add the result to the list of triangles
             foreach (EdgeLoop loop in edgeLoops)
             {
-                if (loop.filled) modelToClip.triangles.AddRange(loop.Triangulate());
+                if (loop.filled)modelToClip.triangles.AddRange(loop.Triangulate());
                 EdgeLoop nestedLoop = loop.nestedLoop;
                 while (nestedLoop != null)
                 {
-                    if (nestedLoop.filled) modelToClip.triangles.AddRange(nestedLoop.Triangulate());
+                    if (nestedLoop.filled)modelToClip.triangles.AddRange(nestedLoop.Triangulate());
                     nestedLoop = nestedLoop.nestedLoop;
                 }
             }
@@ -121,12 +121,6 @@ namespace CSG
                 }
             }
 
-            // store the resulting intersections in the greater vertex list
-            vertices.AddRange(aToBEgresses);
-            vertices.AddRange(bToCEgresses);
-            vertices.AddRange(cToAEgresses);
-            vertices.AddRange(internalIntersections);
-
             // create an aggregate list of egresses for use creating cuts
             // LINQ 
             List<Egress> allEgresses = egressesList.SelectMany(e => e).ToList();
@@ -142,7 +136,6 @@ namespace CSG
 
             // organize the intersections into cuts
             CreateCuts(allEgresses, internalIntersections);
-
 
             // sorting egresses to be in order of consecutive appearence around the edge of the triangle
             // LINQ 
@@ -164,7 +157,6 @@ namespace CSG
             perimeter.AddRange(cToAEgresses);
             perimeter.Add(triangle.vertices[0]); // a duplicate of the first vertex as a sentinel
             // ENDLINQ
-
 
             // find all edge loops and classify whether they should be retopologized or not
             List<EdgeLoop> loops = new List<EdgeLoop>();
@@ -262,7 +254,7 @@ namespace CSG
 
                 FinalStep:
 
-                loops.Add(loop);
+                    loops.Add(loop);
 
                 currentVertexIndex = FindEarliestUnsatisfied(perimeter);
             }
@@ -270,7 +262,7 @@ namespace CSG
             // now that we've created all loops that intersect the edge of the triangle, we can start on loops that float as islands
             List<Vertex> unusedVertices = internalIntersections.Where(intersection => !intersection.usedInLoop).ToList();
 
-            while(unusedVertices.Count > 0)
+            while (unusedVertices.Count > 0)
             {
                 Vertex currentVertex = unusedVertices.Last();
                 EdgeLoop result = DiscoverInternalLoop(currentVertex, unusedVertices, loops);
@@ -278,18 +270,17 @@ namespace CSG
             }
 
             // configure the filledness of the discovered nested loops
-            foreach(EdgeLoop loop in loops)
+            foreach (EdgeLoop loop in loops)
             {
                 EdgeLoop nestedLoop = loop.nestedLoop;
                 EdgeLoop previousLoop = loop;
-                while(nestedLoop != null)
+                while (nestedLoop != null)
                 {
                     nestedLoop.filled = !previousLoop.filled;
                     previousLoop = nestedLoop;
                     nestedLoop = nestedLoop.nestedLoop;
                 }
             }
-
 
             return loops;
         }
@@ -324,7 +315,7 @@ namespace CSG
 
             potentialLoops.Enqueue(new EdgeLoop());
             potentialLoops.Peek().vertices.Add(initialVertex);
-            while(potentialLoops.Count > 0)
+            while (potentialLoops.Count > 0)
             {
                 Vertex secondVertex = null;
                 Vertex nextVertex;
@@ -337,11 +328,11 @@ namespace CSG
                         if (unusedVertices[i].SharesTriangle(loopVertices.Last()) &&
                             (!loopVertices.Contains(unusedVertices[i]) || (unusedVertices[i] == initialVertex && secondVertex != null)))
                         {
-                            if(nextVertex == null)
+                            if (nextVertex == null)
                             {
                                 nextVertex = unusedVertices[i];
 
-                                if(secondVertex == null)
+                                if (secondVertex == null)
                                 {
                                     secondVertex = nextVertex;
                                 }
@@ -370,7 +361,7 @@ namespace CSG
             EdgeLoop finalLoop = completedLoops[0];
             foreach (EdgeLoop loop in completedLoops)
             {
-                if(loop.vertices.Count > finalLoop.vertices.Count)
+                if (loop.vertices.Count > finalLoop.vertices.Count)
                 {
                     finalLoop = loop;
                 }
@@ -404,14 +395,14 @@ namespace CSG
                         } while (finalLoop.nestedLoop != null && initialVertex.LiesWithinLoop(finalLoop.nestedLoop));
                     }
 
-                    // we've found the loop we're contained by, break out
-                    break;
+                        // we've found the loop we're contained by, break out
+                        break;
+                    }
                 }
+
+                return finalLoop;
             }
-
-            return finalLoop;
         }
-
         /// <summary>
         /// Marks the given Cut as traversed and adds its vertices to the greater loop being traversed
         /// </summary>
@@ -650,5 +641,3 @@ namespace CSG
         }
     }
 }
-
-
