@@ -28,12 +28,12 @@ namespace CSG
         /// <param name="mesh">The Mesh to parse</param>
         public Model(Mesh mesh)
         {
-            // LINQ vertices = mesh.vertices.Select((v, i) => new Vertex(i, v));
-            vertices = new List<Vertex>();
+            vertices = mesh.vertices.Select((vertex, index) => new Vertex(index, vertex)).ToList();
+            /*vertices = new List<Vertex>();
             for (int i = 0; i < mesh.vertices.Length; i++)
             {
                 vertices.Add(new Vertex(i, mesh.vertices[i]));
-            }
+            }*/
             // ENDLINQ
 
             triangles = new List<Triangle>();
@@ -72,17 +72,7 @@ namespace CSG
             mesh.SetVertices(createdVertices);
 
             // add triangles to mesh
-            // LINQ int[] newTriangles = triangles.SelectMany(t => t.vertices.Select(v => v.index)).ToArray();
-            int[] newTriangles = new int[triangles.Count * 3];
-            int index = 0;
-
-            foreach (Triangle triangle in triangles)
-            {
-                newTriangles[index++] = triangle.vertices[0].index;
-                newTriangles[index++] = triangle.vertices[1].index;
-                newTriangles[index++] = triangle.vertices[2].index;
-            }
-            //ENDLINQ
+            int[] newTriangles = triangles.SelectMany(triangle => triangle.vertices.Select(vertex => vertex.index)).ToArray();
 
             mesh.SetTriangles(newTriangles, 0);
 

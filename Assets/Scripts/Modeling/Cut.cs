@@ -20,10 +20,12 @@ namespace CSG
         /// </summary>
         /// <returns>The reversed copy</returns>
 
-        // ↓ also kinda redundant
-
-        public Cut GetReversedCopy() // public Cut GetReversedCopy() => this.Reverse();
+        public Cut GetReversedCopy()
         {
+            // AsEnumerable returns a shallow copy of the list
+            //return (Cut)this.AsEnumerable().Reverse().ToList();
+
+            
             Cut copy = new Cut();
             for (int i = this.Count - 1; i >= 0; i--)
             {
@@ -33,16 +35,7 @@ namespace CSG
             return copy;
         }
 
-        public string ToString(List<Vertex> perimeter) // public string ToString(List<Vertex> perimeter) => $"Cut: {String.Join(" ",this.Select(v=>$"{perimeter.IndexOf(v)}: {v.value}"))}";
-        {
-            string output = "Cut:";
-            foreach (Vertex vertex in this)
-            {
-                output += " " + perimeter.IndexOf(vertex) + ": " + vertex.value;
-            }
-
-            return output;
-        }
+        public string ToString(List<Vertex> perimeter) => $"Cut: {string.Join(" ",this.Select(v=>$"{perimeter.IndexOf(v)}: {v.value}"))}";
     }
 
 }
