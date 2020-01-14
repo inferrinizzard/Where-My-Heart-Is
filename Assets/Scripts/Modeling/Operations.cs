@@ -6,15 +6,12 @@ using System.Linq;
 namespace CSG
 {
     /// <summary>
-    /// Supplies methods for 
+    /// Supplies methods for performing constructive solid geometry boolean operations
     /// </summary>
     public class Operations : MonoBehaviour
     {
-        public float egressSimilarity;
-        public float error;
-        public float intersectionError;
-
-        public int triangleCount;
+        [Tooltip("breakpoint for equality comparisons between floats")]
+        [SerializeField] private float error;
 
         /// <summary>
         /// Generates the union of two shapes
@@ -48,101 +45,46 @@ namespace CSG
         /// <param name="bounds">The GameObject containing the Mesh to clip "toClip" to</param>
         /// <param name="flipNormals">Whether the normals of the resulting mesh should be flipped</param>
         /// <returns>The clipped Mesh</returns>
-        public Mesh ClipAToB(GameObject toClip, GameObject bounds, bool flipNormals = false)
+        private Mesh ClipAToB(GameObject toClip, GameObject bounds, bool flipNormals = false)
         {
-            // get a list of all triangles of the bounding mesh
-            List<Triangle> boundsTriangles = GetBoundsTriangles(toClip, bounds);
+            Model bound = new Model(bounds.GetComponent<MeshFilter>().mesh);
+            bound.ConvertCoordinates(bounds.transform, toClip.transform);
 
-            // get a list of all vertices of the clipping target
-            List<Vertex> vertices = ClassifyVertices(toClip, bounds, boundsTriangles);
-
-            // get a list of all triangles of the clipping target
-            List<Triangle> meshTriangles = GetAllTriangles(toClip, vertices);
-
-            // here is where the final triangles will be stored
-            List<Triangle> triangles = new List<Triangle>();
+            Model modelToClip = new Model(toClip.GetComponent<MeshFilter>().mesh);
 
             // to create the triangles, we'll need a list of edge loops to triangluate
             List<EdgeLoop> edgeLoops = new List<EdgeLoop>();
 
             // clip each triangle to only the portion contained by the bound
-            foreach (Triangle triangle in meshTriangles)
+            foreach (Triangle triangle in modelToClip.triangles)
             {
-                edgeLoops.AddRange(ClipTriangleToBound(triangle, boundsTriangles, vertices));
+                edgeLoops.AddRange(ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices));
             }
+
+            // replace the list of triangles with the clipped version
+            modelToClip.triangles.Clear();
 
             // fill the edge loops that need to be filled, add the result to the list of triangles
             foreach (EdgeLoop loop in edgeLoops)
             {
-                if (loop.filled) triangles.AddRange(loop.Trianglulate());
+                if (loop.filled) modelToClip.triangles.AddRange(loop.Trianglulate());
                 EdgeLoop nestedLoop = loop.nestedLoop;
                 while (nestedLoop != null)
                 {
-                    if (nestedLoop.filled) triangles.AddRange(nestedLoop.Trianglulate());
+                    if (nestedLoop.filled) modelToClip.triangles.AddRange(nestedLoop.Trianglulate());
                     nestedLoop = nestedLoop.nestedLoop;
                 }
             }
 
             if(flipNormals)
             {
-                foreach(Triangle triangle in triangles)
+                foreach(Triangle triangle in modelToClip.triangles)
                 {
                     triangle.FlipNormal();
                 }
             }
 
-            return CreateMesh(vertices, triangles);
-        }
-
-        /// <summary>
-        /// Creates a unity Mesh from a list of CSG.Vertex and a list of CSG.Triangle
-        /// </summary>
-        /// <param name="vertices">The vertices of the mesh</param>
-        /// <param name="triangles">The triangles of the mesh</param>
-        /// <returns>The parsed Mesh</returns>
-        private Mesh CreateMesh(List<Vertex> vertices, List<Triangle> triangles)
-        {
-            Mesh mesh = new Mesh();
-
-            // reindex vertices and add them to the mesh
-            List<Vector3> createdVertices = new List<Vector3>();
-
-            // add vertices to mesh
-            for (int i = 0; i < vertices.Count; i++)
-            {
-                vertices[i].index = i;
-                createdVertices.Add(vertices[i].value);
-            }
-            mesh.SetVertices(createdVertices);
-
-            // add triangles to mesh
-            int[] newTriangles = new int[triangles.Count * 3];
-            int index = 0;
-
-            foreach (Triangle triangle in triangles)
-            {
-                foreach (Vertex vertex in triangle.vertices)
-                {
-                    if (!vertices.Contains(vertex))
-                    {
-                        Debug.Log("Vertex " + vertex + " not contained in vertices, :: " + vertex.containedByBound);
-                    }
-                }
-            }
-
-            foreach (Triangle triangle in triangles)
-            {
-                newTriangles[index] = triangle.vertices[0].index;
-                index++;
-                newTriangles[index] = triangle.vertices[1].index;
-                index++;
-                newTriangles[index] = triangle.vertices[2].index;
-                index++;
-            }
-
-            mesh.SetTriangles(newTriangles, 0);
-
-            return mesh;
+            return modelToClip.ToMesh();
         }
 
         /// <summary>
@@ -165,7 +107,7 @@ namespace CSG
                 IdentifyEgress(triangle.vertices[0].value, triangle.vertices[1].value, boundsTriangle, aToBEgresses);
                 IdentifyEgress(triangle.vertices[1].value, triangle.vertices[2].value, boundsTriangle, bToCEgresses);
                 IdentifyEgress(triangle.vertices[2].value, triangle.vertices[0].value, boundsTriangle, cToAEgresses);
-                internalIntersections.AddRange(FindTriangleIntersections(boundsTriangle, triangle));
+                internalIntersections.AddRange(Raycast.TriangleToTriangle(boundsTriangle, triangle, error));
             }
 
             // combine duplicate internal intersections
@@ -173,7 +115,7 @@ namespace CSG
             {
                 for (int k = i - 1; k >= 0; k--)
                 {
-                    if (Vector3.Distance(internalIntersections[i].value, internalIntersections[k].value) < intersectionError)
+                    if (Vector3.Distance(internalIntersections[i].value, internalIntersections[k].value) < error)
                     {
                         internalIntersections[k].triangles.AddRange(internalIntersections[i].triangles);
                         internalIntersections.RemoveAt(i);
@@ -249,7 +191,7 @@ namespace CSG
                 else // 2. a vertex of the original triangle
                 {
                     // in this case, if the vertex is contained by the bound, the loop is a surface, otherwise it's a hole
-                    loop.filled = initialVertex.containedByBound;
+                    loop.filled = PointContainedByBound(initialVertex.value, boundsTriangles);
                 }
 
                 // traverse forward in the ordered list, following each cut, until we reach the initial point
@@ -456,8 +398,6 @@ namespace CSG
                 }
             }
 
-           // Debug.Log(potentialLoops.Peek().vertices.Count);
-
             // the loop with the greatest number of vertices is the correct loop
             EdgeLoop finalLoop = completedLoops[0];
             foreach(EdgeLoop loop in completedLoops)
@@ -542,7 +482,7 @@ namespace CSG
         {
             Vertex intersectionPoint;
 
-            intersectionPoint = EdgeIntersectsTriangle(pointA, pointB, boundsTriangle);
+            intersectionPoint = Raycast.LineSegmentToTriangle(pointA, pointB, boundsTriangle, error);
 
             if (intersectionPoint != null)
             {
@@ -672,60 +612,13 @@ namespace CSG
             mesh.SetVertices(newVertices);
         }
 
-        // only finds the intersections of a's edges with b's surface
-        private List<Vertex> FindTriangleIntersections(Triangle a, Triangle b)
-        {
-            List<Vertex> vertices = new List<Vertex>();
-
-            // for each edge of a, raycast to b
-            for (int i = 0; i < 3; i++)
-            {
-                Vertex vertex = EdgeIntersectsTriangle(a.vertices[i].value, a.vertices[(i + 1) % 3].value, b);
-                if (vertex != null)
-                {
-                    //Debug.Log("point :: " + vertex.value);
-                    vertex.triangles.Add(a);
-                    vertices.Add(vertex);
-                }
-            }
-
-            return vertices;
-        }
-
-        private Vertex EdgeIntersectsTriangle(Vector3 pointA, Vector3 pointB, Triangle triangle)
-        {
-            Vertex raycastIntersection = RaycastToTriangle(pointA, pointA - pointB, triangle);
-            if (raycastIntersection != null)
-            {
-                if (PointLiesOnEdge(raycastIntersection.value, pointA, pointB))
-                {
-                    return raycastIntersection;
-                }
-            }
-
-            return null;
-        }
-
-        private bool PointLiesOnEdge(Vector3 point, Vector3 edgeA, Vector3 edgeB)
-        {
-            float temp = Vector3.Distance(edgeA, point) + Vector3.Distance(point, edgeB);
-            return Mathf.Abs(Vector3.Distance(edgeA, edgeB) - temp) < error;
-        }
-
-        private List<Vertex> ClassifyVertices(GameObject toClip, GameObject bounds, List<Triangle> boundsTriangles)
-        {
-            List<Vertex> vertices = new List<Vertex>();
-            Vector3[] meshVertices = toClip.GetComponent<MeshFilter>().mesh.vertices;
-
-            for (int i = 0; i < meshVertices.Length; i++)
-            {
-                vertices.Add(new Vertex(i, meshVertices[i], PointContainedByBounds(meshVertices[i], toClip, boundsTriangles)));
-            }
-
-            return vertices;
-        }
-
-        private bool PointContainedByBounds(Vector3 point, GameObject toClip, List<Triangle> boundsTriangles)
+        /// <summary>
+        /// Determines whether the given point is contained by the given bound
+        /// </summary>
+        /// <param name="point">The point to check for containment</param>
+        /// <param name="boundsTriangles">A List of triangles representing the bounding shape</param>
+        /// <returns>True if the point is contained, false if it is not</returns>
+        private bool PointContainedByBound(Vector3 point, List<Triangle> boundsTriangles)
         {
             int intersectionsAbove = 0;
             int intersectionsBelow = 0;
@@ -734,7 +627,7 @@ namespace CSG
 
             foreach (Triangle boundsTriangle in boundsTriangles)
             {
-                Vertex intersectionPoint = RaycastToTriangle(point, Vector3.up, boundsTriangle);
+                Vertex intersectionPoint = Raycast.RayToTriangle(point, Vector3.up, boundsTriangle);
                 if (intersectionPoint != null)
                 {
                     intersections.Add(intersectionPoint.value);
@@ -746,7 +639,7 @@ namespace CSG
             {
                 for (int k = i - 1; k >= 0; k--)
                 {
-                    if (Vector3.Distance(intersections[i], intersections[k]) < intersectionError)
+                    if (Vector3.Distance(intersections[i], intersections[k]) < error)
                     {
                         intersections.Remove(intersections[i]);
                         break;
@@ -771,76 +664,7 @@ namespace CSG
             // if they are even, vertex is not contained
             return intersectionsAbove % 2 == 1 && intersectionsBelow % 2 == 1;
         }
-
-        // solution from https://stackoverflow.com/questions/42740765/intersection-between-line-and-triangle-in-3d
-        private Vertex RaycastToTriangle(Vector3 origin, Vector3 direction, Triangle triangle)
-        {
-            Vector3 q1 = origin + direction * 5;
-            Vector3 q2 = origin - direction * 5;
-
-            if (SignedVolume(q1, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) !=
-                SignedVolume(q2, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) &&
-                SignedVolume(q1, q2, triangle.vertices[0].value, triangle.vertices[1].value) ==
-                SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) &&
-                SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) ==
-                SignedVolume(q1, q2, triangle.vertices[2].value, triangle.vertices[0].value)
-                )
-            {
-                // determine equation of plane
-                Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
-                Vector3 planePoint = triangle.vertices[0].value;
-
-                // get ray intersection with plane,
-                float numerator = normal.x * (planePoint.x - origin.x) + normal.y * (planePoint.y - origin.y) + normal.z * (planePoint.z - origin.z);
-                float denominator = normal.x * direction.x + normal.y * direction.y + normal.z * direction.z;
-                Vector3 intersectionPoint = ((numerator / denominator) * direction) + origin;
-
-                return new Vertex(0, intersectionPoint, true);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        private int SignedVolume(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
-        {
-            return (int)Mathf.Sign(Vector3.Dot(Vector3.Cross(b - a, c - a), d - a));
-        }
-
-        private List<Triangle> GetAllTriangles(GameObject toClip, List<Vertex> vertices)
-        {
-            List<Triangle> triangles = new List<Triangle>();
-            int[] meshTriangles = toClip.GetComponent<MeshFilter>().mesh.triangles;
-
-            for (int i = 0; i < meshTriangles.Length; i += 3)
-            {
-                Triangle triangle = new Triangle(vertices[meshTriangles[i]], vertices[meshTriangles[i + 1]], vertices[meshTriangles[i + 2]]);
-                triangles.Add(triangle);
-            }
-
-            return triangles;
-        }
-
-        private List<Triangle> GetBoundsTriangles(GameObject toClip, GameObject bounds)
-        {
-            List<Triangle> triangles = new List<Triangle>();
-            Mesh mesh = bounds.GetComponent<MeshFilter>().mesh;
-
-            for (int i = 0; i < mesh.triangles.Length; i += 3)
-            {
-                Triangle triangle = new Triangle(
-                    new Vertex(i, ConvertPointCoordinates(mesh.vertices[mesh.triangles[i]], bounds, toClip), true),
-                    new Vertex(i + 1, ConvertPointCoordinates(mesh.vertices[mesh.triangles[i + 1]], bounds, toClip), true),
-                    new Vertex(i + 2, ConvertPointCoordinates(mesh.vertices[mesh.triangles[i + 2]], bounds, toClip), true));
-
-                triangles.Add(triangle);
-            }
-
-            return triangles;
-        }
     }
-
 }
 
 

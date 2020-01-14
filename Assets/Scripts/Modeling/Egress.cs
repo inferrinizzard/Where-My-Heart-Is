@@ -33,7 +33,7 @@ namespace CSG
         /// <param name="index">Index in the mesh's vertex array</param>
         /// <param name="value">The location of the vertex in model space</param>
         /// <param name="containedByBound">Whether the vertex lies inside or outside the bounding shape</param>
-        public Egress(int index, Vector3 value, bool containedByBound) : base(index, value, containedByBound)
+        public Egress(int index, Vector3 value) : base(index, value)
         {
             cuts = new List<Cut>();
         }
@@ -45,7 +45,7 @@ namespace CSG
         /// <returns>The created Egress</returns>
         public static Egress CreateFromVertex(Vertex vertex)
         {
-            Egress egress = new Egress(vertex.index, vertex.value, vertex.containedByBound);
+            Egress egress = new Egress(vertex.index, vertex.value);
             egress.usedInLoop = vertex.usedInLoop;
             egress.loops = vertex.loops;
             egress.triangles = vertex.triangles;

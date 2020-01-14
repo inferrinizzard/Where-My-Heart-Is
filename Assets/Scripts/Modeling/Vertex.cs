@@ -28,7 +28,7 @@ namespace CSG
         /// <summary>
         /// Whether this vertex has been identified to be in at least one loop
         /// </summary>
-        public bool usedInLoop;//TODO: redundent? check loops.Count instead?
+        public bool usedInLoop;
 
         /// <summary>
         /// A list of EdgeLoops that this vertex has been identified to be a part of
@@ -46,11 +46,10 @@ namespace CSG
         /// <param name="index">Index in the mesh's vertex array</param>
         /// <param name="value">Location in model space</param>
         /// <param name="containedByBound">Whether the vertex lies within the bounding shape</param>
-        public Vertex(int index, Vector3 value, bool containedByBound)
+        public Vertex(int index, Vector3 value)
         {
             this.index = index;
             this.value = value;
-            this.containedByBound = containedByBound;
 
             loops = new List<EdgeLoop>();
             usedInLoop = false;
@@ -97,7 +96,7 @@ namespace CSG
             List<Vector3> negativeIntersections = new List<Vector3>();
             for (int i = 0; i < loop.vertices.Count; i++)
             {
-                Point3 intersection = Raycast.ToLineSegment(
+                Point3 intersection = Raycast.RayToLineSegment(
                     this.value, 
                     castDirection, 
                     loop.vertices[i].value, 

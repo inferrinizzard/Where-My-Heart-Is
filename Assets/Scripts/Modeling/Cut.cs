@@ -4,15 +4,20 @@ using UnityEngine;
 
 namespace CSG
 {
+    /// <summary>
+    /// An ordered list of vertices that represents one contiguous sequence of intersections of a bounding object with a single triangle
+    /// </summary>
     public class Cut : List<Vertex>
     {
+        /// <summary>
+        /// Whether this cut has been traversed during loop discovery yet
+        /// </summary>
         public bool traversed;
 
-        public Cut()
-        {
-
-        }
-
+        /// <summary>
+        /// Creates a shallow copy of this Cut in reverse order
+        /// </summary>
+        /// <returns>The reversed copy</returns>
         public Cut GetReversedCopy()
         {
             Cut copy = new Cut();
