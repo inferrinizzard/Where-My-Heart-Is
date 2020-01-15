@@ -18,6 +18,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private KeyCode jumpKey;
     [SerializeField] private KeyCode crouchKey;
 
+    // Camera Variables
+    float minX = -85f;
+    float maxX = 85f;
+
+    float rotationY = 0f;
+    float rotationX = 0f;
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
@@ -25,7 +32,11 @@ public class PlayerMovement : MonoBehaviour
         playerHeight = characterController.height;
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
     void Update()
     {
         Move();
@@ -67,8 +78,19 @@ public class PlayerMovement : MonoBehaviour
     // Code edited from Scripts/Player/PlayerManager.cs
     private void Rotate()
     {
-        transform.Rotate(Vector3.up * Input.GetAxis("Mouse X") * mouseSensitivity, Space.World);
-        lookRoot.transform.Rotate(Vector3.right * -Input.GetAxis("Mouse Y") * mouseSensitivity, Space.Self);
+        rotationY += Input.GetAxis("Mouse X") * mouseSensitivity;
+        rotationX += Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+        rotationX = Mathf.Clamp(rotationX, minX, maxX);
+
+        transform.localEulerAngles = new Vector3(0, rotationY, 0);
+        lookRoot.transform.localEulerAngles = new Vector3(-rotationX, 0, 0);
+
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
     }
 
     // Player crouch function
