@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -122,13 +122,7 @@ namespace CSG
             }
 
             // create an aggregate list of egresses for use creating cuts
-            // LINQ 
-            List<Egress> allEgresses = egressesList.SelectMany(e => e).ToList();
-            /*List<Egress> allEgresses = new List<Egress>();
-            allEgresses.AddRange(aToBEgresses);
-            allEgresses.AddRange(bToCEgresses);
-            allEgresses.AddRange(cToAEgresses);*/
-            // ENDLINQ
+            List<Egress> allEgresses = egressesList.SelectMany(egress => egress).ToList();
 
             // store the resulting intersections in the greater vertex list
             vertices.AddRange(allEgresses);
@@ -138,15 +132,11 @@ namespace CSG
             CreateCuts(allEgresses, internalIntersections);
 
             // sorting egresses to be in order of consecutive appearence around the edge of the triangle
-            // LINQ 
-            //egressesList.Select((eList, i) => eList.OrderBy(e => Vector3.Distance(e.value, triangle.vertices[i].value)));// TODO: does not of the working
             aToBEgresses.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, triangle.vertices[0].value) - Vector3.Distance(b.value, triangle.vertices[0].value)));
             bToCEgresses.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, triangle.vertices[1].value) - Vector3.Distance(b.value, triangle.vertices[1].value)));
             cToAEgresses.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, triangle.vertices[2].value) - Vector3.Distance(b.value, triangle.vertices[2].value)));
-            // ENDLINQ
 
             // organize all triangle vertices and egress intersections in an ordered list around the perimeter
-            // LINQ List<Vertex> perimeter = egressesList.SelectMany((e, i) => e.Prepend(triangle.vertices[i])).Append(triangle.vertices[0]).ToList();// this will also not work
             List<Vertex> perimeter = new List<Vertex>();
 
             perimeter.Add(triangle.vertices[0]);
@@ -156,7 +146,6 @@ namespace CSG
             perimeter.Add(triangle.vertices[2]);
             perimeter.AddRange(cToAEgresses);
             perimeter.Add(triangle.vertices[0]); // a duplicate of the first vertex as a sentinel
-            // ENDLINQ
 
             // find all edge loops and classify whether they should be retopologized or not
             List<EdgeLoop> loops = new List<EdgeLoop>();
@@ -181,7 +170,7 @@ namespace CSG
                 if (initialVertex is Egress)
                 {
                     // in this case, the new loop is the opposite of whatever the previous loop is
-                    loop.filled = !initialVertex.loops.Last().filled;
+                    loop.filled = !initialVertex.loops.Last().filled; // TODO: sometimes empty
                 }
                 else // 2. a vertex of the original triangle
                 {
@@ -262,11 +251,11 @@ namespace CSG
             // now that we've created all loops that intersect the edge of the triangle, we can start on loops that float as islands
             List<Vertex> unusedVertices = internalIntersections.Where(intersection => !intersection.usedInLoop).ToList();
 
-            while (unusedVertices.Count > 0)
+            while (unusedVertices.Count > 2)
             {
                 Vertex currentVertex = unusedVertices.Last();
                 EdgeLoop result = DiscoverInternalLoop(currentVertex, unusedVertices, loops);
-                unusedVertices = (unusedVertices.Where(vertex => !result.vertices.Contains(vertex))).ToList();
+                unusedVertices = unusedVertices.Where(vertex => !result.vertices.Contains(vertex)).ToList();
             }
 
             // configure the filledness of the discovered nested loops
@@ -299,7 +288,7 @@ namespace CSG
         /// </remarks>
         /// <param name="perimeter">The perimeter to examine for incomplete vertices</param>
         /// <returns>The index of the earliest unsatisfied vertex in the loop, or -1 if none are left.</returns>
-        private int FindEarliestUnsatisfied(List<Vertex> perimeter) => 
+        private int FindEarliestUnsatisfied(List<Vertex> perimeter) =>
             perimeter.FindIndex(vertex => vertex is Egress ? vertex.loops.Count < ((Egress)vertex).cuts.Count + 1 : vertex.loops.Count < 1);
 
         /// <summary>
@@ -353,21 +342,11 @@ namespace CSG
                 } while (nextVertex != null && nextVertex != initialVertex);
 
                 EdgeLoop potentialLoop = potentialLoops.Dequeue();
-                if (nextVertex != null) completedLoops.Add(potentialLoop);
+                if (nextVertex != null)completedLoops.Add(potentialLoop);
             }
 
             // the loop with the greatest number of vertices is the correct loop
-            // LINQ 
-            //EdgeLoop finalLoop = completedLoops.Aggregate((a, b) => a.vertices.Count > b.vertices.Count ? a : b);//TODO: doesn't work
-            EdgeLoop finalLoop = completedLoops[0];
-            foreach (EdgeLoop loop in completedLoops)
-            {
-                if (loop.vertices.Count > finalLoop.vertices.Count)
-                {
-                    finalLoop = loop;
-                }
-            }
-            // ENDLINQ
+            EdgeLoop finalLoop = completedLoops.OrderBy(loop => loop.vertices.Count).First(); // TODO: sometimes completedLoops is empty
 
             // determine which external loop contains this new loop
             foreach (EdgeLoop loop in loops)
@@ -382,22 +361,18 @@ namespace CSG
                     {
                         finalLoop.nestedLoop = loop.nestedLoop;
                         EdgeLoop previousLoop = loop;
-                        //     finalLoop.nestedLoop = finalLoop.nestedLoop.nestedLoop;
+                        bool liesWithinLoop = initialVertex.LiesWithinLoop(finalLoop.nestedLoop);
                         do
                         {
-                            if (initialVertex.LiesWithinLoop(finalLoop.nestedLoop))
-                            {
-                                previousLoop.nestedLoop = finalLoop.nestedLoop;
-                                finalLoop.nestedLoop = finalLoop.nestedLoop.nestedLoop;
-                                previousLoop.nestedLoop.nestedLoop = finalLoop;
-                            }
-                            // TODO: plz no use this so much, iz expensive
-                        } while (finalLoop.nestedLoop != null && initialVertex.LiesWithinLoop(finalLoop.nestedLoop));
+                            previousLoop.nestedLoop = finalLoop.nestedLoop;
+                            finalLoop.nestedLoop = finalLoop.nestedLoop.nestedLoop;
+                            previousLoop.nestedLoop.nestedLoop = finalLoop;
+                        } while (finalLoop.nestedLoop != null && liesWithinLoop);
                     }
 
                     // we've found the loop we're contained by, break out
                     break;
-                } 
+                }
             }
             return finalLoop;
         }
@@ -443,18 +418,15 @@ namespace CSG
             if (intersectionPoint != null)
             {
                 bool alreadyExists = false;
-                // LINQ if (egresses.Contains(egress => Vector3.Distance(intersectionPoint.value, egress.value) < error) {alreadyExists = true; egress.triangles.Add(boundsTriangle);}
-                // duplicate logic as below
-                foreach (Egress egress in egresses)
+                //TODO
+                Egress duplicate = egresses.Find(egress => Vector3.Distance(intersectionPoint.value, egress.value) < error);
+                if (duplicate != null)
                 {
-                    if (Vector3.Distance(intersectionPoint.value, egress.value) < error)
-                    {
-                        egress.triangles.Add(boundsTriangle);
-                        alreadyExists = true;
-                        break;
-                    }
+                    alreadyExists = true;
+                    duplicate.triangles.Add(boundsTriangle);
                 }
-                // ENDLINQ
+                // duplicate logic as below
+
                 if (!alreadyExists)
                 {
                     intersectionPoint.triangles.Add(boundsTriangle);
@@ -487,16 +459,8 @@ namespace CSG
 
                         if (cut.Count == 1) // if we're starting a new cut
                         {
-                            // LINQ if (egress.cuts.Contains(existingCut => existingCut[1] == intersection)) alreadyExists = true; 
-                            // duplicate logic as below
-                            foreach (Cut existingCut in egress.cuts) // check each of the previous cuts to ensure that it doesn't already exist
-                            {
-                                if (existingCut[1] == intersection)
-                                {
-                                    alreadyExists = true;
-                                }
-                            }
-                            // ENDLINQ
+                            if (egress.cuts.Any(existingCut => existingCut[1] == intersection))
+                                alreadyExists = true;
                         }
 
                         if (intersection.SharesTriangle(currentVertex) && !cut.Contains(intersection) && !alreadyExists)
@@ -515,16 +479,8 @@ namespace CSG
 
                         if (cut.Count == 1) // if we're starting a new cut
                         {
-                            // LINQ if (egress.cuts.Contains(cut => cut == vertex)) alreadyExists = true;
-                            // duplicate logic as above
-                            foreach (Cut existingCut in egress.cuts) // check each of the previous cuts to ensure that it doesn't already exist
-                            {
-                                if (existingCut[1] == vertex)
-                                {
-                                    alreadyExists = true;
-                                }
-                            }
-                            // ENDLINQ
+                            if (egress.cuts.Any(newCut => newCut[1] == (Vertex)vertex))
+                                alreadyExists = true;
                         }
 
                         if (vertex.SharesTriangle(currentVertex) && !cut.Contains(vertex) && !alreadyExists)
@@ -568,14 +524,7 @@ namespace CSG
         /// <param name="to">The GameObject defining the target coordinate space</param>
         private void ConvertMeshCoordinates(Mesh mesh, GameObject from, GameObject to)
         {
-            // List<Vector3> newVertices = mesh.vertices.Select(v => ConvertPointCoordinates(v, from, to)).ToList();
-            List<Vector3> newVertices = new List<Vector3>();
-            foreach (Vector3 vector in mesh.vertices)
-            {
-                newVertices.Add(ConvertPointCoordinates(vector, from, to));
-            }
-            //ENDLINQ
-
+            List<Vector3> newVertices = mesh.vertices.Select(vertex => ConvertPointCoordinates(vertex, from, to)).ToList();
             mesh.SetVertices(newVertices);
         }
 
@@ -590,21 +539,11 @@ namespace CSG
             int intersectionsAbove = 0;
             int intersectionsBelow = 0;
 
-            // List<Vector3> intersections = boundsTriangles.Select(t => Raycast.RayToTriangle(point, Vector3.up, t)).Where(t => t != null).ToList();
-            List<Vector3> intersections = new List<Vector3>();
-
-            foreach (Triangle boundsTriangle in boundsTriangles)
-            {
-                Vertex intersectionPoint = Raycast.RayToTriangle(point, Vector3.up, boundsTriangle);
-                if (intersectionPoint != null)
-                {
-                    intersections.Add(intersectionPoint.value);
-                }
-            }
-            // ENDLINQ
+            List<Vector3> intersections = boundsTriangles.Select(tri => Raycast.RayToTriangle(point, Vector3.up, tri)).Where(tri => tri != null).Select(tri => tri.value).ToList();
 
             // merge nearby points to eliminate double counting
             // duplicate logic as Vertex.RemoveDuplicates, merge?
+            // intersections.RemoveAll(a => intersections.Any(b => Vector3.Distance(a, b) < error)); TODO fix
             for (int i = intersections.Count - 1; i > 0; i--)
             {
                 for (int k = i - 1; k >= 0; k--)
@@ -618,7 +557,7 @@ namespace CSG
             }
 
             // count up intersections above and below
-            // LINQ return intersections.GroupBy(intersection => intersection.y > point.y).All(l => l.Count() % 1 == 0);
+            // LINQ return intersections.GroupBy(intersection => intersection.y > point.y).All(l => l.Count() % 1 == 0); TODO
 
             for (int i = 0; i < intersections.Count; i++)
             {

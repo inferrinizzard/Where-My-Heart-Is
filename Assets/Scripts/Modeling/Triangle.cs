@@ -23,12 +23,7 @@ namespace CSG
         public Triangle(Vertex a, Vertex b, Vertex c)
         {
             vertices = new List<Vertex> { a, b, c };
-
-            // LINQ vertices.ForEach(v => v.triangles.Add(this));
-            a.triangles.Add(this);
-            b.triangles.Add(this);
-            c.triangles.Add(this);
-            // ENDLINQ
+            vertices.ForEach(v => v.triangles.Add(this));
         }
 
         /// <summary>
@@ -59,10 +54,7 @@ namespace CSG
             vertices.Reverse();
         }
 
-        public override string ToString() // public override string ToString() => $"{base.ToString()}::{String.Join("::",vertices.Select(v=>v.value))}";
-        {
-            return base.ToString() + " :: " + vertices[0].value + " :: " + vertices[1].value + " :: " + vertices[2].value;
-        }
+        public override string ToString() => $"{base.ToString()}::{string.Join("::", vertices.Select(v=>v.value))}";
     }
 
 }

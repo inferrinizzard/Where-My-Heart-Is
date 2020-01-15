@@ -29,12 +29,6 @@ namespace CSG
         public Model(Mesh mesh)
         {
             vertices = mesh.vertices.Select((vertex, index) => new Vertex(index, vertex)).ToList();
-            /*vertices = new List<Vertex>();
-            for (int i = 0; i < mesh.vertices.Length; i++)
-            {
-                vertices.Add(new Vertex(i, mesh.vertices[i]));
-            }*/
-            // ENDLINQ
 
             triangles = new List<Triangle>();
 
@@ -58,16 +52,11 @@ namespace CSG
             Mesh mesh = new Mesh();
 
             // reindex vertices and add them to the mesh
-            // LINQ List<Vector3> createdVertices = vertices.Select(v => v.value);
-            List<Vector3> createdVertices = new List<Vector3>();
-
-            // add vertices to mesh
-            for (int i = 0; i < vertices.Count; i++)
+            List<Vector3> createdVertices = vertices.Select((vertex, index) =>
             {
-                vertices[i].index = i; // vertices.ForEach((v, i) => v.index = i);
-                createdVertices.Add(vertices[i].value);
-            }
-            //ENDLINQ
+                vertex.index = index;
+                return vertex.value;
+            }).ToList();
 
             mesh.SetVertices(createdVertices);
 
