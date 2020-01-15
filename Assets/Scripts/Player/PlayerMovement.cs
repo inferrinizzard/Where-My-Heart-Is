@@ -6,24 +6,30 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     private CharacterController characterController;
+    private GameObject lookRoot;
     private Vector3 moveDirection;
     private float verticalVelocity;
+    private float playerHeight;
 
     [SerializeField] private float speed;
     [SerializeField] private float gravity;
     [SerializeField] private float jumpForce;
-    [SerializeField] private KeyCode jumpKey;
     [SerializeField] private float mouseSensitivity;
+    [SerializeField] private KeyCode jumpKey;
+    [SerializeField] private KeyCode crouchKey;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        lookRoot = GameObject.FindGameObjectWithTag("LookRoot");
+        playerHeight = characterController.height;
     }
 
     // Update is called once per frame
     void Update()
     {
         Move();
+        Crouch();
         Rotate();
     }
 
@@ -48,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
         moveDirection.y = verticalVelocity * Time.deltaTime;
     }
 
-    // Player jump funtion
+    // Player jump function
     void Jump()
     {
         if (characterController.isGrounded && Input.GetKeyDown(jumpKey))
@@ -62,6 +68,21 @@ public class PlayerMovement : MonoBehaviour
     private void Rotate()
     {
         transform.Rotate(Vector3.up * Input.GetAxis("Mouse X") * mouseSensitivity, Space.World);
-        transform.Rotate(Vector3.right * -Input.GetAxis("Mouse Y") * mouseSensitivity, Space.Self);
+        lookRoot.transform.Rotate(Vector3.right * -Input.GetAxis("Mouse Y") * mouseSensitivity, Space.Self);
+    }
+
+    // Player crouch function
+    private void Crouch()
+    {
+        Ray crouchRay = new Ray(transform.position, Vector3.up);
+
+        if(Input.GetKey(crouchKey))
+        {
+            characterController.height = playerHeight/2;
+        }
+        else if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3/4)) // Check if there is anything above the player
+        {
+            characterController.height = playerHeight;
+        }
     }
 }
