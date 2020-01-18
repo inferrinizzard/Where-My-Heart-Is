@@ -4,35 +4,40 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameManager : Singleton<GameManager> {
+public class GameManager : Singleton<GameManager>
+{
 
 	GameObject loadingScreen;
 	Slider loadingBar;
 
-	void Start() {
+	void Start()
+	{
 		loadingScreen = transform.GetChild(0).GetChild(0).gameObject;
 		loadingBar = loadingScreen.GetComponentInChildren<Slider>();
-
-		// World.Init();
 	}
-	public static void QuitGame() {
+	public static void QuitGame()
+	{
 		// prompt
 		Application.Quit();
 	}
 
-	public static void Transition(string scene) {
+	public static void Transition(string scene)
+	{
 		instance.StartCoroutine(LoadScene(scene));
 	}
 
-	static IEnumerator LoadScene(string name) {
+	static IEnumerator LoadScene(string name)
+	{
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
 		asyncLoad.allowSceneActivation = false;
-		while (!asyncLoad.isDone) {
+		while (!asyncLoad.isDone)
+		{
 
 			instance.loadingScreen.SetActive(true);
 			instance.loadingBar.normalizedValue = asyncLoad.progress / .9f;
 
-			if (asyncLoad.progress >= .9f) {
+			if (asyncLoad.progress >= .9f)
+			{
 				asyncLoad.allowSceneActivation = true;
 				instance.loadingScreen.SetActive(false);
 			}
