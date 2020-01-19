@@ -16,7 +16,7 @@ public class Widget : InteractableObject
 
     private int messageChoice = 0;
 
-    public override void Interact(PlayerManager player)
+    public override void Interact(PlayerMovement player)
     {
         if(messages.Count > 0)
         {

@@ -136,7 +136,7 @@ public class PlayerMovement : MonoBehaviour
         // Creates an empty game object at the position where a held object should be.
         heldObjectLocation = new GameObject("HeldObjectLocation");
         heldObjectLocation.transform.parent = cam.transform;
-        heldObjectLocation.transform.position = cam.transform.position + Vector3.forward;
+        heldObjectLocation.transform.position = cam.transform.position + cam.transform.forward;
 
     }
 
@@ -280,11 +280,11 @@ public class PlayerMovement : MonoBehaviour
             if(!holding)
             {
                 // Raycast to see what the object's tag is. If it is a Pickupable object...
-                if(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach) && hit.transform.tag == "Pickupable")
+                if(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach) && hit.transform.GetComponent<InteractableObject>() != null)
                 {
                     // Store the held object.
                     heldObject = hit.collider.gameObject;
-                    heldObject.GetComponent<Pickupable>().PickUp(this);
+                    heldObject.GetComponent<InteractableObject>().Interact(this);
 
                     // Enable looking so the player can inspect the object.
                     looking = true;
@@ -300,7 +300,7 @@ public class PlayerMovement : MonoBehaviour
             else if(looking)
             {
                 // Stop inspecting the object
-                heldObject.GetComponent<Pickupable>().StopLooking();
+                heldObject.GetComponent<InteractableObject>().Interact(this);
 
                 // Disable looking.
                 looking = false;
@@ -312,7 +312,7 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 // Drop the object.
-                heldObject.GetComponent<Pickupable>().Drop();
+                heldObject.GetComponent<InteractableObject>().Interact(this);
                 
                 //Disable holding.
                 holding = false;

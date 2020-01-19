@@ -23,9 +23,27 @@ namespace CSG
         public Mesh Union(GameObject shapeA, GameObject shapeB)
         {
             CombineInstance[] combine = new CombineInstance[2];
-            combine[0].mesh = ClipAToB(shapeA, shapeB);
+            combine[0].mesh = ClipAToB(shapeA, shapeB, true);
             combine[0].transform = Matrix4x4.identity;
-            combine[1].mesh = ClipAToB(shapeB, shapeA);
+            combine[1].mesh = ClipAToB(shapeB, shapeA, true);
+            combine[1].transform = Matrix4x4.identity;
+
+            ConvertMeshCoordinates(combine[1].mesh, shapeB, shapeA);
+
+            Mesh completedMesh = new Mesh();
+            completedMesh.CombineMeshes(combine);
+            completedMesh.RecalculateNormals();
+            completedMesh.RecalculateTangents();
+
+            return completedMesh;
+        }
+
+        public Mesh Subtract(GameObject shapeA, GameObject shapeB)
+        {
+            CombineInstance[] combine = new CombineInstance[2];
+            combine[0].mesh = ClipAToB(shapeA, shapeB, false);
+            combine[0].transform = Matrix4x4.identity;
+            combine[1].mesh = ClipAToB(shapeB, shapeA, true, true);
             combine[1].transform = Matrix4x4.identity;
 
             ConvertMeshCoordinates(combine[1].mesh, shapeB, shapeA);
@@ -46,7 +64,7 @@ namespace CSG
         /// <param name="bounds">The GameObject containing the Mesh to clip "toClip" to</param>
         /// <param name="flipNormals">Whether the normals of the resulting mesh should be flipped</param>
         /// <returns>The clipped Mesh</returns>
-        private Mesh ClipAToB(GameObject toClip, GameObject bounds, bool flipNormals = false)
+        private Mesh ClipAToB(GameObject toClip, GameObject bounds, bool clipInside = true, bool flipNormals = false)
         {
             Model bound = new Model(bounds.GetComponent<MeshFilter>().mesh);
             bound.ConvertCoordinates(bounds.transform, toClip.transform);
@@ -54,7 +72,16 @@ namespace CSG
             Model modelToClip = new Model(toClip.GetComponent<MeshFilter>().mesh);
 
             // to create the triangles, we'll need a list of edge loops to triangulate
-            List<EdgeLoop> edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices)).ToList();
+            List<EdgeLoop> edgeLoops;
+
+            if (clipInside)
+            {
+                edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices, PointContainedByBound)).ToList();
+            }
+            else
+            {
+                edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices, PointExcludedByBound)).ToList();
+            }
 
             // replace the list of triangles with the clipped version
             modelToClip.triangles.Clear();
@@ -89,7 +116,7 @@ namespace CSG
         /// <param name="boundsTriangles">A list of triangles defining the bounding object</param>
         /// <param name="vertices">A list of the vertices of the object the triangle belongs to</param>
         /// <returns>A list of edge loops which define the clipped version of the triangle</returns>
-        private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, List<Triangle> boundsTriangles, List<Vertex> vertices)
+        private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, List<Triangle> boundsTriangles, List<Vertex> vertices, Func<Vector3, List<Triangle>, bool> ContainmentCheck)
         {
             List<Egress> aToBEgresses = new List<Egress>();
             List<Egress> bToCEgresses = new List<Egress>();
@@ -175,7 +202,7 @@ namespace CSG
                 else // 2. a vertex of the original triangle
                 {
                     // in this case, if the vertex is contained by the bound, the loop is a surface, otherwise it's a hole
-                    loop.filled = PointContainedByBound(initialVertex.value, boundsTriangles);
+                    loop.filled = ContainmentCheck(initialVertex.value, boundsTriangles);
                 }
 
                 // traverse forward in the ordered list, following each cut, until we reach the initial point
@@ -575,6 +602,11 @@ namespace CSG
             // if they are even, vertex is not contained
             return intersectionsAbove % 2 == 1 && intersectionsBelow % 2 == 1;
             // ENDLINQ
+        }
+
+        private bool PointExcludedByBound(Vector3 point, List<Triangle> boundsTriangles)
+        {
+            return !PointContainedByBound(point, boundsTriangles);
         }
     }
 }

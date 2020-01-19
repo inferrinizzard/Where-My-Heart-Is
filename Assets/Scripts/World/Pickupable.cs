@@ -5,17 +5,17 @@ using UnityEngine;
 /// <summary>
 /// Handles the behavior of an object that can be picked up.
 /// </summary>
-public class Pickupable : MonoBehaviour
+public class Pickupable : InteractableObject
 {
     /// <summary>
     /// Checks if the object is being held.
     /// </summary>
-    private bool holding = false;
+    protected bool holding = false;
 
     /// <summary>
     /// Checks if the object is being inspected.
     /// </summary>
-    private bool looking = false;
+    protected bool looking = false;
     
     /// <summary>
     /// Where the object should be moving towards.
@@ -96,5 +96,21 @@ public class Pickupable : MonoBehaviour
     {
         holding = false;
         transform.parent = null;
+    }
+
+    public override void Interact(PlayerMovement player)
+    {
+        if(!holding)
+        {
+            PickUp(player);
+        }
+        else if(looking)
+        {
+            StopLooking();
+        }
+        else
+        {
+            Drop();
+        }
     }
 }

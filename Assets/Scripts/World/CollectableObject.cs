@@ -38,12 +38,11 @@ public class CollectableObject : InteractableObject
         }
     }
 
-    public override void Interact(PlayerManager player)
+    public override void Interact(PlayerMovement player)
     {
         spacialTarget = player.transform.position;
         rotationalTarget = Quaternion.LookRotation(player.transform.forward, Vector3.up).eulerAngles;
         pickingUp = true;
-        player.gameMaster.Collect(this);
     }
    
 }

@@ -4,25 +4,41 @@ using UnityEngine;
 
 public class ClipableObject : MonoBehaviour
 {
-    public CSG.Operations operations;
-    public GameObject ClippingResultPrefab;
+    private GameObject result;
 
-    public void UnionWith(GameObject other)
+    Mesh initialMesh;
+
+    void Awake()
     {
-        GameObject result = GameObject.Instantiate(ClippingResultPrefab);
-        result.transform.position = this.transform.position;
-        result.transform.rotation = this.transform.rotation;
+        if(GetComponent<MeshFilter>() == null)
+        {
+            gameObject.AddComponent<MeshFilter>();
+        }
 
-        operations.Union(this.gameObject, other, result);
+        initialMesh = GetComponent<MeshFilter>().mesh;
+
     }
 
-    public void Subtract(GameObject other)
+    public void UnionWith(GameObject other, CSG.Operations operations)
     {
-        //TODO: use subtract when available
-        /*GameObject result = GameObject.Instantiate(ClippingResultPrefab);
-        result.transform.position = this.transform.position;
-        result.transform.rotation = this.transform.rotation;
+        if(result != null)
+        {
+            Destroy(result);
+        }
 
-        operations.Union(this.gameObject, other, result);*/
+        result = GameObject.Instantiate(gameObject);
+        result.transform.position = transform.position;
+        result.transform.rotation = transform.rotation;
+        result.transform.localScale = transform.localScale;
+        result.layer = 9;
+
+        result.GetComponent<MeshFilter>().mesh = operations.Union(this.gameObject, other);
+        result.GetComponent<MeshCollider>().sharedMesh = result.GetComponent<MeshFilter>().mesh;
+    }
+
+    public void Subtract(GameObject other, CSG.Operations operations)
+    {
+        GetComponent<MeshFilter>().mesh = initialMesh;
+        GetComponent<MeshFilter>().mesh = operations.Subtract(this.gameObject, other);
     }
 }
