@@ -2,13 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Singleton<T> : MonoBehaviour where T : Component {
+/// <summary> Generic Singleton implementation </summary>
+public class Singleton<T> : MonoBehaviour where T : Component
+{
+    /// <summary> Local instance reference, to be used to child class </summary>
     protected static T instance;
-    public static T Instance {
-        get {
-            if (instance == null) {
+    /// <summary> Public instance reference, to be used by external classes </summary>
+    public static T Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
                 instance = FindObjectOfType<T>();
-                if (instance == null) {
+                if (instance == null)
+                {
                     GameObject obj = new GameObject();
                     obj.name = typeof(T).Name;
                     instance = obj.AddComponent<T>();
@@ -18,11 +26,14 @@ public class Singleton<T> : MonoBehaviour where T : Component {
         }
     }
 
-    public virtual void Awake() {
-        if (instance == null) {
+    public virtual void Awake()
+    {
+        if (instance == null)
+        {
             instance = this as T;
             DontDestroyOnLoad(this.gameObject);
-        } else
+        }
+        else
             Destroy(gameObject);
     }
 }
