@@ -138,6 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 162a7fe1a33786a4ebc31132733adefe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 1590141156}
   worldManager: {fileID: 1089341293}
   FieldOfView: {fileID: 1479176665}
 --- !u!1 &148376230
@@ -995,6 +996,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc8ce9b84dfb8c84db3ce5876b60698b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 1590141156}
 --- !u!65 &978550136
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1181,6 +1183,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   realWorldContainer: {fileID: 1798460474}
   dreamWorldContainer: {fileID: 672231859}
+  player: {fileID: 1590141156}
 --- !u!1 &1098037201
 GameObject:
   m_ObjectHideFlags: 0
@@ -1598,6 +1601,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fcdf94cd62ccf64db8f9aacc083f125, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  heldObjectLocation: {fileID: 0}
+  holding: 0
+  looking: 0
   speed: 5
   gravity: 25
   jumpForce: 7
@@ -1942,6 +1948,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc8ce9b84dfb8c84db3ce5876b60698b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
 --- !u!64 &1927024071
 MeshCollider:
   m_ObjectHideFlags: 0

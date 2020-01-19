@@ -8,39 +8,24 @@ using UnityEngine;
 public class Pickupable : InteractableObject
 {
     /// <summary>
-    /// Checks if the object is being held.
-    /// </summary>
-    protected bool holding = false;
-
-    /// <summary>
-    /// Checks if the object is being inspected.
-    /// </summary>
-    protected bool looking = false;
-    
-    /// <summary>
     /// Where the object should be moving towards.
     /// </summary>
     private Vector3 targetPos;
 
-    /// <summary>
-    /// Reference to the player.
-    /// </summary>
-    private PlayerMovement player;
-
-    /// <summary>
-    /// Called once per frame.
-    /// </summary>
     void Update()
     {
-        // If the object is being held, run Holding.
-        if(holding) Holding();
+        if (active)
+        {
+            // If the object is being held, run Holding.
+            if (player.holding)Holding();
 
-        // If the object is being inspected, run Looking.
-        if(looking) Looking();
+            // If the object is being inspected, run Looking.
+            if (player.looking)Looking();
+        }
     }
 
     /// <summary>
-    /// Manages behavoir of the object when being held.
+    /// Manages behaviour of the object when being held.
     /// </summary>
     public void Holding()
     {
@@ -49,7 +34,7 @@ public class Pickupable : InteractableObject
         transform.position = targetPos;
 
         // If the player is not inspecting the object, set its rotation relative to the held object location.
-        if(!looking)
+        if (!player.looking)
         {
             // Rotate the object based on the player camera
             transform.parent = player.GetHeldObjectLocation();
@@ -70,47 +55,21 @@ public class Pickupable : InteractableObject
         transform.rotation = Quaternion.AngleAxis(rotY, player.GetHeldObjectLocation().right) * transform.rotation;
     }
 
-    /// <summary>
-    /// Used to tell the object to stop being inspected.
-    /// </summary>
-    public void StopLooking()
+    public override void Interact()
     {
-        looking = false;
-    }
-
-    /// <summary>
-    /// Sets variables when the player has picked up the object.
-    /// </summary>
-    /// <param name="player">Reference to the player.</param>
-    public void PickUp(PlayerMovement player)
-    {
-        this.player = player;
-        looking = true;
-        holding = true;
-    }
-
-    /// <summary>
-    /// Drops the object and removes any parents.
-    /// </summary>
-    public void Drop()
-    {
-        holding = false;
-        transform.parent = null;
-    }
-
-    public override void Interact(PlayerMovement player)
-    {
-        if(!holding)
+        if (!player.holding)
         {
-            PickUp(player);
+            player.looking = true;
+            player.holding = true;
         }
-        else if(looking)
+        else if (player.looking)
         {
-            StopLooking();
+            player.looking = false;
         }
         else
         {
-            Drop();
+            player.holding = false;
+            transform.parent = null;
         }
     }
 }

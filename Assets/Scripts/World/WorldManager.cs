@@ -7,22 +7,39 @@ public class WorldManager : MonoBehaviour
     public Transform realWorldContainer;
     public Transform dreamWorldContainer;
 
-    // Start is called before the first frame update
-    void Start()
+    public PlayerMovement player;
+
+    void Awake()
     {
+        realWorldContainer = transform.Find("Real World");
+        dreamWorldContainer = transform.Find("Dream World");
+
         ConfigureWorld("Real", realWorldContainer);
         ConfigureWorld("Dream", dreamWorldContainer);
+        ConfigureInteractables(transform);
     }
 
     private void ConfigureWorld(string layer, Transform worldContainer)
     {
-        for (int i = 0; i < worldContainer.childCount; i++)
+        foreach (Transform child in worldContainer.transform)
         {
-            if (worldContainer.GetChild(i).GetComponent<MeshFilter>())
+            if (child.GetComponent<MeshFilter>())
             {
-                worldContainer.GetChild(i).gameObject.layer = LayerMask.NameToLayer(layer);
-                worldContainer.GetChild(i).gameObject.AddComponent<ClipableObject>();
+                child.gameObject.layer = LayerMask.NameToLayer(layer);
+                child.gameObject.AddComponent<ClipableObject>();
             }
+        }
+    }
+
+    void ConfigureInteractables(Transform parent)
+    {
+        foreach (Transform child in parent)
+        {
+            if (child.childCount > 0)
+                ConfigureInteractables(child);
+            var childInteractable = child.GetComponent<InteractableObject>();
+            if (childInteractable != null)
+                childInteractable.player = player;
         }
     }
 

@@ -4,5 +4,10 @@ using UnityEngine;
 
 public abstract class InteractableObject : MonoBehaviour
 {
-    public abstract void Interact(PlayerMovement player);
+    /// <summary> Reference to the player. </summary>
+    public PlayerMovement player;
+    /// <summary> Whether or not this is the active item </summary>
+
+    public bool active;
+    public abstract void Interact();
 }

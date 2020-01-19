@@ -2,161 +2,109 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Handles player movement and player interaction.
-/// </summary>
+/// <summary Handles player movement and player interaction </summary>
 [System.Serializable]
 public class PlayerMovement : MonoBehaviour
 {
-    /// <summary>
-    /// Reference to player CharacterController.
-    /// </summary>
+    /// <summary> Reference to player CharacterController. </summary>
     private CharacterController characterController;
-
-    /// <summary>
-    /// Reference to player Camera.
-    /// </summary>
+    /// <summary> Reference to player Camera. </summary>
     private Camera cam;
-
-    /// <summary>
-    /// Empty GameObject for where to put a Pickupable object.
-    /// </summary>
-    private GameObject heldObjectLocation;
-
-    /// <summary>
-    /// Reference to a Pickupable object that has been picked up.
-    /// </summary>
-    private GameObject heldObject;
-
-    /// <summary>
-    /// Vector3 to store and calculate move direction.
-    /// </summary>
+    /// <summary> Empty GameObject for where to put a Pickupable object. </summary>
+    public Transform heldObjectLocation;
+    /// <summary> Reference to a Pickupable object that has been picked up. </summary>
+    private InteractableObject heldObject;
+    /// <summary> Vector3 to store and calculate move direction. </summary>
     private Vector3 moveDirection;
-
-    /// <summary>
-    /// Vector3 to store and calculate vertical velocity.
-    /// </summary>
+    /// <summary> Vector3 to store and calculate vertical velocity. </summary>
     private float verticalVelocity;
-
-    /// <summary>
-    /// Player's height.
-    /// </summary>
+    /// <summary> Player's height. </summary>
     private float playerHeight;
+    /// <summary> Whether the player can move or not. </summary>
+    private bool playerCanMove = true;
+    /// <summary> If the player is holding something or not. </summary>
+    public bool holding = false;
+    /// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
+    public bool looking = false;
 
-    /// <summary>
-    /// Whether the player can move or not.
-    /// </summary>
-    private bool playerMovement = true;
+    public enum ObjectState
+    {
+        FREE,
+        HOLDING,
+        INSPECTING
+    }
 
-    /// <summary>
-    /// If the player is holding something or not.
-    /// </summary>
-    private bool holding = false;
+    public ObjectState state = ObjectState.FREE;
 
-    /// <summary>
-    /// Whether the player is inspecting a Pickupable object or not.
-    /// </summary>
-    private bool looking = false;
-
-    /// <summary>
-    /// Player move speed.
-    /// </summary>
+    /// <summary> Player move speed. </summary>
     [SerializeField] private float speed = 5f;
 
-    /// <summary>
-    /// Player gravity variable.
-    /// </summary>
+    /// <summary> Player gravity variable. </summary>
     [SerializeField] private float gravity = 25f;
 
-    /// <summary>
-    /// Player jump force.
-    /// </summary>
+    /// <summary> Player jump force. </summary>
     [SerializeField] private float jumpForce = 7f;
 
-    /// <summary>
-    /// Mouse sensitivity for camera rotation.
-    /// </summary>
+    /// <summary> Mouse sensitivity for camera rotation. </summary>
     [SerializeField] private float mouseSensitivity = 2f;
 
-    /// <summary>
-    /// How far the player can reach to pick something up.
-    /// </summary>
+    /// <summary> How far the player can reach to pick something up. </summary>
     [SerializeField] private float playerReach = 4f;
 
-    /// <summary>
-    /// KeyCode for player jump.
-    /// </summary>
+    [Header("Keybinds")]
+    /// <summary> KeyCode for player jump. </summary>
     [SerializeField] private KeyCode jumpKey = KeyCode.Space;
 
-    /// <summary>
-    /// KeyCode for player crouch.
-    /// </summary>
+    /// <summary> KeyCode for player crouch. </summary>
     [SerializeField] private KeyCode crouchKey = KeyCode.LeftShift;
 
-    /// <summary>
-    /// KeyCode for inspecting and picking up objects.
-    /// </summary>
+    /// <summary> KeyCode for inspecting and picking up objects. </summary>
     [SerializeField] private KeyCode pickUpKey = KeyCode.E;
 
     // Camera Variables
-    /// <summary>
-    /// Minimum angle the player can look upward.
-    /// </summary>
+    /// <summary> Minimum angle the player can look upward. </summary>
     float minX = -90f;
 
-    /// <summary>
-    /// Minimum angle the player can look downward.
-    /// </summary>
+    /// <summary> Minimum angle the player can look downward. </summary>
     float maxX = 90f;
 
-    /// <summary>
-    /// Stores the Y rotation of the player.
-    /// </summary>
+    /// <summary> Stores the Y rotation of the player. </summary>
     float rotationY = 0f;
 
-    /// <summary>
-    /// Stores the X rotation of the player.
-    /// </summary>
+    /// <summary> Stores the X rotation of the player. </summary>
     float rotationX = 0f;
 
-    /// <summary>
-    /// Initializes variables before the game starts.
-    /// </summary>
+    /// <summary> Initializes variables before the game starts. </summary>
     private void Awake()
     {
         // Get reference to the CharacterController.
         characterController = GetComponent<CharacterController>();
-        
+
         // Get reference to the Camera.
         cam = GetComponentInChildren<Camera>();
-        
+
         // Get reference to the player height using the CharacterController's height.
         playerHeight = characterController.height;
 
         // Creates an empty game object at the position where a held object should be.
-        heldObjectLocation = new GameObject("HeldObjectLocation");
-        heldObjectLocation.transform.parent = cam.transform;
-        heldObjectLocation.transform.position = cam.transform.position + cam.transform.forward;
-
+        heldObjectLocation = new GameObject("HeldObjectLocation").transform;
+        heldObjectLocation.parent = cam.transform;
+        heldObjectLocation.position = cam.transform.position + cam.transform.forward;
     }
 
-    /// <summary>
-    /// Called once at the start.
-    /// </summary>
+    /// <summary> Called once at the start. </summary>
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-        playerMovement = true;
+        playerCanMove = true;
         holding = false;
         looking = false;
     }
 
-    /// <summary>
-    /// Called once per frame.
-    /// </summary>
+    /// <summary> Called once per frame. </summary>
     void Update()
     {
-        if(playerMovement) // If the player has movement enabled...
+        if (playerCanMove) // If the player has movement enabled...
         {
             Move(); // Move the player.
             Crouch(); // Crouch.
@@ -166,9 +114,7 @@ public class PlayerMovement : MonoBehaviour
         PickUp(); // Ability to pick up is independent from player movement.
     }
 
-    /// <summary>
-    /// Moves and applies gravity to the player using Horizonal and Vertical Axes.
-    /// </summary>
+    /// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
     private void Move()
     {
         // Get the Vertical and Horizontal Axes and scale them by movement speed.
@@ -184,13 +130,11 @@ public class PlayerMovement : MonoBehaviour
         characterController.Move(moveDirection);
     }
 
-    /// <summary>
-    /// Applies gravity to the player and includes jump.
-    /// </summary>
+    /// <summary> Applies gravity to the player and includes jump. </summary>
     void ApplyGravity()
     {
         // Check if the player is grounded before applying gravity.
-        if(!characterController.isGrounded)
+        if (!characterController.isGrounded)
         {
             verticalVelocity -= gravity * Time.deltaTime;
         }
@@ -202,22 +146,18 @@ public class PlayerMovement : MonoBehaviour
         moveDirection.y = verticalVelocity * Time.deltaTime;
     }
 
-    /// <summary>
-    /// Player jump function.
-    /// </summary>
+    /// <summary> Player jump function. </summary>
     void Jump()
     {
         // Check if the player is grounded and is pressing the jump key.
-        if(characterController.isGrounded && Input.GetKeyDown(jumpKey))
+        if (characterController.isGrounded && Input.GetKeyDown(jumpKey))
         {
             // Apply jump force.
             verticalVelocity = jumpForce;
         }
     }
 
-    /// <summary>
-    /// Rotates the player and camera based on mouse movement.
-    /// </summary>
+    /// <summary> Rotates the player and camera based on mouse movement. </summary>
     private void Rotate()
     {
         // Get the rotation from the Mouse X and Mouse Y Axes and scale them by mouseSensitivity.
@@ -235,28 +175,24 @@ public class PlayerMovement : MonoBehaviour
         cam.transform.localEulerAngles = new Vector3(-rotationX, 0, 0);
 
         // Allow the player to get out of the mouse lock.
-        if(Input.GetKey(KeyCode.Escape))
+        if (Input.GetKey(KeyCode.Escape))
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
     }
 
-    /// <summary>
-    /// Player crouch function.
-    /// </summary>
-    /// <remarks>
-    /// Also checks to see if the player can uncrouch.
-    /// </remarks>
+    /// <summary> Player crouch function. </summary>
+    /// <remarks> Also checks to see if the player can uncrouch. </remarks>
     private void Crouch()
     {
         // Ray looking straight up from the player's position.
         Ray crouchRay = new Ray(transform.position, Vector3.up);
 
         // Check if the player is pressing the crouch key.
-        if(Input.GetKey(crouchKey))
+        if (Input.GetKey(crouchKey))
         {
-            characterController.height = playerHeight/2; // Make the player crouch.
+            characterController.height = playerHeight / 2; // Make the player crouch.
         }
         // Check if there is anything above the player before uncrouching.
         else if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4))
@@ -265,69 +201,56 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Handles player behavior with picking up and inspecting objects.
-    /// </summary>
+    /// <summary> Handles player behavior with picking up and inspecting objects. </summary>
     private void PickUp()
     {
-        // Raycast for what the player is looking at.
-        RaycastHit hit;
-
         // Check if the player is pressing the pick up key.
-        if(Input.GetKeyDown(pickUpKey))
+        if (Input.GetKeyDown(pickUpKey))
         {
             // If the player is not holding anything...
-            if(!holding)
+            switch (state)
             {
-                // Raycast to see what the object's tag is. If it is a Pickupable object...
-                if(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach) && hit.transform.GetComponent<InteractableObject>() != null)
-                {
-                    // Store the held object.
-                    heldObject = hit.collider.gameObject;
-                    heldObject.GetComponent<InteractableObject>().Interact(this);
+                case ObjectState.FREE:
+                    // Raycast for what the player is looking at.
+                    RaycastHit hit;
+                    // Raycast to see what the object's tag is. If it is a Pickupable object...
+                    if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach) && hit.transform.GetComponent<InteractableObject>() != null)
+                    {
+                        // Store the held object.
+                        heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();
+                        heldObject.Interact();
+                        heldObject.active = true;
 
-                    // Enable looking so the player can inspect the object.
-                    looking = true;
+                        state = ObjectState.INSPECTING;
+                        playerCanMove = false;
+                    }
+                    break;
+                    // If the player is holding something and inspecting it, when the player presses the pick up key...
+                case ObjectState.INSPECTING:
+                    // Stop inspecting the object
+                    heldObject.Interact();
 
-                    // Enable holding so the player is holding an object.
-                    holding = true;
+                    state = ObjectState.HOLDING;
+                    playerCanMove = true;
+                    break;
+                    // If the player is holding something and not inspecting, when the player presses the pick up key...
+                case ObjectState.HOLDING:
+                    // Drop the object.
+                    heldObject.Interact();
 
-                    // Lock player movement, as inspecting is done first.
-                    playerMovement = false;
-                }
-            }
-            // If the player is holding something and inspecting it, when the player presses the pick up key...
-            else if(looking)
-            {
-                // Stop inspecting the object
-                heldObject.GetComponent<InteractableObject>().Interact(this);
-
-                // Disable looking.
-                looking = false;
-
-                // Enable player movement.
-                playerMovement = true;
-            }
-            // If the player is holding something and not inspecting, when the player presses the pick up key...
-            else
-            {
-                // Drop the object.
-                heldObject.GetComponent<InteractableObject>().Interact(this);
-                
-                //Disable holding.
-                holding = false;
+                    heldObject.active = false;
+                    state = ObjectState.FREE;
+                    break;
             }
         }
     }
 
-    /// <summary>
-    /// Function to get transform of where the held object should be.
-    /// </summary>
+    /// <summary> Function to get transform of where the held object should be. </summary>
     /// <returns>
     /// Returns a reference to the player's heldObjectLocation transform.
     /// </returns>
     public Transform GetHeldObjectLocation()
     {
         return heldObjectLocation.transform;
-    }    
+    }
 }

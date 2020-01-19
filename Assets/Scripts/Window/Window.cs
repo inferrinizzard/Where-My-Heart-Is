@@ -6,10 +6,18 @@ public class Window : Pickupable
 {
     public WorldManager worldManager;
     public GameObject FieldOfView;
-    public override void Interact(PlayerMovement player)
+
+    CSG.Operations csgOperator;
+
+    void Start()
     {
-        base.Interact(player);
-        if(holding == false)
+        csgOperator = GetComponent<CSG.Operations>();
+    }
+
+    public override void Interact()
+    {
+        base.Interact();
+        if (player.holding == false)
         {
             ApplyCut();
         }
@@ -17,15 +25,15 @@ public class Window : Pickupable
 
     public void ApplyCut()
     {
-        Debug.Log(worldManager.GetDreamObjects().Count);
-        foreach(ClipableObject clippableObject in worldManager.GetRealObjects())
+        // Debug.Log(worldManager.GetDreamObjects().Count);
+        foreach (ClipableObject clippableObject in worldManager.GetRealObjects())
         {
-            clippableObject.UnionWith(FieldOfView, GetComponent<CSG.Operations>());
+            clippableObject.UnionWith(FieldOfView, csgOperator);
         }
-        
+
         foreach (ClipableObject clippableObject in worldManager.GetDreamObjects())
         {
-            clippableObject.Subtract(FieldOfView, GetComponent<CSG.Operations>());
+            clippableObject.Subtract(FieldOfView, csgOperator);
         }
     }
 }

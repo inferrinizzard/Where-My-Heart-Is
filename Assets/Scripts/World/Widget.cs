@@ -16,14 +16,14 @@ public class Widget : InteractableObject
 
     private int messageChoice = 0;
 
-    public override void Interact(PlayerMovement player)
+    public override void Interact()
     {
-        if(messages.Count > 0)
+        if (messages.Count > 0)
         {
             FindObjectOfType<MessageWriter>().WriteMessage(SelectMessage());
         }
 
-        if(sound != null)
+        if (sound != null)
         {
             GetComponent<AudioSource>().PlayOneShot(sound);
         }
@@ -31,7 +31,7 @@ public class Widget : InteractableObject
 
     private string SelectMessage()
     {
-        if(messageChoice == 0)
+        if (messageChoice == 0)
         {
             messageChoice = 1;
         }
