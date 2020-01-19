@@ -5,7 +5,7 @@ using UnityEngine;
 public class Window : Pickupable
 {
     public WorldManager worldManager;
-    public GameObject FieldOfView;
+    public GameObject fieldOfView;
 
     CSG.Operations csgOperator;
 
@@ -26,14 +26,14 @@ public class Window : Pickupable
     public void ApplyCut()
     {
         // Debug.Log(worldManager.GetDreamObjects().Count);
-        foreach (ClipableObject clippableObject in worldManager.GetRealObjects())
+        foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
         {
-            clippableObject.UnionWith(FieldOfView, csgOperator);
+            clipableObject.UnionWith(fieldOfView, csgOperator);
         }
 
-        foreach (ClipableObject clippableObject in worldManager.GetDreamObjects())
+        foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
         {
-            clippableObject.Subtract(FieldOfView, csgOperator);
+            clipableObject.Subtract(fieldOfView, csgOperator);
         }
     }
 }

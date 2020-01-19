@@ -139,8 +139,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1590141156}
+  active: 0
   worldManager: {fileID: 1089341293}
-  FieldOfView: {fileID: 1479176665}
+  fieldOfView: {fileID: 1479176665}
 --- !u!1 &148376230
 GameObject:
   m_ObjectHideFlags: 0
@@ -997,6 +998,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1590141156}
+  active: 0
 --- !u!65 &978550136
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1604,6 +1606,7 @@ MonoBehaviour:
   heldObjectLocation: {fileID: 0}
   holding: 0
   looking: 0
+  state: 0
   speed: 5
   gravity: 25
   jumpForce: 7
@@ -1949,6 +1952,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  active: 0
 --- !u!64 &1927024071
 MeshCollider:
   m_ObjectHideFlags: 0

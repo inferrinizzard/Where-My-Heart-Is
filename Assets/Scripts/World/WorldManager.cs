@@ -6,7 +6,6 @@ public class WorldManager : MonoBehaviour
 {
     public Transform realWorldContainer;
     public Transform dreamWorldContainer;
-
     public PlayerMovement player;
 
     void Awake()
@@ -43,13 +42,13 @@ public class WorldManager : MonoBehaviour
         }
     }
 
-    public List<ClipableObject> GetRealObjects()
+    public ClipableObject[] GetRealObjects()
     {
-        return new List<ClipableObject>(realWorldContainer.GetComponentsInChildren<ClipableObject>());
+        return realWorldContainer.GetComponentsInChildren<ClipableObject>();
     }
 
-    public List<ClipableObject> GetDreamObjects()
+    public ClipableObject[] GetDreamObjects()
     {
-        return new List<ClipableObject>(dreamWorldContainer.GetComponentsInChildren<ClipableObject>());
+        return dreamWorldContainer.GetComponentsInChildren<ClipableObject>();
     }
 }

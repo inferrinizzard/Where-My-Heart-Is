@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary> Reference to player Camera. </summary>
     private Camera cam;
     /// <summary> Empty GameObject for where to put a Pickupable object. </summary>
-    public Transform heldObjectLocation;
+    [HideInInspector] public Transform heldObjectLocation;
     /// <summary> Reference to a Pickupable object that has been picked up. </summary>
     private InteractableObject heldObject;
     /// <summary> Vector3 to store and calculate move direction. </summary>
@@ -54,26 +54,21 @@ public class PlayerMovement : MonoBehaviour
     [Header("Keybinds")]
     /// <summary> KeyCode for player jump. </summary>
     [SerializeField] private KeyCode jumpKey = KeyCode.Space;
-
     /// <summary> KeyCode for player crouch. </summary>
     [SerializeField] private KeyCode crouchKey = KeyCode.LeftShift;
-
     /// <summary> KeyCode for inspecting and picking up objects. </summary>
     [SerializeField] private KeyCode pickUpKey = KeyCode.E;
 
     // Camera Variables
     /// <summary> Minimum angle the player can look upward. </summary>
     float minX = -90f;
-
     /// <summary> Minimum angle the player can look downward. </summary>
     float maxX = 90f;
 
     /// <summary> Stores the Y rotation of the player. </summary>
     float rotationY = 0f;
-
     /// <summary> Stores the X rotation of the player. </summary>
     float rotationX = 0f;
-
     /// <summary> Initializes variables before the game starts. </summary>
     private void Awake()
     {
@@ -123,10 +118,7 @@ public class PlayerMovement : MonoBehaviour
         // Scale the moveDirection to account for different runtimes.
         moveDirection *= speed * Time.deltaTime;
 
-        // Apply gravity to the player.
         ApplyGravity();
-
-        // Move the player based on moveDirection.
         characterController.Move(moveDirection);
     }
 
@@ -149,10 +141,8 @@ public class PlayerMovement : MonoBehaviour
     /// <summary> Player jump function. </summary>
     void Jump()
     {
-        // Check if the player is grounded and is pressing the jump key.
         if (characterController.isGrounded && Input.GetKeyDown(jumpKey))
         {
-            // Apply jump force.
             verticalVelocity = jumpForce;
         }
     }
@@ -246,9 +236,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     /// <summary> Function to get transform of where the held object should be. </summary>
-    /// <returns>
-    /// Returns a reference to the player's heldObjectLocation transform.
-    /// </returns>
+    /// <returns> Returns a reference to the player's heldObjectLocation transform. </returns>
     public Transform GetHeldObjectLocation()
     {
         return heldObjectLocation.transform;

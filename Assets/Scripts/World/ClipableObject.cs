@@ -10,7 +10,7 @@ public class ClipableObject : MonoBehaviour
 
     void Awake()
     {
-        if(GetComponent<MeshFilter>() == null)
+        if (GetComponent<MeshFilter>() == null)
         {
             gameObject.AddComponent<MeshFilter>();
         }
@@ -21,24 +21,22 @@ public class ClipableObject : MonoBehaviour
 
     public void UnionWith(GameObject other, CSG.Operations operations)
     {
-        if(result != null)
+        if (result != null)
         {
             Destroy(result);
         }
 
-        result = GameObject.Instantiate(gameObject);
-        result.transform.position = transform.position;
-        result.transform.rotation = transform.rotation;
+        result = GameObject.Instantiate(gameObject, transform.position, transform.rotation);
         result.transform.localScale = transform.localScale;
         result.layer = 9;
 
-        result.GetComponent<MeshFilter>().mesh = operations.Union(this.gameObject, other);
+        result.GetComponent<MeshFilter>().mesh = operations.Union(gameObject, other);
         result.GetComponent<MeshCollider>().sharedMesh = result.GetComponent<MeshFilter>().mesh;
     }
 
     public void Subtract(GameObject other, CSG.Operations operations)
     {
         GetComponent<MeshFilter>().mesh = initialMesh;
-        GetComponent<MeshFilter>().mesh = operations.Subtract(this.gameObject, other);
+        GetComponent<MeshFilter>().mesh = operations.Subtract(gameObject, other);
     }
 }
