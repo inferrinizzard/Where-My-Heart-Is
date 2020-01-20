@@ -43,9 +43,9 @@ namespace CSG
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="index">Index in the mesh's vertex array</param>
-        /// <param name="value">Location in model space</param>
-        /// <param name="containedByBound">Whether the vertex lies within the bounding shape</param>
+        /// <param name="index"> Index in the mesh's vertex array </param>
+        /// <param name="value"> Location in model space </param>
+        /// <param name="containedByBound"> Whether the vertex lies within the bounding shape </param>
         public Vertex(int index, Vector3 value)
         {
             this.index = index;
@@ -59,7 +59,7 @@ namespace CSG
         /// <summary>
         /// Determines whether this vertex and the given vertex both appear on the same triangle
         /// </summary>
-        /// <param name="vertex">The vertex to compare against</param>
+        /// <param name="vertex">  The vertex to compare against </param>
         /// <returns>Whether this vertex and the given vertex both appear on the same triangle</returns>
         public bool SharesTriangle(Vertex vertex) => triangles.Any(t => vertex.triangles.Contains(t));
 
@@ -71,7 +71,7 @@ namespace CSG
         /// <summary>
         /// Determines whether this vertex lies inside the area of the given loop, assuming they share a plane
         /// </summary>
-        /// <param name="loop">The loop to check for containment</param>
+        /// <param name="loop">  The loop to check for containment </param>
         /// <returns>Whether this vertex lies inside the area of the given loop, assuming they share a plane</returns>
         public bool LiesWithinLoop(EdgeLoop loop)
         {
@@ -102,20 +102,21 @@ namespace CSG
 
             // count # above, below
             // if both odd, return true, else return false
-            return positiveIntersections.Count % 2 == 1;// && negativeIntersections.Count % 2 == 1;
+            return positiveIntersections.Count % 2 == 1; // && negativeIntersections.Count % 2 == 1;
         }
 
         /// <summary>
         /// Takes a List and merges any vertices that are too similar
         /// </summary>
-        /// <param name="list">The list to remove duplicates from</param>
-        private void RemoveDuplicates(List<Vector3> list)
+        /// <param name="list"> The list to remove duplicates from </param>
+        /// <param name="margin"> The distance cutoff to clip duplicates </param>
+        private void RemoveDuplicates(List<Vector3> list, double margin = .0001)
         {
-            for(int i = list.Count - 1; i > 0; i--)
+            for (int i = list.Count - 1; i > 0; i--)
             {
-                for(int k = i; k >=0; k--)
+                for (int k = i; k >= 0; k--)
                 {
-                    if(Vector3.Distance(list[i], list[k]) < 0.0001)
+                    if (Vector3.Distance(list[i], list[k]) < margin)
                     {
                         list.RemoveAt(i);
                         break;
@@ -123,6 +124,6 @@ namespace CSG
                 }
             }
         }
-            //=> list.RemoveAll(a => list.Any(b => Vector3.Distance(a, b) < 0.0001));
+        //=> list.RemoveAll(a => list.Any(b => a!=b Vector3.Distance(a, b) < 0.0001)); // does not acount for A|B → B|A comparisons
     }
 }
