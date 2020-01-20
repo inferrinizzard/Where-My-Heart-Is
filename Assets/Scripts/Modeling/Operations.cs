@@ -89,11 +89,14 @@ namespace CSG
             // fill the edge loops that need to be filled, add the result to the list of triangles
             foreach (EdgeLoop loop in edgeLoops)
             {
-                if (loop.filled)modelToClip.triangles.AddRange(loop.Triangulate());
+                if (loop.filled) modelToClip.triangles.AddRange(loop.Triangulate());
                 EdgeLoop nestedLoop = loop.nestedLoop;
                 while (nestedLoop != null)
                 {
-                    if (nestedLoop.filled)modelToClip.triangles.AddRange(nestedLoop.Triangulate());
+                    if (nestedLoop.filled)
+                    {
+                        modelToClip.triangles.AddRange(nestedLoop.Triangulate());
+                    }
                     nestedLoop = nestedLoop.nestedLoop;
                 }
             }
@@ -270,14 +273,13 @@ namespace CSG
 
                 FinalStep:
 
-                    loops.Add(loop);
+                loops.Add(loop);
 
                 currentVertexIndex = FindEarliestUnsatisfied(perimeter);
             }
 
             // now that we've created all loops that intersect the edge of the triangle, we can start on loops that float as islands
             List<Vertex> unusedVertices = internalIntersections.Where(intersection => !intersection.usedInLoop).ToList();
-
             while (unusedVertices.Count > 2)
             {
                 Vertex currentVertex = unusedVertices.Last();
@@ -369,39 +371,57 @@ namespace CSG
                 } while (nextVertex != null && nextVertex != initialVertex);
 
                 EdgeLoop potentialLoop = potentialLoops.Dequeue();
-                if (nextVertex != null)completedLoops.Add(potentialLoop);
+                if (nextVertex != null)
+                {
+                    completedLoops.Add(potentialLoop);
+                }
             }
 
             // the loop with the greatest number of vertices is the correct loop
-            EdgeLoop finalLoop = completedLoops.OrderBy(loop => loop.vertices.Count).First(); // TODO: sometimes completedLoops is empty
+            int loopSize = 0;
+            foreach(EdgeLoop loop in completedLoops)
+            {
+                if(loop.vertices.Count > loopSize)
+                {
+                    loopSize = loop.vertices.Count();
+                }
+            }
 
+            // we will find a pair of maximal loops with opposite winding orders
+            List<EdgeLoop> finalLoops = completedLoops.Where(loop => loop.vertices.Count == loopSize).ToList();
+
+            int finalLoopIndex = 0;
             // determine which external loop contains this new loop
             foreach (EdgeLoop loop in loops)
             {
                 if (initialVertex.LiesWithinLoop(loop))
                 {
+                    if (loop.GetNormal() != finalLoops[0].GetNormal())
+                    {
+                        finalLoopIndex = 1;
+                    }
                     if (loop.nestedLoop == null)
                     {
-                        loop.nestedLoop = finalLoop;
+                        loop.nestedLoop = finalLoops[finalLoopIndex];
                     }
                     else
                     {
-                        finalLoop.nestedLoop = loop.nestedLoop;
+                        finalLoops[finalLoopIndex].nestedLoop = loop.nestedLoop;
                         EdgeLoop previousLoop = loop;
-                        bool liesWithinLoop = initialVertex.LiesWithinLoop(finalLoop.nestedLoop);
+                        bool liesWithinLoop = initialVertex.LiesWithinLoop(finalLoops[finalLoopIndex].nestedLoop);
                         do
                         {
-                            previousLoop.nestedLoop = finalLoop.nestedLoop;
-                            finalLoop.nestedLoop = finalLoop.nestedLoop.nestedLoop;
-                            previousLoop.nestedLoop.nestedLoop = finalLoop;
-                        } while (finalLoop.nestedLoop != null && liesWithinLoop);
+                            previousLoop.nestedLoop = finalLoops[finalLoopIndex].nestedLoop;
+                            finalLoops[finalLoopIndex].nestedLoop = finalLoops[finalLoopIndex].nestedLoop.nestedLoop;
+                            previousLoop.nestedLoop.nestedLoop = finalLoops[finalLoopIndex];
+                        } while (finalLoops[finalLoopIndex].nestedLoop != null && liesWithinLoop);
                     }
 
                     // we've found the loop we're contained by, break out
                     break;
                 }
             }
-            return finalLoop;
+            return finalLoops[finalLoopIndex];
         }
         /// <summary>
         /// Marks the given Cut as traversed and adds its vertices to the greater loop being traversed

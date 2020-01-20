@@ -78,7 +78,7 @@ namespace CSG
             // collect intersection points
             Vector3 castDirection = (loop.vertices[0].value - loop.vertices[1].value).normalized;
             List<Vector3> positiveIntersections = new List<Vector3>();
-            List<Vector3> negativeIntersections = new List<Vector3>();
+            //List<Vector3> negativeIntersections = new List<Vector3>();
             for (int i = 0; i < loop.vertices.Count; i++)
             {
                 Point3 intersection = Raycast.RayToLineSegment(
@@ -93,26 +93,36 @@ namespace CSG
                     {
                         positiveIntersections.Add(intersection.value);
                     }
-                    else
-                    {
-                        negativeIntersections.Add(intersection.value);
-                    }
                 }
             }
 
             // remove duplicates
             RemoveDuplicates(positiveIntersections);
-            RemoveDuplicates(negativeIntersections);
+            // RemoveDuplicates(negativeIntersections);
 
             // count # above, below
             // if both odd, return true, else return false
-            return positiveIntersections.Count % 2 == 1 && negativeIntersections.Count % 2 == 1;
+            return positiveIntersections.Count % 2 == 1;// && negativeIntersections.Count % 2 == 1;
         }
 
         /// <summary>
         /// Takes a List and merges any vertices that are too similar
         /// </summary>
         /// <param name="list">The list to remove duplicates from</param>
-        private void RemoveDuplicates(List<Vector3> list) => list.RemoveAll(a => list.Any(b => Vector3.Distance(a, b) < 0.0001));
+        private void RemoveDuplicates(List<Vector3> list)
+        {
+            for(int i = list.Count - 1; i > 0; i--)
+            {
+                for(int k = i; k >=0; k--)
+                {
+                    if(Vector3.Distance(list[i], list[k]) < 0.0001)
+                    {
+                        list.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+        }
+            //=> list.RemoveAll(a => list.Any(b => Vector3.Distance(a, b) < 0.0001));
     }
 }

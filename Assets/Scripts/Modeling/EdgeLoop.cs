@@ -56,6 +56,15 @@ namespace CSG
 
             return triangles;
         }
+
+        /// <summary>
+        /// Finds the unit vector normal to the plane defined by this EdgeLoop
+        /// </summary>
+        /// <returns>The normal vector</returns>
+        public Vector3 GetNormal()
+        {
+            return Vector3.Cross(vertices[0].value - vertices[1].value, vertices[2].value - vertices[1].value).normalized;
+        }
     }
 
 }
