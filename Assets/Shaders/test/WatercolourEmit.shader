@@ -55,12 +55,12 @@
 		
 		fixed4 screen (fixed4 colA, fixed4 colB)
 		{
-			fixed4 white = (1,1,1,1);
+			fixed4 white = fixed4(1,1,1,1);
 			return white - (white-colA) * (white-colB);
 		}
 		fixed4 softlight (fixed4 colA, fixed4 colB)
 		{
-			fixed4 white = (1,1,1,1);
+			fixed4 white = fixed4(1,1,1,1);
 			return (white-2*colB)*pow(colA, 2) + 2*colB*colA;
 		}
 		void surf (Input IN, inout SurfaceOutputStandard o) 

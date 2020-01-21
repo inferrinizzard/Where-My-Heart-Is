@@ -14,7 +14,6 @@ namespace CSG
 
         public int triangleCount;
 
-
         public void Union(GameObject toClip, GameObject bounds, GameObject output)
         {
             //Debug.Log("==========================UNION============================");
@@ -71,11 +70,11 @@ namespace CSG
                 edgeLoops.AddRange(ClipTriangleToBound(meshTriangles[triangleCount], boundsTriangles, vertices, true));
                 foreach (EdgeLoop loop in edgeLoops)
                 {
-                    if (loop.filled) triangles.AddRange(TriangulateEdgeLoop(loop));
+                    if (loop.filled)triangles.AddRange(TriangulateEdgeLoop(loop));
                     EdgeLoop nestedLoop = loop.nestedLoop;
                     while (nestedLoop != null)
                     {
-                        if (nestedLoop.filled) triangles.AddRange(TriangulateEdgeLoop(nestedLoop));
+                        if (nestedLoop.filled)triangles.AddRange(TriangulateEdgeLoop(nestedLoop));
                         nestedLoop = nestedLoop.nestedLoop;
                     }
 
@@ -90,12 +89,12 @@ namespace CSG
 
                 foreach (EdgeLoop loop in edgeLoops)
                 {
-                    if (loop.filled) triangles.AddRange(TriangulateEdgeLoop(loop));
+                    if (loop.filled)triangles.AddRange(TriangulateEdgeLoop(loop));
                     EdgeLoop nestedLoop = loop.nestedLoop;
                     while (nestedLoop != null)
                     {
                         Debug.Log("here");
-                        if (nestedLoop.filled) triangles.AddRange(TriangulateEdgeLoop(nestedLoop));
+                        if (nestedLoop.filled)triangles.AddRange(TriangulateEdgeLoop(nestedLoop));
                         nestedLoop = nestedLoop.nestedLoop;
                     }
                 }
@@ -105,9 +104,9 @@ namespace CSG
                 return null;
             }
 
-            if(flipNormals)
+            if (flipNormals)
             {
-                foreach(Triangle triangle in triangles)
+                foreach (Triangle triangle in triangles)
                 {
                     triangle.FlipNormal();
                 }
@@ -205,7 +204,7 @@ namespace CSG
                 foreach (Vertex vertex in triangle.vertices)
                 {
                     Color color = Color.blue;
-                    if (vertex.containedByBound) color = Color.cyan;
+                    if (vertex.containedByBound)color = Color.cyan;
                     Debug.DrawRay(transform.localToWorldMatrix.MultiplyPoint3x4(vertex.value), Vector3.back * 0.1f, color, Time.deltaTime);
                 }
             }
@@ -254,8 +253,7 @@ namespace CSG
             perimeter.AddRange(bToCEgresses);
             perimeter.Add(triangle.vertices[2]);
             perimeter.AddRange(cToAEgresses);
-            perimeter.Add(triangle.vertices[0]);// a duplicate of the first vertex as a sentinel
-
+            perimeter.Add(triangle.vertices[0]); // a duplicate of the first vertex as a sentinel
 
             // find all edge loops and classify whether they should be retopologized or not
 
@@ -368,7 +366,7 @@ namespace CSG
                     {
                         currentVertexIndex = TraverseCut(furthestCut, loop, perimeter, currentVertexIndex);
 
-                        if (perimeter[currentVertexIndex] == initialVertex)// if we arrived at the initial vertex
+                        if (perimeter[currentVertexIndex] == initialVertex) // if we arrived at the initial vertex
                         {
                             loop.vertices.RemoveAt(loop.vertices.Count - 1);
                             break;
@@ -400,7 +398,7 @@ namespace CSG
                                 break;
                             }
 
-                            if (perimeter[currentVertexIndex] == initialVertex)// if we arrived at the initial vertex
+                            if (perimeter[currentVertexIndex] == initialVertex) // if we arrived at the initial vertex
                             {
                                 loop.vertices.RemoveAt(loop.vertices.Count - 1);
                                 goto EndOfDoWhile;
@@ -430,8 +428,8 @@ namespace CSG
                 } while (perimeter[currentVertexIndex] != initialVertex);
                 EndOfDoWhile:
 
-                //Debug.Log("terminated");
-                loops.Add(loop);
+                    //Debug.Log("terminated");
+                    loops.Add(loop);
             }
             if (debug)
             {
@@ -450,21 +448,21 @@ namespace CSG
             List<Vertex> unusedVertices = new List<Vertex>();
             foreach (Vertex intersection in internalIntersections)
             {
-                if(!intersection.usedInLoop)
+                if (!intersection.usedInLoop)
                 {
                     unusedVertices.Add(intersection);
                 }
             }
             int foo = 0;
-            while(unusedVertices.Count > 0)
+            while (unusedVertices.Count > 0)
             {
                 EdgeLoop currentLoop = new EdgeLoop();
                 Vertex currentVertex = unusedVertices[unusedVertices.Count - 1];
                 unusedVertices.RemoveAt(unusedVertices.Count - 1);
 
-                foreach(EdgeLoop loop in loops)
+                foreach (EdgeLoop loop in loops)
                 {
-                    if(currentVertex.LiesWithinLoop(loop))
+                    if (currentVertex.LiesWithinLoop(loop))
                     {
                         if (loop.nestedLoop == null)
                         {
@@ -520,18 +518,17 @@ namespace CSG
 
             }
 
-            foreach(EdgeLoop loop in loops)
+            foreach (EdgeLoop loop in loops)
             {
                 EdgeLoop nestedLoop = loop.nestedLoop;
                 EdgeLoop previousLoop = loop;
-                while(nestedLoop != null)
+                while (nestedLoop != null)
                 {
                     nestedLoop.filled = !previousLoop.filled;
                     previousLoop = nestedLoop;
                     nestedLoop = nestedLoop.nestedLoop;
                 }
             }
-
 
             return loops;
         }
@@ -612,9 +609,9 @@ namespace CSG
                     {
                         bool alreadyExists = false;
 
-                        if (cut.Count == 1)// if we're starting a new cut
+                        if (cut.Count == 1) // if we're starting a new cut
                         {
-                            foreach (Cut existingCut in egress.cuts)// check each of the previous cuts to ensure that it doesn't already exist
+                            foreach (Cut existingCut in egress.cuts) // check each of the previous cuts to ensure that it doesn't already exist
                             {
                                 if (existingCut[1] == intersection)
                                 {
@@ -637,9 +634,9 @@ namespace CSG
                     {
                         bool alreadyExists = false;
 
-                        if (cut.Count == 1)// if we're starting a new cut
+                        if (cut.Count == 1) // if we're starting a new cut
                         {
-                            foreach (Cut existingCut in egress.cuts)// check each of the previous cuts to ensure that it doesn't already exist
+                            foreach (Cut existingCut in egress.cuts) // check each of the previous cuts to ensure that it doesn't already exist
                             {
                                 if (existingCut[1] == vertex)
                                 {
@@ -710,8 +707,6 @@ namespace CSG
 
             return vertices;
         }
-
-
 
         private Vertex EdgeIntersectsTriangle(Vector3 pointA, Vector3 pointB, Triangle triangle)
         {
@@ -825,7 +820,7 @@ namespace CSG
                 SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) &&
                 SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) ==
                 SignedVolume(q1, q2, triangle.vertices[2].value, triangle.vertices[0].value)
-                )
+            )
             {
                 // determine equation of plane
                 Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
@@ -945,5 +940,3 @@ namespace CSG
     }
 
 }
-
-

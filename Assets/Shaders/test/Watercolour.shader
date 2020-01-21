@@ -1,7 +1,6 @@
 ﻿Shader "Custom/Watercolour" 
 {
-	Properties 
-	{
+	Properties {
 		_Color ("Tint Color 1", Color) = (1,1,1,1)
 		_Color2 ("Tint Color 2", Color) = (1,1,1,1)
 		_InkCol ("Ink Color", Color) = (1,1,1,1)
@@ -18,8 +17,8 @@
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
 	}
-	SubShader 
-	{
+
+	SubShader {
 		Tags { "RenderType"="Opaque" }
 		LOD 200
 		
@@ -44,28 +43,23 @@
 		fixed4 _Color2;
 		fixed4 _InkCol;
 
-		struct Input 
-		{
+		struct Input {
 			float2 uv_BlotchTex;
 			float2 uv_DetailTex;
 			float2 uv_PaperTex;
 		};
 
-		
-		
-			
-		fixed4 screen (fixed4 colA, fixed4 colB)
-		{
-			fixed4 white = (1,1,1,1);
+		fixed4 screen (fixed4 colA, fixed4 colB) {
+			fixed4 white = fixed4(1,1,1,1);
 			return white - (white-colA) * (white-colB);
 		}
-		fixed4 softlight (fixed4 colA, fixed4 colB)
-		{
-			fixed4 white = (1,1,1,1);
+
+		fixed4 softlight (fixed4 colA, fixed4 colB) {
+			fixed4 white = fixed4(1,1,1,1);
 			return (white-2*colB)*pow(colA, 2) + 2*colB*colA;
 		}
-		void surf (Input IN, inout SurfaceOutputStandard o) 
-		{
+
+		void surf (Input IN, inout SurfaceOutputStandard o) {
 			fixed c = tex2D (_BlotchTex, IN.uv_BlotchTex).r;
 			c *= _BlotchMulti;
 			c -= _BlotchSub;			
@@ -85,7 +79,6 @@
 			o.Smoothness = _Glossiness;
 			o.Alpha = 1;
 		}
-		
 		
 		ENDCG
 	} 
