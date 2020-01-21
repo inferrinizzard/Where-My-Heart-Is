@@ -124,6 +124,6 @@ namespace CSG
                 }
             }
         }
-        //=> list.RemoveAll(a => list.Any(b => a != b Vector3.Distance(a, b) < 0.0001)); // does not acount for A|B → B|A comparisons
+        //=> list.RemoveAll(a => list.Any(b => a!=b Vector3.Distance(a, b) < 0.0001)); // does not acount for A|B → B|A comparisons
     }
 }

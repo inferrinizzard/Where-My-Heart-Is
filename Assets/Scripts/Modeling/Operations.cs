@@ -38,12 +38,6 @@ namespace CSG
             return completedMesh;
         }
 
-        /// <summary>
-        /// Generates the subtraction of two shapes
-        /// </summary>
-        /// <param name="shapeA">The first shape to subtract</param>
-        /// <param name="shapeB">The second shape to subtract</param>
-        /// <returns>The subtraction of the two shapes</returns>
         public Mesh Subtract(GameObject shapeA, GameObject shapeB)
         {
             CombineInstance[] combine = new CombineInstance[2];

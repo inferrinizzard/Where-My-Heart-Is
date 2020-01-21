@@ -221,9 +221,4 @@ namespace CSG
 			// ENDLINQ
 		}
 	}
-
-	private bool PointExcludedByBound(Vector3 point, List<Triangle> boundsTriangles)
-	{
-		return !PointContainedByBound(point, boundsTriangles);
-	}
 }
