@@ -121,6 +121,7 @@ namespace CSG
         /// <returns>A list of edge loops which define the clipped version of the triangle</returns>
         private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, List<Triangle> boundsTriangles, List<Vertex> vertices, Func<Vector3, List<Triangle>, bool> ContainmentCheck)
         {
+            Debug.Log("clipping triangle");
             List<Egress> aToBEgresses = new List<Egress>();
             List<Egress> bToCEgresses = new List<Egress>();
             List<Egress> cToAEgresses = new List<Egress>();
@@ -199,11 +200,13 @@ namespace CSG
                 // 1. an egress which is already part of one loop
                 if (initialVertex is Egress)
                 {
+                    Debug.Log("Egress: " + initialVertex);
                     // in this case, the new loop is the opposite of whatever the previous loop is
                     loop.filled = !initialVertex.loops.Last().filled; // TODO: sometimes empty
                 }
                 else // 2. a vertex of the original triangle
                 {
+                    Debug.Log("Nonegress: " + initialVertex);
                     // in this case, if the vertex is contained by the bound, the loop is a surface, otherwise it's a hole
                     loop.filled = ContainmentCheck(initialVertex.value, boundsTriangles);
                 }
@@ -274,6 +277,7 @@ namespace CSG
                 FinalStep:
 
                 loops.Add(loop);
+                Debug.Log(loop);
 
                 currentVertexIndex = FindEarliestUnsatisfied(perimeter);
             }

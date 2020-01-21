@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CSG
@@ -47,14 +48,61 @@ namespace CSG
         /// <returns>The created triangles</returns>
         public List<Triangle> Triangulate()
         {
-            List<Triangle> triangles = new List<Triangle>();
-
-            for (int i = 1; i < this.vertices.Count - 1; i++)
+            /*if(vertices.Count < 3)
             {
-                triangles.Add(new Triangle(this.vertices[0], this.vertices[i], this.vertices[(i + 1) % this.vertices.Count]));
+                return new List<Triangle>();
+            }*/
+            List<Triangle> triangles = new List<Triangle>();
+            List<Vertex> currentVertices = new List<Vertex>(vertices);
+
+            //ear method
+            int i = 0;
+            while (currentVertices.Count > 3)
+            {
+                i++;
+                if(i > 300)
+                {
+                    throw new System.Exception();
+                }
+                triangles.Add(CreateNextEar(currentVertices));
             }
+            triangles.Add(new Triangle(currentVertices[0], currentVertices[1], currentVertices[2]));
 
             return triangles;
+        }
+
+        private Triangle CreateNextEar(List<Vertex> currentVertices)
+        {
+            for (int i = 0; i < currentVertices.Count; i++)
+            {
+                Vector3 a = currentVertices[i].value - currentVertices[(i + 1) % currentVertices.Count].value;
+                Vector3 b = currentVertices[(i + 2) % currentVertices.Count].value - currentVertices[(i + 1) % currentVertices.Count].value;
+                if (Vector3.SignedAngle(a, b, Vector3.Cross(a, b)) > 0)
+                {
+                    Triangle resultingTriangle = new Triangle(currentVertices[i], currentVertices[(i + 1) % currentVertices.Count], currentVertices[(i + 2) % currentVertices.Count]);
+                    if(!TriangleContainsAny(currentVertices, resultingTriangle))
+                    {
+                        currentVertices.RemoveAt((i + 1) % currentVertices.Count);
+                        return resultingTriangle;
+                    }
+
+                }
+            }
+
+            return null;
+        }
+
+        private bool TriangleContainsAny(List<Vertex> vertices, Triangle triangle)
+        {
+            foreach(Vertex vertex in vertices)
+            {
+                if(!triangle.vertices.Contains(vertex) && vertex.LiesWithinTriangle(triangle))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -65,6 +113,8 @@ namespace CSG
         {
             return Vector3.Cross(vertices[0].value - vertices[1].value, vertices[2].value - vertices[1].value).normalized;
         }
+
+        public override string ToString() => $"{base.ToString()}::{string.Join("::", vertices.Select(v => v.value.ToString("F4")))}";
     }
 
 }

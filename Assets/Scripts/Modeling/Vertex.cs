@@ -78,7 +78,6 @@ namespace CSG
             // collect intersection points
             Vector3 castDirection = (loop.vertices[0].value - loop.vertices[1].value).normalized;
             List<Vector3> positiveIntersections = new List<Vector3>();
-            //List<Vector3> negativeIntersections = new List<Vector3>();
             for (int i = 0; i < loop.vertices.Count; i++)
             {
                 Point3 intersection = Raycast.RayToLineSegment(
@@ -98,24 +97,59 @@ namespace CSG
 
             // remove duplicates
             RemoveDuplicates(positiveIntersections);
-            // RemoveDuplicates(negativeIntersections);
 
-            // count # above, below
-            // if both odd, return true, else return false
+            // count #
+            // if odd, return true, else return false
+            return positiveIntersections.Count % 2 == 1;// && negativeIntersections.Count % 2 == 1;
+        }
+
+        /// <summary>
+        /// Determines whether this vertex lies inside the area of the given triangle, assuming they share a plane
+        /// </summary>
+        /// <param name="triangle">The triangle to check for containment</param>
+        /// <returns>Whether this vertex lies inside the area of the given triangle, assuming they share a plane</returns>
+        public bool LiesWithinTriangle(Triangle triangle)
+        {
+            // collect intersection points
+            Vector3 castDirection = (triangle.vertices[0].value - triangle.vertices[1].value).normalized;
+            List<Vector3> positiveIntersections = new List<Vector3>();
+            for (int i = 0; i < triangle.vertices.Count; i++)
+            {
+                Point3 intersection = Raycast.RayToLineSegment(
+                    this.value,
+                    castDirection,
+                    triangle.vertices[i].value,
+                    triangle.vertices[(i + 1) % triangle.vertices.Count].value);
+                if (intersection != null)
+                {
+                    Vector3 directionToIntersection = (intersection.value - this.value).normalized;
+                    if (Vector3.Dot(directionToIntersection, castDirection) > 0)
+                    {
+                        positiveIntersections.Add(intersection.value);
+                    }
+                }
+            }
+
+            // remove duplicates
+            RemoveDuplicates(positiveIntersections);
+
+            // count #
+            // if odd, return true, else return false
             return positiveIntersections.Count % 2 == 1;// && negativeIntersections.Count % 2 == 1;
         }
 
         /// <summary>
         /// Takes a List and merges any vertices that are too similar
         /// </summary>
-        /// <param name="list">The list to remove duplicates from</param>
-        private void RemoveDuplicates(List<Vector3> list)
+        /// <param name="list"> The list to remove duplicates from </param>
+        /// <param name="margin"> The distance cutoff to clip duplicates </param>
+        private void RemoveDuplicates(List<Vector3> list, double margin = .0001)
         {
-            for(int i = list.Count - 1; i > 0; i--)
+            for (int i = list.Count - 1; i > 0; i--)
             {
-                for(int k = i; k >=0; k--)
+                for (int k = i; k >= 0; k--)
                 {
-                    if(Vector3.Distance(list[i], list[k]) < 0.0001)
+                    if (Vector3.Distance(list[i], list[k]) < margin)
                     {
                         list.RemoveAt(i);
                         break;
@@ -123,6 +157,7 @@ namespace CSG
                 }
             }
         }
-            //=> list.RemoveAll(a => list.Any(b => Vector3.Distance(a, b) < 0.0001));
+
+        //=> list.RemoveAll(a => list.Any(b => Vector3.Distance(a, b) < 0.0001));
     }
 }
