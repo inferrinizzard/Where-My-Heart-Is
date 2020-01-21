@@ -49,7 +49,7 @@ public class PlayerManager : MonoBehaviour
                 heldObject = hit.collider.gameObject;
                 if (heldObject.GetComponent<InteractableObject>())
                 {
-                    heldObject.GetComponent<InteractableObject>().Interact(this);
+                    //heldObject.GetComponent<InteractableObject>().Interact(this);
                 }
                 heldObject = null;
             }

@@ -10,40 +10,38 @@ public class CollectableObject : InteractableObject
     public string interactText;
 
     private bool pickingUp;
-    private Vector3 spacialTarget;
+    private Vector3 spatialTarget;
     private Vector3 rotationalTarget;
 
     private void Start()
     {
-        pickingUp = false;        
+        pickingUp = false;
     }
 
     private void Update()
     {
-        if(pickingUp)
+        if (pickingUp)
         {
-            transform.position = Vector3.Lerp(transform.position, spacialTarget, 5f * Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, spatialTarget, 5f * Time.deltaTime);
             transform.rotation = Quaternion.Euler(Vector3.Lerp(transform.rotation.eulerAngles, rotationalTarget, 4f * Time.deltaTime));
 
-            if(Vector3.Distance(transform.position, spacialTarget) < threshold)
+            if (Vector3.Distance(transform.position, spatialTarget) < threshold)
             {
-                if(twin != null)
+                if (twin != null)
                 {
                     twin.SetActive(false);
                 }
                 gameObject.SetActive(false);
 
-
             }
         }
     }
 
-    public override void Interact(PlayerManager player)
+    public override void Interact()
     {
-        spacialTarget = player.transform.position;
+        spatialTarget = player.transform.position;
         rotationalTarget = Quaternion.LookRotation(player.transform.forward, Vector3.up).eulerAngles;
         pickingUp = true;
-        player.gameMaster.Collect(this);
     }
-   
+
 }
