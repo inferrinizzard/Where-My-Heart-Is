@@ -48,6 +48,7 @@ namespace CSG
         /// <returns>The created triangles</returns>
         public List<Triangle> Triangulate()
         {
+            //this.RemoveDuplicates();
             /*if(vertices.Count < 3)
             {
                 return new List<Triangle>();
@@ -59,8 +60,15 @@ namespace CSG
             int i = 0;
             while (currentVertices.Count > 3)
             {
+                Debug.Log(currentVertices.Count);
+                if(currentVertices.Count == 9)
+                {
+                    EdgeLoop foo = new EdgeLoop();
+                    foo.vertices = currentVertices;
+                    Debug.Log(foo);
+                }
                 i++;
-                if(i > 300)
+                if(i > 100)
                 {
                     throw new System.Exception();
                 }
@@ -85,7 +93,6 @@ namespace CSG
                         currentVertices.RemoveAt((i + 1) % currentVertices.Count);
                         return resultingTriangle;
                     }
-
                 }
             }
 
@@ -114,7 +121,27 @@ namespace CSG
             return Vector3.Cross(vertices[0].value - vertices[1].value, vertices[2].value - vertices[1].value).normalized;
         }
 
-        public override string ToString() => $"{base.ToString()}::{string.Join("::", vertices.Select(v => v.value.ToString("F4")))}";
+        public void RemoveDuplicates()
+        {
+            for(int i = vertices.Count - 1; i > 0; i--)
+            {
+                for(int k = i - 1; k >= 0; k--)
+                {
+                    Debug.Log(vertices[i]);
+                    Debug.Log(vertices[k]);
+                    Debug.Log(Vector3.Distance(vertices[i].value, vertices[k].value));
+                    if(Vector3.Distance(vertices[i].value, vertices[k].value) < 0.0001)
+                    {
+                        Debug.Log("removing " + i);
+                        vertices.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        public override string ToString() => 
+            $"{base.ToString()}::{string.Join("::", vertices.Select(v => (v.value.ToString("F4") + " (" + (v is Egress) + ")")))}";
     }
 
 }

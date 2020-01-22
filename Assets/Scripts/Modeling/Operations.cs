@@ -14,6 +14,8 @@ namespace CSG
         [Tooltip("Breakpoint for equality comparisons between floats")]
         [SerializeField] private float error;
 
+        public int limitTo;
+
         /// <summary>
         /// Generates the union of two shapes
         /// </summary>
@@ -73,14 +75,36 @@ namespace CSG
 
             // to create the triangles, we'll need a list of edge loops to triangulate
             List<EdgeLoop> edgeLoops;
-
+            
             if (clipInside)
             {
-                edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices, PointContainedByBound)).ToList();
+                if(limitTo > -1)
+                {
+                    edgeLoops = new List<EdgeLoop>();
+                    if(limitTo < modelToClip.triangles.Count)
+                    {
+                        edgeLoops.AddRange(ClipTriangleToBound(modelToClip.triangles[limitTo], bound.triangles, modelToClip.vertices, PointContainedByBound));
+                    }
+                }
+                else
+                {
+                    edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices, PointContainedByBound)).ToList();
+                }
             }
             else
             {
-                edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices, PointExcludedByBound)).ToList();
+                if (limitTo > -1)
+                {
+                    edgeLoops = new List<EdgeLoop>();
+                    if (limitTo < modelToClip.triangles.Count)
+                    {
+                        edgeLoops.AddRange(ClipTriangleToBound(modelToClip.triangles[limitTo], bound.triangles, modelToClip.vertices, PointExcludedByBound));
+                    }
+                }
+                else
+                {
+                    edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices, PointExcludedByBound)).ToList();
+                }
             }
 
             // replace the list of triangles with the clipped version
@@ -121,7 +145,6 @@ namespace CSG
         /// <returns>A list of edge loops which define the clipped version of the triangle</returns>
         private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, List<Triangle> boundsTriangles, List<Vertex> vertices, Func<Vector3, List<Triangle>, bool> ContainmentCheck)
         {
-            Debug.Log("clipping triangle");
             List<Egress> aToBEgresses = new List<Egress>();
             List<Egress> bToCEgresses = new List<Egress>();
             List<Egress> cToAEgresses = new List<Egress>();
@@ -200,13 +223,11 @@ namespace CSG
                 // 1. an egress which is already part of one loop
                 if (initialVertex is Egress)
                 {
-                    Debug.Log("Egress: " + initialVertex);
                     // in this case, the new loop is the opposite of whatever the previous loop is
                     loop.filled = !initialVertex.loops.Last().filled; // TODO: sometimes empty
                 }
                 else // 2. a vertex of the original triangle
                 {
-                    Debug.Log("Nonegress: " + initialVertex);
                     // in this case, if the vertex is contained by the bound, the loop is a surface, otherwise it's a hole
                     loop.filled = ContainmentCheck(initialVertex.value, boundsTriangles);
                 }
@@ -277,7 +298,6 @@ namespace CSG
                 FinalStep:
 
                 loops.Add(loop);
-                Debug.Log(loop);
 
                 currentVertexIndex = FindEarliestUnsatisfied(perimeter);
             }
