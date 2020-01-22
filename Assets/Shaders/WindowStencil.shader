@@ -1,19 +1,25 @@
-﻿Shader "Custom/StencilRead" {
+﻿Shader "Custom/WindowStencil"
+{
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
-
-		//pass layer by script as ref
-		[IntRange] _StencilRef ("Stencil Ref", Range(0,255)) = 1
+		_Glossiness ("Smoothness", Range(0,1)) = 0.5
+		_Metallic ("Metallic", Range(0,1)) = 0.0
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
 		LOD 200
 
-		Stencil {
-			Ref [_StencilMask]
-			Comp NotEqual
-			Pass Zero
+
+		// real world pass 1 all
+		// dream world check 1, pass → 1, fail → 2
+		// final 1 → show. 2 → cut
+		Pass {
+			Stencil {
+				Ref 1
+				Comp Less
+				Fail Replace
+			}
 		}
 
 		CGPROGRAM
@@ -30,6 +36,8 @@
 			float2 uv_MainTex;
 		};
 
+		half _Glossiness;
+		half _Metallic;
 		fixed4 _Color;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -45,6 +53,8 @@
 			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
 			o.Albedo = c.rgb;
 			// Metallic and smoothness come from slider variables
+			o.Metallic = _Metallic;
+			o.Smoothness = _Glossiness;
 			o.Alpha = c.a;
 		}
 		ENDCG

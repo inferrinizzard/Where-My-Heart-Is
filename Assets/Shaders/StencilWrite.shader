@@ -7,13 +7,13 @@
         [IntRange] _StencilRef ("Stencil Ref", Range(0,255)) = 1
     }
     SubShader {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Opaque" "Queue"="Geometry-1"}
         LOD 200
 
         Stencil {
             Ref [_StencilMask]
-            Comp NotEqual
-            Pass Zero
+            Comp Never
+            Fail Replace
         }
 
         CGPROGRAM
@@ -25,8 +25,7 @@
 
         sampler2D _MainTex;
 
-        struct Input
-        {
+        struct Input {
             float2 uv_MainTex;
         };
 
