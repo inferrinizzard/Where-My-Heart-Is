@@ -113,13 +113,13 @@ namespace CSG
             // fill the edge loops that need to be filled, add the result to the list of triangles
             foreach (EdgeLoop loop in edgeLoops)
             {
-                if (loop.filled) modelToClip.triangles.AddRange(loop.Triangulate());
+                if (loop.filled) modelToClip.triangles.AddRange(loop.Triangulate(toClip));
                 EdgeLoop nestedLoop = loop.nestedLoop;
                 while (nestedLoop != null)
                 {
                     if (nestedLoop.filled)
                     {
-                        modelToClip.triangles.AddRange(nestedLoop.Triangulate());
+                        modelToClip.triangles.AddRange(nestedLoop.Triangulate(toClip));
                     }
                     nestedLoop = nestedLoop.nestedLoop;
                 }
