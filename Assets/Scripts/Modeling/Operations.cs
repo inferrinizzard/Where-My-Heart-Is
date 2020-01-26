@@ -12,7 +12,7 @@ namespace CSG
     public class Operations : MonoBehaviour
     {
         [Tooltip("Breakpoint for equality comparisons between floats")]
-        [SerializeField] private float error;
+        [SerializeField] private float error = .01f;
 
         public int limitTo;
 
