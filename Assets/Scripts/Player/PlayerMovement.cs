@@ -27,7 +27,12 @@ public class PlayerMovement : MonoBehaviour
 	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
 	public bool looking = false;
 
-	public enum ObjectState
+    CSG.Operations csgOperator;
+    public WorldManager worldManager;
+    public GameObject fieldOfView;
+    public GameObject heartWindow;
+
+    public enum ObjectState
 	{
 		FREE,
 		HOLDING,
@@ -83,8 +88,8 @@ public class PlayerMovement : MonoBehaviour
 
 		// Creates an empty game object at the position where a held object should be.
 		heldObjectLocation = new GameObject("HeldObjectLocation").transform;
-		heldObjectLocation.parent = cam.transform;
 		heldObjectLocation.position = cam.transform.position + cam.transform.forward;
+		heldObjectLocation.parent = cam.transform;
 	}
 
 	/// <summary> Called once at the start. </summary>
@@ -94,7 +99,9 @@ public class PlayerMovement : MonoBehaviour
 		playerCanMove = true;
 		holding = false;
 		looking = false;
-	}
+
+        csgOperator = GetComponent<CSG.Operations>();
+    }
 
 	/// <summary> Called once per frame. </summary>
 	void Update()
@@ -104,6 +111,7 @@ public class PlayerMovement : MonoBehaviour
 			Move(); // Move the player.
 			Crouch(); // Crouch.
 			Rotate(); // Mouse based rotation for camera and player.
+            Cut(); // Player cut powers.
 		}
 
 		PickUp(); // Ability to pick up is independent from player movement.
@@ -234,6 +242,31 @@ public class PlayerMovement : MonoBehaviour
 			}
 		}
 	}
+
+    private void Cut()
+    {
+        if(Input.GetMouseButton(1))
+        {
+            heartWindow.SetActive(true);
+            if(Input.GetMouseButtonDown(0))
+            {
+                Debug.Log("hi");
+                foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
+                {
+                    clipableObject.UnionWith(fieldOfView, csgOperator);
+                }
+
+                foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
+                {
+                    clipableObject.Subtract(fieldOfView, csgOperator);
+                }
+            }
+        }
+        else
+        {
+            heartWindow.SetActive(false);
+        }
+    }
 
 	/// <summary> Function to get transform of where the held object should be. </summary>
 	/// <returns> Returns a reference to the player's heldObjectLocation transform. </returns>

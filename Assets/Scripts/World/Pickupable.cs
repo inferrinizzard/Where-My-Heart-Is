@@ -52,7 +52,7 @@ public class Pickupable : InteractableObject
 
 		// Rotate the object based on previous rotations.
 		transform.rotation = Quaternion.AngleAxis(-rotX, player.GetHeldObjectLocation().up) * transform.rotation;
-		transform.rotation = Quaternion.AngleAxis(rotY, player.GetHeldObjectLocation().right) * transform.rotation;
+		transform.rotation = Quaternion.AngleAxis(rotY, player.GetHeldObjectLocation().forward) * transform.rotation;
 	}
 
 	public override void Interact()
