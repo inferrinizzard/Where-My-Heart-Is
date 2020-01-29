@@ -44,7 +44,60 @@ public class WorldManager : MonoBehaviour
 		}
 	}
 
-	public ClipableObject[] GetRealObjects()
+    public void ResetCut()
+    {
+        // preserving certain changes selectively must be done here
+
+        // delete previous copy set
+        //TODO: all changes made to the state of these objects done during the cut should be 
+        // applied to their source objects before the cut versions are removed
+
+
+
+        /*foreach (GameObject obj in realObjects)
+        {
+            Destroy(obj);
+        }
+        foreach (GameObject obj in dreamObjects)
+        {
+            Destroy(obj);
+        }
+        foreach (GameObject obj in entangledObjects)
+        {
+            Destroy(obj);
+        }
+        realObjects = new List<GameObject>();
+        dreamObjects = new List<GameObject>();
+        entangledObjects = new List<GameObject>();*/
+
+        // get top level children for each world
+
+        foreach (Transform child in realWorldContainer)
+        {
+            foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
+            {
+                obj.Revert();
+            }
+        }
+
+        foreach (Transform child in dreamWorldContainer)
+        {
+            foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
+            {
+                obj.Revert();
+            }
+        }
+
+        foreach (Transform child in entangledWorldContainer)
+        {
+            foreach (EntangledClippable obj in child.GetComponentsInChildren<EntangledClippable>())
+            {
+                obj.Revert();
+            }
+        }
+    }
+
+    public ClipableObject[] GetRealObjects()
 	{
 		return realWorldContainer.GetComponentsInChildren<ClipableObject>();
 	}
@@ -56,6 +109,6 @@ public class WorldManager : MonoBehaviour
 
     public ClipableObject[] GetEntangledObjects()
     {
-        return entangledWorldContainer.GetComponentsInChildren<ClipableObject>();
+        return entangledWorldContainer.GetComponentsInChildren<EntangledClippable>();
     }
 }

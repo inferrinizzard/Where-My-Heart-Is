@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class ClipableObject : MonoBehaviour
 {
-	private GameObject result;
+	//private GameObject result;
 
-	Mesh initialMesh;
+	private Mesh initialMesh;
+    private GameObject uncutCopy;
+
+    int oldLayer;
 
 	void Awake()
 	{
@@ -16,27 +19,30 @@ public class ClipableObject : MonoBehaviour
 		}
 
 		initialMesh = GetComponent<MeshFilter>().mesh;
-
+        oldLayer = gameObject.layer;
 	}
 
+    // TODO: APPLY IN PLACE
 	public virtual void UnionWith(GameObject other, CSG.Operations operations)
 	{
-		if (result != null)
-		{
-			Destroy(result);
-		}
+        uncutCopy = GameObject.Instantiate(gameObject, transform.position, transform.rotation, transform);
+        oldLayer = gameObject.layer;
+        gameObject.layer = 9;
 
-		result = GameObject.Instantiate(gameObject, transform.position, transform.rotation);
-		result.transform.localScale = transform.localScale;
-		result.layer = 9;
-
-		result.GetComponent<MeshFilter>().mesh = operations.Union(gameObject, other);
-		result.GetComponent<MeshCollider>().sharedMesh = result.GetComponent<MeshFilter>().mesh;
+		GetComponent<MeshFilter>().mesh = operations.Union(gameObject, other);
 	}
 
-	public void Subtract(GameObject other, CSG.Operations operations)
+    public virtual void Revert()
+    {
+        gameObject.layer = oldLayer;
+        GetComponent<MeshFilter>().mesh = initialMesh;
+        if(uncutCopy) Destroy(uncutCopy);
+    }
+
+    // TODO: APPLY IN PLACE
+    public void Subtract(GameObject other, CSG.Operations operations)
 	{
-		GetComponent<MeshFilter>().mesh = initialMesh;
-		GetComponent<MeshFilter>().mesh = operations.Subtract(gameObject, other);
+        oldLayer = gameObject.layer;
+        GetComponent<MeshFilter>().mesh = operations.Subtract(gameObject, other);
 	}
 }

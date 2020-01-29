@@ -12,6 +12,8 @@ public class Pickupable : InteractableObject
 	/// </summary>
 	private Vector3 targetPos;
 
+    private Transform oldParent;
+
 	void Update()
 	{
 		if (active)
@@ -30,15 +32,16 @@ public class Pickupable : InteractableObject
 	public void Holding()
 	{
 		// Move the object to the target position.
-		targetPos = player.GetHeldObjectLocation().position;
-		transform.position = targetPos;
+		/*targetPos = player.GetHeldObjectLocation().position;
+		transform.position = targetPos;*/
 
 		// If the player is not inspecting the object, set its rotation relative to the held object location.
-		if (!player.looking)
+		/*if (!player.looking)
 		{
-			// Rotate the object based on the player camera
-			transform.parent = player.GetHeldObjectLocation();
-		}
+            // Rotate the object based on the player camera
+            oldParent = transform.parent;
+            transform.parent = player.GetHeldObjectLocation();
+		}*/
 	}
 
 	/// <summary>
@@ -61,7 +64,12 @@ public class Pickupable : InteractableObject
 		{
 			player.looking = true;
 			player.holding = true;
-		}
+
+            // save the old parent to revert to later
+            oldParent = transform.parent;
+            transform.parent = player.GetHeldObjectLocation();// set the new parent to the hold object location object
+            transform.localPosition = Vector3.zero;// set the position to local zero to match the position of the hold object location target
+        }
 		else if (player.looking)
 		{
 			player.looking = false;
@@ -69,7 +77,7 @@ public class Pickupable : InteractableObject
 		else
 		{
 			player.holding = false;
-			transform.parent = null;
+			transform.parent = oldParent;
 		}
 	}
 }

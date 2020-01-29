@@ -4,19 +4,33 @@ using UnityEngine;
 
 public class EntangledClippable : ClipableObject
 {
-    //[SerializeField] public GameObject dreamPrefab;
-    //[SerializeField] public GameObject realPrefab;
-
     public ClipableObject realVersion;
     public ClipableObject dreamVersion;
 
-    //private GameObject previousDreamPrefab;
-    //private GameObject previousRealPrefab;
+    public bool Visable
+    {
+        get
+        {
+            return dreamVersion.gameObject.GetComponent<MeshRenderer>().enabled;
+        }
+
+        set
+        {
+            //realVersion.gameObject.GetComponent<MeshRenderer>().enabled = value;
+            dreamVersion.gameObject.GetComponent<MeshRenderer>().enabled = value;
+        }
+    }
 
     public override void UnionWith(GameObject other, CSG.Operations operations)
     {
-        dreamVersion.UnionWith(other, operations);
-        realVersion.Subtract(other, operations);
+        realVersion.UnionWith(other, operations);
+        dreamVersion.Subtract(other, operations);
+    }
+
+    public override void Revert()
+    {
+        realVersion.Revert();
+        dreamVersion.Revert();
     }
 
     public void OnDreamChange(GameObject dreamPrefab)

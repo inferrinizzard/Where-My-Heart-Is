@@ -25,8 +25,26 @@ public class Window : Pickupable
 
 	public void ApplyCut()
 	{
-		// Debug.Log(worldManager.GetDreamObjects().Count);
-		foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
+        worldManager.ResetCut();
+
+        foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
+        {
+            //TODO: Here's where we check if we should cut this one or not
+            //clipableObject.gameObject.GetComponent<MeshRenderer>().enabled = false;
+            clipableObject.UnionWith(fieldOfView, csgOperator);
+        }
+
+        foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
+        {
+            clipableObject.Subtract(fieldOfView, csgOperator);
+        }
+
+        foreach (EntangledClippable clipableObject in worldManager.GetEntangledObjects())
+        {
+            clipableObject.UnionWith(fieldOfView, csgOperator);
+        }
+        // Debug.Log(worldManager.GetDreamObjects().Count);
+        /*foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
 		{
 			clipableObject.UnionWith(fieldOfView, csgOperator);
 		}
@@ -39,6 +57,6 @@ public class Window : Pickupable
         foreach (ClipableObject clipableObject in worldManager.GetEntangledObjects())
         {
             clipableObject.UnionWith(fieldOfView, csgOperator);
-        }
-	}
+        }*/
+    }
 }
