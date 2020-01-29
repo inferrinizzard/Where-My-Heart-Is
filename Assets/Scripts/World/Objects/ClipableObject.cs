@@ -19,7 +19,7 @@ public class ClipableObject : MonoBehaviour
 
 	}
 
-	public void UnionWith(GameObject other, CSG.Operations operations)
+	public virtual void UnionWith(GameObject other, CSG.Operations operations)
 	{
 		if (result != null)
 		{

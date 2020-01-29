@@ -35,5 +35,10 @@ public class Window : Pickupable
 		{
 			clipableObject.Subtract(fieldOfView, csgOperator);
 		}
+
+        foreach (ClipableObject clipableObject in worldManager.GetEntangledObjects())
+        {
+            clipableObject.UnionWith(fieldOfView, csgOperator);
+        }
 	}
 }

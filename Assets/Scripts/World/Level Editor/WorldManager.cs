@@ -6,7 +6,9 @@ public class WorldManager : MonoBehaviour
 {
 	public Transform realWorldContainer;
 	public Transform dreamWorldContainer;
-	public PlayerMovement player;
+	public Transform entangledWorldContainer;
+    public PlayerMovement player;// TODO: phase out by using player object
+    public static GameObject playerReference;
 
 	void Awake()
 	{
@@ -51,4 +53,9 @@ public class WorldManager : MonoBehaviour
 	{
 		return dreamWorldContainer.GetComponentsInChildren<ClipableObject>();
 	}
+
+    public ClipableObject[] GetEntangledObjects()
+    {
+        return entangledWorldContainer.GetComponentsInChildren<ClipableObject>();
+    }
 }
