@@ -59,7 +59,6 @@ public class Pickupable : InteractableObject
 	{
 		if (!player.holding)
 		{
-			player.looking = true;
 			player.holding = true;
 		}
 		else if (player.looking)

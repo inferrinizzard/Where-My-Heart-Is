@@ -205,7 +205,6 @@ public class PlayerMovement : MonoBehaviour
 		// Check if the player is pressing the pick up key.
 		if (Input.GetKeyDown(pickUpKey))
 		{
-			// If the player is not holding anything...
 			switch (state)
 			{
 				case ObjectState.FREE:
@@ -218,9 +217,9 @@ public class PlayerMovement : MonoBehaviour
 						heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();
 						heldObject.Interact();
 						heldObject.active = true;
-
-						state = ObjectState.INSPECTING;
-						playerCanMove = false;
+                        
+						state = ObjectState.HOLDING;
+						playerCanMove = true;
 					}
 					break;
 					// If the player is holding something and inspecting it, when the player presses the pick up key...
@@ -243,13 +242,16 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
+    /// <summary> Function to aim and apply player cut power. </summary>
     private void Cut()
     {
         if(Input.GetMouseButton(1))
         {
+            // Aiming...
             heartWindow.SetActive(true);
             if(Input.GetMouseButtonDown(0))
             {
+                // Apply the cut
                 foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
                 {
                     clipableObject.UnionWith(fieldOfView, csgOperator);
@@ -263,6 +265,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
+            // Not Aiming...
             heartWindow.SetActive(false);
         }
     }
