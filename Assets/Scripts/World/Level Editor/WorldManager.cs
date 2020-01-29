@@ -29,6 +29,8 @@ public class WorldManager : MonoBehaviour
 				child.gameObject.layer = LayerMask.NameToLayer(layer);
 				child.gameObject.AddComponent<ClipableObject>();
 			}
+
+            ConfigureWorld(layer, child);// do this recursively to hit everything in the given world
 		}
 	}
 
