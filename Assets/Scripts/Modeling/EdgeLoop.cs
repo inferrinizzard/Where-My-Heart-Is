@@ -63,12 +63,12 @@ namespace CSG
             {
                 EdgeLoop temp = new EdgeLoop();
                 temp.vertices = currentVertices;
-                Debug.Log(currentVertices.Count);
+                //Debug.Log(currentVertices.Count);
                 if(currentVertices.Count == 9)
                 {
                     EdgeLoop foo = new EdgeLoop();
                     foo.vertices = currentVertices;
-                    Debug.Log(foo);
+                    //Debug.Log(foo);
                 //temp.Draw(referenceFrame, 60.0f, Color.red);
                 }
                 i++;
@@ -89,17 +89,17 @@ namespace CSG
             {
                 Vector3 a = currentVertices[i].value - currentVertices[(i + 1) % currentVertices.Count].value;
                 Vector3 b = currentVertices[(i + 2) % currentVertices.Count].value - currentVertices[(i + 1) % currentVertices.Count].value;
-                Debug.Log(currentVertices[i] + " :: " + currentVertices[(i + 1) % currentVertices.Count] + " :: " + currentVertices[(i + 2) % currentVertices.Count]);
+                /*Debug.Log(currentVertices[i] + " :: " + currentVertices[(i + 1) % currentVertices.Count] + " :: " + currentVertices[(i + 2) % currentVertices.Count]);
                 Debug.Log((currentVertices[i].value - currentVertices[(i + 1) % currentVertices.Count].value).ToString("F4"));
                 Debug.Log(currentVertices[(i + 2) % currentVertices.Count].value - currentVertices[(i + 1) % currentVertices.Count].value);
-                Debug.Log(SignedAngle(a, b));
+                Debug.Log(SignedAngle(a, b));*/
                 //if (Vector3.SignedAngle(a, b, Vector3.Cross(a, b)) > 0)
                 if (SignedAngle(a, b) > 0)
                 {
                     Triangle resultingTriangle = new Triangle(currentVertices[i], currentVertices[(i + 1) % currentVertices.Count], currentVertices[(i + 2) % currentVertices.Count]);
                     if(!TriangleContainsAny(currentVertices, resultingTriangle))
                     {
-                        Debug.Log("am happy");
+                        //Debug.Log("am happy");
                         currentVertices.RemoveAt((i + 1) % currentVertices.Count);
                         return resultingTriangle;
                     }
@@ -113,7 +113,7 @@ namespace CSG
         {
             //Vector3 cross = Vector3.Cross(a, b);
             //int  = Mathf.Sign
-            Debug.Log(Mathf.Sign(Mathf.Asin(Vector3.Cross(a, b).magnitude / (a.magnitude * b.magnitude))));
+            //Debug.Log(Mathf.Sign(Mathf.Asin(Vector3.Cross(a, b).magnitude / (a.magnitude * b.magnitude))));
             return Mathf.Asin(Vector3.Cross(a, b).magnitude / (a.magnitude * b.magnitude));
         }
 
@@ -145,12 +145,12 @@ namespace CSG
             {
                 for(int k = i - 1; k >= 0; k--)
                 {
-                    Debug.Log(vertices[i]);
+                    /*Debug.Log(vertices[i]);
                     Debug.Log(vertices[k]);
-                    Debug.Log(Vector3.Distance(vertices[i].value, vertices[k].value));
+                    Debug.Log(Vector3.Distance(vertices[i].value, vertices[k].value));*/
                     if(Vector3.Distance(vertices[i].value, vertices[k].value) < 0.0001)
                     {
-                        Debug.Log("removing " + i);
+                        //Debug.Log("removing " + i);
                         vertices.RemoveAt(i);
                         break;
                     }
@@ -163,12 +163,12 @@ namespace CSG
         private void Draw(GameObject referenceFrame, float time, Color color)
         {
             float increment = 1f / vertices.Count;
-            Debug.Log(vertices.Count);
-            Debug.Log(increment);
+            /*Debug.Log(vertices.Count);
+            Debug.Log(increment);*/
             for(int i = 0; i < vertices.Count; i++)
             {
                 color = new Color(i * increment, i * increment, i * increment);
-                Debug.Log(i * increment);
+                //Debug.Log(i * increment);
                 Debug.DrawLine(referenceFrame.transform.localToWorldMatrix * vertices[i].value, referenceFrame.transform.localToWorldMatrix * vertices[(i + 1) % vertices.Count].value, color, time);
             }
         }
