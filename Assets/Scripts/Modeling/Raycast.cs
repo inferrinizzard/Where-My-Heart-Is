@@ -165,5 +165,3 @@ namespace CSG
         }
     }
 }
-
-

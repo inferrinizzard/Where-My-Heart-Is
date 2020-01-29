@@ -11,35 +11,35 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class Widget : InteractableObject
 {
-    public List<string> messages;
-    public AudioClip sound;
+	public List<string> messages;
+	public AudioClip sound;
 
-    private int messageChoice = 0;
+	private int messageChoice = 0;
 
-    public override void Interact()
-    {
-        if (messages.Count > 0)
-        {
-            FindObjectOfType<MessageWriter>().WriteMessage(SelectMessage());
-        }
+	public override void Interact()
+	{
+		if (messages.Count > 0)
+		{
+			FindObjectOfType<MessageWriter>().WriteMessage(SelectMessage());
+		}
 
-        if (sound != null)
-        {
-            GetComponent<AudioSource>().PlayOneShot(sound);
-        }
-    }
+		if (sound != null)
+		{
+			GetComponent<AudioSource>().PlayOneShot(sound);
+		}
+	}
 
-    private string SelectMessage()
-    {
-        if (messageChoice == 0)
-        {
-            messageChoice = 1;
-        }
-        else
-        {
-            messageChoice = 0;
-        }
-        return messages[messageChoice];
-        //return messages[Mathf.RoundToInt(Random.Range(0, messages.Count))];
-    }
+	private string SelectMessage()
+	{
+		if (messageChoice == 0)
+		{
+			messageChoice = 1;
+		}
+		else
+		{
+			messageChoice = 0;
+		}
+		return messages[messageChoice];
+		//return messages[Mathf.RoundToInt(Random.Range(0, messages.Count))];
+	}
 }
