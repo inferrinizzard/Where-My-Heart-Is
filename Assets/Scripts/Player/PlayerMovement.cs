@@ -250,7 +250,6 @@ public class PlayerMovement : MonoBehaviour
             heartWindow.SetActive(true);
             if(Input.GetMouseButtonDown(0))
             {
-                Debug.Log("hi");
                 foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
                 {
                     clipableObject.UnionWith(fieldOfView, csgOperator);
