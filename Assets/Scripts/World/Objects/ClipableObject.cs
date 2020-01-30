@@ -27,7 +27,7 @@ public class ClipableObject : MonoBehaviour
 	public virtual void UnionWith(GameObject other, CSG.Operations operations)
 	{
         uncutCopy = GameObject.Instantiate(gameObject, transform.position, transform.rotation, transform);
-        uncutCopy.transform.localScale = Vector3.zero;
+        uncutCopy.transform.localScale = new Vector3(1,1,1);
         oldLayer = gameObject.layer;
         gameObject.layer = 9;
 
