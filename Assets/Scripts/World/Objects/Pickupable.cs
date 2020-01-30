@@ -2,15 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Handles the behavior of an object that can be picked up.
-/// </summary>
+/// <summary> Handles the behavior of an object that can be picked up. </summary>
 public class Pickupable : InteractableObject
 {
-	/// <summary>
-	/// Where the object should be moving towards.
-	/// </summary>
-	private Vector3 targetPos;
 
     private Transform oldParent;
 
@@ -19,16 +13,14 @@ public class Pickupable : InteractableObject
 		if (active)
 		{
 			// If the object is being held, run Holding.
-			if (player.holding)Holding();
+			//if (player.holding)Holding();
 
 			// If the object is being inspected, run Looking.
 			if (player.looking)Looking();
 		}
 	}
 
-	/// <summary>
-	/// Manages behaviour of the object when being held.
-	/// </summary>
+	/// <summary> Manages behaviour of the object when being held. </summary>
 	public void Holding()
 	{
 		// Move the object to the target position.
@@ -44,9 +36,7 @@ public class Pickupable : InteractableObject
 		}*/
 	}
 
-	/// <summary>
-	/// Manages behavior of the object when being inspected.
-	/// </summary>
+	/// <summary> Manages behavior of the object when being inspected. </summary>
 	public void Looking()
 	{
 		// Set the rotations based on the mouse movement.
@@ -66,6 +56,7 @@ public class Pickupable : InteractableObject
 
             // save the old parent to revert to later
             oldParent = transform.parent;
+            Debug.Log(oldParent);
             transform.parent = player.GetHeldObjectLocation();// set the new parent to the hold object location object
             transform.localPosition = Vector3.zero;// set the position to local zero to match the position of the hold object location target
         }
