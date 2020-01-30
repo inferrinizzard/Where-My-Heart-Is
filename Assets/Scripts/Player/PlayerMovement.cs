@@ -210,8 +210,11 @@ public class PlayerMovement : MonoBehaviour
 				case ObjectState.FREE:
 					// Raycast for what the player is looking at.
 					RaycastHit hit;
+
+                    int layerMask = 1 << 9;
+
 					// Raycast to see what the object's tag is. If it is a Pickupable object...
-					if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach) && hit.transform.GetComponent<InteractableObject>() != null)
+					if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() != null)
 					{
 						// Store the held object.
 						heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();
@@ -245,7 +248,7 @@ public class PlayerMovement : MonoBehaviour
     /// <summary> Function to aim and apply player cut power. </summary>
     private void Cut()
     {
-        if(Input.GetMouseButton(1))
+        if(Input.GetMouseButton(1) && !holding)
         {
             // Aiming...
             heartWindow.SetActive(true);

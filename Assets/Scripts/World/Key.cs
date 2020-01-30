@@ -12,6 +12,8 @@ public class Key : Pickupable
     void Awake()
     {
         originPosition = transform;
+        Debug.Log(transform.position.x + ", " + transform.position.y + ", " + transform.position.z);
+        Debug.Log(originPosition);
     }
 
     void Update()
