@@ -12,7 +12,9 @@ namespace CSG
     public class Operations : MonoBehaviour
     {
         [Tooltip("Breakpoint for equality comparisons between floats")]
-        [SerializeField] private float error;
+        [SerializeField] private float error = .01f;
+
+        public int limitTo;
 
         /// <summary>
         /// Generates the union of two shapes
@@ -23,9 +25,27 @@ namespace CSG
         public Mesh Union(GameObject shapeA, GameObject shapeB)
         {
             CombineInstance[] combine = new CombineInstance[2];
-            combine[0].mesh = ClipAToB(shapeA, shapeB);
+            combine[0].mesh = ClipAToB(shapeA, shapeB, true);
             combine[0].transform = Matrix4x4.identity;
-            combine[1].mesh = ClipAToB(shapeB, shapeA);
+            combine[1].mesh = ClipAToB(shapeB, shapeA, true);
+            combine[1].transform = Matrix4x4.identity;
+
+            ConvertMeshCoordinates(combine[1].mesh, shapeB, shapeA);
+
+            Mesh completedMesh = new Mesh();
+            completedMesh.CombineMeshes(combine);
+            completedMesh.RecalculateNormals();
+            completedMesh.RecalculateTangents();
+
+            return completedMesh;
+        }
+
+        public Mesh Subtract(GameObject shapeA, GameObject shapeB)
+        {
+            CombineInstance[] combine = new CombineInstance[2];
+            combine[0].mesh = ClipAToB(shapeA, shapeB, false);
+            combine[0].transform = Matrix4x4.identity;
+            combine[1].mesh = ClipAToB(shapeB, shapeA, true, true);
             combine[1].transform = Matrix4x4.identity;
 
             ConvertMeshCoordinates(combine[1].mesh, shapeB, shapeA);
@@ -46,7 +66,7 @@ namespace CSG
         /// <param name="bounds">The GameObject containing the Mesh to clip "toClip" to</param>
         /// <param name="flipNormals">Whether the normals of the resulting mesh should be flipped</param>
         /// <returns>The clipped Mesh</returns>
-        private Mesh ClipAToB(GameObject toClip, GameObject bounds, bool flipNormals = false)
+        public Mesh ClipAToB(GameObject toClip, GameObject bounds, bool clipInside = true, bool flipNormals = false)
         {
             Model bound = new Model(bounds.GetComponent<MeshFilter>().mesh);
             bound.ConvertCoordinates(bounds.transform, toClip.transform);
@@ -54,7 +74,38 @@ namespace CSG
             Model modelToClip = new Model(toClip.GetComponent<MeshFilter>().mesh);
 
             // to create the triangles, we'll need a list of edge loops to triangulate
-            List<EdgeLoop> edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices)).ToList();
+            List<EdgeLoop> edgeLoops;
+            
+            if (clipInside)
+            {
+                if(limitTo > -1)
+                {
+                    edgeLoops = new List<EdgeLoop>();
+                    if(limitTo < modelToClip.triangles.Count)
+                    {
+                        edgeLoops.AddRange(ClipTriangleToBound(modelToClip.triangles[limitTo], bound.triangles, modelToClip.vertices, PointContainedByBound));
+                    }
+                }
+                else
+                {
+                    edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices, PointContainedByBound)).ToList();
+                }
+            }
+            else
+            {
+                if (limitTo > -1)
+                {
+                    edgeLoops = new List<EdgeLoop>();
+                    if (limitTo < modelToClip.triangles.Count)
+                    {
+                        edgeLoops.AddRange(ClipTriangleToBound(modelToClip.triangles[limitTo], bound.triangles, modelToClip.vertices, PointExcludedByBound));
+                    }
+                }
+                else
+                {
+                    edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices, PointExcludedByBound)).ToList();
+                }
+            }
 
             // replace the list of triangles with the clipped version
             modelToClip.triangles.Clear();
@@ -62,11 +113,14 @@ namespace CSG
             // fill the edge loops that need to be filled, add the result to the list of triangles
             foreach (EdgeLoop loop in edgeLoops)
             {
-                if (loop.filled)modelToClip.triangles.AddRange(loop.Triangulate());
+                if (loop.filled) modelToClip.triangles.AddRange(loop.Triangulate(toClip));
                 EdgeLoop nestedLoop = loop.nestedLoop;
                 while (nestedLoop != null)
                 {
-                    if (nestedLoop.filled)modelToClip.triangles.AddRange(nestedLoop.Triangulate());
+                    if (nestedLoop.filled)
+                    {
+                        modelToClip.triangles.AddRange(nestedLoop.Triangulate(toClip));
+                    }
                     nestedLoop = nestedLoop.nestedLoop;
                 }
             }
@@ -89,7 +143,7 @@ namespace CSG
         /// <param name="boundsTriangles">A list of triangles defining the bounding object</param>
         /// <param name="vertices">A list of the vertices of the object the triangle belongs to</param>
         /// <returns>A list of edge loops which define the clipped version of the triangle</returns>
-        private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, List<Triangle> boundsTriangles, List<Vertex> vertices)
+        private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, List<Triangle> boundsTriangles, List<Vertex> vertices, Func<Vector3, List<Triangle>, bool> ContainmentCheck)
         {
             List<Egress> aToBEgresses = new List<Egress>();
             List<Egress> bToCEgresses = new List<Egress>();
@@ -175,7 +229,7 @@ namespace CSG
                 else // 2. a vertex of the original triangle
                 {
                     // in this case, if the vertex is contained by the bound, the loop is a surface, otherwise it's a hole
-                    loop.filled = PointContainedByBound(initialVertex.value, boundsTriangles);
+                    loop.filled = ContainmentCheck(initialVertex.value, boundsTriangles);
                 }
 
                 // traverse forward in the ordered list, following each cut, until we reach the initial point
@@ -243,14 +297,13 @@ namespace CSG
 
                 FinalStep:
 
-                    loops.Add(loop);
+                loops.Add(loop);
 
                 currentVertexIndex = FindEarliestUnsatisfied(perimeter);
             }
 
             // now that we've created all loops that intersect the edge of the triangle, we can start on loops that float as islands
             List<Vertex> unusedVertices = internalIntersections.Where(intersection => !intersection.usedInLoop).ToList();
-
             while (unusedVertices.Count > 2)
             {
                 Vertex currentVertex = unusedVertices.Last();
@@ -342,39 +395,57 @@ namespace CSG
                 } while (nextVertex != null && nextVertex != initialVertex);
 
                 EdgeLoop potentialLoop = potentialLoops.Dequeue();
-                if (nextVertex != null)completedLoops.Add(potentialLoop);
+                if (nextVertex != null)
+                {
+                    completedLoops.Add(potentialLoop);
+                }
             }
 
             // the loop with the greatest number of vertices is the correct loop
-            EdgeLoop finalLoop = completedLoops.OrderBy(loop => loop.vertices.Count).First(); // TODO: sometimes completedLoops is empty
+            int loopSize = 0;
+            foreach(EdgeLoop loop in completedLoops)
+            {
+                if(loop.vertices.Count > loopSize)
+                {
+                    loopSize = loop.vertices.Count();
+                }
+            }
 
+            // we will find a pair of maximal loops with opposite winding orders
+            List<EdgeLoop> finalLoops = completedLoops.Where(loop => loop.vertices.Count == loopSize).ToList();
+
+            int finalLoopIndex = 0;
             // determine which external loop contains this new loop
             foreach (EdgeLoop loop in loops)
             {
                 if (initialVertex.LiesWithinLoop(loop))
                 {
+                    if (loop.GetNormal() != finalLoops[0].GetNormal())
+                    {
+                        finalLoopIndex = 1;
+                    }
                     if (loop.nestedLoop == null)
                     {
-                        loop.nestedLoop = finalLoop;
+                        loop.nestedLoop = finalLoops[finalLoopIndex];
                     }
                     else
                     {
-                        finalLoop.nestedLoop = loop.nestedLoop;
+                        finalLoops[finalLoopIndex].nestedLoop = loop.nestedLoop;
                         EdgeLoop previousLoop = loop;
-                        bool liesWithinLoop = initialVertex.LiesWithinLoop(finalLoop.nestedLoop);
+                        bool liesWithinLoop = initialVertex.LiesWithinLoop(finalLoops[finalLoopIndex].nestedLoop);
                         do
                         {
-                            previousLoop.nestedLoop = finalLoop.nestedLoop;
-                            finalLoop.nestedLoop = finalLoop.nestedLoop.nestedLoop;
-                            previousLoop.nestedLoop.nestedLoop = finalLoop;
-                        } while (finalLoop.nestedLoop != null && liesWithinLoop);
+                            previousLoop.nestedLoop = finalLoops[finalLoopIndex].nestedLoop;
+                            finalLoops[finalLoopIndex].nestedLoop = finalLoops[finalLoopIndex].nestedLoop.nestedLoop;
+                            previousLoop.nestedLoop.nestedLoop = finalLoops[finalLoopIndex];
+                        } while (finalLoops[finalLoopIndex].nestedLoop != null && liesWithinLoop);
                     }
 
                     // we've found the loop we're contained by, break out
                     break;
                 }
             }
-            return finalLoop;
+            return finalLoops[finalLoopIndex];
         }
         /// <summary>
         /// Marks the given Cut as traversed and adds its vertices to the greater loop being traversed
@@ -575,6 +646,11 @@ namespace CSG
             // if they are even, vertex is not contained
             return intersectionsAbove % 2 == 1 && intersectionsBelow % 2 == 1;
             // ENDLINQ
+        }
+
+        private bool PointExcludedByBound(Vector3 point, List<Triangle> boundsTriangles)
+        {
+            return !PointContainedByBound(point, boundsTriangles);
         }
     }
 }

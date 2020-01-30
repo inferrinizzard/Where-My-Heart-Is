@@ -12,6 +12,7 @@ namespace CSG
         /// <summary>
         /// Raycast to a line segment defined by two points
         /// </summary>
+        /// <remarks>http://mathforum.org/library/drmath/view/62814.html</remarks>
         /// <param name="origin">The start point for the raycast</param>
         /// <param name="direction">The direction to cast in</param>
         /// <param name="pointA">Half of the definition for the line segment</param>
@@ -20,30 +21,23 @@ namespace CSG
         public static Point3 RayToLineSegment(Vector3 origin, Vector3 direction, Vector3 pointA, Vector3 pointB)
         {
             Vector3 edgeDirection = (pointA - pointB).normalized;
-
             //TODO: unhardcode breakpoint
             // if the cast and the edge are parallel, there will be no intersection
             if (Vector3.Cross(direction, edgeDirection).magnitude < 0.0001)
             {
                 return null;
             }
+            float a = Vector3.Cross(pointA - origin, edgeDirection).magnitude / Vector3.Cross(direction, edgeDirection).magnitude;
 
-            float u = (pointA.x - origin.x - (direction.x / direction.y) * (pointA.y - origin.y)) /
-                (((direction.x / direction.y) * edgeDirection.y) - edgeDirection.x);
-
-            // sometimes we align with an axis and create NaN, so try a different axis if this happens
-            if (float.IsNaN(u))
-            {
-                u = (pointA.x - origin.x - (direction.x / direction.z) * (pointA.z - origin.z)) /
-                (((direction.x / direction.z) * edgeDirection.z) - edgeDirection.x);
-            }
-
-            Vector3 intersectionPoint = pointA + (edgeDirection * u);
+            Vector3 intersectionPoint = origin + (direction * a);
             if (Vector3.Distance(pointA, intersectionPoint) + Vector3.Distance(intersectionPoint, pointB) - Vector3.Distance(pointA, pointB) < 0.0001)
             {
                 return new Point3(intersectionPoint);
             }
-            else return null;
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -63,7 +57,6 @@ namespace CSG
                 Vertex vertex = LineSegmentToTriangle(a.vertices[i].value, a.vertices[(i + 1) % 3].value, b, error);
                 if (vertex != null)
                 {
-                    //Debug.Log("point :: " + vertex.value);
                     vertex.triangles.Add(a);
                     vertices.Add(vertex);
                 }
@@ -106,8 +99,8 @@ namespace CSG
         /// <returns></returns>
         public static Vertex RayToTriangle(Vector3 origin, Vector3 direction, Triangle triangle)
         {
-            Vector3 q1 = origin + direction * 5;
-            Vector3 q2 = origin - direction * 5;
+            Vector3 q1 = origin + direction * 50;
+            Vector3 q2 = origin - direction * 50;
 
             // first, determine whether the ray intersects the triangle
             if (SignedVolume(q1, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) !=
@@ -165,5 +158,3 @@ namespace CSG
         }
     }
 }
-
-
