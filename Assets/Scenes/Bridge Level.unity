@@ -686,6 +686,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1082062505}
   - component: {fileID: 1082062507}
+  - component: {fileID: 1082062502}
   - component: {fileID: 1082062506}
   - component: {fileID: 1082062504}
   - component: {fileID: 1082062503}
@@ -696,6 +697,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1082062502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1082062501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 686f24558b99bb34ba8c1b923e26b635, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 717361798}
+  active: 0
+  twin: {fileID: 0}
+  pickupSound: {fileID: 0}
+  threshold: 0
+  interactText: 
 --- !u!23 &1082062503
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -782,7 +801,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clipable: 1
   pickupable: 0
-  collectable: 0
+  collectable: 1
 --- !u!4 &1162096593 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2375349851788431607, guid: 056da89eca605134582b4e1cad231950,
