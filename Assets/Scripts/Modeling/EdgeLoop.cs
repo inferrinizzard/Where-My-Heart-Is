@@ -48,7 +48,7 @@ namespace CSG
         /// <returns>The created triangles</returns>
         public List<Triangle> Triangulate(GameObject referenceFrame)
         {
-            Draw(referenceFrame, 60.0f, Color.red);
+            //Draw(referenceFrame, 60.0f, Color.red);
             //this.RemoveDuplicates();
             /*if(vertices.Count < 3)
             {
@@ -61,7 +61,7 @@ namespace CSG
             int i = 0;
             while (currentVertices.Count > 3)
             {
-                EdgeLoop temp = new EdgeLoop();
+                /*EdgeLoop temp = new EdgeLoop();
                 temp.vertices = currentVertices;
                 //Debug.Log(currentVertices.Count);
                 if(currentVertices.Count == 9)
@@ -70,7 +70,7 @@ namespace CSG
                     foo.vertices = currentVertices;
                     //Debug.Log(foo);
                 //temp.Draw(referenceFrame, 60.0f, Color.red);
-                }
+                }*/
                 i++;
                 if(i > 100)
                 {
