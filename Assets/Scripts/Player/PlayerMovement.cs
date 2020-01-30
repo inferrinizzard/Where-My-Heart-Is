@@ -22,8 +22,12 @@ public class PlayerMovement : MonoBehaviour
 	private float playerHeight;
 	/// <summary> Whether the player can move or not. </summary>
 	private bool playerCanMove = true;
-	/// <summary> If the player is holding something or not. </summary>
-	public bool holding = false;
+
+    private bool jumping = false;
+    private bool crouching = false;
+
+    /// <summary> If the player is holding something or not. </summary>
+    public bool holding = false;
 	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
 	public bool looking = false;
 
@@ -122,7 +126,9 @@ public class PlayerMovement : MonoBehaviour
 	{
 		// Get the Vertical and Horizontal Axes and scale them by movement speed.
 		moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-
+        moveDirection.Normalize();
+        GetComponent<PlayerAudioManager>().SetWalkingVelocity(Mathf.RoundToInt(characterController.velocity.magnitude) / speed);
+        Debug.Log(Mathf.RoundToInt(characterController.velocity.magnitude) / speed);
 		// Scale the moveDirection to account for different runtimes.
 		moveDirection *= speed * Time.deltaTime;
 
@@ -149,10 +155,31 @@ public class PlayerMovement : MonoBehaviour
 	/// <summary> Player jump function. </summary>
 	void Jump()
 	{
-		if (characterController.isGrounded && Input.GetKeyDown(jumpKey))
+        PlayerAudioManager audioManager = GetComponent<PlayerAudioManager>();
+        if (jumping)
+        {
+            RaycastHit hit;
+            int mask = ~gameObject.layer;
+            Physics.Raycast(new Ray(transform.position, Vector3.down), out hit, 5f, mask);
+            if (verticalVelocity < 0 && hit.distance < audioManager.landingDistanceThreshold)
+            {
+                GetComponent<PlayerAudioManager>().PlayJumpLanding();
+                jumping = false;
+            }
+        }
+
+		if (characterController.isGrounded)
 		{
-			verticalVelocity = jumpForce;
+            
+            
+            if(Input.GetKeyDown(jumpKey))
+            {
+			    verticalVelocity = jumpForce;
+                GetComponent<PlayerAudioManager>().PlayJumpLiftoff();
+                jumping = true;
+            }
 		}
+
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
@@ -188,14 +215,22 @@ public class PlayerMovement : MonoBehaviour
 		Ray crouchRay = new Ray(transform.position, Vector3.up);
 
 		// Check if the player is pressing the crouch key.
-		if (Input.GetKey(crouchKey))
+		if (Input.GetKeyDown(crouchKey))
 		{
 			characterController.height = playerHeight / 2; // Make the player crouch.
-		}
+            GetComponent<PlayerAudioManager>().PlayCrouchDown();
+            crouching = true;
+        }
+
 		// Check if there is anything above the player before uncrouching.
-		else if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4))
+		else if (!Input.GetKey(crouchKey) && !Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4))
 		{
-			characterController.height = playerHeight; // Make the player stand.
+            if(crouching)
+            {
+                GetComponent<PlayerAudioManager>().PlayCrouchUp();
+                characterController.height = playerHeight; // Make the player stand.
+                crouching = false;
+            }
 		}
 	}
 
