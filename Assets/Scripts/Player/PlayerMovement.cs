@@ -6,6 +6,8 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerMovement : MonoBehaviour
 {
+	[SerializeField] private Transform lastSpawn = default;
+
 	/// <summary> Reference to player CharacterController. </summary>
 	private CharacterController characterController;
 	/// <summary> Reference to player Camera. </summary>
@@ -72,10 +74,7 @@ public class PlayerMovement : MonoBehaviour
 	/// <summary> Initializes variables before the game starts. </summary>
 	private void Awake()
 	{
-		// Get reference to the CharacterController.
 		characterController = GetComponent<CharacterController>();
-
-		// Get reference to the Camera.
 		cam = GetComponentInChildren<Camera>();
 
 		// Get reference to the player height using the CharacterController's height.
@@ -107,6 +106,7 @@ public class PlayerMovement : MonoBehaviour
 		}
 
 		PickUp(); // Ability to pick up is independent from player movement.
+
 	}
 
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
@@ -120,18 +120,22 @@ public class PlayerMovement : MonoBehaviour
 
 		ApplyGravity();
 		characterController.Move(moveDirection);
+
+		if (characterController.velocity.y < -30)
+		{
+			transform.position = lastSpawn.position;
+			verticalVelocity = 0;
+		}
 	}
 
 	/// <summary> Applies gravity to the player and includes jump. </summary>
 	void ApplyGravity()
 	{
-		// Check if the player is grounded before applying gravity.
 		if (!characterController.isGrounded)
 		{
 			verticalVelocity -= gravity * Time.deltaTime;
 		}
 
-		// Allow the player to jump.
 		Jump();
 
 		// Scale the vertical velocity to account for different runtimes.

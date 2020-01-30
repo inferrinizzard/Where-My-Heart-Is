@@ -25,26 +25,26 @@ public class Window : Pickupable
 
 	public void ApplyCut()
 	{
-        worldManager.ResetCut();
+		worldManager.ResetCut();
 
-        foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
-        {
-            //TODO: Here's where we check if we should cut this one or not
-            //clipableObject.gameObject.GetComponent<MeshRenderer>().enabled = false;
-            clipableObject.UnionWith(fieldOfView, csgOperator);
-        }
+		foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
+		{
+			//TODO: Here's where we check if we should cut this one or not
+			//clipableObject.gameObject.GetComponent<MeshRenderer>().enabled = false;
+			clipableObject.UnionWith(fieldOfView, csgOperator);
+		}
 
-        foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
-        {
-            clipableObject.Subtract(fieldOfView, csgOperator);
-        }
+		foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
+		{
+			clipableObject.Subtract(fieldOfView, csgOperator);
+		}
 
-        foreach (EntangledClippable clipableObject in worldManager.GetEntangledObjects())
-        {
-            clipableObject.UnionWith(fieldOfView, csgOperator);
-        }
-        // Debug.Log(worldManager.GetDreamObjects().Count);
-        /*foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
+		foreach (EntangledClippable clipableObject in worldManager.GetEntangledObjects())
+		{
+			clipableObject.UnionWith(fieldOfView, csgOperator);
+		}
+		// Debug.Log(worldManager.GetDreamObjects().Count);
+		/*foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
 		{
 			clipableObject.UnionWith(fieldOfView, csgOperator);
 		}
@@ -58,5 +58,5 @@ public class Window : Pickupable
         {
             clipableObject.UnionWith(fieldOfView, csgOperator);
         }*/
-    }
+	}
 }
