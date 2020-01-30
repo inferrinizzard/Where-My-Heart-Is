@@ -6,8 +6,6 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerMovement : MonoBehaviour
 {
-	[SerializeField] private Transform lastSpawn = default;
-
 	/// <summary> Reference to player CharacterController. </summary>
 	private CharacterController characterController;
 	/// <summary> Reference to player Camera. </summary>
@@ -25,20 +23,22 @@ public class PlayerMovement : MonoBehaviour
 	/// <summary> Whether the player can move or not. </summary>
 	private bool playerCanMove = true;
 	/// <summary> If the player is holding something or not. </summary>
-	public bool holding = false;
+	[HideInInspector] public bool holding = false;
 	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
-	public bool looking = false;
+	[HideInInspector] public bool looking = false;
 
-    public GameObject heartWindow;
+	[Header("References"), SerializeField] private Transform lastSpawn = default;
 
-    public enum ObjectState
+	public GameObject heartWindow;
+
+	public enum ObjectState
 	{
 		FREE,
 		HOLDING,
 		INSPECTING
 	}
 
-	public ObjectState state = ObjectState.FREE;
+	[Header("Parametres")] public ObjectState state = ObjectState.FREE;
 
 	/// <summary> Player move speed. </summary>
 	[SerializeField] private float speed = 5f;
@@ -95,7 +95,7 @@ public class PlayerMovement : MonoBehaviour
 		playerCanMove = true;
 		holding = false;
 		looking = false;
-    }
+	}
 
 	/// <summary> Called once per frame. </summary>
 	void Update()
@@ -105,7 +105,7 @@ public class PlayerMovement : MonoBehaviour
 			Move(); // Move the player.
 			Crouch(); // Crouch.
 			Rotate(); // Mouse based rotation for camera and player.
-            Cut(); // Player cut powers.
+			Cut(); // Player cut powers.
 		}
 
 		PickUp(); // Ability to pick up is independent from player movement.
@@ -210,7 +210,7 @@ public class PlayerMovement : MonoBehaviour
 					// Raycast for what the player is looking at.
 					RaycastHit hit;
 
-                    int layerMask = 1 << 9;
+					int layerMask = 1 << 9;
 
 					// Raycast to see what the object's tag is. If it is a Pickupable object...
 					if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() != null)
@@ -219,7 +219,7 @@ public class PlayerMovement : MonoBehaviour
 						heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();
 						heldObject.Interact();
 						heldObject.active = true;
-                        
+
 						state = ObjectState.HOLDING;
 						playerCanMove = true;
 					}
@@ -244,24 +244,24 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
-    /// <summary> Function to aim and apply player cut power. </summary>
-    private void Cut()
-    {
-        if(Input.GetMouseButton(1) && !holding)
-        {
-            // Aiming...
-            heartWindow.SetActive(true);
-            if(Input.GetMouseButtonDown(0))
-            {
-                heartWindow.GetComponent<Window>().ApplyCut();
-            }
-        }
-        else
-        {
-            // Not Aiming...
-            heartWindow.SetActive(false);
-        }
-    }
+	/// <summary> Function to aim and apply player cut power. </summary>
+	private void Cut()
+	{
+		if ((Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftControl)) && !holding)
+		{
+			// Aiming...
+			heartWindow.SetActive(true);
+			if (Input.GetMouseButtonDown(0))
+			{
+				heartWindow.GetComponent<Window>().ApplyCut();
+			}
+		}
+		else
+		{
+			// Not Aiming...
+			heartWindow.SetActive(false);
+		}
+	}
 
 	/// <summary> Function to get transform of where the held object should be. </summary>
 	/// <returns> Returns a reference to the player's heldObjectLocation transform. </returns>
