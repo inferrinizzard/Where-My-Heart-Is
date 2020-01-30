@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class EntangledObjectManager : MonoBehaviour
 {
-    public GameObject sharedObjectPrefab;
+	public GameObject sharedObjectPrefab;
 
-    public void AddObject()
-    {
-        GameObject createdObject = Instantiate(sharedObjectPrefab);
-        createdObject.transform.parent = transform;
-        createdObject.AddComponent<EntangledClippable>();
-    }
+	public void AddObject()
+	{
+		GameObject createdObject = Instantiate(sharedObjectPrefab);
+		createdObject.transform.parent = transform;
+		createdObject.AddComponent<EntangledClipable>();
+	}
 }
