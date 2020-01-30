@@ -27,7 +27,10 @@ public class WorldManager : MonoBehaviour
 			if (child.GetComponent<MeshFilter>())
 			{
 				child.gameObject.layer = LayerMask.NameToLayer(layer);
-				child.gameObject.AddComponent<ClipableObject>();
+                if (child.GetComponent<ClipableObject>() == null)
+                {
+                    child.gameObject.AddComponent<ClipableObject>();
+                }
 			}
 
             ConfigureWorld(layer, child);// do this recursively to hit everything in the given world

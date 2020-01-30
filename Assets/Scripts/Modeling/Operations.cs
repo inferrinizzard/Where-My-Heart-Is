@@ -66,7 +66,7 @@ namespace CSG
         /// <param name="bounds">The GameObject containing the Mesh to clip "toClip" to</param>
         /// <param name="flipNormals">Whether the normals of the resulting mesh should be flipped</param>
         /// <returns>The clipped Mesh</returns>
-        private Mesh ClipAToB(GameObject toClip, GameObject bounds, bool clipInside = true, bool flipNormals = false)
+        public Mesh ClipAToB(GameObject toClip, GameObject bounds, bool clipInside = true, bool flipNormals = false)
         {
             Model bound = new Model(bounds.GetComponent<MeshFilter>().mesh);
             bound.ConvertCoordinates(bounds.transform, toClip.transform);

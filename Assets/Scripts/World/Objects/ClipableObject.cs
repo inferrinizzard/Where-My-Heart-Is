@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class ClipableObject : MonoBehaviour
 {
-	//private GameObject result;
+    //private GameObject result;
+    public bool volumeless;
 
 	private Mesh initialMesh;
     private GameObject uncutCopy;
 
     int oldLayer;
 
-	void Awake()
+	void Start()
 	{
 		if (GetComponent<MeshFilter>() == null)
 		{
@@ -29,8 +30,15 @@ public class ClipableObject : MonoBehaviour
         oldLayer = gameObject.layer;
         gameObject.layer = 9;
 
-		GetComponent<MeshFilter>().mesh = operations.Union(gameObject, other);
-	}
+        if (!volumeless)
+        {
+            GetComponent<MeshFilter>().mesh = operations.Union(gameObject, other);
+        }
+        else
+        {
+            GetComponent<MeshFilter>().mesh = operations.ClipAToB(gameObject, other);
+        }
+    }
 
     public virtual void Revert()
     {
@@ -43,6 +51,16 @@ public class ClipableObject : MonoBehaviour
     public void Subtract(GameObject other, CSG.Operations operations)
 	{
         oldLayer = gameObject.layer;
-        GetComponent<MeshFilter>().mesh = operations.Subtract(gameObject, other);
-	}
+        
+        if (!volumeless)
+        {
+            GetComponent<MeshFilter>().mesh = operations.Subtract(gameObject, other);
+        }
+        else
+        {
+            GetComponent<MeshFilter>().mesh = operations.ClipAToB(gameObject, other, false);
+            //GetComponent<MeshFilter>().mesh.RecalculateNormals();
+            //GetComponent<MeshFilter>().mesh.RecalculateTangents();
+        }
+    }
 }
