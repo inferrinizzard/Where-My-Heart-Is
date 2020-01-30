@@ -81,6 +81,7 @@ public class WorldManager : MonoBehaviour
         {
             foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
             {
+                Debug.Log(obj);
                 obj.Revert();
             }
         }

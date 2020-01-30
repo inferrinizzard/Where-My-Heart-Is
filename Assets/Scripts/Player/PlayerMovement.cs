@@ -27,9 +27,6 @@ public class PlayerMovement : MonoBehaviour
 	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
 	public bool looking = false;
 
-    CSG.Operations csgOperator;
-    public WorldManager worldManager;
-    public GameObject fieldOfView;
     public GameObject heartWindow;
 
     public enum ObjectState
@@ -99,8 +96,6 @@ public class PlayerMovement : MonoBehaviour
 		playerCanMove = true;
 		holding = false;
 		looking = false;
-
-        csgOperator = GetComponent<CSG.Operations>();
     }
 
 	/// <summary> Called once per frame. </summary>
@@ -254,16 +249,7 @@ public class PlayerMovement : MonoBehaviour
             heartWindow.SetActive(true);
             if(Input.GetMouseButtonDown(0))
             {
-                // Apply the cut
-                foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
-                {
-                    clipableObject.UnionWith(fieldOfView, csgOperator);
-                }
-
-                foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
-                {
-                    clipableObject.Subtract(fieldOfView, csgOperator);
-                }
+                heartWindow.GetComponent<Window>().ApplyCut();
             }
         }
         else
