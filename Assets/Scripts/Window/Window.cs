@@ -7,12 +7,14 @@ public class Window : Pickupable
 	public WorldManager worldManager;
 	public GameObject fieldOfView;
 
-	CSG.Operations csgOperator;
+	private CSG.Operations csgOperator;
+    private CSG.Model fieldOfViewModel;
 
 	void Start()
 	{
 		csgOperator = GetComponent<CSG.Operations>();
-	}
+        fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
+    }
 
 	public override void Interact()
 	{
@@ -27,21 +29,43 @@ public class Window : Pickupable
 	{
 		worldManager.ResetCut();
 
-		foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
+        foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
 		{
-			//TODO: Here's where we check if we should cut this one or not
-			//clipableObject.gameObject.GetComponent<MeshRenderer>().enabled = false;
-			clipableObject.UnionWith(fieldOfView, csgOperator);
+            // less expensive, less accurate intersection check
+            if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
+            {
+                // more expensive, more accurate intersection check
+                if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
+                {
+			        clipableObject.UnionWith(fieldOfView, csgOperator);
+                }
+            }
 		}
 
 		foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
 		{
-			clipableObject.Subtract(fieldOfView, csgOperator);
+            // less expensive, less accurate intersection check
+            if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
+            {
+                // more expensive, more accurate intersection check
+                if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
+                {
+                    clipableObject.Subtract(fieldOfView, csgOperator);
+                }
+            }
 		}
 
 		foreach (EntangledClippable clipableObject in worldManager.GetEntangledObjects())
 		{
-			clipableObject.UnionWith(fieldOfView, csgOperator);
+            // less expensive, less accurate intersection check
+            if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
+            {
+                // more expensive, more accurate intersection check
+                if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
+                {
+                    clipableObject.UnionWith(fieldOfView, csgOperator);
+                }
+            }
 		}
 		// Debug.Log(worldManager.GetDreamObjects().Count);
 		/*foreach (ClipableObject clipableObject in worldManager.GetRealObjects())

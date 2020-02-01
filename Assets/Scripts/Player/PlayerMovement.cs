@@ -123,7 +123,6 @@ public class PlayerMovement : MonoBehaviour
 		moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
         moveDirection.Normalize();
         GetComponent<PlayerAudioManager>().SetWalkingVelocity(Mathf.RoundToInt(characterController.velocity.magnitude) / speed);
-        Debug.Log(Mathf.RoundToInt(characterController.velocity.magnitude) / speed);
 		// Scale the moveDirection to account for different runtimes.
 		moveDirection *= speed * Time.deltaTime;
 

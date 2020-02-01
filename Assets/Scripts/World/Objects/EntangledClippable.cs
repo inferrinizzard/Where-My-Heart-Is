@@ -23,6 +23,8 @@ public class EntangledClippable : ClipableObject
 
     public override void UnionWith(GameObject other, CSG.Operations operations)
     {
+        isClipped = true;
+
         realVersion.UnionWith(other, operations);
         dreamVersion.Subtract(other, operations);
     }
