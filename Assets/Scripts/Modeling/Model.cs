@@ -80,5 +80,18 @@ namespace CSG
 				vertex.value = to.worldToLocalMatrix.MultiplyPoint3x4(from.localToWorldMatrix.MultiplyPoint3x4(vertex.value));
 			}
 		}
+
+        public bool Intersects(Model other, float error)
+        {
+            foreach (Vertex vertex in vertices)
+            {
+                if (vertex.ContainedBy(other, error))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 	}
 }

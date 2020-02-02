@@ -21,11 +21,6 @@ namespace CSG
         public Vector3 value;
 
         /// <summary>
-        /// Whether the vertex lies within the bounding shape
-        /// </summary>
-        public bool containedByBound;
-
-        /// <summary>
         /// Whether this vertex has been identified to be in at least one loop
         /// </summary>
         public bool usedInLoop;
@@ -158,6 +153,53 @@ namespace CSG
             }
         }
 
-        //=> list.RemoveAll(a => list.Any(b => Vector3.Distance(a, b) < 0.0001));
+
+        /// <summary>
+        /// Determines whether the given point is contained by the given model
+        /// </summary>
+        /// <param name="model">the model to check for containment of this point</param>
+        /// <returns>True if the point is contained, false if it is not</returns>
+        public bool ContainedBy(Model model, float error)
+        {
+            int intersectionsAbove = 0;
+            int intersectionsBelow = 0;
+
+            List<Vector3> intersections = model.triangles.Select(tri => Raycast.RayToTriangle(this.value, Vector3.up, tri)).Where(tri => tri != null).Select(tri => tri.value).ToList();
+
+            // merge nearby points to eliminate double counting
+            // duplicate logic as Vertex.RemoveDuplicates, merge?
+            // intersections.RemoveAll(a => intersections.Any(b => Vector3.Distance(a, b) < error)); TODO fix
+            for (int i = intersections.Count - 1; i > 0; i--)
+            {
+                for (int k = i - 1; k >= 0; k--)
+                {
+                    if (Vector3.Distance(intersections[i], intersections[k]) < error)
+                    {
+                        intersections.Remove(intersections[i]);
+                        break;
+                    }
+                }
+            }
+
+            // count up intersections above and below
+            // LINQ return intersections.GroupBy(intersection => intersection.y > point.y).All(l => l.Count() % 1 == 0); TODO
+
+            for (int i = 0; i < intersections.Count; i++)
+            {
+                if (intersections[i].y > this.value.y)
+                {
+                    intersectionsAbove++;
+                }
+                else
+                {
+                    intersectionsBelow++;
+                }
+            }
+
+            // If above and below are odd, vertex is contained
+            // if they are even, vertex is not contained
+            return intersectionsAbove % 2 == 1 && intersectionsBelow % 2 == 1;
+            // ENDLINQ
+        }
     }
 }

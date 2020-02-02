@@ -117,7 +117,8 @@ public class PlayerMovement : MonoBehaviour
 	{
 		// Get the Vertical and Horizontal Axes and scale them by movement speed.
 		moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-
+		moveDirection.Normalize();
+		GetComponent<PlayerAudioManager>().SetWalkingVelocity(Mathf.RoundToInt(characterController.velocity.magnitude) / speed);
 		// Scale the moveDirection to account for different runtimes.
 		moveDirection *= speed * Time.deltaTime;
 
