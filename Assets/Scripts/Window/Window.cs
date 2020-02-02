@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Window : Pickupable
+/**
+ * <summary>
+ * Class that uses CSG.Operations on ClipableObjects to create the cut
+ * </summary>
+ * */
+public class Window : MonoBehaviour
 {
 	public WorldManager worldManager;
 	public GameObject fieldOfView;
@@ -16,19 +21,11 @@ public class Window : Pickupable
         fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
     }
 
-	public override void Interact()
-	{
-		base.Interact();
-		if (player.holding == false)
-		{
-			ApplyCut();
-		}
-	}
-
 	public void ApplyCut()
 	{
 		worldManager.ResetCut();
 
+        // real world objects get intersected with the bound
         foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
 		{
             // less expensive, less accurate intersection check
@@ -42,6 +39,7 @@ public class Window : Pickupable
             }
 		}
 
+        // dream world objects get the bound subtracted from them
 		foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
 		{
             // less expensive, less accurate intersection check
@@ -55,6 +53,7 @@ public class Window : Pickupable
             }
 		}
 
+        // entangled objects have both real and dream world components, which are cut properly by their entangled clipable
 		foreach (EntangledClippable clipableObject in worldManager.GetEntangledObjects())
 		{
             // less expensive, less accurate intersection check
@@ -67,20 +66,5 @@ public class Window : Pickupable
                 }
             }
 		}
-		// Debug.Log(worldManager.GetDreamObjects().Count);
-		/*foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
-		{
-			clipableObject.UnionWith(fieldOfView, csgOperator);
-		}
-
-		foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
-		{
-			clipableObject.Subtract(fieldOfView, csgOperator);
-		}
-
-        foreach (ClipableObject clipableObject in worldManager.GetEntangledObjects())
-        {
-            clipableObject.UnionWith(fieldOfView, csgOperator);
-        }*/
 	}
 }
