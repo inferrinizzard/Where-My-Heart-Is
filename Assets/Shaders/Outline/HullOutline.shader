@@ -18,11 +18,10 @@
 
 		struct Input {
 			float2 uv_MainTex; 
-			float2 uv_DissolveTex; 
 		};
 
 		void surf (Input i, inout SurfaceOutputStandard o) {
-			col = _Color;
+			o.Albedo = _Color;
 		}
 		ENDCG
 
@@ -38,7 +37,6 @@
 
 			fixed4 _OutlineColor;
 			float _OutlineThickness;
-			float _DissolveAmount;
 
 			struct appdata {
 				float4 vertex : POSITION;
@@ -49,7 +47,7 @@
 
 			v2f vert(appdata v) {
 				v2f o;
-				o.position = UnityObjectToClipPos(v.vertex + normalize(v.normal) * _OutlineThickness  * (1-_DissolveAmount));
+				o.position = UnityObjectToClipPos(v.vertex + normalize(v.normal) * _OutlineThickness);
 				return o;
 			}
 
