@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(EntangledClippable))]
+[CustomEditor(typeof(EntangledClipable))]
 public class EntangledClippableGUI : Editor
 {
     public override void OnInspectorGUI()
@@ -13,14 +13,14 @@ public class EntangledClippableGUI : Editor
         Object prefab = EditorGUILayout.ObjectField("Real Prefab", target, typeof(GameObject), true);
         if (EditorGUI.EndChangeCheck())
         {
-            ((EntangledClippable)target).OnRealChange((GameObject)prefab);
+            ((EntangledClipable)target).OnRealChange((GameObject)prefab);
         }
 
         EditorGUI.BeginChangeCheck();
         prefab = EditorGUILayout.ObjectField("Dream Prefab", target, typeof(GameObject), true);
         if (EditorGUI.EndChangeCheck())
         {
-            ((EntangledClippable)target).OnDreamChange((GameObject)prefab);
+            ((EntangledClipable)target).OnDreamChange((GameObject)prefab);
         }
 
     }

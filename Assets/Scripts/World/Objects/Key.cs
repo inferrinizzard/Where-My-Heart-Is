@@ -9,11 +9,11 @@ public class Key : Pickupable
 
     private Transform originPosition;
 
+    private Transform oldParent;
+
     void Awake()
     {
         originPosition = transform;
-        Debug.Log(transform.position.x + ", " + transform.position.y + ", " + transform.position.z);
-        Debug.Log(originPosition);
     }
 
     void Update()
@@ -21,7 +21,7 @@ public class Key : Pickupable
         if (active)
         {
             // If the object is being held, run Holding.
-            if (player.holding) Holding();
+            //if (player.holding) Holding();
 
             // If the object is being inspected, run Looking.
             if (player.looking) Looking();
@@ -33,16 +33,22 @@ public class Key : Pickupable
         if (!player.holding)
         {
             player.holding = true;
+
+            // save the old parent to revert to later
+            oldParent = transform.parent;
+            transform.parent = player.GetHeldObjectLocation();// set the new parent to the hold object location object
+            transform.localPosition = Vector3.zero;// set the position to local zero to match the position of the hold object location target
         }
         else if (player.looking)
         {
             player.looking = false;
         }
         else
-        {
-            transform.parent = null;
+        {   
+            player.holding = false;
+            transform.parent = oldParent;
 
-            if(Vector3.Distance(transform.position, _lock.transform.position) < 2 && _lock != null)
+            if (Vector3.Distance(transform.position, _lock.transform.position) < 2 && _lock != null)
             {
                 this.gameObject.SetActive(false);
                 _lock.Interact();
@@ -53,7 +59,6 @@ public class Key : Pickupable
                 transform.position = originPosition.position;
                 transform.rotation = originPosition.rotation;
             }
-            player.holding = false;
         }
     }
 }

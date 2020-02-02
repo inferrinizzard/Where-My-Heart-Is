@@ -10,6 +10,6 @@ public class EntangledObjectManager : MonoBehaviour
     {
         GameObject createdObject = Instantiate(sharedObjectPrefab);
         createdObject.transform.parent = transform;
-        createdObject.AddComponent<EntangledClippable>();
+        createdObject.AddComponent<EntangledClipable>();
     }
 }
