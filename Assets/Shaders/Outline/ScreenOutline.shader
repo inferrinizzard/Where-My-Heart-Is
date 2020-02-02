@@ -1,8 +1,13 @@
-﻿Shader "Custom/Outline"{
+﻿Shader "Outline/Screen"{
 	Properties{
 		[HideInInspector]_MainTex ("Texture", 2D) = "white" {}
 		_OutlineColor ("Outline Color", Color) = (0,0,0,1)
-		_Weight ("Thickness", Range(0,3)) = 0.03
+		_Weight ("Thickness", Range(0,1)) = 0.03
+
+		_NormalMult ("Normal Outline Multiplier", Range(0,4)) = 1
+		_NormalBias ("Normal Outline Bias", Range(1,4)) = 1
+		_DepthMult ("Depth Outline Multiplier", Range(0,4)) = 1
+		_DepthBias ("Depth Outline Bias", Range(1,4)) = 1
 	}
 
 	SubShader{
@@ -23,6 +28,11 @@
 
 			float4 _OutlineColor;
 			float _Weight;
+
+			float _NormalMult;
+			float _NormalBias;
+			float _DepthMult;
+			float _DepthBias;
 
 			struct appdata {
 				float4 vertex : POSITION;
@@ -75,8 +85,18 @@
 				normalDifference = saturate(normalDifference);
 
 				float outline = normalDifference * (1 + _Weight) + depthDifference;
+
+				depthDifference = depthDifference * _DepthMult;
+				depthDifference = saturate(depthDifference);
+				depthDifference = pow(depthDifference, _DepthBias);
+
+				normalDifference = normalDifference * _NormalMult;
+				normalDifference = saturate(normalDifference);
+				normalDifference = pow(normalDifference, _NormalBias);
+
 				float4 sourceColor = tex2D(_MainTex, i.uv);
-				return lerp(sourceColor, _OutlineColor, outline);
+				float4 color = lerp(sourceColor, _OutlineColor, outline);
+				return color;
 			}
 			ENDCG
 		}

@@ -2,9 +2,9 @@
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class OldOutline : MonoBehaviour
+public class ScreenOutline : MonoBehaviour
 {
-	[SerializeField] Material postprocessMaterial;
+	[SerializeField] Material outlineMat = default;
 
 	void Start()
 	{
@@ -13,6 +13,6 @@ public class OldOutline : MonoBehaviour
 
 	void OnRenderImage(RenderTexture source, RenderTexture destination)
 	{
-		Graphics.Blit(source, destination, postprocessMaterial);
+		Graphics.Blit(source, destination, outlineMat);
 	}
 }

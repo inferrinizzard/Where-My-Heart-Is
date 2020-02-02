@@ -1,4 +1,4 @@
-﻿Shader "Custom/HullOutline" {
+﻿Shader "Outline/Hull" {
 	Properties {
 		_Color ("Tint", Color) = (0, 0, 0, 1)
 		[HideInInspector]_MainTex ("Texture", 2D) = "white" {}
