@@ -6,6 +6,8 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerMovement : MonoBehaviour
 {
+	[SerializeField] private Transform lastSpawn = default;
+
 	/// <summary> Reference to player CharacterController. </summary>
 	private CharacterController characterController;
 	/// <summary> Reference to player Camera. </summary>
@@ -27,13 +29,10 @@ public class PlayerMovement : MonoBehaviour
     private bool crouching = false;
 
     /// <summary> If the player is holding something or not. </summary>
-    public bool holding = false;
-	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
-	public bool looking = false;
+    [HideInInspector] public bool holding = false;
+    /// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
+    [HideInInspector] public bool looking = false;
 
-    CSG.Operations csgOperator;
-    public WorldManager worldManager;
-    public GameObject fieldOfView;
     public GameObject heartWindow;
 
     public enum ObjectState
@@ -81,10 +80,7 @@ public class PlayerMovement : MonoBehaviour
 	/// <summary> Initializes variables before the game starts. </summary>
 	private void Awake()
 	{
-		// Get reference to the CharacterController.
 		characterController = GetComponent<CharacterController>();
-
-		// Get reference to the Camera.
 		cam = GetComponentInChildren<Camera>();
 
 		// Get reference to the player height using the CharacterController's height.
@@ -103,8 +99,6 @@ public class PlayerMovement : MonoBehaviour
 		playerCanMove = true;
 		holding = false;
 		looking = false;
-
-        csgOperator = GetComponent<CSG.Operations>();
     }
 
 	/// <summary> Called once per frame. </summary>
@@ -119,10 +113,21 @@ public class PlayerMovement : MonoBehaviour
 		}
 
 		PickUp(); // Ability to pick up is independent from player movement.
-	}
+        Die();
 
-	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
-	private void Move()
+    }
+
+    private void Die()
+    {
+        if (characterController.velocity.y < -30)
+        {
+            transform.position = lastSpawn == null ? Vector3.zero : lastSpawn.position;
+            verticalVelocity = 0;
+        }
+    }
+
+    /// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
+    private void Move()
 	{
 		// Get the Vertical and Horizontal Axes and scale them by movement speed.
 		moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
@@ -134,18 +139,22 @@ public class PlayerMovement : MonoBehaviour
 
 		ApplyGravity();
 		characterController.Move(moveDirection);
+
+		if (characterController.velocity.y < -30)
+		{
+			transform.position = lastSpawn.position;
+			verticalVelocity = 0;
+		}
 	}
 
 	/// <summary> Applies gravity to the player and includes jump. </summary>
 	void ApplyGravity()
 	{
-		// Check if the player is grounded before applying gravity.
 		if (!characterController.isGrounded)
 		{
 			verticalVelocity -= gravity * Time.deltaTime;
 		}
 
-		// Allow the player to jump.
 		Jump();
 
 		// Scale the vertical velocity to account for different runtimes.
@@ -245,8 +254,11 @@ public class PlayerMovement : MonoBehaviour
 				case ObjectState.FREE:
 					// Raycast for what the player is looking at.
 					RaycastHit hit;
+
+                    int layerMask = 1 << 9;
+
 					// Raycast to see what the object's tag is. If it is a Pickupable object...
-					if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach) && hit.transform.GetComponent<InteractableObject>() != null)
+					if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() != null)
 					{
 						// Store the held object.
 						heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();
@@ -280,22 +292,13 @@ public class PlayerMovement : MonoBehaviour
     /// <summary> Function to aim and apply player cut power. </summary>
     private void Cut()
     {
-        if(Input.GetMouseButton(1))
+        if(Input.GetMouseButton(1) && !holding)
         {
             // Aiming...
             heartWindow.SetActive(true);
             if(Input.GetMouseButtonDown(0))
             {
-                // Apply the cut
-                foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
-                {
-                    clipableObject.UnionWith(fieldOfView, csgOperator);
-                }
-
-                foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
-                {
-                    clipableObject.Subtract(fieldOfView, csgOperator);
-                }
+                heartWindow.GetComponent<Window>().ApplyCut();
             }
         }
         else
