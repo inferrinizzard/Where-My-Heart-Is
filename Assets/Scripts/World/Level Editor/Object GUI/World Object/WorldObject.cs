@@ -25,7 +25,7 @@ public class WorldObject : MonoBehaviour
 		// interactable = pickupable;
 		var newComponent = SummonComponent<Pickupable>(pickupable);
 		if (newComponent != null)
-			((InteractableObject)newComponent).player = transform.root.GetComponent<WorldManager>().player;
+			((InteractableObject)newComponent).player = transform.root.GetComponent<World>().player;
 	}
 	public void ToggleCollectable()
 	{
@@ -33,7 +33,7 @@ public class WorldObject : MonoBehaviour
 		// interactable = collectable;
 		var newComponent = SummonComponent<CollectableObject>(collectable);
 		if (newComponent != null)
-			((InteractableObject)newComponent).player = transform.root.GetComponent<WorldManager>().player;
+			((InteractableObject)newComponent).player = transform.root.GetComponent<World>().player;
 	}
 
 	Component SummonComponent<T>(bool flag)where T : Component

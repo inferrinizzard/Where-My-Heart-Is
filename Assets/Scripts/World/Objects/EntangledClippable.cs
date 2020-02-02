@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EntangledClippable : ClipableObject
+public class EntangledClipable : ClipableObject
 {
     public ClipableObject realVersion;
     public ClipableObject dreamVersion;
@@ -16,7 +16,6 @@ public class EntangledClippable : ClipableObject
 
         set
         {
-            //realVersion.gameObject.GetComponent<MeshRenderer>().enabled = value;
             dreamVersion.gameObject.GetComponent<MeshRenderer>().enabled = value;
         }
     }
@@ -73,7 +72,6 @@ public class EntangledClippable : ClipableObject
             createdObject.gameObject.layer = LayerMask.NameToLayer(layer);
             return createdObject.gameObject.AddComponent<ClipableObject>();
         }
-        Debug.Log(":(");
 
         return null;
     }

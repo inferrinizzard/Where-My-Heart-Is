@@ -9,11 +9,11 @@ using UnityEngine;
  * */
 public class Window : MonoBehaviour
 {
-	public WorldManager worldManager;
+	public World world;
 	public GameObject fieldOfView;
+    public CSG.Model fieldOfViewModel;
 
 	private CSG.Operations csgOperator;
-    private CSG.Model fieldOfViewModel;
 
 	void Start()
 	{
@@ -23,10 +23,10 @@ public class Window : MonoBehaviour
 
 	public void ApplyCut()
 	{
-		worldManager.ResetCut();
+		world.ResetCut();
 
         // real world objects get intersected with the bound
-        foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
+        foreach (ClipableObject clipableObject in world.GetRealObjects())
 		{
             // less expensive, less accurate intersection check
             if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
@@ -40,7 +40,7 @@ public class Window : MonoBehaviour
 		}
 
         // dream world objects get the bound subtracted from them
-		foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
+		foreach (ClipableObject clipableObject in world.GetDreamObjects())
 		{
             // less expensive, less accurate intersection check
             if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
@@ -54,7 +54,7 @@ public class Window : MonoBehaviour
 		}
 
         // entangled objects have both real and dream world components, which are cut properly by their entangled clipable
-		foreach (EntangledClippable clipableObject in worldManager.GetEntangledObjects())
+		foreach (EntangledClipable clipableObject in world.GetEntangledObjects())
 		{
             // less expensive, less accurate intersection check
             if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))

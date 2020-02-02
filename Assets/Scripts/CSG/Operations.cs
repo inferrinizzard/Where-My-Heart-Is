@@ -17,12 +17,12 @@ namespace CSG
         public int limitTo;
 
         /// <summary>
-        /// Generates the union of two shapes
+        /// Generates the intersection of two shapes
         /// </summary>
-        /// <param name="shapeA">The first shape to union</param>
-        /// <param name="shapeB">The second shape to union</param>
-        /// <returns>The union of the two shapes</returns>
-        public Mesh Union(GameObject shapeA, GameObject shapeB)
+        /// <param name="shapeA">The first shape to intersect</param>
+        /// <param name="shapeB">The second shape to intersect</param>
+        /// <returns>The intersection of the two shapes</returns>
+        public Mesh Intersect(GameObject shapeA, GameObject shapeB)
         {
             CombineInstance[] combine = new CombineInstance[2];
             combine[0].mesh = ClipAToB(shapeA, shapeB, true);

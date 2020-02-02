@@ -10,7 +10,7 @@ public class ClipableObject : MonoBehaviour
     public bool isClipped;
 
 	private Mesh initialMesh;
-    private GameObject uncutCopy;
+    public GameObject uncutCopy;
 
     int oldLayer;
 
@@ -46,7 +46,7 @@ public class ClipableObject : MonoBehaviour
 
         if (!volumeless)
         {
-            GetComponent<MeshFilter>().mesh = operations.Union(gameObject, other);
+            GetComponent<MeshFilter>().mesh = operations.Intersect(gameObject, other);
         }
         else
         {
