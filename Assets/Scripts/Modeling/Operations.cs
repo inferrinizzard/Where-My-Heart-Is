@@ -83,12 +83,12 @@ namespace CSG
                     edgeLoops = new List<EdgeLoop>();
                     if(limitTo < modelToClip.triangles.Count)
                     {
-                        edgeLoops.AddRange(ClipTriangleToBound(modelToClip.triangles[limitTo], bound.triangles, modelToClip.vertices, PointContainedByBound));
+                        edgeLoops.AddRange(ClipTriangleToBound(modelToClip.triangles[limitTo], bound, modelToClip.vertices, PointContainedByBound));
                     }
                 }
                 else
                 {
-                    edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices, PointContainedByBound)).ToList();
+                    edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound, modelToClip.vertices, PointContainedByBound)).ToList();
                 }
             }
             else
@@ -98,12 +98,12 @@ namespace CSG
                     edgeLoops = new List<EdgeLoop>();
                     if (limitTo < modelToClip.triangles.Count)
                     {
-                        edgeLoops.AddRange(ClipTriangleToBound(modelToClip.triangles[limitTo], bound.triangles, modelToClip.vertices, PointExcludedByBound));
+                        edgeLoops.AddRange(ClipTriangleToBound(modelToClip.triangles[limitTo], bound, modelToClip.vertices, PointExcludedByBound));
                     }
                 }
                 else
                 {
-                    edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound.triangles, modelToClip.vertices, PointExcludedByBound)).ToList();
+                    edgeLoops = modelToClip.triangles.SelectMany(triangle => ClipTriangleToBound(triangle, bound, modelToClip.vertices, PointExcludedByBound)).ToList();
                 }
             }
 
@@ -143,7 +143,7 @@ namespace CSG
         /// <param name="boundsTriangles">A list of triangles defining the bounding object</param>
         /// <param name="vertices">A list of the vertices of the object the triangle belongs to</param>
         /// <returns>A list of edge loops which define the clipped version of the triangle</returns>
-        private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, List<Triangle> boundsTriangles, List<Vertex> vertices, Func<Vector3, List<Triangle>, bool> ContainmentCheck)
+        private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, Model bound, List<Vertex> vertices, Func<Vertex, Model, bool> ContainmentCheck)
         {
             List<Egress> aToBEgresses = new List<Egress>();
             List<Egress> bToCEgresses = new List<Egress>();
@@ -152,7 +152,7 @@ namespace CSG
             List<Egress>[] egressesList = { aToBEgresses, bToCEgresses, cToAEgresses };
 
             // find all intersections between the triangle and the bound
-            foreach (Triangle boundsTriangle in boundsTriangles)
+            foreach (Triangle boundsTriangle in bound.triangles)
             {
                 IdentifyEgress(triangle.vertices[0].value, triangle.vertices[1].value, boundsTriangle, aToBEgresses);
                 IdentifyEgress(triangle.vertices[1].value, triangle.vertices[2].value, boundsTriangle, bToCEgresses);
@@ -229,7 +229,7 @@ namespace CSG
                 else // 2. a vertex of the original triangle
                 {
                     // in this case, if the vertex is contained by the bound, the loop is a surface, otherwise it's a hole
-                    loop.filled = ContainmentCheck(initialVertex.value, boundsTriangles);
+                    loop.filled = ContainmentCheck(initialVertex, bound);
                 }
 
                 // traverse forward in the ordered list, following each cut, until we reach the initial point
@@ -598,59 +598,21 @@ namespace CSG
             List<Vector3> newVertices = mesh.vertices.Select(vertex => ConvertPointCoordinates(vertex, from, to)).ToList();
             mesh.SetVertices(newVertices);
         }
-
+        
         /// <summary>
         /// Determines whether the given point is contained by the given bound
         /// </summary>
         /// <param name="point">The point to check for containment</param>
         /// <param name="boundsTriangles">A List of triangles representing the bounding shape</param>
         /// <returns>True if the point is contained, false if it is not</returns>
-        private bool PointContainedByBound(Vector3 point, List<Triangle> boundsTriangles)
+        private bool PointContainedByBound(Vertex point, Model bound)
         {
-            int intersectionsAbove = 0;
-            int intersectionsBelow = 0;
-
-            List<Vector3> intersections = boundsTriangles.Select(tri => Raycast.RayToTriangle(point, Vector3.up, tri)).Where(tri => tri != null).Select(tri => tri.value).ToList();
-
-            // merge nearby points to eliminate double counting
-            // duplicate logic as Vertex.RemoveDuplicates, merge?
-            // intersections.RemoveAll(a => intersections.Any(b => Vector3.Distance(a, b) < error)); TODO fix
-            for (int i = intersections.Count - 1; i > 0; i--)
-            {
-                for (int k = i - 1; k >= 0; k--)
-                {
-                    if (Vector3.Distance(intersections[i], intersections[k]) < error)
-                    {
-                        intersections.Remove(intersections[i]);
-                        break;
-                    }
-                }
-            }
-
-            // count up intersections above and below
-            // LINQ return intersections.GroupBy(intersection => intersection.y > point.y).All(l => l.Count() % 1 == 0); TODO
-
-            for (int i = 0; i < intersections.Count; i++)
-            {
-                if (intersections[i].y > point.y)
-                {
-                    intersectionsAbove++;
-                }
-                else
-                {
-                    intersectionsBelow++;
-                }
-            }
-
-            // If above and below are odd, vertex is contained
-            // if they are even, vertex is not contained
-            return intersectionsAbove % 2 == 1 && intersectionsBelow % 2 == 1;
-            // ENDLINQ
+            return point.ContainedBy(bound, error);
         }
 
-        private bool PointExcludedByBound(Vector3 point, List<Triangle> boundsTriangles)
+        private bool PointExcludedByBound(Vertex point, Model bound)
         {
-            return !PointContainedByBound(point, boundsTriangles);
+            return !PointContainedByBound(point, bound);
         }
     }
 }

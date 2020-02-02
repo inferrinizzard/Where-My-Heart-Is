@@ -7,8 +7,8 @@ public class WorldManager : MonoBehaviour
 	public Transform realWorldContainer;
 	public Transform dreamWorldContainer;
 	public Transform entangledWorldContainer;
-    public PlayerMovement player;// TODO: phase out by using player object
-    public static GameObject playerReference;
+	public PlayerMovement player; // TODO: phase out by using player object
+	public static GameObject playerReference;
 
 	void Awake()
 	{
@@ -27,13 +27,13 @@ public class WorldManager : MonoBehaviour
 			if (child.GetComponent<MeshFilter>())
 			{
 				child.gameObject.layer = LayerMask.NameToLayer(layer);
-                if (child.GetComponent<ClipableObject>() == null)
-                {
-                    child.gameObject.AddComponent<ClipableObject>();
-                }
+				if (child.GetComponent<ClipableObject>() == null)
+				{
+					child.gameObject.AddComponent<ClipableObject>();
+				}
 			}
 
-            ConfigureWorld(layer, child);// do this recursively to hit everything in the given world
+			ConfigureWorld(layer, child); // do this recursively to hit everything in the given world
 		}
 	}
 
@@ -49,61 +49,34 @@ public class WorldManager : MonoBehaviour
 		}
 	}
 
-    public void ResetCut()
-    {
-        // preserving certain changes selectively must be done here
+	public void ResetCut()
+	{
+		foreach (Transform child in realWorldContainer)
+		{
+			foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
+			{
+				if (obj.isClipped)obj.Revert();
+			}
+		}
 
-        // delete previous copy set
-        //TODO: all changes made to the state of these objects done during the cut should be 
-        // applied to their source objects before the cut versions are removed
+		foreach (Transform child in dreamWorldContainer)
+		{
+			foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
+			{
+				if (obj.isClipped)obj.Revert();
+			}
+		}
 
+		foreach (Transform child in entangledWorldContainer)
+		{
+			foreach (EntangledClippable obj in child.GetComponentsInChildren<EntangledClippable>())
+			{
+				if (obj.isClipped)obj.Revert();
+			}
+		}
+	}
 
-
-        /*foreach (GameObject obj in realObjects)
-        {
-            Destroy(obj);
-        }
-        foreach (GameObject obj in dreamObjects)
-        {
-            Destroy(obj);
-        }
-        foreach (GameObject obj in entangledObjects)
-        {
-            Destroy(obj);
-        }
-        realObjects = new List<GameObject>();
-        dreamObjects = new List<GameObject>();
-        entangledObjects = new List<GameObject>();*/
-
-        // get top level children for each world
-
-        foreach (Transform child in realWorldContainer)
-        {
-            foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
-            {
-                Debug.Log(obj);
-                obj.Revert();
-            }
-        }
-
-        foreach (Transform child in dreamWorldContainer)
-        {
-            foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
-            {
-                obj.Revert();
-            }
-        }
-
-        foreach (Transform child in entangledWorldContainer)
-        {
-            foreach (EntangledClippable obj in child.GetComponentsInChildren<EntangledClippable>())
-            {
-                obj.Revert();
-            }
-        }
-    }
-
-    public ClipableObject[] GetRealObjects()
+	public ClipableObject[] GetRealObjects()
 	{
 		return realWorldContainer.GetComponentsInChildren<ClipableObject>();
 	}
@@ -113,8 +86,8 @@ public class WorldManager : MonoBehaviour
 		return dreamWorldContainer.GetComponentsInChildren<ClipableObject>();
 	}
 
-    public ClipableObject[] GetEntangledObjects()
-    {
-        return entangledWorldContainer.GetComponentsInChildren<EntangledClippable>();
-    }
+	public ClipableObject[] GetEntangledObjects()
+	{
+		return entangledWorldContainer.GetComponentsInChildren<EntangledClippable>();
+	}
 }

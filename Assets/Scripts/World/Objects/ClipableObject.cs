@@ -7,14 +7,18 @@ public class ClipableObject : MonoBehaviour
     //private GameObject result;
     public bool volumeless;
 
+    public bool isClipped;
+
 	private Mesh initialMesh;
     private GameObject uncutCopy;
 
     int oldLayer;
 
-	void Start()
+	void Awake()
 	{
-		if (GetComponent<MeshFilter>() == null)
+        isClipped = false;
+
+        if (GetComponent<MeshFilter>() == null)
 		{
 			gameObject.AddComponent<MeshFilter>();
 		}
@@ -23,13 +27,22 @@ public class ClipableObject : MonoBehaviour
         oldLayer = gameObject.layer;
 	}
 
+    public bool IntersectsBound(Transform boundTransform, CSG.Model bound)
+    {
+        CSG.Model model = new CSG.Model(GetComponent<MeshFilter>().mesh);
+        model.ConvertCoordinates(transform, boundTransform);
+        return model.Intersects(bound, 0.001f);
+    }
+
     // TODO: APPLY IN PLACE
 	public virtual void UnionWith(GameObject other, CSG.Operations operations)
 	{
+        isClipped = true;
         uncutCopy = GameObject.Instantiate(gameObject, transform.position, transform.rotation, transform);
         uncutCopy.transform.localScale = new Vector3(1,1,1);
         oldLayer = gameObject.layer;
         gameObject.layer = 9;
+        GetComponent<Collider>().enabled = true;
 
         if (!volumeless)
         {
@@ -45,12 +58,15 @@ public class ClipableObject : MonoBehaviour
     {
         gameObject.layer = oldLayer;
         GetComponent<MeshFilter>().mesh = initialMesh;
-        if(uncutCopy) Destroy(uncutCopy);
+        GetComponent<Collider>().enabled = false;
+        if (uncutCopy) Destroy(uncutCopy);
     }
 
     // TODO: APPLY IN PLACE
     public void Subtract(GameObject other, CSG.Operations operations)
 	{
+        isClipped = true;
+
         oldLayer = gameObject.layer;
         
         if (!volumeless)
