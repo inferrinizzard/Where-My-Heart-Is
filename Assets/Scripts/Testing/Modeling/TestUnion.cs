@@ -34,7 +34,7 @@ public class TestUnion : MonoBehaviour
     public void Test()
     {
         //model.GetComponent<MeshFilter>().mesh = model.GetComponent<MeshFilter>().mesh.
-        output.GetComponent<MeshFilter>().mesh = GetComponent<CSG.Operations>().Union(model, bounds);
+        output.GetComponent<MeshFilter>().mesh = GetComponent<CSG.Operations>().Intersect(model, bounds);
 
         //output.GetComponent<MeshFilter>().mesh = result;
 

@@ -63,22 +63,10 @@ Assets/StreamingAssets/*.bank
 fmod_editor.log
 
 # FMOD Meta override
-Assets/Audio/FMOD/WMHI/Metadata/
-Assets/Audio/FMOD/WMHI/Metadata/*.meta
+!Assets/Audio/FMOD/**/*.xml.meta
 Assets/Audio/FMOD/WMHI/Metadata/**/*.meta
-Assets/Audio/FMOD/WMHI/Plugins.meta
-Assets/Audio/FMOD/WMHI/Metadata/VCA.meta
-Assets/Audio/FMOD/WMHI/Metadata/Snapshot.meta
-Assets/Audio/FMOD/WMHI/Metadata/ParameterPreset.meta
-Assets/Audio/FMOD/WMHI/Metadata/MixerView.meta
-Assets/Audio/FMOD/WMHI/Metadata/Locale.meta
-Assets/Audio/FMOD/WMHI/Metadata/Group.meta
-Assets/Audio/FMOD/WMHI/Metadata/EffectPreset.meta
-Assets/Audio/FMOD/WMHI/Metadata/DAWProject.meta
-Assets/Audio/FMOD/WMHI/Metadata/DAWAsset.meta
-Assets/Audio/FMOD/WMHI/Metadata/DataFile.meta
-
-
+Assets/StreamingAssets/**/*.meta
+Assets/Plugins/FMOD/**/*.meta
 
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta

@@ -70,12 +70,17 @@ public class EntangledClipable : ClipableObject
 
 	private ClipableObject ConfigureObject(string layer, GameObject createdObject)
 	{
+		foreach (MeshFilter filter in createdObject.GetComponentsInChildren<MeshFilter>())
+		{
+			filter.gameObject.layer = LayerMask.NameToLayer(layer);
+			filter.gameObject.AddComponent<ClipableObject>();
+		}
+
+		createdObject.gameObject.layer = LayerMask.NameToLayer(layer);
 		if (createdObject.GetComponent<MeshFilter>())
 		{
-			createdObject.gameObject.layer = LayerMask.NameToLayer(layer);
 			return createdObject.gameObject.AddComponent<ClipableObject>();
 		}
-		Debug.Log(":(");
 
 		return null;
 	}
