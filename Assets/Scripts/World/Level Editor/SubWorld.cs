@@ -7,7 +7,7 @@ public class SubWorld : MonoBehaviour
 {
 	int count = 0;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR 
 	void Start()
 	{
 		count = transform.childCount;

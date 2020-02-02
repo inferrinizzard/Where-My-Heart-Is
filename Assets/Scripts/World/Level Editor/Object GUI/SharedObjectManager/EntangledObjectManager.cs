@@ -8,8 +8,8 @@ public class EntangledObjectManager : MonoBehaviour
 
 	public void AddObject()
 	{
-		GameObject createdObject = Instantiate(sharedObjectPrefab);
-		createdObject.transform.parent = transform;
+		GameObject createdObject = Instantiate(sharedObjectPrefab, transform);
+		createdObject.name = "Entangled Object";
 		createdObject.AddComponent<EntangledClipable>();
 		createdObject.layer = 9;
 	}

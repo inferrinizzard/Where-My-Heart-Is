@@ -4,17 +4,14 @@ using UnityEngine;
 
 public class EntangledClipable : ClipableObject
 {
-	public Object realPrefab;
-	public Object dreamPrefab;
 	public ClipableObject realVersion;
 	public ClipableObject dreamVersion;
+	public GameObject realObject;
+	public GameObject dreamObject;
 
 	public bool Visable
 	{
-		get
-		{
-			return dreamVersion.gameObject.GetComponent<MeshRenderer>().enabled;
-		}
+		get => dreamVersion.gameObject.GetComponent<MeshRenderer>().enabled;
 
 		set
 		{
@@ -38,32 +35,34 @@ public class EntangledClipable : ClipableObject
 	public void OnDreamChange(GameObject dreamPrefab)
 	{
 		GameObject createdObject;
-		if (dreamVersion != null)
+		if (dreamObject != null)
 		{
-			createdObject = Instantiate(dreamPrefab, dreamVersion.transform.position, dreamVersion.transform.rotation, transform);
-			DestroyImmediate(dreamVersion.gameObject);
+			createdObject = Instantiate(dreamPrefab, dreamObject.transform.position, dreamObject.transform.rotation, transform);
+			DestroyImmediate(dreamObject);
 		}
 		else
 		{
 			createdObject = Instantiate(dreamPrefab, transform);
 		}
 		createdObject.name += " [Dream]";
+		dreamObject = createdObject;
 		dreamVersion = ConfigureObject("Dream", createdObject);
 	}
 
 	public void OnRealChange(GameObject realPrefab)
 	{
 		GameObject createdObject;
-		if (realVersion != null)
+		if (realObject != null)
 		{
-			createdObject = Instantiate(realPrefab, realVersion.transform.position, realVersion.transform.rotation, transform);
-			DestroyImmediate(realVersion.gameObject);
+			createdObject = Instantiate(realPrefab, realObject.transform.position, realObject.transform.rotation, transform);
+			DestroyImmediate(realObject);
 		}
 		else
 		{
 			createdObject = Instantiate(realPrefab, transform);
 		}
 		createdObject.name += " [Real]";
+		realObject = createdObject;
 		realVersion = ConfigureObject("Real", createdObject);
 
 	}
@@ -73,13 +72,17 @@ public class EntangledClipable : ClipableObject
 		foreach (MeshFilter filter in createdObject.GetComponentsInChildren<MeshFilter>())
 		{
 			filter.gameObject.layer = LayerMask.NameToLayer(layer);
-			filter.gameObject.AddComponent<ClipableObject>();
+			if (filter.gameObject.GetComponent<MeshFilter>() != null)
+				filter.gameObject.AddComponent<MeshCollider>();
+			if (filter.gameObject.GetComponent<ClipableObject>() == null)
+				filter.gameObject.AddComponent<ClipableObject>();
 		}
 
-		createdObject.gameObject.layer = LayerMask.NameToLayer(layer);
+		createdObject.layer = LayerMask.NameToLayer(layer);
 		if (createdObject.GetComponent<MeshFilter>())
 		{
-			return createdObject.gameObject.AddComponent<ClipableObject>();
+			createdObject.AddComponent<MeshCollider>();
+			return createdObject.AddComponent<ClipableObject>();
 		}
 
 		return null;
