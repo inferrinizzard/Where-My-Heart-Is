@@ -6,7 +6,6 @@ using UnityEngine;
 [CustomEditor(typeof(EntangledObjectManager))]
 public class EntangledObjectManagerGUI : Editor
 {
-
 	public override void OnInspectorGUI()
 	{
 		base.OnInspectorGUI();

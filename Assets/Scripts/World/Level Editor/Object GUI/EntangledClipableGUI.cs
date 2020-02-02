@@ -8,7 +8,6 @@ public class EntangledClipableGUI : Editor
 {
 	Object realPrefab;
 	Object dreamPrefab;
-
 	EntangledClipable entangledObject;
 
 	private void OnEnable()

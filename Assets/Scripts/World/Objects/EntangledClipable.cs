@@ -9,6 +9,8 @@ public class EntangledClipable : ClipableObject
 	public GameObject realObject;
 	public GameObject dreamObject;
 
+	string entangledName = $"[|]"; // todo compound names
+
 	public bool Visable
 	{
 		get => dreamVersion.gameObject.GetComponent<MeshRenderer>().enabled;
