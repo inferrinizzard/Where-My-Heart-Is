@@ -16,7 +16,7 @@ public class EntangledClipableGUI : Editor
 
 	public override void OnInspectorGUI()
 	{
-		//base.OnInspectorGUI();
+		base.OnInspectorGUI();
 		EditorGUI.BeginChangeCheck();
 		realPrefab = EditorGUILayout.ObjectField("Real Prefab", realPrefab, typeof(GameObject), true);
 		if (EditorGUI.EndChangeCheck())
