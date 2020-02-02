@@ -22,23 +22,28 @@ public class PlayerMovement : MonoBehaviour
 	private float playerHeight;
 	/// <summary> Whether the player can move or not. </summary>
 	private bool playerCanMove = true;
-	/// <summary> If the player is holding something or not. </summary>
-	[HideInInspector] public bool holding = false;
+
+    private bool jumping = false;
+    private bool crouching = false;
+
+    /// <summary> If the player is holding something or not. </summary>
+    public bool holding = false;
 	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
-	[HideInInspector] public bool looking = false;
+	public bool looking = false;
 
-	[Header("References"), SerializeField] private Transform lastSpawn = null;
+    CSG.Operations csgOperator;
+    public WorldManager worldManager;
+    public GameObject fieldOfView;
+    public GameObject heartWindow;
 
-	public GameObject heartWindow;
-
-	public enum ObjectState
+    public enum ObjectState
 	{
 		FREE,
 		HOLDING,
 		INSPECTING
 	}
 
-	[Header("Parametres")] public ObjectState state = ObjectState.FREE;
+	public ObjectState state = ObjectState.FREE;
 
 	/// <summary> Player move speed. </summary>
 	[SerializeField] private float speed = 5f;
@@ -76,7 +81,10 @@ public class PlayerMovement : MonoBehaviour
 	/// <summary> Initializes variables before the game starts. </summary>
 	private void Awake()
 	{
+		// Get reference to the CharacterController.
 		characterController = GetComponent<CharacterController>();
+
+		// Get reference to the Camera.
 		cam = GetComponentInChildren<Camera>();
 
 		// Get reference to the player height using the CharacterController's height.
@@ -95,7 +103,9 @@ public class PlayerMovement : MonoBehaviour
 		playerCanMove = true;
 		holding = false;
 		looking = false;
-	}
+
+        csgOperator = GetComponent<CSG.Operations>();
+    }
 
 	/// <summary> Called once per frame. </summary>
 	void Update()
@@ -105,11 +115,10 @@ public class PlayerMovement : MonoBehaviour
 			Move(); // Move the player.
 			Crouch(); // Crouch.
 			Rotate(); // Mouse based rotation for camera and player.
-			Cut(); // Player cut powers.
+            Cut(); // Player cut powers.
 		}
 
 		PickUp(); // Ability to pick up is independent from player movement.
-
 	}
 
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
@@ -117,28 +126,26 @@ public class PlayerMovement : MonoBehaviour
 	{
 		// Get the Vertical and Horizontal Axes and scale them by movement speed.
 		moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-
+        moveDirection.Normalize();
+        GetComponent<PlayerAudioManager>().SetWalkingVelocity(Mathf.RoundToInt(characterController.velocity.magnitude) / speed);
+        Debug.Log(Mathf.RoundToInt(characterController.velocity.magnitude) / speed);
 		// Scale the moveDirection to account for different runtimes.
 		moveDirection *= speed * Time.deltaTime;
 
 		ApplyGravity();
 		characterController.Move(moveDirection);
-
-		if (characterController.velocity.y < -30)
-		{
-			transform.position = lastSpawn == null ? Vector3.zero : lastSpawn.position;
-			verticalVelocity = 0;
-		}
 	}
 
 	/// <summary> Applies gravity to the player and includes jump. </summary>
 	void ApplyGravity()
 	{
+		// Check if the player is grounded before applying gravity.
 		if (!characterController.isGrounded)
 		{
 			verticalVelocity -= gravity * Time.deltaTime;
 		}
 
+		// Allow the player to jump.
 		Jump();
 
 		// Scale the vertical velocity to account for different runtimes.
@@ -148,10 +155,31 @@ public class PlayerMovement : MonoBehaviour
 	/// <summary> Player jump function. </summary>
 	void Jump()
 	{
-		if (characterController.isGrounded && Input.GetKeyDown(jumpKey))
+        PlayerAudioManager audioManager = GetComponent<PlayerAudioManager>();
+        if (jumping)
+        {
+            RaycastHit hit;
+            int mask = ~gameObject.layer;
+            Physics.Raycast(new Ray(transform.position, Vector3.down), out hit, 5f, mask);
+            if (verticalVelocity < 0 && hit.distance < audioManager.landingDistanceThreshold)
+            {
+                GetComponent<PlayerAudioManager>().PlayJumpLanding();
+                jumping = false;
+            }
+        }
+
+		if (characterController.isGrounded)
 		{
-			verticalVelocity = jumpForce;
+            
+            
+            if(Input.GetKeyDown(jumpKey))
+            {
+			    verticalVelocity = jumpForce;
+                GetComponent<PlayerAudioManager>().PlayJumpLiftoff();
+                jumping = true;
+            }
 		}
+
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
@@ -187,14 +215,22 @@ public class PlayerMovement : MonoBehaviour
 		Ray crouchRay = new Ray(transform.position, Vector3.up);
 
 		// Check if the player is pressing the crouch key.
-		if (Input.GetKey(crouchKey))
+		if (Input.GetKeyDown(crouchKey))
 		{
 			characterController.height = playerHeight / 2; // Make the player crouch.
-		}
+            GetComponent<PlayerAudioManager>().PlayCrouchDown();
+            crouching = true;
+        }
+
 		// Check if there is anything above the player before uncrouching.
-		else if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4))
+		else if (!Input.GetKey(crouchKey) && !Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4))
 		{
-			characterController.height = playerHeight; // Make the player stand.
+            if(crouching)
+            {
+                GetComponent<PlayerAudioManager>().PlayCrouchUp();
+                characterController.height = playerHeight; // Make the player stand.
+                crouching = false;
+            }
 		}
 	}
 
@@ -209,17 +245,14 @@ public class PlayerMovement : MonoBehaviour
 				case ObjectState.FREE:
 					// Raycast for what the player is looking at.
 					RaycastHit hit;
-
-					int layerMask = 1 << 9;
-
 					// Raycast to see what the object's tag is. If it is a Pickupable object...
-					if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() != null)
+					if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach) && hit.transform.GetComponent<InteractableObject>() != null)
 					{
 						// Store the held object.
 						heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();
 						heldObject.Interact();
 						heldObject.active = true;
-
+                        
 						state = ObjectState.HOLDING;
 						playerCanMove = true;
 					}
@@ -244,24 +277,33 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
-	/// <summary> Function to aim and apply player cut power. </summary>
-	private void Cut()
-	{
-		if ((Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftControl)) && !holding)
-		{
-			// Aiming...
-			heartWindow.SetActive(true);
-			if (Input.GetMouseButtonDown(0))
-			{
-				heartWindow.GetComponent<Window>().ApplyCut();
-			}
-		}
-		else
-		{
-			// Not Aiming...
-			heartWindow.SetActive(false);
-		}
-	}
+    /// <summary> Function to aim and apply player cut power. </summary>
+    private void Cut()
+    {
+        if(Input.GetMouseButton(1))
+        {
+            // Aiming...
+            heartWindow.SetActive(true);
+            if(Input.GetMouseButtonDown(0))
+            {
+                // Apply the cut
+                foreach (ClipableObject clipableObject in worldManager.GetRealObjects())
+                {
+                    clipableObject.UnionWith(fieldOfView, csgOperator);
+                }
+
+                foreach (ClipableObject clipableObject in worldManager.GetDreamObjects())
+                {
+                    clipableObject.Subtract(fieldOfView, csgOperator);
+                }
+            }
+        }
+        else
+        {
+            // Not Aiming...
+            heartWindow.SetActive(false);
+        }
+    }
 
 	/// <summary> Function to get transform of where the held object should be. </summary>
 	/// <returns> Returns a reference to the player's heldObjectLocation transform. </returns>
