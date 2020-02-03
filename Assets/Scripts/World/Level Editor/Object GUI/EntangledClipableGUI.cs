@@ -8,10 +8,13 @@ public class EntangledClipableGUI : Editor
 {
 	Object realPrefab;
 	Object dreamPrefab;
-	private void Awake()
+	EntangledClipable entangledObject;
+
+	private void OnEnable()
 	{
-		realPrefab = null;
-		dreamPrefab = null;
+		entangledObject = (EntangledClipable)target;
+		realPrefab = entangledObject.realObject;
+		dreamPrefab = entangledObject.dreamObject;
 	}
 
 	public override void OnInspectorGUI()
@@ -21,14 +24,14 @@ public class EntangledClipableGUI : Editor
 		realPrefab = EditorGUILayout.ObjectField("Real Prefab", realPrefab, typeof(GameObject), true);
 		if (EditorGUI.EndChangeCheck())
 		{
-			((EntangledClipable)target).OnRealChange((GameObject)realPrefab);
+			entangledObject.OnRealChange((GameObject)realPrefab);
 		}
 
 		EditorGUI.BeginChangeCheck();
 		dreamPrefab = EditorGUILayout.ObjectField("Dream Prefab", dreamPrefab, typeof(GameObject), true);
 		if (EditorGUI.EndChangeCheck())
 		{
-			((EntangledClipable)target).OnDreamChange((GameObject)dreamPrefab);
+			entangledObject.OnDreamChange((GameObject)dreamPrefab);
 		}
 
 	}
