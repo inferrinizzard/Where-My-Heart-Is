@@ -13,6 +13,8 @@ public class CollectableObject : InteractableObject
 	private Vector3 spatialTarget;
 	private Vector3 rotationalTarget;
 
+	[SerializeField] string sceneTarget = "";
+
 	private void Start()
 	{
 		pickingUp = false;
@@ -42,6 +44,8 @@ public class CollectableObject : InteractableObject
 		spatialTarget = player.transform.position;
 		rotationalTarget = Quaternion.LookRotation(player.transform.forward, Vector3.up).eulerAngles;
 		pickingUp = true;
+		if (sceneTarget != "")
+			GameManager.Instance.ChangeLevel(sceneTarget);
 	}
 
 }
