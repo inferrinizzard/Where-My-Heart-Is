@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.00.00">
+	<object class="ParameterPreset" id="{a08576b5-ea6e-4570-aa30-e7e545cc44a2}">
+		<property name="name">
+			<value>WindowState</value>
+		</property>
+		<relationship name="folder">
+			<destination>{16a49ee2-03d7-4ad9-94ba-21b2e4660e95}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{4ea47d1f-c8e6-4e87-9317-3f64d3669e4d}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{4ea47d1f-c8e6-4e87-9317-3f64d3669e4d}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>3</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>Off</value>
+			<value>On</value>
+			<value>Placed</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
