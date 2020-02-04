@@ -159,7 +159,7 @@ public class Player : MonoBehaviour
 			Physics.Raycast(new Ray(transform.position, Vector3.down), out hit, 5f, mask);
 			if (verticalVelocity < 0 && hit.distance < audioManager.landingDistanceThreshold)
 			{
-				GetComponent<PlayerAudio>().PlayJumpLanding();
+				GetComponent<PlayerAudio>().JumpLanding();
 				jumping = false;
 			}
 		}
@@ -170,7 +170,7 @@ public class Player : MonoBehaviour
 			if (Input.GetKeyDown(jumpKey))
 			{
 				verticalVelocity = jumpForce;
-				GetComponent<PlayerAudio>().PlayJumpLiftoff();
+				GetComponent<PlayerAudio>().JumpLiftoff();
 				jumping = true;
 			}
 		}
@@ -213,7 +213,7 @@ public class Player : MonoBehaviour
 		if (Input.GetKeyDown(crouchKey))
 		{
 			characterController.height = playerHeight / 2; // Make the player crouch.
-			GetComponent<PlayerAudio>().PlayCrouchDown();
+			GetComponent<PlayerAudio>().CrouchDown();
 			crouching = true;
 		}
 
@@ -222,7 +222,7 @@ public class Player : MonoBehaviour
 		{
 			if (crouching)
 			{
-				GetComponent<PlayerAudio>().PlayCrouchUp();
+				GetComponent<PlayerAudio>().CrouchUp();
 				characterController.height = playerHeight; // Make the player stand.
 				crouching = false;
 			}
@@ -276,19 +276,29 @@ public class Player : MonoBehaviour
 	{
 		if ((Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftControl)) && !holding)
 		{
-			// Aiming...
-			heartWindow.SetActive(true);
+            // Aiming...
+            if (!heartWindow.activeSelf)
+            {
+                heartWindow.SetActive(true);
+                GetComponent<PlayerAudio>().OpenWindow();
+            }
 			if (Input.GetMouseButtonDown(0))
 			{
 				heartWindow.GetComponent<Window>().ApplyCut();
-			}
-		}
+                GetComponent<PlayerAudio>().PlaceWindow();
+            }
+        }
 		else
 		{
-			// Not Aiming...
-			heartWindow.SetActive(false);
-		}
-	}
+            // Not Aiming...
+            if (heartWindow.activeSelf)
+            {
+                heartWindow.SetActive(false);
+                GetComponent<PlayerAudio>().CloseWindow();
+            }
+
+        }
+    }
 
 	/// <summary> Function to get transform of where the held object should be. </summary>
 	/// <returns> Returns a reference to the player's heldObjectLocation transform. </returns>
