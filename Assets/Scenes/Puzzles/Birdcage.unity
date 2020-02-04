@@ -474,11 +474,6 @@ PrefabInstance:
       propertyPath: limitTo
       value: -1
       objectReference: {fileID: 0}
-    - target: {fileID: 7884385906382927456, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 2182867183277312575, guid: 363b9a74c27aeba43ab8c35665f02ff7,
         type: 3}
       propertyPath: m_Enabled
@@ -498,6 +493,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7884385906382927456, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 363b9a74c27aeba43ab8c35665f02ff7, type: 3}
@@ -1038,7 +1038,7 @@ MonoBehaviour:
   player: {fileID: 0}
   active: 0
   threshold: 0.1
-  sceneTarget: 
+  sceneTarget: Chest...
 --- !u!1 &2075308436
 GameObject:
   m_ObjectHideFlags: 0
@@ -1539,19 +1539,6 @@ Transform:
   m_Father: {fileID: 5006512736522863329}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &9141436761204760005
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9141436761204760057}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &9141436761204760006
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1593,7 +1580,6 @@ GameObject:
   m_Component:
   - component: {fileID: 9141436761204760056}
   - component: {fileID: 9141436761204760006}
-  - component: {fileID: 9141436761204760005}
   - component: {fileID: 1022084754}
   - component: {fileID: 1022084753}
   - component: {fileID: 1022084752}

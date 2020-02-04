@@ -5,17 +5,17 @@ using UnityEngine;
 /// <summary> Handles the behavior of an object that can be picked up. </summary>
 public class Pickupable : InteractableObject
 {
-    private Transform oldParent;
+	protected Transform oldParent;
 
-    private Vector3 initialPosition;
-    private Quaternion initialRotation;
+	protected Vector3 initialPosition;
+	protected Quaternion initialRotation;
 
 	void Update()
 	{
 		if (active)
 		{
 			// If the object is being inspected, run Looking.
-			if (player.looking) Looking();
+			if (player.looking)Looking();
 		}
 	}
 
@@ -31,48 +31,48 @@ public class Pickupable : InteractableObject
 		transform.rotation = Quaternion.AngleAxis(rotY, player.GetHeldObjectLocation().forward) * transform.rotation;
 	}
 
-    public void PickUp()
-    {
-        player.holding = true;
+	public void PickUp()
+	{
+		player.holding = true;
 
-        initialPosition = transform.position;
-        initialRotation = transform.rotation;
+		initialPosition = transform.position;
+		initialRotation = transform.rotation;
 
-        oldParent = transform.parent;
-        transform.parent = player.GetHeldObjectLocation();// set the new parent to the hold object location object
-        transform.localPosition = Vector3.zero;// set the position to local zero to match the position of the hold object location target
-    }
+		oldParent = transform.parent;
+		transform.parent = player.GetHeldObjectLocation(); // set the new parent to the hold object location object
+		transform.localPosition = Vector3.zero; // set the position to local zero to match the position of the hold object location target
+	}
 
-    public void PutDown()
-    {
-        ClipableObject clipable = GetComponent<ClipableObject>();
+	public void PutDown()
+	{
+		ClipableObject clipable = GetComponent<ClipableObject>();
 
-        if (clipable != null && !clipable.IntersectsBound(player.heartWindow.GetComponent<Window>().fieldOfView.transform, player.heartWindow.GetComponent<Window>().fieldOfViewModel))
-        {
-            if(clipable.uncutCopy != null)
-            {
-                transform.position = initialPosition;
-                transform.rotation = initialRotation;
-            }
-        }
+		if (clipable != null && !clipable.IntersectsBound(player.heartWindow.GetComponent<Window>().fieldOfView.transform, player.heartWindow.GetComponent<Window>().fieldOfViewModel))
+		{
+			if (clipable.uncutCopy != null)
+			{
+				transform.position = initialPosition;
+				transform.rotation = initialRotation;
+			}
+		}
 
-        player.holding = false;
-        transform.parent = oldParent;
-    }
+		player.holding = false;
+		transform.parent = oldParent;
+	}
 
 	public override void Interact()
 	{
 		if (!player.holding)
 		{
-            PickUp();
-        }
+			PickUp();
+		}
 		else if (player.looking)
 		{
 			player.looking = false;
 		}
 		else
 		{
-            PutDown();
+			PutDown();
 		}
 	}
 }
