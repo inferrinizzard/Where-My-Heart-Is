@@ -170,7 +170,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 82df3567bd3ae5e43b20f385c80059ee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -272,12 +272,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 686f24558b99bb34ba8c1b923e26b635, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
-  twin: {fileID: 0}
-  pickupSound: {fileID: 0}
   threshold: 0.1
-  interactText: 
   sceneTarget: Birdcage
 --- !u!1001 &230594501
 PrefabInstance:
@@ -503,7 +501,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 82df3567bd3ae5e43b20f385c80059ee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -592,6 +590,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 0
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
   realVersion: {fileID: 1527220464}
@@ -776,24 +775,24 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.47261277
       objectReference: {fileID: 0}
-    - target: {fileID: 2182867183277312575, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8454981882681934524, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
         type: 3}
       propertyPath: limitTo
       value: -1
       objectReference: {fileID: 0}
+    - target: {fileID: 2182867183277312575, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7884385905051823265, guid: 363b9a74c27aeba43ab8c35665f02ff7,
         type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8454981882681934524, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -921,6 +920,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 0
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!23 &885205208
@@ -1080,6 +1080,7 @@ MonoBehaviour:
   CrouchDownEvent: event:/Crouch - Down
   CrouchUpEvent: event:/Crouch - Up
   WalkEvent: event:/Walking
+  WindowEvent: 
 --- !u!1 &1051750140 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 3da829e1e4e129246b24df14e285768a,
@@ -1095,7 +1096,7 @@ MeshCollider:
   m_GameObject: {fileID: 1051750140}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 14
@@ -1147,6 +1148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 1
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!65 &1146369501
@@ -1179,7 +1181,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 670224309865224971, guid: 2bcabcc129941c146ade5425fcaf2593, type: 3}
+  - {fileID: 2100000, guid: 9bb64a96be27d074085805d975216c3a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1255,6 +1257,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 1
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!65 &1188078868
@@ -1287,7 +1290,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 670224309865224971, guid: 2bcabcc129941c146ade5425fcaf2593, type: 3}
+  - {fileID: 2100000, guid: 98a8306000267be44bed958bc257349f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1428,6 +1431,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 0
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
   realVersion: {fileID: 1146369500}
@@ -1481,6 +1485,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 1
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!65 &1527220465
@@ -1513,7 +1518,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 670224309865224971, guid: 2bcabcc129941c146ade5425fcaf2593, type: 3}
+  - {fileID: 2100000, guid: 98a8306000267be44bed958bc257349f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1602,6 +1607,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 1
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!23 &1802488447
@@ -1621,7 +1627,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 670224309865224971, guid: 2bcabcc129941c146ade5425fcaf2593, type: 3}
+  - {fileID: 2100000, guid: 9bb64a96be27d074085805d975216c3a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1737,6 +1743,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.55131954
       objectReference: {fileID: 0}
+    - target: {fileID: -1504981713932161579, guid: 3da829e1e4e129246b24df14e285768a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2e050018dfe57e242ac1ab4184a80da4, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3da829e1e4e129246b24df14e285768a, type: 3}
 --- !u!4 &1835722336 stripped
@@ -1806,6 +1817,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 0
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!23 &1854562405
@@ -2155,7 +2167,7 @@ GameObject:
   - component: {fileID: 1022084753}
   - component: {fileID: 1022084752}
   - component: {fileID: 1022084755}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
