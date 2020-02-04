@@ -62,7 +62,7 @@ public class ClipableObject : MonoBehaviour
 	{
 		gameObject.layer = oldLayer;
 		meshFilter.mesh = initialMesh;
-		GetComponent<Collider>().enabled = false;
+		//GetComponent<Collider>().enabled = false;
         if (uncutCopy != null)
         {
             DestroyImmediate(uncutCopy);

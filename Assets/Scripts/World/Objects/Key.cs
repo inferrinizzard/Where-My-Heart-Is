@@ -7,13 +7,10 @@ public class Key : Pickupable
 
     public Lock _lock;
 
-    private Transform originPosition;
-
     private Transform oldParent;
 
     void Awake()
     {
-        originPosition = transform;
     }
 
     void Update()
@@ -48,7 +45,7 @@ public class Key : Pickupable
             player.holding = false;
             transform.parent = oldParent;
 
-            if (Vector3.Distance(transform.position, _lock.transform.position) < 2 && _lock != null)
+            if (Vector3.Distance(transform.position, _lock.transform.position) < 2 && _lock != null && _lock.gameObject.layer == 9)
             {
                 this.gameObject.SetActive(false);
                 _lock.Interact();
@@ -56,8 +53,6 @@ public class Key : Pickupable
             else
             {
                 Debug.Log("Oops you dropped this");
-                transform.position = originPosition.position;
-                transform.rotation = originPosition.rotation;
             }
         }
     }

@@ -45,14 +45,14 @@ public class EntangledClipable : ClipableObject
 
 	public override void UnionWith(GameObject other, CSG.Operations operations)
 	{
-		realVersion.UnionWith(other, operations);
-		dreamVersion.Subtract(other, operations);
+		//realVersion.UnionWith(other, operations);
+		//dreamVersion.Subtract(other, operations);
 	}
 
 	public override void Revert()
 	{
-		realVersion.Revert();
-		dreamVersion.Revert();
+		//realVersion.Revert();
+		//dreamVersion.Revert();
 	}
 
 	public void OnDreamChange(GameObject dreamPrefab)

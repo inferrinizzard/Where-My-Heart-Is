@@ -69,9 +69,9 @@ public class World : MonoBehaviour
 
 		foreach (Transform child in entangledWorldContainer)
 		{
-			foreach (EntangledClipable obj in child.GetComponentsInChildren<EntangledClipable>())
+			foreach (ClipableObject obj in child.GetComponentsInChildren<EntangledClipable>())
 			{
-				if (obj.isClipped)obj.Revert();
+				if (obj.isClipped) obj.Revert();
 			}
 		}
 	}
