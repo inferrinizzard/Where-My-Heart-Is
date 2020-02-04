@@ -14,7 +14,7 @@ public class CollectableObject : InteractableObject
 
 	protected override void Start()
 	{
-        base.Start();
+		base.Start();
 		pickingUp = false;
 	}
 

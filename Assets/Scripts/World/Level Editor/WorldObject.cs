@@ -42,8 +42,8 @@ public class WorldObject : MonoBehaviour
 		{
 			int numComponents = GetComponents<Component>().Length;
 			var newComponent = gameObject.AddComponent<T>();
-			for (int i = 0; i < numComponents - 2; i++)
-				UnityEditorInternal.ComponentUtility.MoveComponentUp(newComponent);
+			// for (int i = 0; i < numComponents - 2; i++)
+			// 	UnityEditorInternal.ComponentUtility.MoveComponentUp(newComponent);
 			return newComponent;
 		}
 		else

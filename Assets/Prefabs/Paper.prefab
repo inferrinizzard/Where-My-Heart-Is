@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4011296927975362308}
-  - component: {fileID: 4011296927975362311}
+  - component: {fileID: 3206235599677939217}
   m_Layer: 9
   m_Name: EmptyEntangled(Clone)
   m_TagString: Untagged
@@ -33,7 +33,7 @@ Transform:
   m_Father: {fileID: 4011296928471995870}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4011296927975362311
+--- !u!114 &3206235599677939217
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,16 +42,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 4011296927975362309}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dae16a66b22f6824b8614c83f7a14c0e, type: 3}
+  m_Script: {fileID: 11500000, guid: cadb38be40248cc4cbc19534e76a292b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 0
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
-  realPrefab: {fileID: 0}
-  dreamPrefab: {fileID: 0}
-  realVersion: {fileID: 4011296929088595361}
-  dreamVersion: {fileID: 4011296929561954370}
+  realVersion: {fileID: 0}
+  dreamVersion: {fileID: 0}
+  realObject: {fileID: 0}
+  dreamObject: {fileID: 0}
 --- !u!1 &4011296928471995871
 GameObject:
   m_ObjectHideFlags: 0
@@ -111,12 +112,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 686f24558b99bb34ba8c1b923e26b635, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
-  twin: {fileID: 0}
-  pickupSound: {fileID: 0}
   threshold: 0.1
-  interactText: 
+  sceneTarget: 
 --- !u!1 &4011296928814376742
 GameObject:
   m_ObjectHideFlags: 0
@@ -210,6 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 1
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!65 &4011296928814376744
@@ -318,6 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 1
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!65 &4011296929088595360
@@ -342,7 +344,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4011296929322422416}
-  - component: {fileID: 4011296929322422421}
+  - component: {fileID: 6159528901850151073}
   m_Layer: 9
   m_Name: EmptyEntangled(Clone) (1)
   m_TagString: Untagged
@@ -366,7 +368,7 @@ Transform:
   m_Father: {fileID: 4011296928471995870}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4011296929322422421
+--- !u!114 &6159528901850151073
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -375,16 +377,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 4011296929322422417}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dae16a66b22f6824b8614c83f7a14c0e, type: 3}
+  m_Script: {fileID: 11500000, guid: cadb38be40248cc4cbc19534e76a292b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 0
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
-  realPrefab: {fileID: 0}
-  dreamPrefab: {fileID: 0}
-  realVersion: {fileID: 4011296929536497805}
-  dreamVersion: {fileID: 4011296928814376751}
+  realVersion: {fileID: 0}
+  dreamVersion: {fileID: 0}
+  realObject: {fileID: 0}
+  dreamObject: {fileID: 0}
 --- !u!1 &4011296929536497803
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,6 +481,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 1
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!65 &4011296929536497804
@@ -586,6 +590,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeless: 1
+  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!65 &4011296929561954373

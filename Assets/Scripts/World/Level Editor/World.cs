@@ -71,7 +71,7 @@ public class World : MonoBehaviour
 		{
 			foreach (ClipableObject obj in child.GetComponentsInChildren<EntangledClipable>())
 			{
-				if (obj.isClipped) obj.Revert();
+				if (obj.isClipped)obj.Revert();
 			}
 		}
 	}

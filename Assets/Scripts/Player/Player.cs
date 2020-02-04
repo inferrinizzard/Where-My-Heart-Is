@@ -4,6 +4,7 @@ using UnityEngine;
 
 /// <summary Handles player movement and player interaction </summary>
 [System.Serializable]
+// public class Player : Singleton<Player>
 public class Player : MonoBehaviour
 {
 	[SerializeField] private Transform lastSpawn = default;
@@ -71,6 +72,7 @@ public class Player : MonoBehaviour
 	/// <summary> Initializes variables before the game starts. </summary>
 	private void Awake()
 	{
+		// base.Awake();
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
 		heartWindow = GetComponentInChildren<Window>().gameObject;
@@ -276,29 +278,29 @@ public class Player : MonoBehaviour
 	{
 		if ((Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftControl)) && !holding)
 		{
-            // Aiming...
-            if (!heartWindow.activeSelf)
-            {
-                heartWindow.SetActive(true);
-                GetComponent<PlayerAudio>().OpenWindow();
-            }
+			// Aiming...
+			if (!heartWindow.activeSelf)
+			{
+				heartWindow.SetActive(true);
+				GetComponent<PlayerAudio>().OpenWindow();
+			}
 			if (Input.GetMouseButtonDown(0))
 			{
 				heartWindow.GetComponent<Window>().ApplyCut();
-                GetComponent<PlayerAudio>().PlaceWindow();
-            }
-        }
+				GetComponent<PlayerAudio>().PlaceWindow();
+			}
+		}
 		else
 		{
-            // Not Aiming...
-            if (heartWindow.activeSelf)
-            {
-                heartWindow.SetActive(false);
-                GetComponent<PlayerAudio>().CloseWindow();
-            }
+			// Not Aiming...
+			if (heartWindow.activeSelf)
+			{
+				heartWindow.SetActive(false);
+				GetComponent<PlayerAudio>().CloseWindow();
+			}
 
-        }
-    }
+		}
+	}
 
 	/// <summary> Function to get transform of where the held object should be. </summary>
 	/// <returns> Returns a reference to the player's heldObjectLocation transform. </returns>
