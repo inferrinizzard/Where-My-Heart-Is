@@ -24,9 +24,9 @@ public class World : MonoBehaviour
 	{
 		foreach (Transform child in worldContainer.transform)
 		{
+			child.gameObject.layer = LayerMask.NameToLayer(layer);
 			if (child.GetComponent<MeshFilter>())
 			{
-				child.gameObject.layer = LayerMask.NameToLayer(layer);
 				if (child.GetComponent<ClipableObject>() == null)
 				{
 					child.gameObject.AddComponent<ClipableObject>();
