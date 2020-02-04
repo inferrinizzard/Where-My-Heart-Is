@@ -20,12 +20,11 @@ public class ClipableObject : MonoBehaviour
 		isClipped = false;
 
 		meshFilter = GetComponent<MeshFilter>() ?? gameObject.AddComponent<MeshFilter>();
-
-		initialMesh = meshFilter.mesh;
+		if(meshFilter != null) initialMesh = meshFilter.mesh;
 		oldLayer = gameObject.layer;
 	}
 
-	public bool IntersectsBound(Transform boundTransform, CSG.Model bound)
+	public virtual bool IntersectsBound(Transform boundTransform, CSG.Model bound)
 	{
 		CSG.Model model = new CSG.Model(meshFilter.mesh);
 		model.ConvertCoordinates(transform, boundTransform);

@@ -11,7 +11,28 @@ public class EntangledClipable : ClipableObject
 
 	string entangledName = $"[|]"; // todo compound names
 
-	public bool Visable
+    private void Start()
+    {
+        foreach (Transform child in realObject.transform)
+        {
+            child.gameObject.layer = realObject.layer;
+            if (child.GetComponent<MeshFilter>() != null)
+            {
+                child.gameObject.AddComponent<ClipableObject>();
+            }
+        }
+
+        foreach (Transform child in dreamObject.transform)
+        {
+            child.gameObject.layer = dreamObject.layer;
+            if (child.GetComponent<MeshFilter>() != null)
+            {
+                child.gameObject.AddComponent<ClipableObject>();
+            }
+        }
+    }
+
+    public bool Visable
 	{
 		get => dreamVersion.gameObject.GetComponent<MeshRenderer>().enabled;
 

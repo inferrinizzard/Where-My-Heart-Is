@@ -57,7 +57,27 @@ public class Window : MonoBehaviour
 		// entangled objects have both real and dream world components, which are cut properly by their entangled clipable
 		foreach (EntangledClipable clipableObject in world.GetEntangledObjects())
 		{
-			// less expensive, less accurate intersection check
+            foreach (ClipableObject clipable in clipableObject.transform.GetComponentsInChildren<ClipableObject>())
+            {
+                if (clipable == clipableObject) continue;
+                // less expensive, less accurate intersection check
+                if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipable.GetComponent<MeshFilter>().mesh.bounds))
+                {
+                    // more expensive, more accurate intersection check
+                    if (clipable.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
+                    {
+                        if (clipable.gameObject.layer == 9)
+                        {
+                            clipable.Subtract(fieldOfView, csgOperator);
+                        }
+                        else
+                        {
+                            clipable.UnionWith(fieldOfView, csgOperator);
+                        }
+                    }
+                }
+            }
+			/*// less expensive, less accurate intersection check
 			if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.realVersion.GetComponent<Collider>().bounds) ||
 				fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.dreamVersion.GetComponent<Collider>().bounds))
 			{
@@ -66,7 +86,7 @@ public class Window : MonoBehaviour
 				{
 					clipableObject.UnionWith(fieldOfView, csgOperator);
 				}
-			}
+			}*/
 		}
 	}
 }
