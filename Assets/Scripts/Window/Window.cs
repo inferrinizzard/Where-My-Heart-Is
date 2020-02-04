@@ -11,60 +11,62 @@ public class Window : MonoBehaviour
 {
 	public World world;
 	public GameObject fieldOfView;
-    public CSG.Model fieldOfViewModel;
+	MeshCollider fovMeshCollider; //assign
+	public CSG.Model fieldOfViewModel;
 
 	private CSG.Operations csgOperator;
 
 	void Start()
 	{
 		csgOperator = GetComponent<CSG.Operations>();
-        fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
-    }
+		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
+	}
 
 	public void ApplyCut()
 	{
 		world.ResetCut();
 
-        // real world objects get intersected with the bound
-        foreach (ClipableObject clipableObject in world.GetRealObjects())
+		// real world objects get intersected with the bound
+		foreach (ClipableObject clipableObject in world.GetRealObjects())
 		{
-            // less expensive, less accurate intersection check
-            if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
-            {
-                // more expensive, more accurate intersection check
-                if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
-                {
-			        clipableObject.UnionWith(fieldOfView, csgOperator);
-                }
-            }
+			// less expensive, less accurate intersection check
+			if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
+			{
+				// more expensive, more accurate intersection check
+				if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
+				{
+					clipableObject.UnionWith(fieldOfView, csgOperator);
+				}
+			}
 		}
 
-        // dream world objects get the bound subtracted from them
+		// dream world objects get the bound subtracted from them
 		foreach (ClipableObject clipableObject in world.GetDreamObjects())
 		{
-            // less expensive, less accurate intersection check
-            if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
-            {
-                // more expensive, more accurate intersection check
-                if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
-                {
-                    clipableObject.Subtract(fieldOfView, csgOperator);
-                }
-            }
+			// less expensive, less accurate intersection check
+			if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
+			{
+				// more expensive, more accurate intersection check
+				if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
+				{
+					clipableObject.Subtract(fieldOfView, csgOperator);
+				}
+			}
 		}
 
-        // entangled objects have both real and dream world components, which are cut properly by their entangled clipable
+		// entangled objects have both real and dream world components, which are cut properly by their entangled clipable
 		foreach (EntangledClipable clipableObject in world.GetEntangledObjects())
 		{
-            // less expensive, less accurate intersection check
-            if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
-            {
-                // more expensive, more accurate intersection check
-                if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
-                {
-                    clipableObject.UnionWith(fieldOfView, csgOperator);
-                }
-            }
+			// less expensive, less accurate intersection check
+			if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.realVersion.GetComponent<Collider>().bounds) ||
+				fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.dreamVersion.GetComponent<Collider>().bounds))
+			{
+				// more expensive, more accurate intersection check
+				if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
+				{
+					clipableObject.UnionWith(fieldOfView, csgOperator);
+				}
+			}
 		}
 	}
 }
