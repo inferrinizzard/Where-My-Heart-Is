@@ -7,18 +7,28 @@ public class ApplyMask : MonoBehaviour
 {
 	[SerializeField] Camera realCam = default;
 	Camera dreamCam;
-
 	[SerializeField] Shader merge = default;
 	Material screenMat;
-	// Start is called before the first frame update
+
+	Texture2D mask;
+	RenderTexture real;
 	void Start()
 	{
 		screenMat = new Material(merge);
+		real = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
+		realCam.targetTexture = real;
 	}
 
-	// Update is called once per frame
-	void Update()
+	public void AssignMask(Texture2D mask)
 	{
+		this.mask = mask;
+		screenMat.SetTexture("_Mask", mask);
+	}
 
+	void OnRenderImage(RenderTexture source, RenderTexture dest)
+	{
+		screenMat.SetTexture("_Dream", source);
+		screenMat.SetTexture("_Real", real);
+		Graphics.Blit(source, dest, screenMat);
 	}
 }

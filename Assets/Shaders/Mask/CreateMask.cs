@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class CreateMask : MonoBehaviour
 {
+	[SerializeField] ApplyMask apply = default;
 	Camera maskCam;
-	// Start is called before the first frame update
 	void Start()
 	{
 		maskCam = GetComponent<Camera>();
@@ -20,14 +20,15 @@ public class CreateMask : MonoBehaviour
 		Texture2D mask = new Texture2D(maskCam.targetTexture.width, maskCam.targetTexture.height);
 		mask.ReadPixels(new Rect(0, 0, maskCam.targetTexture.width, maskCam.targetTexture.height), 0, 0);
 		mask.Apply();
+		apply.AssignMask(mask);
 
 		// maskCam.targetTexture = null;
 		// RenderTexture.ReleaseTemporary(capture);
 		RenderTexture.active = currentScreen;
 		maskCam.Render();
 
-		byte[] bytes = mask.EncodeToPNG();
-		System.IO.File.WriteAllBytes("Assets/Resources/Mask.png", bytes);
+		// byte[] bytes = mask.EncodeToPNG();
+		// System.IO.File.WriteAllBytes("Assets/Resources/Mask.png", bytes);
 		StartCoroutine(WaitFrames());
 
 	}

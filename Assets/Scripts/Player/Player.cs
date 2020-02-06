@@ -282,10 +282,12 @@ public class Player : MonoBehaviour
 			if (!heartWindow.activeSelf)
 			{
 				heartWindow.SetActive(true);
+				cam.GetComponent<Effects>().ToggleMask(true);
 				GetComponent<PlayerAudio>().OpenWindow();
 			}
 			if (Input.GetMouseButtonDown(0))
 			{
+				cam.GetComponent<Effects>().ToggleMask(false);
 				heartWindow.GetComponent<Window>().ApplyCut();
 				GetComponent<PlayerAudio>().PlaceWindow();
 			}
@@ -296,6 +298,7 @@ public class Player : MonoBehaviour
 			if (heartWindow.activeSelf)
 			{
 				heartWindow.SetActive(false);
+				cam.GetComponent<Effects>().ToggleMask(false);
 				GetComponent<PlayerAudio>().CloseWindow();
 			}
 
