@@ -2,28 +2,92 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class World : MonoBehaviour
 {
-	int count = 0;
+	public Transform realWorldContainer;
+	public Transform dreamWorldContainer;
+	public Transform entangledWorldContainer;
+	public Player player; // TODO: phase out by using player object
+	public static GameObject playerReference;
 
-#if UNITY_EDITOR
-	void Start()
+	void Awake()
 	{
-		count = transform.childCount;
+		realWorldContainer = transform.Find("Real World");
+		dreamWorldContainer = transform.Find("Dream World");
+
+		ConfigureWorld("Real", realWorldContainer);
+		ConfigureWorld("Dream", dreamWorldContainer);
+		ConfigureInteractables(transform);
 	}
 
-	void OnTransformChildrenChanged()
+	private void ConfigureWorld(string layer, Transform worldContainer)
 	{
-		count = transform.childCount;
-		foreach (Transform child in transform)
-			if (child.GetComponent<WorldObject>() == null)
+		foreach (Transform child in worldContainer.transform)
+		{
+			if (child.GetComponent<MeshFilter>())
 			{
-				int numComponents = child.GetComponents<Component>().Length;
-				var worldObjRef = child.gameObject.AddComponent<WorldObject>();
-				for (int i = 0; i < numComponents; i++)
-					UnityEditorInternal.ComponentUtility.MoveComponentUp(worldObjRef);
+				child.gameObject.layer = LayerMask.NameToLayer(layer);
+				if (child.GetComponent<ClipableObject>() == null)
+				{
+					child.gameObject.AddComponent<ClipableObject>();
+				}
 			}
+
+			ConfigureWorld(layer, child); // do this recursively to hit everything in the given world
+		}
 	}
-#endif
+
+	void ConfigureInteractables(Transform parent)
+	{
+		foreach (Transform child in parent)
+		{
+			if (child.childCount > 0)
+				ConfigureInteractables(child);
+			var childInteractable = child.GetComponent<InteractableObject>();
+			if (childInteractable != null)
+				childInteractable.player = player;
+		}
+	}
+
+	public void ResetCut()
+	{
+		foreach (Transform child in realWorldContainer)
+		{
+			foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
+			{
+				if (obj.isClipped)obj.Revert();
+			}
+		}
+
+		foreach (Transform child in dreamWorldContainer)
+		{
+			foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
+			{
+				if (obj.isClipped)obj.Revert();
+			}
+		}
+
+		foreach (Transform child in entangledWorldContainer)
+		{
+			foreach (ClipableObject obj in child.GetComponentsInChildren<EntangledClipable>())
+			{
+				if (obj.isClipped)obj.Revert();
+			}
+		}
+	}
+
+	public ClipableObject[] GetRealObjects()
+	{
+		return realWorldContainer.GetComponentsInChildren<ClipableObject>();
+	}
+
+	public ClipableObject[] GetDreamObjects()
+	{
+		return dreamWorldContainer.GetComponentsInChildren<ClipableObject>();
+	}
+
+	public ClipableObject[] GetEntangledObjects()
+	{
+		return entangledWorldContainer.GetComponentsInChildren<EntangledClipable>();
+	}
 }

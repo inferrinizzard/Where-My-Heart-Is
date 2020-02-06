@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class Lock : InteractableObject
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	public GameObject oneVersion;
+	public GameObject otherVersion;
+	public GameObject otherLock;
+	public GameObject key;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	public override void Interact()
+	{
+		if (key.activeSelf == false)
+		{
+			oneVersion.SetActive(false);
+			otherVersion.SetActive(false);
+			otherLock.SetActive(false);
+			this.gameObject.SetActive(false);
 
-    public override void Interact()
-    {
-        this.gameObject.SetActive(false);
-    }
+		}
+	}
 }

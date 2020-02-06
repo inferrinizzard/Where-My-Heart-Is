@@ -4,56 +4,56 @@ using UnityEngine;
 
 public class Key : Pickupable
 {
+	public Lock _lock;
 
-    public Lock _lock;
+	Vector3 oopsDropped;
+	Quaternion oopsDroppedRot;
 
-    private Transform originPosition;
+	void Update()
+	{
+		if (active)
+		{
+			// If the object is being held, run Holding.
+			//if (player.holding) Holding();
 
-    void Awake()
-    {
-        originPosition = transform;
-        Debug.Log(transform.position.x + ", " + transform.position.y + ", " + transform.position.z);
-        Debug.Log(originPosition);
-    }
+			// If the object is being inspected, run Looking.
+			if (player.looking)Looking();
+		}
+	}
 
-    void Update()
-    {
-        if (active)
-        {
-            // If the object is being held, run Holding.
-            if (player.holding) Holding();
+	public override void Interact()
+	{
+		if (!player.holding)
+		{
+			player.holding = true;
 
-            // If the object is being inspected, run Looking.
-            if (player.looking) Looking();
-        }
-    }
+			// save the old parent to revert to later
+			oopsDropped = transform.position;
+			oopsDroppedRot = transform.rotation;
+			oldParent = transform.parent;
+			transform.parent = player.GetHeldObjectLocation(); // set the new parent to the hold object location object
+			transform.localPosition = Vector3.zero; // set the position to local zero to match the position of the hold object location target
+		}
+		else if (player.looking)
+		{
+			player.looking = false;
+		}
+		else
+		{
+			player.holding = false;
+			transform.parent = oldParent;
 
-    public override void Interact()
-    {
-        if (!player.holding)
-        {
-            player.holding = true;
-        }
-        else if (player.looking)
-        {
-            player.looking = false;
-        }
-        else
-        {
-            transform.parent = null;
-
-            if(Vector3.Distance(transform.position, _lock.transform.position) < 2 && _lock != null)
-            {
-                this.gameObject.SetActive(false);
-                _lock.Interact();
-            }
-            else
-            {
-                Debug.Log("Oops you dropped this");
-                transform.position = originPosition.position;
-                transform.rotation = originPosition.rotation;
-            }
-            player.holding = false;
-        }
-    }
+			if (Vector3.Distance(transform.position, _lock.transform.position) < 2 && _lock != null && _lock.gameObject.layer == 9)
+			{
+				this.gameObject.SetActive(false);
+				_lock.Interact();
+			}
+			else
+			{
+				Debug.Log("Oops you dropped this");
+				transform.position = oopsDropped;
+				transform.rotation = oopsDroppedRot;
+			}
+		}
+	}
 }

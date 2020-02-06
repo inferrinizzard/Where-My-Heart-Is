@@ -4,64 +4,97 @@ using UnityEngine;
 
 public class ClipableObject : MonoBehaviour
 {
-    //private GameObject result;
-    public bool volumeless;
+	public bool volumeless;
 
+    [HideInInspector] public InteractableObject tiedInteractable;
+	[HideInInspector] public bool isClipped;
+    [HideInInspector] public GameObject uncutCopy;
+
+	private int oldLayer;
 	private Mesh initialMesh;
-    private GameObject uncutCopy;
+	private MeshFilter meshFilter;
 
-    int oldLayer;
 
-	void Start()
+	void Awake()
 	{
-		if (GetComponent<MeshFilter>() == null)
-		{
-			gameObject.AddComponent<MeshFilter>();
-		}
+		isClipped = false;
 
-		initialMesh = GetComponent<MeshFilter>().mesh;
-        oldLayer = gameObject.layer;
+		meshFilter = GetComponent<MeshFilter>() ?? gameObject.AddComponent<MeshFilter>();
+		if(meshFilter != null) initialMesh = meshFilter.mesh;
+		oldLayer = gameObject.layer;
 	}
 
-    // TODO: APPLY IN PLACE
+	public virtual bool IntersectsBound(Transform boundTransform, CSG.Model bound)
+	{
+		CSG.Model model = new CSG.Model(meshFilter.mesh);
+		model.ConvertCoordinates(transform, boundTransform);
+		return model.Intersects(bound, 0.001f);
+	}
+
 	public virtual void UnionWith(GameObject other, CSG.Operations operations)
 	{
-        uncutCopy = GameObject.Instantiate(gameObject, transform.position, transform.rotation, transform);
-        uncutCopy.transform.localScale = new Vector3(1,1,1);
-        oldLayer = gameObject.layer;
-        gameObject.layer = 9;
+		isClipped = true;
+		uncutCopy = GameObject.Instantiate(gameObject, transform.position, transform.rotation, transform);
+		uncutCopy.transform.localScale = Vector3.one;
+		oldLayer = gameObject.layer;
+		gameObject.layer = 9;
+		//GetComponent<Collider>().enabled = true;
+        
 
-        if (!volumeless)
+		if (!volumeless)
+		{
+			meshFilter.mesh = operations.Intersect(gameObject, other);
+		}
+		else
+		{
+			meshFilter.mesh = operations.ClipAToB(gameObject, other);
+		}
+
+        if (GetComponent<MeshCollider>() != null)
         {
-            GetComponent<MeshFilter>().mesh = operations.Union(gameObject, other);
+            GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
         }
-        else
-        {
-            GetComponent<MeshFilter>().mesh = operations.ClipAToB(gameObject, other);
-        }
+
+        UpdateInteractable();
     }
 
     public virtual void Revert()
-    {
-        gameObject.layer = oldLayer;
-        GetComponent<MeshFilter>().mesh = initialMesh;
-        if(uncutCopy) Destroy(uncutCopy);
+	{
+		gameObject.layer = oldLayer;
+		meshFilter.mesh = initialMesh;
+		//GetComponent<Collider>().enabled = false;
+        if (uncutCopy != null)
+        {
+            DestroyImmediate(uncutCopy);
+        }
+
+        UpdateInteractable();
     }
 
-    // TODO: APPLY IN PLACE
     public void Subtract(GameObject other, CSG.Operations operations)
 	{
-        oldLayer = gameObject.layer;
-        
-        if (!volumeless)
+		isClipped = true;
+
+		oldLayer = gameObject.layer;
+
+		if (!volumeless)
+		{
+			meshFilter.mesh = operations.Subtract(gameObject, other);
+		}
+		else
+		{
+			meshFilter.mesh = operations.ClipAToB(gameObject, other, false);
+		}
+
+        UpdateInteractable();
+    }
+
+    private void UpdateInteractable()
+    {
+        if(tiedInteractable != null)
         {
-            GetComponent<MeshFilter>().mesh = operations.Subtract(gameObject, other);
-        }
-        else
-        {
-            GetComponent<MeshFilter>().mesh = operations.ClipAToB(gameObject, other, false);
-            //GetComponent<MeshFilter>().mesh.RecalculateNormals();
-            //GetComponent<MeshFilter>().mesh.RecalculateTangents();
+            tiedInteractable.GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
+            tiedInteractable.gameObject.layer = gameObject.layer;
         }
     }
 }
