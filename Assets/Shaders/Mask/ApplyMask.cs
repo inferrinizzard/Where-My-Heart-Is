@@ -10,7 +10,7 @@ public class ApplyMask : MonoBehaviour
 	[SerializeField] Shader merge = default;
 	Material screenMat;
 
-	Texture2D mask;
+	public Texture2D mask;
 	RenderTexture real;
 	void Start()
 	{

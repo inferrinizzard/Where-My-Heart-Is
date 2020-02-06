@@ -4,14 +4,21 @@ using UnityEngine;
 
 public class CreateMask : MonoBehaviour
 {
+	RenderTexture maskRT;
+	Camera maskCam;
+
 	void Start()
 	{
-		var maskCam = GetComponent<Camera>();
-		maskCam.backgroundColor = Color.black;
+		maskCam = GetComponent<Camera>();
+		// maskCam.cullingMask = 1 << LayerMask.NameToLayer("Mask");
+		// maskCam.clearFlags = CameraClearFlags.SolidColor;
+		// maskCam.depth = 0;
+		maskCam.backgroundColor = new Color(0, 0, 0, 0);
+
+		// maskRT = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.R8);
+		// maskCam.targetTexture = maskRT;
 
 		var currentScreen = RenderTexture.active;
-		// var capture = RenderTexture.GetTemporary(Screen.width, Screen.height, 16, RenderTextureFormat.R8);
-		// maskCam.targetTexture = capture;
 		RenderTexture.active = maskCam.targetTexture;
 		maskCam.Render();
 
@@ -20,15 +27,9 @@ public class CreateMask : MonoBehaviour
 		mask.Apply();
 		GetComponentInParent<ApplyMask>().AssignMask(mask);
 
-		// maskCam.targetTexture = null;
-		// RenderTexture.ReleaseTemporary(capture);
 		RenderTexture.active = currentScreen;
-		maskCam.Render();
 
-		// byte[] bytes = mask.EncodeToPNG();
-		// System.IO.File.WriteAllBytes("Assets/Resources/Mask.png", bytes);
 		StartCoroutine(WaitFrames());
-
 	}
 
 	IEnumerator WaitFrames(int frames = 2)
@@ -37,7 +38,6 @@ public class CreateMask : MonoBehaviour
 		while (i++ < frames)
 			yield return null;
 		gameObject.SetActive(false);
-		Destroy(this);
-		Destroy(gameObject);
+		// Destroy(gameObject);
 	}
 }
