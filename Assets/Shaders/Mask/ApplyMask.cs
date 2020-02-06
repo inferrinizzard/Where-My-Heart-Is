@@ -16,6 +16,7 @@ public class ApplyMask : MonoBehaviour
 	{
 		screenMat = new Material(merge);
 		real = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
+		real.name = "Real World";
 		realCam.targetTexture = real;
 	}
 
