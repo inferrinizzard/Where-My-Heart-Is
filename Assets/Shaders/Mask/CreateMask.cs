@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class CreateMask : MonoBehaviour
 {
-	[SerializeField] ApplyMask apply = default;
-	Camera maskCam;
 	void Start()
 	{
-		maskCam = GetComponent<Camera>();
+		var maskCam = GetComponent<Camera>();
 		maskCam.backgroundColor = Color.black;
 
 		var currentScreen = RenderTexture.active;
@@ -20,7 +18,7 @@ public class CreateMask : MonoBehaviour
 		Texture2D mask = new Texture2D(maskCam.targetTexture.width, maskCam.targetTexture.height);
 		mask.ReadPixels(new Rect(0, 0, maskCam.targetTexture.width, maskCam.targetTexture.height), 0, 0);
 		mask.Apply();
-		apply.AssignMask(mask);
+		GetComponentInParent<ApplyMask>().AssignMask(mask);
 
 		// maskCam.targetTexture = null;
 		// RenderTexture.ReleaseTemporary(capture);
@@ -40,5 +38,6 @@ public class CreateMask : MonoBehaviour
 			yield return null;
 		gameObject.SetActive(false);
 		Destroy(this);
+		Destroy(gameObject);
 	}
 }

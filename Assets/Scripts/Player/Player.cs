@@ -13,6 +13,8 @@ public class Player : MonoBehaviour
 	private CharacterController characterController;
 	/// <summary> Reference to player Camera. </summary>
 	private Camera cam;
+
+	private Effects VFX;
 	/// <summary> Empty GameObject for where to put a Pickupable object. </summary>
 	[HideInInspector] public Transform heldObjectLocation;
 	/// <summary> Reference to a Pickupable object that has been picked up. </summary>
@@ -75,6 +77,7 @@ public class Player : MonoBehaviour
 		// base.Awake();
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
+		VFX = cam.GetComponent<Effects>();
 		heartWindow = GetComponentInChildren<Window>().gameObject;
 
 		// Get reference to the player height using the CharacterController's height.
@@ -282,12 +285,12 @@ public class Player : MonoBehaviour
 			if (!heartWindow.activeSelf)
 			{
 				heartWindow.SetActive(true);
-				cam.GetComponent<Effects>().ToggleMask(true);
+				VFX.ToggleMask(true);
 				GetComponent<PlayerAudio>().OpenWindow();
 			}
 			if (Input.GetMouseButtonDown(0))
 			{
-				cam.GetComponent<Effects>().ToggleMask(false);
+				VFX.ToggleMask(false);
 				heartWindow.GetComponent<Window>().ApplyCut();
 				GetComponent<PlayerAudio>().PlaceWindow();
 			}
@@ -298,7 +301,7 @@ public class Player : MonoBehaviour
 			if (heartWindow.activeSelf)
 			{
 				heartWindow.SetActive(false);
-				cam.GetComponent<Effects>().ToggleMask(false);
+				VFX.ToggleMask(false);
 				GetComponent<PlayerAudio>().CloseWindow();
 			}
 

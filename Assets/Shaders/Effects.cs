@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Effects : MonoBehaviour
 {
-	public ApplyMask mask;
+	ApplyMask mask;
 
 	public void Awake()
 	{
