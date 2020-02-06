@@ -4,10 +4,18 @@
 	{
 		_Color ("Color", Color) = (1,1,1,1)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
-		_DissolveTex ("Dissolve Map", 2D) = "white" {}
-		_Dissolve ("Dissolve Amount", Range(0,1)) = 0.5
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
 		_Metallic ("Metallic", Range(0,1)) = 0.0
+		// [HDR] _Emission ("Emission", color) = (0,0,0)
+
+		[Header(Dissolve)]
+		_DissolveTex ("Dissolve Map", 2D) = "white" {}
+		_Dissolve ("Dissolve Amount", Range(0,1)) = 0.5
+
+		// [Header(Glow)]
+		// [HDR]_GlowColor("Color", Color) = (1, 1, 1, 1)
+		// _GlowRange("Range", Range(0, .3)) = 0.1
+		// _GlowFalloff("Falloff", Range(0.001, .3)) = 0.1
 	}
 	SubShader
 	{
@@ -33,8 +41,13 @@
 
 		half _Glossiness;
 		half _Metallic;
+		// half3 _Emission;
 		fixed _Dissolve;
 		fixed4 _Color;
+
+		// float3 _GlowColor;
+		// float _GlowRange;
+		// float _GlowFalloff;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -52,12 +65,16 @@
 			float isVisible = dissolve - exp(-camDist);
 			clip(isVisible);
 
+			// // // // float isGlowing = smoothstep(_GlowRange + _GlowFalloff, _GlowRange, isVisible);
+			// // float3 glow = isGlowing * _GlowColor;
+
 			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
 			o.Albedo = c.rgb;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
 			o.Alpha = c.a;
+			// o.Emission = _Emission + glow;
 		}
 		ENDCG
 	}
