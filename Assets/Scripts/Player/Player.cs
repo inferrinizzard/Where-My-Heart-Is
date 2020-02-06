@@ -89,6 +89,7 @@ public class Player : MonoBehaviour
 	/// <summary> Called once at the start. </summary>
 	void Start()
 	{
+		Cursor.visible = false;
 		Cursor.lockState = CursorLockMode.Locked;
 		playerCanMove = true;
 		holding = false;
