@@ -94,6 +94,7 @@ public class Player : Singleton<Player>, IResetable
 		Init();
 	}
 
+	///	<summary> will reset movement vars and assign spawnpoint, reset window-world ref </summary>
 	public void Init()
 	{
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
@@ -103,13 +104,13 @@ public class Player : Singleton<Player>, IResetable
 		window.world = World.Instance;
 	}
 
+	///	<summary> reset pos, rendundant </summary>
 	public void Reset()
 	{
 		transform.position = Vector3.zero;
 		transform.eulerAngles = Vector3.zero;
 	}
 
-	/// <summary> Called once per frame. </summary>
 	void Update()
 	{
 

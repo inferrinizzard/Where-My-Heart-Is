@@ -13,6 +13,7 @@ public class World : Singleton<World>, IResetable
 		Init();
 	}
 
+	/// <summary> configures children and related clipables, interactables </summary>
 	public void Init()
 	{
 		realWorldContainer = transform.Find("Real World");
@@ -23,6 +24,7 @@ public class World : Singleton<World>, IResetable
 		ConfigureWorld("Dream", dreamWorldContainer);
 	}
 
+	/// <summary> removes refs and deletes current to pass singleton to next world </summary>
 	public void Reset()
 	{
 		realWorldContainer = null;
