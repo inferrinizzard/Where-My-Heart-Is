@@ -50,7 +50,7 @@ public class ClipableObject : MonoBehaviour
 			meshFilter.mesh = operations.ClipAToB(gameObject, other);
 		}
 
-        if (GetComponent<Collider>() != null)
+        if (GetComponent<MeshCollider>() != null)
         {
             GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
         }
@@ -60,6 +60,7 @@ public class ClipableObject : MonoBehaviour
 
     public virtual void Revert()
 	{
+        isClipped = false;
 		gameObject.layer = oldLayer;
 		meshFilter.mesh = initialMesh;
 		//GetComponent<Collider>().enabled = false;
