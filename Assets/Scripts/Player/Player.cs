@@ -98,6 +98,11 @@ public class Player : Singleton<Player>, IResetable
 	public void Init()
 	{
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
+		if (lastSpawn != null)
+		{
+			transform.position = lastSpawn.position;
+			transform.rotation = lastSpawn.rotation;
+		}
 		playerCanMove = true;
 		holding = false;
 		looking = false;
