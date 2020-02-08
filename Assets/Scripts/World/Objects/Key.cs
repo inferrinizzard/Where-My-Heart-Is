@@ -5,6 +5,7 @@ using UnityEngine;
 public class Key : Pickupable
 {
 	public Lock _lock;
+	public Lock otherlock;
 
 	Vector3 oopsDropped;
 	Quaternion oopsDroppedRot;
@@ -43,10 +44,12 @@ public class Key : Pickupable
 			player.holding = false;
 			transform.parent = oldParent;
 
-			if (Vector3.Distance(transform.position, _lock.transform.position) < 2 && _lock != null && _lock.gameObject.layer == 9)
+			if (Vector3.Distance(transform.position, _lock.transform.position) < 2 && _lock != null && _lock.gameObject.layer == 9
+				|| Vector3.Distance(transform.position, otherlock.transform.position) < 2 && otherlock != null && otherlock.gameObject.layer == 9)
 			{
 				this.gameObject.SetActive(false);
 				_lock.Interact();
+				otherlock.Interact();
 			}
 			else
 			{

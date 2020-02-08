@@ -7,6 +7,7 @@ using UnityEngine;
 // public class Player : Singleton<Player>
 public class Player : MonoBehaviour
 {
+	/// <summary> Reference to the players last spawn. </summary>
 	[SerializeField] private Transform lastSpawn = default;
 
 	/// <summary> Reference to player CharacterController. </summary>
@@ -25,11 +26,11 @@ public class Player : MonoBehaviour
 	private float playerHeight;
 	/// <summary> Whether the player can move or not. </summary>
 	private bool playerCanMove = true;
-
+	/// <summary> Whether the player is jumping or not. </summary>
 	private bool jumping = false;
+	/// <summary> Whether the player is crouching or not. </summary>
 	private bool crouching = false;
-
-	/// <summary> If the player is holding something or not. </summary>
+	/// <summary> Whether the player is holding something or not. </summary>
 	[HideInInspector] public bool holding = false;
 	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
 	[HideInInspector] public bool looking = false;
@@ -59,16 +60,16 @@ public class Player : MonoBehaviour
 	/// <summary> KeyCode for inspecting and picking up objects. </summary>
 	[SerializeField] private KeyCode pickUpKey = KeyCode.E;
 
-	// Camera Variables
+	[Header("Camera Variables")]
 	/// <summary> Minimum angle the player can look upward. </summary>
-	float minX = -90f;
+	private float minX = -90f;
 	/// <summary> Minimum angle the player can look downward. </summary>
-	float maxX = 90f;
+	private float maxX = 90f;
 
 	/// <summary> Stores the Y rotation of the player. </summary>
-	float rotationY = 0f;
+	private float rotationY = 0f;
 	/// <summary> Stores the X rotation of the player. </summary>
-	float rotationX = 0f;
+	private float rotationX = 0f;
 	/// <summary> Initializes variables before the game starts. </summary>
 	private void Awake()
 	{
@@ -130,7 +131,7 @@ public class Player : MonoBehaviour
 	{
 		// Get the Vertical and Horizontal Axes and scale them by movement speed.
 		moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-		moveDirection.Normalize();
+		//moveDirection.Normalize();
 		Vector3 horizontal = characterController.velocity - characterController.velocity.y * Vector3.up;
 		GetComponent<PlayerAudio>().SetWalkingVelocity(Mathf.RoundToInt(horizontal.magnitude) / speed);
 		// Scale the moveDirection to account for different runtimes.
@@ -236,9 +237,8 @@ public class Player : MonoBehaviour
 	private void PickUp()
 	{
 		// Check if the player is pressing the pick up key.
-		if (Input.GetKeyDown(pickUpKey))
+		if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
 		{
-
 			if (!holding && !looking)
 			{
 				// Raycast for what the player is looking at.
