@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -14,6 +15,10 @@ namespace CSG
 		/// </summary>
 		public List<Vertex> vertices;
 
+        public List<Edge> edges;// always 3 of these// to be found externally
+
+        public List<Intersection> internalIntersections;
+
 		/// <summary>
 		/// Creates a Triangle with the three given vertices
 		/// </summary>
@@ -24,7 +29,29 @@ namespace CSG
 		{
 			vertices = new List<Vertex> { a, b, c };
 			vertices.ForEach(v => v.triangles.Add(this));
+            edges = new List<Edge>();
+            internalIntersections = new List<Intersection>();
 		}
+
+        public List<Vertex> GetPerimeter()
+        {
+            List<Vertex> perimeter = new List<Vertex>();
+
+            for(int i = 0; i < 3; i++)
+            {
+                perimeter.Add(vertices[i]);
+                List<Vertex> edgeIntersections = edges[i].intersections.Select(intersection => intersection.vertex).ToList();
+
+                edgeIntersections.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, vertices[i].value) - Vector3.Distance(b.value, vertices[i].value)));
+
+                perimeter.AddRange(edgeIntersections);
+            }
+
+            //TODO evaluate whether this is needed or not
+            perimeter.Add(vertices[0]);// as a sentinal
+
+            return perimeter;
+        }
 
 		/// <summary>
 		/// Determines whether the given Vertex is one of this Triangle's vertices

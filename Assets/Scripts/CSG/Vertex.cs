@@ -36,6 +36,16 @@ namespace CSG
         public List<Triangle> triangles;
 
         /// <summary>
+        /// A list of cuts across the associated triangle.
+        /// </summary>
+        /// <remarks>
+        /// Typically, there will be only one cut, but occasionally there are multiple.
+        /// </remarks>
+        public List<Cut> cuts;
+
+        public bool fromIntersection;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="index">Index in the mesh's vertex array</param>
@@ -47,8 +57,10 @@ namespace CSG
             this.value = value;
 
             loops = new List<EdgeLoop>();
-            usedInLoop = false;
             triangles = new List<Triangle>();
+            cuts = new List<Cut>();
+            usedInLoop = false;
+            fromIntersection = false; 
         }
 
         /// <summary>
@@ -96,6 +108,12 @@ namespace CSG
             // count #
             // if odd, return true, else return false
             return positiveIntersections.Count % 2 == 1;// && negativeIntersections.Count % 2 == 1;
+        }
+
+        public bool LiesOnEdge(Edge edge)
+        {
+            float error = 0.001f;
+            return Raycast.PointLiesOnLineSegment(value, edge.vertices[0].value, edge.vertices[1].value, error);
         }
 
         /// <summary>
@@ -200,6 +218,68 @@ namespace CSG
             // if they are even, vertex is not contained
             return intersectionsAbove % 2 == 1 && intersectionsBelow % 2 == 1;
             // ENDLINQ
+        }
+
+        /// <summary>
+        /// Finds and returns the cut among cuts which travels the furthest around the perimeter of the triangle
+        /// </summary>
+        /// <param name="perimeter">The perimeter in question</param>
+        /// <returns>The cut that travels the furthest</returns>
+        public Cut GetFurthestCut(List<Vertex> perimeter)
+        {
+            Cut bestCut = null;
+            int bestCutIndex = -1;
+
+            foreach (Cut cut in cuts)
+            {
+                if (cut.traversed == false)
+                {
+                    int perimeterIndex = perimeter.IndexOf(cut[cut.Count - 1]);
+                    if (perimeterIndex > bestCutIndex)
+                    {
+                        bestCut = cut;
+                        bestCutIndex = perimeterIndex;
+                    }
+                }
+            }
+
+            return bestCut;
+        }
+
+        /// <summary>
+        /// Finds and returns the cut among cuts which travels the furthest around the perimeter of the triangle 
+        /// while still terminating at a perimeter index between the given constraints.
+        /// </summary>
+        /// <param name="perimeter">The perimeter in question</param>
+        /// <param name="ignore">A cut that should be ignored when searching for the furthest cut</param>
+        /// <param name="minIndex">The minimum index a cut must arrive at to be returned</param>
+        /// <param name="targetIndex">The index of the initial vertex of the current loop being traversed</param>
+        /// <returns>The cut satisfying all constraints</returns>
+        public Cut GetFurthestCut(List<Vertex> perimeter, Cut ignore, int minIndex, int targetIndex)
+        {
+            Cut bestCut = null;
+            int bestCutIndex = -1;
+
+            foreach (Cut cut in cuts)
+            {
+                if (cut.traversed == false && cut != ignore)
+                {
+                    int perimeterIndex = perimeter.IndexOf(cut[cut.Count - 1]);
+                    if (perimeterIndex > bestCutIndex)
+                    {
+                        bestCut = cut;
+                        bestCutIndex = perimeterIndex;
+                    }
+                }
+            }
+
+            if (bestCutIndex < minIndex && bestCutIndex != targetIndex)
+            {
+                //Debug.Log(bestCutIndex);
+                return null;
+            }
+
+            return bestCut;
         }
     }
 }

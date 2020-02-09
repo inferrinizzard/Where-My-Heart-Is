@@ -99,35 +99,54 @@ namespace CSG
         /// <returns></returns>
         public static Vertex RayToTriangle(Vector3 origin, Vector3 direction, Triangle triangle)
         {
-            Vector3 q1 = origin + direction * 50;
-            Vector3 q2 = origin - direction * 50;
+            // if the ray intersects the triangle, we can find the specific point at which it does
 
-            // first, determine whether the ray intersects the triangle
-            if (SignedVolume(q1, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) !=
-                SignedVolume(q2, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) &&
-                SignedVolume(q1, q2, triangle.vertices[0].value, triangle.vertices[1].value) ==
-                SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) &&
-                SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) ==
-                SignedVolume(q1, q2, triangle.vertices[2].value, triangle.vertices[0].value)
-                )
+            // determine equation of plane
+            Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
+            Vector3 planePoint = triangle.vertices[0].value;
+
+            // get ray intersection with plane,
+            float numerator = normal.x * (planePoint.x - origin.x) + normal.y * (planePoint.y - origin.y) + normal.z * (planePoint.z - origin.z);
+            float denominator = normal.x * direction.x + normal.y * direction.y + normal.z * direction.z;
+            Vector3 intersectionPoint = ((numerator / denominator) * direction) + origin;
+
+            Vertex intersection = new Vertex(0, intersectionPoint);
+            if (intersection.LiesWithinTriangle(triangle))
             {
-                // if the ray intersects the triangle, we can find the specific point at which it does
-
-                // determine equation of plane
-                Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
-                Vector3 planePoint = triangle.vertices[0].value;
-
-                // get ray intersection with plane,
-                float numerator = normal.x * (planePoint.x - origin.x) + normal.y * (planePoint.y - origin.y) + normal.z * (planePoint.z - origin.z);
-                float denominator = normal.x * direction.x + normal.y * direction.y + normal.z * direction.z;
-                Vector3 intersectionPoint = ((numerator / denominator) * direction) + origin;
-
-                return new Vertex(0, intersectionPoint);
+                return intersection;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
+
+            /* Vector3 q1 = origin + direction * 50;
+             Vector3 q2 = origin - direction * 50;
+
+             // first, determine whether the ray intersects the triangle
+             if (SignedVolume(q1, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) !=
+                 SignedVolume(q2, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) &&
+                 SignedVolume(q1, q2, triangle.vertices[0].value, triangle.vertices[1].value) ==
+                 SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) &&
+                 SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) ==
+                 SignedVolume(q1, q2, triangle.vertices[2].value, triangle.vertices[0].value)
+                 )
+             {
+                 // if the ray intersects the triangle, we can find the specific point at which it does
+
+                 // determine equation of plane
+                 Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
+                 Vector3 planePoint = triangle.vertices[0].value;
+
+                 // get ray intersection with plane,
+                 float numerator = normal.x * (planePoint.x - origin.x) + normal.y * (planePoint.y - origin.y) + normal.z * (planePoint.z - origin.z);
+                 float denominator = normal.x * direction.x + normal.y * direction.y + normal.z * direction.z;
+                 Vector3 intersectionPoint = ((numerator / denominator) * direction) + origin;
+
+                 return new Vertex(0, intersectionPoint);
+             }
+             else
+             {
+                 return null;
+             }*/
         }
 
         /// <summary>
