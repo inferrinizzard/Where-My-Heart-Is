@@ -11,11 +11,17 @@ public class Die : PlayerState
 
     public override void Start()
     {
-        if (player.characterController.velocity.y < -30)
+        if (player.transform.position.y < player.deathPlane.transform.position.y)
         {
             if (player.lastSpawn == null) Debug.LogWarning("Missing spawn point");
-            player.transform.position = player.lastSpawn == null ? Vector3.zero : player.lastSpawn.position; // Reset the player to the spawnpoint.
+
+            // Set the player position to the spawnpoint
+            player.transform.position = player.lastSpawn == null ? Vector3.zero : player.lastSpawn.position;
             player.verticalVelocity = 0;
+
+            // Set the player rotation to the spawnpoint
+            player.rotationX = player.lastSpawn.rotation.x;
+            player.rotationY = player.lastSpawn.rotation.y;
         }
     }
 }

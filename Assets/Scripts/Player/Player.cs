@@ -35,7 +35,12 @@ public class Player : StateMachine
 	/// <summary> Vector3 to store and calculate move direction. </summary>
 	private Vector3 moveDirection;
 
+	[Header("Game Object References")]
+	/// <summary> Reference to heart window. </summary>
 	public GameObject heartWindow;
+	/// <summary> Reference to death plane. </summary>
+	public GameObject deathPlane;
+
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
 	[SerializeField] private float speed = 5f;
@@ -63,9 +68,9 @@ public class Player : StateMachine
 	private float maxX = 90f;
 
 	/// <summary> Stores the Y rotation of the player. </summary>
-	private float rotationY = 0f;
+	[HideInInspector] public float rotationY = 0f;
 	/// <summary> Stores the X rotation of the player. </summary>
-	private float rotationX = 0f;
+	[HideInInspector] public float rotationX = 0f;
 
 	/// <summary> Initializes variables before the game starts. </summary>
 	private void Awake()
