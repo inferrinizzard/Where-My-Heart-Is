@@ -73,10 +73,12 @@
 		}
 		void surf (Input IN, inout SurfaceOutputStandard o)
 		{
-			// fixed c = tex2D (_BlotchTex, IN.uv_BlotchTex).r;
-			// c *= _BlotchMulti;
-			// c -= _BlotchSub;			
-			// c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
+			fixed c = tex2D (_BlotchTex, IN.uv_BlotchTex).r;
+			c *= _BlotchMulti;
+			c -= _BlotchSub;			
+			c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
+			c = tex2D (_RampTex, half2(c, 0)).r;
+			c = saturate(c);
 
 			// float fresnel = dot(IN.worldNormal, IN.viewDir);
 			// fresnel = saturate(1 - fresnel);
@@ -95,10 +97,12 @@
 
 			float fresnel = dot(IN.worldNormal, IN.viewDir);
 			fresnel = saturate(1 - fresnel);
-			fresnel = pow(fresnel, _FresnelExponent);
-			fixed sat = tex2D (_RampTex, fixed2(fresnel * _RampTex_TexelSize.z, 0)).r;
-			saturate(sat);
-			o.Albedo = sat;
+			fresnel = pow(fresnel, _FresnelExponent-1);
+			fresnel = saturate(1 - fresnel);
+			// fixed sat = tex2D (_RampTex, fixed2(fresnel * _RampTex_TexelSize.z, 0)).r;
+			// saturate(sat);
+			// o.Albedo = sat;
+			o.Albedo = c * fresnel;
 		}
 		ENDCG
 	}
