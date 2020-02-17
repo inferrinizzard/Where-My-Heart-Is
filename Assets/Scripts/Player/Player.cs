@@ -2,55 +2,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary Handles player movement and player interaction </summary>
+/// <summary> Handles player movement and player interaction </summary>
 [System.Serializable]
 // public class Player : Singleton<Player>
-public class Player : MonoBehaviour
+public class Player : StateMachine
 {
 	/// <summary> Reference to the players last spawn. </summary>
-	[SerializeField] private Transform lastSpawn = default;
+	[SerializeField] public Transform lastSpawn = default;
 
 	/// <summary> Reference to player CharacterController. </summary>
-	private CharacterController characterController;
+	[HideInInspector] public CharacterController characterController;
 	/// <summary> Reference to player Camera. </summary>
-	private Camera cam;
+	[HideInInspector] public Camera cam;
 	/// <summary> Empty GameObject for where to put a Pickupable object. </summary>
 	[HideInInspector] public Transform heldObjectLocation;
 	/// <summary> Reference to a Pickupable object that has been picked up. </summary>
-	private InteractableObject heldObject;
-	/// <summary> Vector3 to store and calculate move direction. </summary>
-	private Vector3 moveDirection;
+	[HideInInspector] public InteractableObject heldObject;
 	/// <summary> Vector3 to store and calculate vertical velocity. </summary>
-	private float verticalVelocity;
+	[HideInInspector] public float verticalVelocity;
 	/// <summary> Player's height. </summary>
-	private float playerHeight;
+	[HideInInspector] public float playerHeight;
 	/// <summary> Whether the player can move or not. </summary>
-	private bool playerCanMove = true;
+	[HideInInspector] public bool playerCanMove = true;
 	/// <summary> Whether the player is jumping or not. </summary>
-	private bool jumping = false;
+	[HideInInspector] public bool jumping = false;
 	/// <summary> Whether the player is crouching or not. </summary>
-	private bool crouching = false;
+	[HideInInspector] public bool crouching = false;
 	/// <summary> Whether the player is holding something or not. </summary>
 	[HideInInspector] public bool holding = false;
 	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
 	[HideInInspector] public bool looking = false;
+	/// <summary> Vector3 to store and calculate move direction. </summary>
+	private Vector3 moveDirection;
 
 	public GameObject heartWindow;
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
 	[SerializeField] private float speed = 5f;
-
 	/// <summary> Player gravity variable. </summary>
 	[SerializeField] private float gravity = 25f;
-
 	/// <summary> Player jump force. </summary>
-	[SerializeField] private float jumpForce = 7f;
-
+	[SerializeField] public float jumpForce = 7f;
 	/// <summary> Mouse sensitivity for camera rotation. </summary>
 	[SerializeField] private float mouseSensitivity = 2f;
-
 	/// <summary> How far the player can reach to pick something up. </summary>
-	[SerializeField] private float playerReach = 4f;
+	[SerializeField] public float playerReach = 4f;
 
 	[Header("Keybinds")]
 	/// <summary> KeyCode for player jump. </summary>
@@ -70,6 +66,7 @@ public class Player : MonoBehaviour
 	private float rotationY = 0f;
 	/// <summary> Stores the X rotation of the player. </summary>
 	private float rotationX = 0f;
+
 	/// <summary> Initializes variables before the game starts. </summary>
 	private void Awake()
 	{
@@ -116,15 +113,7 @@ public class Player : MonoBehaviour
 		Die();
 	}
 
-	private void Die()
-	{
-		if (characterController.velocity.y < -30)
-		{
-			if (lastSpawn == null)Debug.LogWarning("Missing spawn point");
-			transform.position = lastSpawn == null ? Vector3.zero : lastSpawn.position;
-			verticalVelocity = 0;
-		}
-	}
+	private void Die() { SetState(new Die(this)); }
 
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
 	private void Move()
@@ -155,30 +144,7 @@ public class Player : MonoBehaviour
 	/// <summary> Player jump function. </summary>
 	void Jump()
 	{
-		PlayerAudio audioManager = GetComponent<PlayerAudio>();
-		if (jumping)
-		{
-			RaycastHit hit;
-			int mask = ~gameObject.layer;
-			Physics.Raycast(new Ray(transform.position, Vector3.down), out hit, 5f, mask);
-			if (verticalVelocity < 0 && hit.distance < audioManager.landingDistanceThreshold)
-			{
-				GetComponent<PlayerAudio>().JumpLanding();
-				jumping = false;
-			}
-		}
-
-		if (characterController.isGrounded)
-		{
-
-			if (Input.GetKeyDown(jumpKey))
-			{
-				verticalVelocity = jumpForce;
-				GetComponent<PlayerAudio>().JumpLiftoff();
-				jumping = true;
-			}
-		}
-
+		if (characterController.isGrounded && Input.GetKeyDown(jumpKey)) SetState(new Jump(this));
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
@@ -214,23 +180,9 @@ public class Player : MonoBehaviour
 		Ray crouchRay = new Ray(transform.position, Vector3.up);
 
 		// Check if the player is pressing the crouch key.
-		if (Input.GetKeyDown(crouchKey))
-		{
-			characterController.height = playerHeight / 2; // Make the player crouch.
-			GetComponent<PlayerAudio>().CrouchDown();
-			crouching = true;
-		}
-
+		if (Input.GetKeyDown(crouchKey)) { SetState(new Crouch(this)); }
 		// Check if there is anything above the player before uncrouching.
-		else if (!Input.GetKey(crouchKey) && !Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4))
-		{
-			if (crouching)
-			{
-				GetComponent<PlayerAudio>().CrouchUp();
-				characterController.height = playerHeight; // Make the player stand.
-				crouching = false;
-			}
-		}
+		else if (!Input.GetKey(crouchKey) && !Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4) && crouching) { SetState(new UnCrouch(this)); }
 	}
 
 	/// <summary> Handles player behavior with picking up and inspecting objects. </summary>
@@ -239,38 +191,9 @@ public class Player : MonoBehaviour
 		// Check if the player is pressing the pick up key.
 		if (Input.GetKeyDown(pickUpKey))
 		{
-			if (!holding && !looking)
-			{
-				// Raycast for what the player is looking at.
-				RaycastHit hit;
-
-				int layerMask = 1 << 9;
-
-				// Raycast to see what the object's tag is. If it is a Pickupable object...
-				if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() != null)
-				{
-					// Store the held object.
-					heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();
-					heldObject.Interact();
-					heldObject.active = true;
-
-					playerCanMove = true;
-				}
-			}
-			else if (looking) // If the player is holding something and inspecting it, when the player presses the pick up key...
-			{
-				// Stop inspecting the object
-				heldObject.Interact();
-
-				playerCanMove = true;
-			}
-			else if (holding)
-			{
-				// Drop the object.
-				heldObject.Interact();
-
-				heldObject.active = false;
-			}
+			if (!holding && !looking) { SetState(new PickUp(this)); }
+			else if (looking) { SetState(new Inspect(this)); } // If the player is holding something and inspecting it, when the player presses the pick up key... 
+			else if (holding) { SetState(new Drop(this)); }
 		}
 	}
 
@@ -280,16 +203,8 @@ public class Player : MonoBehaviour
 		if ((Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftControl)) && !holding)
 		{
 			// Aiming...
-			if (!heartWindow.activeSelf)
-			{
-				heartWindow.SetActive(true);
-				GetComponent<PlayerAudio>().OpenWindow();
-			}
-			if (Input.GetMouseButtonDown(0))
-			{
-				heartWindow.GetComponent<Window>().ApplyCut();
-				GetComponent<PlayerAudio>().PlaceWindow();
-			}
+			if (!heartWindow.activeSelf) { SetState(new Aiming(this)); }
+			if (Input.GetMouseButtonDown(0)) { SetState(new Cut(this)); }
 		}
 		else
 		{
@@ -299,7 +214,6 @@ public class Player : MonoBehaviour
 				heartWindow.SetActive(false);
 				GetComponent<PlayerAudio>().CloseWindow();
 			}
-
 		}
 	}
 
