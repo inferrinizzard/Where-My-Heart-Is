@@ -1,6 +1,7 @@
-﻿Shader "Custom/TextureTest"
+﻿Shader "Custom/TextureTest1"
 {
-	Properties {
+	Properties
+	{
 		_Color ("Tint Color 1", Color) = (1,1,1,1)
 		_Color2 ("Tint Color 2", Color) = (1,1,1,1)
 		_InkCol ("Ink Color", Color) = (1,1,1,1)
@@ -12,12 +13,11 @@
 		
 		_TintScale ("Tint Scale", Range(2,8)) = 4
 		_PaperStrength ("Paper Strength", Range(0,1)) = 1
-		_BlotchMulti ("Blotch Multiply", Range(0,16)) = 4
+		_BlotchMulti ("Blotch Multiply", Range(0,8)) = 4
 		_BlotchSub ("Blotch Subtract", Range(0,8)) = 2
-
-		[PowerSlider(8)] _FresnelExponent ("Fresnel Exponent", Range(0, 4)) = 1
 	}
-	SubShader {
+	SubShader
+	{
 		Tags { "RenderType"="Opaque" }
 		LOD 200
 
@@ -40,9 +40,9 @@
 		fixed4 _Color;
 		fixed4 _Color2;
 		fixed4 _InkCol;
-		half _FresnelExponent;
 
-		struct Input {
+		struct Input
+		{
 			float2 uv_BlotchTex;
 			float2 uv_DetailTex;
 			float2 uv_PaperTex;
@@ -58,40 +58,30 @@
 		// put more per-instance properties here
 		UNITY_INSTANCING_BUFFER_END(Props)
 
-		fixed4 screen (fixed4 colA, fixed4 colB) {
+		fixed4 screen (fixed4 colA, fixed4 colB)
+		{
 			fixed4 white = fixed4(1, 1, 1, 1);
 			return white - (white - colA) * (white - colB);
 		}
-
-		fixed4 softlight (fixed4 colA, fixed4 colB) {
+		fixed4 softlight (fixed4 colA, fixed4 colB)
+		{
 			fixed4 white = fixed4(1, 1, 1, 1);
 			return (white - 2 * colB) * pow(colA, 2) + 2 * colB * colA;
 		}
-
-		void surf (Input IN, inout SurfaceOutputStandard o) {
-			fixed c = tex2D (_BlotchTex, IN.uv_BlotchTex).r;
+		void surf (Input IN, inout SurfaceOutputStandard o)
+		{
+			fixed c = tex2D(_BlotchTex, IN.uv_BlotchTex).r;
 			c *= _BlotchMulti;
 			c -= _BlotchSub;			
-			c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
-
-			float f = dot(IN.worldNormal, IN.viewDir);
-			f = pow(f, _FresnelExponent);
-
-			c = saturate(c * .3 + f);
-			c = tex2D (_RampTex, half2(1 - c, 0)).r;
+			c *= tex2D(_DetailTex, IN.uv_DetailTex).r;			
+			c = tex2D(_RampTex, half2(c, 0)).r;
 			c = saturate(c);
 
-			fixed4 tint = tex2D (_BlotchTex, IN.uv_BlotchTex / _TintScale);	
+			fixed4 tint = tex2D(_BlotchTex, IN.uv_BlotchTex / _TintScale);	
 			tint = lerp(_Color, _Color2, tint.r);
 			
-			// fixed4 ink = screen(_InkCol, fixed4(c, c, c, 1));
 			fixed4 ink = screen(_InkCol, fixed4(c, c, c, 1));
-
-			// o.Albedo = ink;
-			
 			o.Albedo = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength);
-
-			// o.Albedo = saturate(c*.3+f) * fixed3(1, 1, 1);
 		}
 		ENDCG
 	}
