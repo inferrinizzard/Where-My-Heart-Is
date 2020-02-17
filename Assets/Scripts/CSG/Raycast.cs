@@ -21,21 +21,26 @@ namespace CSG
         public static Point3 RayToLineSegment(Vector3 origin, Vector3 direction, Vector3 pointA, Vector3 pointB)
         {
             Vector3 edgeDirection = (pointA - pointB).normalized;
+
             //TODO: unhardcode breakpoint
             // if the cast and the edge are parallel, there will be no intersection
             if (Vector3.Cross(direction, edgeDirection).magnitude < 0.0001)
             {
                 return null;
             }
-            float a = Vector3.Cross(pointA - origin, edgeDirection).magnitude / Vector3.Cross(direction, edgeDirection).magnitude;
+            //float a = Vector3.Cross((pointA - origin), edgeDirection).magnitude / Vector3.Cross(direction, edgeDirection).magnitude;
+            Vector3 closestPoint = (Vector3.Dot((origin - pointA), edgeDirection) * edgeDirection) + pointA;
 
-            Vector3 intersectionPoint = origin + (direction * a);
+            float h = Vector3.Distance(closestPoint, origin) / Mathf.Cos(Vector3.Angle((closestPoint - origin).normalized, direction) * Mathf.Deg2Rad);
+
+            Vector3 intersectionPoint = origin + (direction * h);
             if (Vector3.Distance(pointA, intersectionPoint) + Vector3.Distance(intersectionPoint, pointB) - Vector3.Distance(pointA, pointB) < 0.0001)
             {
                 return new Point3(intersectionPoint);
             }
             else
             {
+                //Debug.Log("not on line segment: " + (Vector3.Distance(pointA, intersectionPoint) + Vector3.Distance(intersectionPoint, pointB) - Vector3.Distance(pointA, pointB)));
                 return null;
             }
         }
@@ -47,22 +52,22 @@ namespace CSG
         /// <param name="b">The Triangle whose surface should be cast to</param>
         /// <param name="error">Equality comparison breakpoint value</param>
         /// <returns>The List of all found intersections</returns>
-        public static List<Vertex> TriangleToTriangle(Triangle a, Triangle b, float error)
+        public static List<Intersection> TriangleToTriangle(Triangle a, Triangle b, float error)
         {
-            List<Vertex> vertices = new List<Vertex>();
+            List<Intersection> intersections = new List<Intersection>();
 
             // for each edge of a, raycast to b
             for (int i = 0; i < 3; i++)
             {
-                Vertex vertex = LineSegmentToTriangle(a.vertices[i].value, a.vertices[(i + 1) % 3].value, b, error);
-                if (vertex != null)
+                //Vertex vertex = LineSegmentToTriangle(a.vertices[i].value, a.vertices[(i + 1) % 3].value, b, error);
+                Intersection intersection = a.edges[i].IntersectWithTriangle(b);
+                if (intersection != null)
                 {
-                    vertex.triangles.Add(a);
-                    vertices.Add(vertex);
+                    intersections.Add(intersection);
                 }
             }
 
-            return vertices;
+            return intersections;
         }
 
         /// <summary>
@@ -78,6 +83,7 @@ namespace CSG
             Vertex raycastIntersection = RayToTriangle(pointA, pointA - pointB, triangle);
             if (raycastIntersection != null)
             {
+                //Debug.Log(raycastIntersection);
                 if (PointLiesOnLineSegment(raycastIntersection.value, pointA, pointB, error))
                 {
                     return raycastIntersection;
@@ -102,7 +108,7 @@ namespace CSG
             // if the ray intersects the triangle, we can find the specific point at which it does
 
             // determine equation of plane
-            Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
+            /*Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
             Vector3 planePoint = triangle.vertices[0].value;
 
             // get ray intersection with plane,
@@ -116,37 +122,49 @@ namespace CSG
                 return intersection;
             }
 
-            return null;
+            return null;*/
 
-            /* Vector3 q1 = origin + direction * 50;
-             Vector3 q2 = origin - direction * 50;
+            Vector3 q1 = origin + direction * 50;
+            Vector3 q2 = origin - direction * 50;
+
+            /*Debug.Log(SignedVolume(q1, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) !=
+                SignedVolume(q2, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) &&
+                SignedVolume(q1, q2, triangle.vertices[0].value, triangle.vertices[1].value) ==
+                SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) &&
+                SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) ==
+                SignedVolume(q1, q2, triangle.vertices[2].value, triangle.vertices[0].value));*/
 
              // first, determine whether the ray intersects the triangle
-             if (SignedVolume(q1, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) !=
-                 SignedVolume(q2, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) &&
-                 SignedVolume(q1, q2, triangle.vertices[0].value, triangle.vertices[1].value) ==
-                 SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) &&
-                 SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) ==
-                 SignedVolume(q1, q2, triangle.vertices[2].value, triangle.vertices[0].value)
-                 )
-             {
-                 // if the ray intersects the triangle, we can find the specific point at which it does
+            if (SignedVolume(q1, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) !=
+                SignedVolume(q2, triangle.vertices[0].value, triangle.vertices[1].value, triangle.vertices[2].value) &&
+                SignedVolume(q1, q2, triangle.vertices[0].value, triangle.vertices[1].value) ==
+                SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) &&
+                SignedVolume(q1, q2, triangle.vertices[1].value, triangle.vertices[2].value) ==
+                SignedVolume(q1, q2, triangle.vertices[2].value, triangle.vertices[0].value)
+                )
+            {
+                // if the ray intersects the triangle, we can find the specific point at which it does
 
-                 // determine equation of plane
-                 Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
-                 Vector3 planePoint = triangle.vertices[0].value;
+                // determine equation of plane
+                Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
+                Vector3 planePoint = triangle.vertices[0].value;
 
-                 // get ray intersection with plane,
-                 float numerator = normal.x * (planePoint.x - origin.x) + normal.y * (planePoint.y - origin.y) + normal.z * (planePoint.z - origin.z);
-                 float denominator = normal.x * direction.x + normal.y * direction.y + normal.z * direction.z;
-                 Vector3 intersectionPoint = ((numerator / denominator) * direction) + origin;
+                // get ray intersection with plane,
+                float numerator = normal.x * (planePoint.x - origin.x) + normal.y * (planePoint.y - origin.y) + normal.z * (planePoint.z - origin.z);
+                float denominator = normal.x * direction.x + normal.y * direction.y + normal.z * direction.z;
+                Vector3 intersectionPoint = ((numerator / denominator) * direction) + origin;
 
-                 return new Vertex(0, intersectionPoint);
-             }
-             else
-             {
-                 return null;
-             }*/
+                //Debug.Log(intersectionPoint);
+                Vertex draw = new Vertex(0, intersectionPoint);
+                draw.referenceFrame = triangle.edges[0].referenceFrame;
+                //Debug.Log(triangle.edges[0].referenceFrame);
+                //draw.Draw(0.2f, Vector3.up, Color.green);
+                return new Vertex(0, intersectionPoint);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>

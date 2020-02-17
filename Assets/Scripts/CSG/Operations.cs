@@ -24,10 +24,54 @@ namespace CSG
         /// <returns>The intersection of the two shapes</returns>
         public Mesh Intersect(GameObject shapeA, GameObject shapeB)
         {
-            CombineInstance[] combine = new CombineInstance[2];
-            combine[0].mesh = ClipAToB(shapeA, shapeB, true);
+            Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
+            modelA.ConvertToWorld(shapeA.transform);
+
+            Model modelB = new Model(shapeB.GetComponent<MeshFilter>().mesh);
+            modelB.ConvertToWorld(shapeB.transform);
+
+            modelA.IntersectWith(modelB);//generate all intersections
+
+            Model clippedA = ClipModelAToModelB(modelA, modelB, true);
+            Model clippedB = ClipModelAToModelB(modelB, modelA, true);
+
+            //clippedA.ConvertToLocal(shapeA.transform);
+            //clippedB.ConvertToLocal(shapeB.transform);
+
+            //CombineInstance[] combine = new CombineInstance[1];
+            //combine[0].mesh = clippedA.ToMesh();
+            //combine[0].transform = Matrix4x4.identity;
+            //combine[1].mesh = clippedB.ToMesh();
+            //combine[1].transform = Matrix4x4.identity;
+
+            //ConvertMeshCoordinates(combine[1].mesh, shapeB, shapeA);
+
+            //completedMesh.RecalculateNormals();
+            //completedMesh.RecalculateTangents();
+            Model result = Model.Combine(clippedA, clippedB);
+            result.ConvertToLocal(shapeA.transform);
+
+            return result.ToMesh();
+        }
+
+        public Mesh Subtract(GameObject shapeA, GameObject shapeB)
+        {
+            //TODO
+            Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
+            modelA.ConvertToWorld(shapeA.transform);
+
+            Model modelB = new Model(shapeB.GetComponent<MeshFilter>().mesh);
+            modelB.ConvertToWorld(shapeB.transform);
+
+            modelA.IntersectWith(modelB);//generate all intersections
+
+            Model clippedA = ClipModelAToModelB(modelA, modelB, false);
+            Model clippedB = ClipModelAToModelB(modelB, modelA, true, true);
+
+            CombineInstance[] combine = new CombineInstance[1];
+            combine[0].mesh = clippedA.ToMesh();
             combine[0].transform = Matrix4x4.identity;
-            combine[1].mesh = ClipAToB(shapeB, shapeA, true);
+            combine[1].mesh = clippedB.ToMesh();
             combine[1].transform = Matrix4x4.identity;
 
             ConvertMeshCoordinates(combine[1].mesh, shapeB, shapeA);
@@ -40,69 +84,63 @@ namespace CSG
             return completedMesh;
         }
 
-        public Mesh Subtract(GameObject shapeA, GameObject shapeB)
+        public Mesh ClipAToB(GameObject shapeA, GameObject shapeB, bool clipInside = true, bool flipNormals = false)
         {
-            CombineInstance[] combine = new CombineInstance[2];
-            combine[0].mesh = ClipAToB(shapeA, shapeB, false);
-            combine[0].transform = Matrix4x4.identity;
-            combine[1].mesh = ClipAToB(shapeB, shapeA, true, true);
-            combine[1].transform = Matrix4x4.identity;
+            Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
+            modelA.ConvertToWorld(shapeA.transform);
 
-            ConvertMeshCoordinates(combine[1].mesh, shapeB, shapeA);
+            Model modelB = new Model(shapeB.GetComponent<MeshFilter>().mesh);
+            modelB.ConvertToWorld(shapeB.transform);
 
-            Mesh completedMesh = new Mesh();
-            completedMesh.CombineMeshes(combine);
-            completedMesh.RecalculateNormals();
-            completedMesh.RecalculateTangents();
+            modelA.IntersectWith(modelB);//generate all intersections
 
-            return completedMesh;
+            Model clippedA = ClipModelAToModelB(modelA, modelB, clipInside, flipNormals);
+
+            clippedA.ConvertToLocal(shapeA.transform);
+
+            return clippedA.ToMesh();
         }
 
         /// <summary>
         /// Generates a mesh that matches the portion of the given "toClip" object's mesh contained by the 
         /// bounding object "bounds"
         /// </summary>
-        /// <param name="toClip">The GameObject containing the Mesh to clip</param>
-        /// <param name="bounds">The GameObject containing the Mesh to clip "toClip" to</param>
+        /// <param name="modelA">The GameObject containing the Mesh to clip</param>
+        /// <param name="modelB">The GameObject containing the Mesh to clip "toClip" to</param>
         /// <param name="flipNormals">Whether the normals of the resulting mesh should be flipped</param>
         /// <returns>The clipped Mesh</returns>
-        public Mesh ClipAToB(GameObject toClip, GameObject bounds, bool clipInside = true, bool flipNormals = false)
+        private Model ClipModelAToModelB(Model modelA, Model modelB, bool clipInside = true, bool flipNormals = false)
         {
-            Model bound = new Model(bounds.GetComponent<MeshFilter>().mesh);
-            bound.ConvertCoordinates(bounds.transform, toClip.transform);
-
-            Model modelToClip = new Model(toClip.GetComponent<MeshFilter>().mesh);
-
-            List<Vertex> intersections = modelToClip.IntersectWith(bound);
-
-            modelToClip.vertices.AddRange(intersections);
-            // for each model
-            // create a list of edges by finding all unique pairs of vertices that share a triangle
-            // references to these will also be held by the triangles, where if two triangles share an edge,
-            // they both reference the same edge
-            // for each edge
-            // find its intersections with all the triangles of the other shape
-            // if there is more than one intersection, check to see if they should be merged by distance
-            // if the intersection is unique, add it to this edges list of intersections
-
-            // what do we do in the case of edges intersecting?
+            List<Egress> egresses = new List<Egress>();
 
             // to create the triangles, we'll need a list of edge loops to triangulate
-            List<EdgeLoop> edgeLoops;
-            
+            List<EdgeLoop> edgeLoops = new List<EdgeLoop>();
+
             if (clipInside)
             {
-                if(limitTo > -1)
+                if (limitTo > -1)
                 {
                     edgeLoops = new List<EdgeLoop>();
-                    if(limitTo < modelToClip.triangles.Count)
+                    if (limitTo < modelA.triangles.Count)
                     {
-                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelToClip.triangles[limitTo], bound, PointContainedByBound));
+                        //modelA.triangles[limitTo].Draw(Color.red);
+                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[limitTo], modelB, PointContainedByBound));
+                        edgeLoops.ForEach(loop => loop.Draw(Color.red, Color.green, Color.blue));
                     }
                 }
                 else
                 {
-                    edgeLoops = modelToClip.triangles.SelectMany(triangle => IdentifyTriangleEdgeLoops(triangle, bound, PointContainedByBound)).ToList();
+                    foreach(Triangle triangle in modelA.triangles)
+                    {
+                        try
+                        {
+                            edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointContainedByBound));
+                        }
+                        catch
+                        {
+                            Debug.Log(modelA.triangles.IndexOf(triangle));
+                        }
+                    }
                 }
             }
             else
@@ -110,44 +148,41 @@ namespace CSG
                 if (limitTo > -1)
                 {
                     edgeLoops = new List<EdgeLoop>();
-                    if (limitTo < modelToClip.triangles.Count)
+                    if (limitTo < modelA.triangles.Count)
                     {
-                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelToClip.triangles[limitTo], bound, PointExcludedByBound));
+                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[limitTo], modelB, PointExcludedByBound));
                     }
                 }
                 else
                 {
-                    edgeLoops = modelToClip.triangles.SelectMany(triangle => IdentifyTriangleEdgeLoops(triangle, bound, PointExcludedByBound)).ToList();
+                    foreach (Triangle triangle in modelA.triangles)
+                    {
+                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointExcludedByBound));
+                    }
                 }
             }
+            Model finalModel = new Model();
 
-            // replace the list of triangles with the clipped version
-            modelToClip.triangles.Clear();
-
-            // fill the edge loops that need to be filled, add the result to the list of triangles
-            foreach (EdgeLoop loop in edgeLoops)
+            edgeLoops.ForEach(loop =>
             {
-                if (loop.filled) modelToClip.triangles.AddRange(loop.Triangulate(toClip));
+                if (loop.filled)
+                {
+                    finalModel.AddTriangles(loop.TriangulateFanMethod());
+                }
+
+                bool fillNested = !loop.filled;
                 EdgeLoop nestedLoop = loop.nestedLoop;
                 while (nestedLoop != null)
                 {
-                    if (nestedLoop.filled)
-                    {
-                        modelToClip.triangles.AddRange(nestedLoop.Triangulate(toClip));
-                    }
+                    if (fillNested) finalModel.AddTriangles(nestedLoop.TriangulateFanMethod());
+                    fillNested = !fillNested;
                     nestedLoop = nestedLoop.nestedLoop;
                 }
-            }
+            });
 
-            if (flipNormals)
-            {
-                foreach (Triangle triangle in modelToClip.triangles)
-                {
-                    triangle.FlipNormal();
-                }
-            }
+            if (flipNormals) finalModel.FlipNormals();
 
-            return modelToClip.ToMesh();
+            return finalModel;
         }
 
         /// <summary>
@@ -159,77 +194,23 @@ namespace CSG
         /// <returns>A list of edge loops which define the clipped version of the triangle</returns>
         private List<EdgeLoop> IdentifyTriangleEdgeLoops(Triangle triangle, Model bound, Func<Vertex, Model, bool> ContainmentCheck)
         {
-            /*List<Egress> aToBEgresses = new List<Egress>();
-            List<Egress> bToCEgresses = new List<Egress>();
-            List<Egress> cToAEgresses = new List<Egress>();
-            List<Vertex> internalIntersections = new List<Vertex>();
-            List<Egress>[] egressesList = { aToBEgresses, bToCEgresses, cToAEgresses };*/
 
-            /*// find all intersections between the triangle and the bound
-            foreach (Triangle boundsTriangle in bound.triangles)
-            {
-                IdentifyEgress(triangle.vertices[0].value, triangle.vertices[1].value, boundsTriangle, aToBEgresses);
-                IdentifyEgress(triangle.vertices[1].value, triangle.vertices[2].value, boundsTriangle, bToCEgresses);
-                IdentifyEgress(triangle.vertices[2].value, triangle.vertices[0].value, boundsTriangle, cToAEgresses);
-                internalIntersections.AddRange(Raycast.TriangleToTriangle(boundsTriangle, triangle, error));
-            }*/
-
-            // combine duplicate internal intersections
-            // duplicate logic as Vertex.RemoveDuplicates, merge?
-            /*for (int i = internalIntersections.Count - 1; i > 0; i--)
-            {
-                for (int k = i - 1; k >= 0; k--)
-                {
-                    if (Vector3.Distance(internalIntersections[i].value, internalIntersections[k].value) < error)
-                    {
-                        internalIntersections[k].triangles.AddRange(internalIntersections[i].triangles);
-                        internalIntersections.RemoveAt(i);
-                        break;
-                    }
-                }
-            }*/
-
-            // create an aggregate list of egresses for use creating cuts
-            //List<Egress> allEgresses = egressesList.SelectMany(egress => egress).ToList();
-
-            // store the resulting intersections in the greater vertex list
-            /*vertices.AddRange(allEgresses);
-            vertices.AddRange(internalIntersections);*/
-
+            triangle.ClearMetadata();
             // organize the intersections into cuts
-            CreateCuts(triangle);
-
-            /*// sorting egresses to be in order of consecutive appearence around the edge of the triangle
-            aToBEgresses.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, triangle.vertices[0].value) - Vector3.Distance(b.value, triangle.vertices[0].value)));
-            bToCEgresses.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, triangle.vertices[1].value) - Vector3.Distance(b.value, triangle.vertices[1].value)));
-            cToAEgresses.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, triangle.vertices[2].value) - Vector3.Distance(b.value, triangle.vertices[2].value)));
-
-            // organize all triangle vertices and egress intersections in an ordered list around the perimeter
-            List<Vertex> perimeter = new List<Vertex>();
-
-            perimeter.Add(triangle.vertices[0]);
-            perimeter.AddRange(aToBEgresses);
-            perimeter.Add(triangle.vertices[1]);
-            perimeter.AddRange(bToCEgresses);
-            perimeter.Add(triangle.vertices[2]);
-            perimeter.AddRange(cToAEgresses);
-            perimeter.Add(triangle.vertices[0]); // a duplicate of the first vertex as a sentinel*/
+            CreateCuts(triangle, bound);
 
             List<Vertex> perimeter = triangle.GetPerimeter();
-
 
             // find all edge loops and classify whether they should be retopologized or not
             List<EdgeLoop> loops = new List<EdgeLoop>();
 
-            foreach (Vertex vertex in triangle.vertices)
-            {
-                vertex.loops = new List<EdgeLoop>();
-            }
-
             // while there are still entries in that list for which we haven't identified all loops (1 for triangle vertices, 2 for egresses)
             int currentVertexIndex = FindEarliestUnsatisfied(perimeter);
+            int overflow = 0;
+
             while (currentVertexIndex != -1)
             {
+                //Debug.Log(currentVertexIndex);
                 // determine whether this loop should be filled or not
                 EdgeLoop loop = new EdgeLoop();
 
@@ -241,7 +222,17 @@ namespace CSG
                 if (initialVertex.fromIntersection)
                 {
                     // in this case, the new loop is the opposite of whatever the previous loop is
-                    loop.filled = !initialVertex.loops.Last().filled; // TODO: sometimes empty
+                    try
+                    {
+                        loop.filled = !initialVertex.loops.Last().filled;
+                    }
+                    catch
+                    {
+                        loop.filled = !loops.Last().filled;
+                        initialVertex.Draw(1, Vector3.up, Color.red);
+                        Debug.Log(loops.Count);
+                        Debug.Log("aw shit");
+                    }
                 }
                 else // 2. a vertex of the original triangle
                 {
@@ -251,291 +242,66 @@ namespace CSG
 
                 // traverse forward in the ordered list, following each cut, until we reach the initial point
                 // once the inital entry is reached again, we have identified a loop, and can add it to the pile
+
+                loop.vertices.Add(perimeter[currentVertexIndex]);
+                perimeter[currentVertexIndex].loops.Add(loop);
+
+                currentVertexIndex = (currentVertexIndex + 1) % perimeter.Count;
                 do
                 {
-                    Cut furthestCut = null;
 
-                    if (perimeter[currentVertexIndex].fromIntersection)
+                    Cut cut = perimeter[currentVertexIndex].cut;
+                    if (cut != null)
                     {
-                        furthestCut = perimeter[currentVertexIndex].GetFurthestCut(perimeter);
-                    }
+                        // add all vertices of the egress's cut to the loop
+                        loop.vertices.AddRange(cut);
+                        perimeter[currentVertexIndex].loops.Add(loop);
 
-                    //TODO: this can be null for 2 reasons:
-                    // a. the current vertex is a triangle vertex
-                    // b. we could not find another cut for the current vertex
-                    if (furthestCut != null)
-                    {
-                        currentVertexIndex = TraverseCut(furthestCut, loop, perimeter, currentVertexIndex);
-
-                        if (perimeter[currentVertexIndex] == initialVertex) // if we arrived at the initial vertex
+                        // find the index of the last vertex in the cut (which is always an egress) and get its index in the perimeter
+                        currentVertexIndex = perimeter.IndexOf(cut.Last());
+                        perimeter[currentVertexIndex].loops.Add(loop);
+                        if(perimeter[currentVertexIndex] == initialVertex)
                         {
-                            loop.vertices.RemoveAt(loop.vertices.Count - 1);
                             break;
-                        }
-
-                        // while there are still cuts to traverse
-                        // TODO: there might be a cut, but no untraversed cuts
-                        while (perimeter[currentVertexIndex].cuts.Count > 1)
-                        {
-                            // select cut
-                            Cut toIgnore = null;
-                            foreach (Cut cut in perimeter[currentVertexIndex].cuts)// don't imediately traverse back the way you came
-                            {
-                                if (cut.Last() == furthestCut[0])
-                                {
-                                    toIgnore = cut;
-                                    break;
-                                }
-                            }
-                            furthestCut = perimeter[currentVertexIndex].GetFurthestCut(perimeter, toIgnore, currentVertexIndex, perimeter.IndexOf(initialVertex));
-
-                            if (furthestCut != null)
-                            {
-                                currentVertexIndex = TraverseCut(furthestCut, loop, perimeter, currentVertexIndex);
-                            }
-                            else
-                            {
-                                // we ran out of cuts to chain-traverse, proceed to the next vertex in the perimeter
-                                break;
-                            }
-
-                            if (perimeter[currentVertexIndex] == initialVertex) // if we arrived at the initial vertex
-                            {
-                                loop.vertices.RemoveAt(loop.vertices.Count - 1);
-                                goto FinalStep;
-                            }
                         }
                     }
                     else
                     {
-                        // add current vertex to loop
                         loop.vertices.Add(perimeter[currentVertexIndex]);
                         perimeter[currentVertexIndex].loops.Add(loop);
                     }
-
-                    currentVertexIndex++;// proceed to the next vertex in the perimeter
-
+                    overflow++;
+                    if (overflow > 100) throw new Exception ("Too many iterations when defining loops");
                     // once the current vertex loops around to the start, we're done
+                    currentVertexIndex = (currentVertexIndex + 1) % perimeter.Count;
                 } while (perimeter[currentVertexIndex] != initialVertex);
 
-                FinalStep:
-
                 loops.Add(loop);
+
+                overflow++;
+                if (overflow > 100) throw new Exception ("Too many iterations when defining loops");
 
                 currentVertexIndex = FindEarliestUnsatisfied(perimeter);
             }
 
-            Debug.Log(triangle.internalIntersections.Count);
-            // now that we've created all loops that intersect the edge of the triangle, we can start on loops that float as islands
-            List<Intersection> unusedIntersections = triangle.internalIntersections.Where(intersection => !intersection.usedInLoop).ToList();
-            Debug.Log(unusedIntersections.Count);
-            while (unusedIntersections.Count > 2)
+            List<Intersection> unusedInternalIntersections = triangle.internalIntersections.Where(intersection =>
             {
-                Vertex currentVertex = unusedIntersections[0];
-                EdgeLoop result = DiscoverInternalLoop(currentVertex, unusedIntersections., loops);
-                unusedIntersections = unusedIntersections.Where(vertex => !result.vertices.Contains(vertex)).ToList();
-            }
+                return !loops.Exists(loop => loop.vertices.Contains(intersection.vertex));
+            }).ToList();
 
-            // configure the filledness of the discovered nested loops
-            foreach (EdgeLoop loop in loops)
+            unusedInternalIntersections.ForEach(intersection => intersection.vertex.Draw(0.05f, Vector3.up, Color.red));
+
+            overflow = 0;
+            while (unusedInternalIntersections.Count > 0)
             {
-                EdgeLoop nestedLoop = loop.nestedLoop;
-                EdgeLoop previousLoop = loop;
-                while (nestedLoop != null)
-                {
-                    nestedLoop.filled = !previousLoop.filled;
-                    previousLoop = nestedLoop;
-                    nestedLoop = nestedLoop.nestedLoop;
-                }
+                DiscoverInternalLoop(unusedInternalIntersections, loops);
+
+                overflow++;
+                if (overflow > 100) throw new Exception("Too many iterations when defining loops");
             }
 
             return loops;
         }
-
-        /*private List<EdgeLoop> ClipTriangleToBound(Triangle triangle, Model bound, List<Vertex> vertices, Func<Vertex, Model, bool> ContainmentCheck)
-        {
-            List<Egress> aToBEgresses = new List<Egress>();
-            List<Egress> bToCEgresses = new List<Egress>();
-            List<Egress> cToAEgresses = new List<Egress>();
-            List<Vertex> internalIntersections = new List<Vertex>();
-            List<Egress>[] egressesList = { aToBEgresses, bToCEgresses, cToAEgresses };
-
-            // find all intersections between the triangle and the bound
-            foreach (Triangle boundsTriangle in bound.triangles)
-            {
-                IdentifyEgress(triangle.vertices[0].value, triangle.vertices[1].value, boundsTriangle, aToBEgresses);
-                IdentifyEgress(triangle.vertices[1].value, triangle.vertices[2].value, boundsTriangle, bToCEgresses);
-                IdentifyEgress(triangle.vertices[2].value, triangle.vertices[0].value, boundsTriangle, cToAEgresses);
-                internalIntersections.AddRange(Raycast.TriangleToTriangle(boundsTriangle, triangle, error));
-            }
-
-            // combine duplicate internal intersections
-            // duplicate logic as Vertex.RemoveDuplicates, merge?
-            for (int i = internalIntersections.Count - 1; i > 0; i--)
-            {
-                for (int k = i - 1; k >= 0; k--)
-                {
-                    if (Vector3.Distance(internalIntersections[i].value, internalIntersections[k].value) < error)
-                    {
-                        internalIntersections[k].triangles.AddRange(internalIntersections[i].triangles);
-                        internalIntersections.RemoveAt(i);
-                        break;
-                    }
-                }
-            }
-
-            // create an aggregate list of egresses for use creating cuts
-            List<Egress> allEgresses = egressesList.SelectMany(egress => egress).ToList();
-
-            // store the resulting intersections in the greater vertex list
-            vertices.AddRange(allEgresses);
-            vertices.AddRange(internalIntersections);
-
-            // organize the intersections into cuts
-            CreateCuts(allEgresses, internalIntersections);
-
-            // sorting egresses to be in order of consecutive appearence around the edge of the triangle
-            aToBEgresses.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, triangle.vertices[0].value) - Vector3.Distance(b.value, triangle.vertices[0].value)));
-            bToCEgresses.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, triangle.vertices[1].value) - Vector3.Distance(b.value, triangle.vertices[1].value)));
-            cToAEgresses.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, triangle.vertices[2].value) - Vector3.Distance(b.value, triangle.vertices[2].value)));
-
-            // organize all triangle vertices and egress intersections in an ordered list around the perimeter
-            List<Vertex> perimeter = new List<Vertex>();
-
-            perimeter.Add(triangle.vertices[0]);
-            perimeter.AddRange(aToBEgresses);
-            perimeter.Add(triangle.vertices[1]);
-            perimeter.AddRange(bToCEgresses);
-            perimeter.Add(triangle.vertices[2]);
-            perimeter.AddRange(cToAEgresses);
-            perimeter.Add(triangle.vertices[0]); // a duplicate of the first vertex as a sentinel
-
-            // find all edge loops and classify whether they should be retopologized or not
-            List<EdgeLoop> loops = new List<EdgeLoop>();
-
-            foreach (Vertex vertex in triangle.vertices)
-            {
-                vertex.loops = new List<EdgeLoop>();
-            }
-
-            // while there are still entries in that list for which we haven't identified all loops (1 for triangle vertices, 2 for egresses)
-            int currentVertexIndex = FindEarliestUnsatisfied(perimeter);
-            while (currentVertexIndex != -1)
-            {
-                // determine whether this loop should be filled or not
-                EdgeLoop loop = new EdgeLoop();
-
-                Vertex initialVertex = perimeter[currentVertexIndex];
-
-                // the loop defines either a surface or a hole, and we can determine that by looking at our starting entry
-                // the starting entry can be one of two cases:
-                // 1. an egress which is already part of one loop
-                if (initialVertex is Egress)
-                {
-                    // in this case, the new loop is the opposite of whatever the previous loop is
-                    loop.filled = !initialVertex.loops.Last().filled; // TODO: sometimes empty
-                }
-                else // 2. a vertex of the original triangle
-                {
-                    // in this case, if the vertex is contained by the bound, the loop is a surface, otherwise it's a hole
-                    loop.filled = ContainmentCheck(initialVertex, bound);
-                }
-
-                // traverse forward in the ordered list, following each cut, until we reach the initial point
-                // once the inital entry is reached again, we have identified a loop, and can add it to the pile
-                do
-                {
-                    Cut furthestCut = null;
-
-                    if (perimeter[currentVertexIndex] is Egress)
-                    {
-                        furthestCut = ((Egress)perimeter[currentVertexIndex]).GetFurthestCut(perimeter);
-                    }
-
-                    if (furthestCut != null)
-                    {
-                        currentVertexIndex = TraverseCut(furthestCut, loop, perimeter, currentVertexIndex);
-
-                        if (perimeter[currentVertexIndex] == initialVertex) // if we arrived at the initial vertex
-                        {
-                            loop.vertices.RemoveAt(loop.vertices.Count - 1);
-                            break;
-                        }
-
-                        while (((Egress)perimeter[currentVertexIndex]).cuts.Count > 1)
-                        {
-                            // select cut
-                            Cut toIgnore = null;
-                            foreach (Cut cut in ((Egress)perimeter[currentVertexIndex]).cuts)
-                            {
-                                if (cut.Last() == furthestCut[0])
-                                {
-                                    toIgnore = cut;
-                                    break;
-                                }
-                            }
-                            furthestCut = ((Egress)perimeter[currentVertexIndex]).GetFurthestCut(perimeter, toIgnore, currentVertexIndex, perimeter.IndexOf(initialVertex));
-
-                            if (furthestCut != null)
-                            {
-                                currentVertexIndex = TraverseCut(furthestCut, loop, perimeter, currentVertexIndex);
-                            }
-                            else
-                            {
-                                break;
-                            }
-
-                            if (perimeter[currentVertexIndex] == initialVertex) // if we arrived at the initial vertex
-                            {
-                                loop.vertices.RemoveAt(loop.vertices.Count - 1);
-                                goto FinalStep;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // add current vertex to loop
-                        loop.vertices.Add(perimeter[currentVertexIndex]);
-                        perimeter[currentVertexIndex].loops.Add(loop);
-                    }
-
-                    currentVertexIndex++;
-
-                    // once the current vertex loops around to the start, we're done
-                } while (perimeter[currentVertexIndex] != initialVertex);
-
-                FinalStep:
-
-                loops.Add(loop);
-
-                currentVertexIndex = FindEarliestUnsatisfied(perimeter);
-            }
-
-            // now that we've created all loops that intersect the edge of the triangle, we can start on loops that float as islands
-            List<Vertex> unusedVertices = internalIntersections.Where(intersection => !intersection.usedInLoop).ToList();
-            while (unusedVertices.Count > 2)
-            {
-                Vertex currentVertex = unusedVertices.Last();
-                EdgeLoop result = DiscoverInternalLoop(currentVertex, unusedVertices, loops);
-                unusedVertices = unusedVertices.Where(vertex => !result.vertices.Contains(vertex)).ToList();
-            }
-
-            // configure the filledness of the discovered nested loops
-            foreach (EdgeLoop loop in loops)
-            {
-                EdgeLoop nestedLoop = loop.nestedLoop;
-                EdgeLoop previousLoop = loop;
-                while (nestedLoop != null)
-                {
-                    nestedLoop.filled = !previousLoop.filled;
-                    previousLoop = nestedLoop;
-                    nestedLoop = nestedLoop.nestedLoop;
-                }
-            }
-
-            return loops;
-        }*/
-
 
         /// <summary>
         /// Finds the earliest appearing Vertex in a triangle's perimeter that hasn't had all it's loops identified.
@@ -552,168 +318,80 @@ namespace CSG
         /// <param name="perimeter">The perimeter to examine for incomplete vertices</param>
         /// <returns>The index of the earliest unsatisfied vertex in the loop, or -1 if none are left.</returns>
         private int FindEarliestUnsatisfied(List<Vertex> perimeter) =>
-            perimeter.FindIndex(vertex => vertex is Egress ? vertex.loops.Count < ((Egress)vertex).cuts.Count + 1 : vertex.loops.Count < 1);
+            perimeter.FindIndex(vertex => vertex.fromIntersection ? vertex.loops.Count < 2 : vertex.loops.Count < 1);
 
         /// <summary>
         /// Finds the loop associated with the given intersection with a triangle and places it as a child of the correct containing edge loop
         /// </summary>
-        /// <param name="initialVertex">A vertex on the loop to find</param>
-        /// <param name="unusedVertices">A list of vertices that could possibly be part of the loop</param>
+        /// <param name="initialIntersection">A vertex on the loop to find</param>
+        /// <param name="unusedIntersections">A list of vertices that could possibly be part of the loop</param>
         /// <param name="loops">A list of all non-internal loops found for the current triangle</param>
         /// <returns>An edge loop defining the loop associated with the given vertex</returns>
-        private EdgeLoop DiscoverInternalLoop(Vertex initialVertex, List<Vertex> unusedVertices, List<EdgeLoop> loops)
+        private EdgeLoop DiscoverInternalLoop(List<Intersection> unusedIntersections, List<EdgeLoop> loops)
         {
-            Queue<EdgeLoop> potentialLoops = new Queue<EdgeLoop>();
-            List<EdgeLoop> completedLoops = new List<EdgeLoop>();
+            EdgeLoop createdLoop = new EdgeLoop();
 
-            potentialLoops.Enqueue(new EdgeLoop());
-            potentialLoops.Peek().vertices.Add(initialVertex);
-            while (potentialLoops.Count > 0)
+            Intersection initialIntersection = unusedIntersections.First();
+
+            Triangle currentTriangle = null;
+            Edge currentEdge = initialIntersection.edge;
+            Edge finalEdge;
+
+            createdLoop.vertices.Add(initialIntersection.vertex);
+            unusedIntersections.Remove(initialIntersection);
+
+            currentTriangle = currentEdge.triangles.Find(triangle => triangle != currentTriangle);
+
+            Intersection nextIntersection = null;
+            int overflow = 0;
+            do
             {
-                Vertex secondVertex = null;
-                Vertex nextVertex;
-                do
+                nextIntersection = null;
+                foreach (Edge edge in currentTriangle.edges)
                 {
-                    nextVertex = null;
-                    List<Vertex> loopVertices = potentialLoops.Peek().vertices;
-                    for (int i = unusedVertices.Count - 1; i >= 0; i--)
+                    nextIntersection = edge.intersections.Find(intersection => unusedIntersections.Contains(intersection) && intersection != initialIntersection);
+                    if (nextIntersection != null)
                     {
-                        if (unusedVertices[i].SharesTriangle(loopVertices.Last()) &&
-                            (!loopVertices.Contains(unusedVertices[i]) || (unusedVertices[i] == initialVertex && secondVertex != null)))
-                        {
-                            if (nextVertex == null)
-                            {
-                                nextVertex = unusedVertices[i];
+                        unusedIntersections.Remove(nextIntersection);
+                        createdLoop.vertices.Add(nextIntersection.vertex);
 
-                                if (secondVertex == null)
-                                {
-                                    secondVertex = nextVertex;
-                                }
-                            }
-                            else
-                            {
-                                EdgeLoop newLoop = new EdgeLoop(loopVertices);
-                                newLoop.vertices.Add(unusedVertices[i]);
-                                potentialLoops.Enqueue(newLoop);
-                            }
-                        }
-                    }
-                    if (nextVertex != null && nextVertex != initialVertex)
-                    {
-                        loopVertices.Add(nextVertex);
-                    }
-                } while (nextVertex != null && nextVertex != initialVertex);
-
-                EdgeLoop potentialLoop = potentialLoops.Dequeue();
-                if (nextVertex != null)
-                {
-                    completedLoops.Add(potentialLoop);
-                }
-            }
-
-            // the loop with the greatest number of vertices is the correct loop
-            int loopSize = 0;
-            foreach(EdgeLoop loop in completedLoops)
-            {
-                if(loop.vertices.Count > loopSize)
-                {
-                    loopSize = loop.vertices.Count();
-                }
-            }
-
-            // we will find a pair of maximal loops with opposite winding orders
-            List<EdgeLoop> finalLoops = completedLoops.Where(loop => loop.vertices.Count == loopSize).ToList();
-
-            int finalLoopIndex = 0;
-            // determine which external loop contains this new loop
-            foreach (EdgeLoop loop in loops)
-            {
-                if (initialVertex.LiesWithinLoop(loop))
-                {
-                    if (loop.GetNormal() != finalLoops[0].GetNormal())
-                    {
-                        finalLoopIndex = 1;
-                    }
-                    if (loop.nestedLoop == null)
-                    {
-                        loop.nestedLoop = finalLoops[finalLoopIndex];
+                        currentEdge = edge;
+                        currentTriangle = currentEdge.triangles.Find(triangle => triangle != currentTriangle);
+                        break;
                     }
                     else
                     {
-                        finalLoops[finalLoopIndex].nestedLoop = loop.nestedLoop;
-                        EdgeLoop previousLoop = loop;
-                        bool liesWithinLoop = initialVertex.LiesWithinLoop(finalLoops[finalLoopIndex].nestedLoop);
-                        do
-                        {
-                            previousLoop.nestedLoop = finalLoops[finalLoopIndex].nestedLoop;
-                            finalLoops[finalLoopIndex].nestedLoop = finalLoops[finalLoopIndex].nestedLoop.nestedLoop;
-                            previousLoop.nestedLoop.nestedLoop = finalLoops[finalLoopIndex];
-                        } while (finalLoops[finalLoopIndex].nestedLoop != null && liesWithinLoop);
+                        finalEdge = edge;
                     }
-
-                    // we've found the loop we're contained by, break out
-                    break;
                 }
-            }
-            return finalLoops[finalLoopIndex];
-        }
-        /// <summary>
-        /// Marks the given Cut as traversed and adds its vertices to the greater loop being traversed
-        /// </summary>
-        /// <param name="cut">The Cut being traversed</param>
-        /// <param name="loop">The EdgeLoop being traversed</param>
-        /// <param name="perimeter">The parimeter of the current triangle</param>
-        /// <param name="currentVertexIndex">The index of the vertex at the beginning of the Cut</param>
-        /// <returns>The index of the vertex arrived at by traversing the Cut</returns>
-        private int TraverseCut(Cut cut, EdgeLoop loop, List<Vertex> perimeter, int currentVertexIndex)
-        {
-            cut.traversed = true;
 
-            // add all vertices of the egress's cut to the loop
-            loop.vertices.AddRange(cut);
-            perimeter[currentVertexIndex].loops.Add(loop);
+                overflow++;
+                if (overflow > 100) throw new Exception("Too many iterations in internal loop discovery");
+            } while (nextIntersection != null);
 
-            // find the index of the last vertex in the cut (which is always an egress) and get its index in the perimeter
-            currentVertexIndex = perimeter.IndexOf(cut.Last());
-            perimeter[currentVertexIndex].loops.Add(loop);
+            //createdLoop.Draw(Color.red, Color.green, Color.blue);
 
-            return currentVertexIndex;
-        }
-
-        /// <summary>
-        /// Identifies a new egress created by the intersection of the edge defined by points A and B and a given bounds triangle if there is one
-        /// </summary>
-        /// <remarks>
-        /// Sometimes an Egress is identified multiple times. In these cases, the Egress is not double counted
-        /// </remarks>
-        /// <param name="pointA">The first point of the intersecting edge</param>
-        /// <param name="pointB">The second point of the intersecting edge</param>
-        /// <param name="boundsTriangle">The Triangle to intersect the edge with</param>
-        /// <param name="egresses">A list of existing egresses to store the new Egress in</param>
-        private void IdentifyEgress(Vector3 pointA, Vector3 pointB, Triangle boundsTriangle, List<Egress> egresses)
-        {
-            Vertex intersectionPoint;
-
-            intersectionPoint = Raycast.LineSegmentToTriangle(pointA, pointB, boundsTriangle, error);
-
-            if (intersectionPoint != null)
+            // if we haven't gotten back to the start, we don't have a valid loop
+            if (!currentTriangle.edges.Exists(edge => edge.intersections.Exists(intersection => intersection == initialIntersection))
+                || createdLoop.vertices.Count < 3)
             {
-                bool alreadyExists = false;
-                //TODO
-                Egress duplicate = egresses.Find(egress => Vector3.Distance(intersectionPoint.value, egress.value) < error);
-                if (duplicate != null)
-                {
-                    alreadyExists = true;
-                    duplicate.triangles.Add(boundsTriangle);
-                }
-                // duplicate logic as below
-
-                if (!alreadyExists)
-                {
-                    intersectionPoint.triangles.Add(boundsTriangle);
-                    egresses.Add(Egress.CreateFromVertex(intersectionPoint));
-                }
+                Debug.LogWarning("Unable to complete internal loop");
+                return null;
             }
+
+            //TODO: THERE CAN BE MULTIPLE NESTED LOOPS!!!!!
+            EdgeLoop parentLoop = loops.Find(loop => initialIntersection.vertex.LiesWithinLoop(loop));
+            Debug.Log(createdLoop.vertices.Count);
+            createdLoop.MatchNormal(parentLoop);
+            while(parentLoop.nestedLoop != null && initialIntersection.vertex.LiesWithinLoop(parentLoop.nestedLoop))
+            {
+                parentLoop = parentLoop.nestedLoop;
+            }
+
+            createdLoop.nestedLoop = parentLoop.nestedLoop;
+            parentLoop.nestedLoop = createdLoop;
+
+            return createdLoop;
         }
 
         /// <summary>
@@ -721,182 +399,111 @@ namespace CSG
         /// </summary>
         /// <param name="egresses">The list of Egresses to find cuts for</param>
         /// <param name="intersections">The list of internal intersections that form the intermediate points in the created cuts</param>
-        private void CreateCuts(Triangle triangle)
+        private void CreateCuts(Triangle triangle, Model bounds)
         {
             for (int i = 0; i < 3; i++)
             {
-                /*List<Vertex> edgeIntersections = triangle.edges[i].intersections.Select(intersection => intersection.vertex).ToList();
-                edgeIntersections.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, triangle.vertices[i].value) - Vector3.Distance(b.value, triangle.vertices[i].value)));
-                */
+                //TODO do this somewhere where it won't get called multiple times on the same edges
                 triangle.edges[i].intersections.Sort(
-                    (a, b) => Math.Sign(Vector3.Distance(a.vertex.value, triangle.vertices[i].value) - 
+                    (a, b) => Math.Sign(Vector3.Distance(a.vertex.value, triangle.vertices[i].value) -
                     Vector3.Distance(b.vertex.value, triangle.vertices[i].value)));
+                int overflow = 0;
 
                 // for each edge forming the parimeter, find its cuts
                 foreach (Intersection intersection in triangle.edges[i].intersections)
                 {
-                    // get any intersections between the edges of the intersected triangle and this triangle
-                    List<Intersection> successors = intersection.triangle.edges.SelectMany(edge => 
-                        edge.intersections.Where(intersect => intersect.triangle == triangle)).ToList();
-
-                    foreach(Intersection successorIntersection in successors)
+                    // if there's already a cut for this intersection, pass
+                    if(intersection.vertex.cut != null)
                     {
-                        Cut cut = new Cut();
-                        Intersection currentIntersection = successorIntersection;
-                        bool cutCompleted = false;
+                        //Debug.LogWarning("Vertex: " + intersection.vertex + " already has cut, passing on finding it again");
+                        //intersection.vertex.Draw(0.05f, Vector3.left, (Color.red / 2) + (Color.yellow / 2));
+                        continue;
+                    }
 
-                        while(!cutCompleted)
+                    Cut createdCut = new Cut();
+                    createdCut.Add(intersection.vertex);// add the starting point of the cut
+
+                    Edge currentEdge = null;
+                    Triangle previousTriangle = intersection.triangle;
+                    Triangle currentTriangle = intersection.triangle;
+
+                    bool done = false;
+
+                    // while I haven't gotten to a triangle who is intersected by my perimeter
+                    while (!done)
+                    {
+                        // the current edge is the specific edge that intersects the initial triangle
+                        Edge nextEdge = currentTriangle.edges.Find(edge => edge.intersections.Exists(intersect => intersect.triangle == triangle) &&
+                            edge != currentEdge);
+                        // if we found another edge, we can try to continue to proceed
+                        if (nextEdge != null)
                         {
-                            cut.Add(currentIntersection.vertex);
+                            currentEdge = nextEdge;
+                            createdCut.Add(currentEdge.intersections.Find(intersect => intersect.triangle == triangle).vertex);
 
-                            List<Intersection> nextIntersections = currentIntersection.triangle.edges.SelectMany(edge =>
-                                edge.intersections.Where(intersect => intersect.triangle == triangle)).ToList();
+                            // the previous triangle is now the one we found most recently
+                            previousTriangle = currentTriangle;
 
-                            // if we can't find a way forward, give up on this cut
-                            if(nextIntersections.Count == 0)
+                            // the current triangle is the first one we can find that shares an edge with the previous triangle 
+                            // that has an additional edge intersection the initial triangle
+                            currentTriangle = currentEdge.triangles.Find(tri => tri != previousTriangle &&
+                                tri.edges.Exists(edge => edge.intersections.Exists(intersect => intersect.triangle == triangle) && edge != currentEdge));
+                        }
+                        else
+                        {
+                            currentTriangle = null;
+                        }
+                        
+                        if(currentTriangle == null)// if we can't find a way to proceed, with internal intersections, it's time to check for egress intersections
+                        {
+                            Intersection finalIntersection = null;
+
+                            if (currentEdge == null)// this happens when we have no internal intersections as part of the cut
                             {
-                                Debug.LogWarning("Invalid cut: aborting and proceeding to next cut");
-                                break;
+                                foreach (Edge edge in triangle.edges)
+                                {
+                                    finalIntersection = edge.intersections.Find(intersect => intersection.triangle == intersect.triangle && intersect != intersection);
+                                    if (finalIntersection != null)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (Edge edge in triangle.edges)
+                                {
+                                    finalIntersection = edge.intersections.Find(intersect => currentEdge.triangles.Contains(intersect.triangle) && intersect != intersection);
+                                    if (finalIntersection != null)
+                                    {
+                                        break;
+                                    }
+                                }
                             }
 
-                            currentIntersection = nextIntersections[0];
-
-                            // if this intersection is on the perimeter
-                            if (triangle.edges.Where(edge => edge.intersections.Contains(currentIntersection)).Count() > 0)
+                            if (finalIntersection != null)
                             {
-                                cutCompleted = true;
+                                createdCut.Add(finalIntersection.vertex);
+                                createdCut.First().cut = createdCut;
+                                createdCut.Last().cut = createdCut.GetReversedCopy();
                             }
+                            else
+                            {
+                                Debug.LogWarning("Unable to complete cut. Aborting and proceeding to next cut.");
+                            }
+
+                            done = true;
                         }
 
-                        if (cutCompleted)
+                        if (overflow > 100)
                         {
-                            intersection.vertex.usedInLoop = true;
-                            intersection.vertex.cuts.Add(cut);
-                            currentIntersection.vertex.cuts.Add(cut.GetReversedCopy());
+                            throw new Exception("Maxiumum iterations exceeded");
                         }
+                        overflow++;
                     }
                 }
             }
-            /*
-            foreach (Egress egress in egresses)
-            {
-                Cut cut = new Cut();
-                cut.Add(egress);
-                Vertex currentVertex = egress;
-                bool foundNext = false;
-                do
-                {
-                    foundNext = false;
-
-                    // prioritize progressing along internal intersections first
-                    foreach (Vertex intersection in intersections)
-                    {
-                        bool alreadyExists = false;
-
-                        if (cut.Count == 1) // if we're starting a new cut
-                        {
-                            if (egress.cuts.Any(existingCut => existingCut[1] == intersection))
-                                alreadyExists = true;
-                        }
-
-                        if (intersection.SharesTriangle(currentVertex) && !cut.Contains(intersection) && !alreadyExists)
-                        {
-                            foundNext = true;
-                            cut.Add(intersection);
-                            intersection.usedInLoop = true;
-                            currentVertex = intersection;
-                        }
-                    }
-
-                    // then find egresses that will terminate the cut
-                    foreach (Egress vertex in egresses)
-                    {
-                        bool alreadyExists = false;
-
-                        if (cut.Count == 1) // if we're starting a new cut
-                        {
-                            if (egress.cuts.Any(newCut => newCut[1] == (Vertex)vertex))
-                                alreadyExists = true;
-                        }
-
-                        if (vertex.SharesTriangle(currentVertex) && !cut.Contains(vertex) && !alreadyExists)
-                        {
-                            foundNext = true;
-                            cut.Add(vertex);
-                            currentVertex = vertex;
-                            break;
-                        }
-                    }
-                } while (!(currentVertex is Egress) && foundNext);
-
-                if (foundNext && currentVertex != egress)
-                {
-                    egress.cuts.Add(cut);
-                    ((Egress)currentVertex).cuts.Add(cut.GetReversedCopy());
-                }
-            }*/
         }
-
-        /*private void CreateCuts(List<Egress> egresses, List<Vertex> intersections)
-    {
-        foreach (Egress egress in egresses)
-        {
-            Cut cut = new Cut();
-            cut.Add(egress);
-            Vertex currentVertex = egress;
-            bool foundNext = false;
-            do
-            {
-                foundNext = false;
-
-                // prioritize progressing along internal intersections first
-                foreach (Vertex intersection in intersections)
-                {
-                    bool alreadyExists = false;
-
-                    if (cut.Count == 1) // if we're starting a new cut
-                    {
-                        if (egress.cuts.Any(existingCut => existingCut[1] == intersection))
-                            alreadyExists = true;
-                    }
-
-                    if (intersection.SharesTriangle(currentVertex) && !cut.Contains(intersection) && !alreadyExists)
-                    {
-                        foundNext = true;
-                        cut.Add(intersection);
-                        intersection.usedInLoop = true;
-                        currentVertex = intersection;
-                    }
-                }
-
-                // then find egresses that will terminate the cut
-                foreach (Egress vertex in egresses)
-                {
-                    bool alreadyExists = false;
-
-                    if (cut.Count == 1) // if we're starting a new cut
-                    {
-                        if (egress.cuts.Any(newCut => newCut[1] == (Vertex)vertex))
-                            alreadyExists = true;
-                    }
-
-                    if (vertex.SharesTriangle(currentVertex) && !cut.Contains(vertex) && !alreadyExists)
-                    {
-                        foundNext = true;
-                        cut.Add(vertex);
-                        currentVertex = vertex;
-                        break;
-                    }
-                }
-            } while (!(currentVertex is Egress) && foundNext);
-
-            if (foundNext && currentVertex != egress)
-            {
-                egress.cuts.Add(cut);
-                ((Egress)currentVertex).cuts.Add(cut.GetReversedCopy());
-            }
-        }
-    }*/
 
         /// <summary>
         /// Converts a Vector 3 from the local coordinate system defined by "from" to a target coordinate system defined by "to"

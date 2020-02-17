@@ -47,9 +47,6 @@ namespace CSG
                 perimeter.AddRange(edgeIntersections);
             }
 
-            //TODO evaluate whether this is needed or not
-            perimeter.Add(vertices[0]);// as a sentinal
-
             return perimeter;
         }
 
@@ -81,7 +78,26 @@ namespace CSG
 			vertices.Reverse();
 		}
 
-		public override string ToString() => $"{base.ToString()}::{string.Join("::", vertices.Select(v=>v.value))}";
+        public void ClearMetadata()
+        {
+            vertices.ForEach(vertex => vertex.loops = new List<EdgeLoop>());
+
+            foreach (Edge edge in edges)
+            {
+                edge.intersections.ForEach(intersection =>
+                {
+                    intersection.vertex.cut = null;
+                    intersection.vertex.loops = new List<EdgeLoop>();
+                });
+            }
+        }
+
+		public override string ToString() => $"{base.ToString()}::{string.Join("::", vertices.Select(v=>v.value.ToString("F4")))}";
+
+        public void Draw(Color color)
+        {
+            edges.ForEach(edge => edge.Draw(color));
+        }
 	}
 
 }

@@ -8,6 +8,9 @@ namespace CSG
     {
         public List<Vertex> vertices;// the vertices that define this edge
         public List<Intersection> intersections;// a place to store the intersections this edge has with the other shape
+        public List<Triangle> triangles;
+
+        public Transform referenceFrame;
 
         public Edge(Vertex vertexA, Vertex vertexB)
         {
@@ -15,6 +18,7 @@ namespace CSG
             vertices.Add(vertexA);
             vertices.Add(vertexB);
             intersections = new List<Intersection>();
+            triangles = new List<Triangle>();
         }
 
         public Intersection IntersectWithTriangle(Triangle triangle)
@@ -23,6 +27,16 @@ namespace CSG
             Vertex vertex = Raycast.LineSegmentToTriangle(vertices[0].value, vertices[1].value, triangle, error);
             if (vertex != null) vertex.fromIntersection = true;
             return vertex != null ? new Intersection(triangle, vertex, this) : null;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + ": " + vertices[0] + " :: " + vertices[1];
+        }
+
+        public void Draw(Color color)
+        {
+            Debug.DrawLine(vertices[0].value, vertices[1].value, color);
         }
     }
 }

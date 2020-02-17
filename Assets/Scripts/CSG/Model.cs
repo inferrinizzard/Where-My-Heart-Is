@@ -21,6 +21,7 @@ namespace CSG
         {
             vertices = new List<Vertex>();
             triangles = new List<Triangle>();
+            edges = new List<Edge>();
         }
 
         /// <summary>
@@ -30,6 +31,21 @@ namespace CSG
         public Model(Mesh mesh)
         {
             vertices = mesh.vertices.Select((vertex, index) => new Vertex(index, vertex)).ToList();
+            List<Vertex> uniqueVertices = new List<Vertex>();
+            foreach (Vertex vertex in vertices)
+            {
+                Vertex existingVertex = uniqueVertices.Find(testVertex => testVertex.value == vertex.value);
+                if (existingVertex == null)
+                {
+                    uniqueVertices.Add(vertex);
+                }
+                else
+                {
+                    uniqueVertices.Add(existingVertex);
+                }
+            }
+            vertices = uniqueVertices;
+            
 
             triangles = new List<Triangle>();
 
@@ -41,7 +57,21 @@ namespace CSG
                 triangles.Add(triangle);
             }
 
+            uniqueVertices = new List<Vertex>();
+            foreach (Vertex vertex in vertices)
+            {
+                Vertex existingVertex = uniqueVertices.Find(testVertex => testVertex == vertex);
+                if (existingVertex == null)
+                {
+                    uniqueVertices.Add(vertex);
+                }
+            }
+
+            vertices = uniqueVertices;
+
             CreateEdges();
+
+            //Debug.Log(edges.Count);
         }
 
         /// <summary>
@@ -50,26 +80,31 @@ namespace CSG
         private void CreateEdges()
         {
             edges = new List<Edge>();
+            //Debug.Log(triangles.Count);
             foreach (Triangle triangle in triangles)
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    List<Edge> preexistingEdges = edges.Where(edge =>
-                        !edge.vertices.Contains(triangle.vertices[i]) &&
-                        !edge.vertices.Contains(triangle.vertices[(i + 1) % 3])
-                        ).ToList();
-                    if (preexistingEdges.Count == 0)// if there are no edges that contain both the current vertices
+                    Edge preexistingEdge = edges.Find(edge =>
+                        edge.vertices.Contains(triangle.vertices[i]) &&
+                        edge.vertices.Contains(triangle.vertices[(i + 1) % 3])
+                        );
+
+                    if (preexistingEdge == null)// if there are no edges that contain both the current vertices
                     {
                         Edge createdEdge = new Edge(triangle.vertices[i], triangle.vertices[(i + 1) % 3]);
                         edges.Add(createdEdge);
                         triangle.edges.Add(createdEdge);
+                        createdEdge.triangles.Add(triangle);
                     }
                     else// otherwise, the edge already exists
                     {
-                        triangle.edges.Add(preexistingEdges[0]);
+                        triangle.edges.Add(preexistingEdge);
+                        preexistingEdge.triangles.Add(triangle);
                     }
                 }
             }
+
         }
 
         /// <summary>
@@ -80,47 +115,34 @@ namespace CSG
         {
             List<Vertex> createdVertices = new List<Vertex>();
 
-            createdVertices.AddRange(IntersectAWithB(this, other));
-            createdVertices.AddRange(IntersectAWithB(other, this));
+            createdVertices.AddRange(IntersectAWithB(this, other, new Color(0, 0, 0, 0)));
+            createdVertices.AddRange(IntersectAWithB(other, this, Color.white));
 
-           //Debug.Log("Intersections: " + createdVertices.Count);
 
             return createdVertices;
         }
 
-        private List<Vertex> IntersectAWithB(Model modelA, Model modelB)
+        private List<Vertex> IntersectAWithB(Model modelA, Model modelB, Color color)
         {
             List<Vertex> createdVertices = new List<Vertex>();
             foreach(Edge edge in modelA.edges)
             {
                 foreach(Triangle triangle in modelB.triangles)
                 {
+                    //Debug.Log("Intersecting edge: " + edge + " with triangle: " + triangle);
                     Intersection intersection = edge.IntersectWithTriangle(triangle);
 
                     if (intersection != null)
                     {
+                        intersection.vertex.referenceFrame = edges[0].referenceFrame;//TODO HAK
                         createdVertices.Add(intersection.vertex);
                         edge.intersections.Add(intersection);
 
-                        bool foundEdgeEdge = false;
-                        foreach (Edge triangleEdge in triangle.edges)// check if this intersection intersects an edge of the triangle
-                        {
-                            if (intersection.vertex.LiesOnEdge(triangleEdge))
-                            {
-                                triangleEdge.intersections.Add(intersection);
-                                foundEdgeEdge = true;
-                                break;
-                            }
-                        }
-
-                        if (!foundEdgeEdge)// if it does not intersect an edge of the trangle, it can be saved as an internal intersection
-                        {
-                            triangle.internalIntersections.Add(intersection);
-                        }
+                        triangle.internalIntersections.Add(intersection);
                     }
                 }
             }
-
+            //createdVertices.ForEach(vertex => vertex.Draw(0.02f, Vector3.back, color));
             return createdVertices;
         }
         
@@ -133,6 +155,7 @@ namespace CSG
 		/// <returns>The parsed Mesh</returns>
 		public Mesh ToMesh()
 		{
+            //TODO: each face may need to have its vertices inputed as separate things
 			Mesh mesh = new Mesh();
 
 			// reindex vertices and add them to the mesh
@@ -165,6 +188,16 @@ namespace CSG
 			}
 		}
 
+        public void ConvertToWorld(Transform referenceFrame)
+        {
+            vertices.ForEach(vertex => vertex.value = referenceFrame.localToWorldMatrix.MultiplyPoint3x4(vertex.value));
+        }
+
+        public void ConvertToLocal(Transform referenceFrame)
+        {
+            vertices.ForEach(vertex => vertex.value = referenceFrame.worldToLocalMatrix.MultiplyPoint3x4(vertex.value));
+        }
+
         public bool Intersects(Model other, float error)
         {
             foreach (Vertex vertex in vertices)
@@ -177,5 +210,56 @@ namespace CSG
 
             return false;
         }
-	}
+
+        public void AddTriangle(Triangle triangle)
+        {
+            triangles.Add(triangle);
+            triangle.vertices.ForEach(vertex =>
+            {
+                if (!vertices.Contains(vertex))
+                {
+                    vertices.Add(vertex);
+                }
+            });
+        }
+
+        public void AddTriangles(List<Triangle> trianglesToAdd)
+        {
+            trianglesToAdd.ForEach(triangle =>
+            {
+                triangles.Add(triangle);
+                triangle.vertices.ForEach(vertex =>
+                {
+                    if (!vertices.Contains(vertex))
+                    {
+                        vertices.Add(vertex);
+                    }
+                });
+            });
+        }
+
+        public void FlipNormals()
+        {
+            triangles.ForEach(triangle => triangle.FlipNormal());
+        }
+
+        public static Model Combine(Model modelA, Model modelB)
+        {
+            Model result = new Model();
+
+            modelA.triangles.ForEach(triangle =>
+            {
+                result.AddTriangle(triangle);
+            }
+            );
+
+            modelB.triangles.ForEach(triangle =>
+            {
+                result.AddTriangle(triangle);
+            }
+            );
+
+            return result;
+        }
+    }
 }

@@ -46,7 +46,7 @@ namespace CSG
 		/// Creates a series of Triangles that cover the surface of this EdgeLoop
 		/// </summary>
 		/// <returns>The created triangles</returns>
-		public List<Triangle> Triangulate(GameObject referenceFrame)
+		public List<Triangle> Triangulate()
 		{
 			//Draw(referenceFrame, 60.0f, Color.red);
 			//this.RemoveDuplicates();
@@ -82,6 +82,17 @@ namespace CSG
 
 			return triangles;
 		}
+
+        public List<Triangle> TriangulateFanMethod()
+        {
+            List<Triangle> triangles = new List<Triangle>();
+            for(int i = 0; i < vertices.Count - 2; i++)
+            {
+                triangles.Add(new Triangle(vertices[0], vertices[i+1], vertices[i+2]));
+            }
+
+            return triangles;
+        }
 
 		private Triangle CreateNextEar(List<Vertex> currentVertices)
 		{
@@ -139,6 +150,19 @@ namespace CSG
 			return Vector3.Cross(vertices[0].value - vertices[1].value, vertices[2].value - vertices[1].value).normalized;
 		}
 
+        public void FlipNormal()
+        {
+            vertices.Reverse();
+        }
+
+        public void MatchNormal(EdgeLoop toMatch)
+        {
+            if (Vector3.Distance(this.GetNormal(), toMatch.GetNormal()) > 0.0001)
+            {
+                this.FlipNormal();
+            }
+        }
+
 		public void RemoveDuplicates()
 		{
 			for (int i = vertices.Count - 1; i > 0; i--)
@@ -159,17 +183,20 @@ namespace CSG
 		}
 
 		public override string ToString() =>
-			$"{base.ToString()}::{string.Join("::", vertices.Select(v => (v.value.ToString("F4") + " (" + (v is Egress) + ")")))}";
-		private void Draw(GameObject referenceFrame, float time, Color color)
+			$"{base.ToString()}::{string.Join("::", vertices.Select(v => (v.value.ToString("F4") + " (" + (v.fromIntersection) + ")")))}";
+
+        public void Draw(Color color, Color secondaryColor, Color vertexColor)
 		{
-			float increment = 1f / vertices.Count;
-			/*Debug.Log(vertices.Count);
-			Debug.Log(increment);*/
-			for (int i = 0; i < vertices.Count; i++)
+            
+            //float increment = 1f / vertices.Count;
+            for (int i = 0; i < vertices.Count; i++)
 			{
-				color = new Color(i * increment, i * increment, i * increment);
-				//Debug.Log(i * increment);
-				Debug.DrawLine(referenceFrame.transform.localToWorldMatrix * vertices[i].value, referenceFrame.transform.localToWorldMatrix * vertices[(i + 1) % vertices.Count].value, color, time);
+                vertices[i].Draw(0.05f, Vector3.forward, vertexColor);
+                vertexColor = Color.blue;
+                color += secondaryColor * 0.05f;
+                //color = new Color(i * increment, i * increment, i * increment);
+                //Debug.Log(i * increment);
+                Debug.DrawLine(vertices[i].value, vertices[(i + 1) % vertices.Count].value, color);
 			}
 		}
 

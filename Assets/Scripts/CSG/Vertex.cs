@@ -41,7 +41,10 @@ namespace CSG
         /// <remarks>
         /// Typically, there will be only one cut, but occasionally there are multiple.
         /// </remarks>
-        public List<Cut> cuts;
+        //public List<Cut> cuts;
+        public Cut cut;
+
+        public Transform referenceFrame;
 
         public bool fromIntersection;
 
@@ -58,7 +61,7 @@ namespace CSG
 
             loops = new List<EdgeLoop>();
             triangles = new List<Triangle>();
-            cuts = new List<Cut>();
+            cut = null;
             usedInLoop = false;
             fromIntersection = false; 
         }
@@ -225,7 +228,7 @@ namespace CSG
         /// </summary>
         /// <param name="perimeter">The perimeter in question</param>
         /// <returns>The cut that travels the furthest</returns>
-        public Cut GetFurthestCut(List<Vertex> perimeter)
+        /*public Cut GetFurthestCut(List<Vertex> perimeter)
         {
             Cut bestCut = null;
             int bestCutIndex = -1;
@@ -244,7 +247,7 @@ namespace CSG
             }
 
             return bestCut;
-        }
+        }*/
 
         /// <summary>
         /// Finds and returns the cut among cuts which travels the furthest around the perimeter of the triangle 
@@ -255,7 +258,7 @@ namespace CSG
         /// <param name="minIndex">The minimum index a cut must arrive at to be returned</param>
         /// <param name="targetIndex">The index of the initial vertex of the current loop being traversed</param>
         /// <returns>The cut satisfying all constraints</returns>
-        public Cut GetFurthestCut(List<Vertex> perimeter, Cut ignore, int minIndex, int targetIndex)
+        /*public Cut GetFurthestCut(List<Vertex> perimeter, Cut ignore, int minIndex, int targetIndex)
         {
             Cut bestCut = null;
             int bestCutIndex = -1;
@@ -280,6 +283,11 @@ namespace CSG
             }
 
             return bestCut;
+        }*/
+
+        public void Draw(float length, Vector3 direction, Color color)
+        {
+            Debug.DrawLine(value, value + direction.normalized * length, color);
         }
     }
 }
