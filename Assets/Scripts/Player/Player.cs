@@ -237,7 +237,7 @@ public class Player : MonoBehaviour
 	private void PickUp()
 	{
 		// Check if the player is pressing the pick up key.
-		if (Input.GetMouseButtonDown(0) && !Input.GetMouseButton(1))
+		if (Input.GetKeyDown(pickUpKey))
 		{
 			if (!holding && !looking)
 			{
