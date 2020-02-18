@@ -9,7 +9,6 @@ public class Player : StateMachine
 {
 	/// <summary> Reference to the players last spawn. </summary>
 	[SerializeField] public Transform lastSpawn = default;
-
 	/// <summary> Reference to player CharacterController. </summary>
 	[HideInInspector] public CharacterController characterController;
 	/// <summary> Reference to player Camera. </summary>
@@ -34,7 +33,7 @@ public class Player : StateMachine
 	[HideInInspector] public bool looking = false;
 	/// <summary> Whether the player in aiming the window or not. </summary>
 	[HideInInspector] public bool aiming = false;
-
+	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
 	private bool stillCrouching = false;
 
 	/// <summary> Vector3 to store and calculate move direction. </summary>
@@ -63,13 +62,11 @@ public class Player : StateMachine
 	private float minX = -90f;
 	/// <summary> Minimum angle the player can look downward. </summary>
 	private float maxX = 90f;
-
 	/// <summary> Stores the Y rotation of the player. </summary>
 	[HideInInspector] public float rotationY = 0f;
 	/// <summary> Stores the X rotation of the player. </summary>
 	[HideInInspector] public float rotationX = 0f;
 
-	/// <summary> Initializes variables before the game starts. </summary>
 	private void Awake()
 	{
 		// base.Awake();
@@ -117,7 +114,7 @@ public class Player : StateMachine
 		playerCanMove = true;
 		holding = false;
 		looking = false;
-		heartWindow.SetActive(false);
+		heartWindow.SetActive(false); // Weird bug where the window is active by default.
 	}
 
 	void Update()
@@ -134,7 +131,7 @@ public class Player : StateMachine
 		Die();
 	}
 
-	/// <summary> Player die function. </summary>
+	/// <summary> Player sudoku function. </summary>
 	private void Die() { SetState(new Die(this)); }
 
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
@@ -236,7 +233,6 @@ public class Player : StateMachine
 	/// <summary> Player stoped aiming function. </summary>
 	private void StopAiming()
 	{
-		// Not Aiming...
 		if (heartWindow.activeSelf)
 		{
 			heartWindow.SetActive(false);
