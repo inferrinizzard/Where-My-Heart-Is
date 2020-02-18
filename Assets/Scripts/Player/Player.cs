@@ -5,9 +5,9 @@ using UnityEngine;
 /// <summary Handles player movement and player interaction </summary>
 [System.Serializable]
 // public class Player : Singleton<Player>
-public class Player : MonoBehaviour
+public class Player : Singleton<Player>, IResetable
 {
-	[SerializeField] private Transform lastSpawn = default;
+	Transform lastSpawn;
 
 	/// <summary> Reference to player CharacterController. </summary>
 	private CharacterController characterController;
@@ -36,7 +36,9 @@ public class Player : MonoBehaviour
 	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
 	[HideInInspector] public bool looking = false;
 
-	public GameObject heartWindow;
+	GameObject heartWindow;
+	[HideInInspector] public Window window;
+
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
 	[SerializeField] private float speed = 5f;
@@ -71,34 +73,49 @@ public class Player : MonoBehaviour
 	float rotationY = 0f;
 	/// <summary> Stores the X rotation of the player. </summary>
 	float rotationX = 0f;
-	/// <summary> Initializes variables before the game starts. </summary>
-	private void Awake()
-	{
-		// base.Awake();
-		characterController = GetComponent<CharacterController>();
-		cam = GetComponentInChildren<Camera>();
-		VFX = cam.GetComponent<Effects>();
-		heartWindow = GetComponentInChildren<Window>().gameObject;
-
-		// Get reference to the player height using the CharacterController's height.
-		playerHeight = characterController.height;
-
-		// Creates an empty game object at the position where a held object should be.
-		heldObjectLocation = new GameObject("HeldObjectLocation").transform;
-		heldObjectLocation.position = cam.transform.position + cam.transform.forward;
-		heldObjectLocation.parent = cam.transform;
-	}
 
 	/// <summary> Called once at the start. </summary>
 	void Start()
 	{
+		characterController = GetComponent<CharacterController>();
+		cam = GetComponentInChildren<Camera>();
+		VFX = cam.GetComponent<Effects>();
+		heartWindow = GetComponentInChildren<Window>().gameObject;
+		window = heartWindow.GetComponent<Window>();
+
+		// Get reference to the player height using the CharacterController's height.
+		playerHeight = characterController.height;
+		// Creates an empty game object at the position where a held object should be.
+		heldObjectLocation = new GameObject("HeldObjectLocation").transform;
+		heldObjectLocation.position = cam.transform.position + cam.transform.forward;
+		heldObjectLocation.parent = cam.transform;
 		Cursor.lockState = CursorLockMode.Locked;
+
+		Init();
+	}
+
+	///	<summary> will reset movement vars and assign spawnpoint, reset window-world ref </summary>
+	public void Init()
+	{
+		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
+		if (lastSpawn != null)
+		{
+			transform.position = lastSpawn.position;
+			transform.rotation = lastSpawn.rotation;
+		}
 		playerCanMove = true;
 		holding = false;
 		looking = false;
+		window.world = World.Instance;
 	}
 
-	/// <summary> Called once per frame. </summary>
+	///	<summary> reset pos, rendundant </summary>
+	public void Reset()
+	{
+		transform.position = Vector3.zero;
+		transform.eulerAngles = Vector3.zero;
+	}
+
 	void Update()
 	{
 

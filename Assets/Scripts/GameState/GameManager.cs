@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary> Constrols app macro and scene manipulations </summary>
-public class GameManager : Singleton<GameManager>
+public class GameManager : Singleton<GameManager>, IResetable
 {
 	/// <summary> UI Image wrapper for Loading Screen  </summary>
 	GameObject loadingScreen;
@@ -18,6 +18,9 @@ public class GameManager : Singleton<GameManager>
 		loadingScreen = transform.GetChild(0).GetChild(0).gameObject; // better find
 		// get Slider ref
 		loadingBar = loadingScreen.GetComponentInChildren<Slider>();
+
+		World.Instance.name += $" [{SceneManager.GetActiveScene().name}]";
+		SceneManager.activeSceneChanged += instance.InitScene;
 	}
 
 	/// <summary> Closes the Application </summary>
@@ -25,6 +28,24 @@ public class GameManager : Singleton<GameManager>
 	{
 		// prompt
 		Application.Quit();
+	}
+
+	/// <summary> SceneManager.activeSceneChanged Delegate wrapper </summary>
+	void InitScene(Scene from, Scene to) => instance.Init();
+
+	/// <summary> Will delegate sub Init calls </summary>
+	public void Init()
+	{
+		World.Instance.Init();
+		World.Instance.name += $"[{SceneManager.GetActiveScene().name}]";
+		Player.Instance.Init();
+	}
+
+	/// <summary> Will delegate sub Reset calls </summary>
+	public void Reset()
+	{
+		World.Instance.Reset();
+		Player.Instance.Reset();
 	}
 
 	public void ChangeLevel(string scene) => Transition(scene); // temp, to be deleted
@@ -50,10 +71,22 @@ public class GameManager : Singleton<GameManager>
 
 			if (asyncLoad.progress >= .9f && Time.time - start > 1)
 			{
-				asyncLoad.allowSceneActivation = true;
 				instance.loadingScreen.SetActive(false);
+				instance.Reset();
+				asyncLoad.allowSceneActivation = true;
+				instance.StartCoroutine(UnloadScene(name));
+				// instance.Init();
 			}
 			yield return null;
 		}
+	}
+
+	/// <summary> Unloads scene asynchronously </summary>
+	/// <param name="scene"> Name of scene to unload  </param>
+	static IEnumerator UnloadScene(string name)
+	{
+		AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(name);
+		while (!asyncUnload.isDone)
+			yield return null;
 	}
 }

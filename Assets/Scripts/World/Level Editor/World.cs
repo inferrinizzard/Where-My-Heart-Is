@@ -2,22 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class World : MonoBehaviour
+public class World : Singleton<World>, IResetable
 {
 	public Transform realWorldContainer;
 	public Transform dreamWorldContainer;
 	public Transform entangledWorldContainer;
-	public Player player; // TODO: phase out by using player object
-	public static GameObject playerReference;
 
-	void Awake()
+	public void Start()
+	{
+		Init();
+	}
+
+	/// <summary> configures children and related clipables, interactables </summary>
+	public void Init()
 	{
 		realWorldContainer = transform.Find("Real World");
 		dreamWorldContainer = transform.Find("Dream World");
+		entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform;
 
 		ConfigureWorld("Real", realWorldContainer);
 		ConfigureWorld("Dream", dreamWorldContainer);
-		ConfigureInteractables(transform);
+	}
+
+	/// <summary> removes refs and deletes current to pass singleton to next world </summary>
+	public void Reset()
+	{
+		realWorldContainer = null;
+		dreamWorldContainer = null;
+		entangledWorldContainer = null;
+		instance = null;
+		Destroy(gameObject);
 	}
 
 	private void ConfigureWorld(string layer, Transform worldContainer)
@@ -34,18 +48,6 @@ public class World : MonoBehaviour
 			}
 
 			ConfigureWorld(layer, child); // do this recursively to hit everything in the given world
-		}
-	}
-
-	void ConfigureInteractables(Transform parent)
-	{
-		foreach (Transform child in parent)
-		{
-			if (child.childCount > 0)
-				ConfigureInteractables(child);
-			var childInteractable = child.GetComponent<InteractableObject>();
-			if (childInteractable != null)
-				childInteractable.player = player;
 		}
 	}
 
