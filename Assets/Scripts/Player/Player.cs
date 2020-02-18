@@ -32,6 +32,11 @@ public class Player : StateMachine
 	[HideInInspector] public bool holding = false;
 	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
 	[HideInInspector] public bool looking = false;
+	/// <summary> Whether the player in aiming the window or not. </summary>
+	[HideInInspector] public bool aiming = false;
+
+	private bool stillCrouching = false;
+
 	/// <summary> Vector3 to store and calculate move direction. </summary>
 	private Vector3 moveDirection;
 
@@ -52,14 +57,6 @@ public class Player : StateMachine
 	[SerializeField] private float mouseSensitivity = 2f;
 	/// <summary> How far the player can reach to pick something up. </summary>
 	[SerializeField] public float playerReach = 4f;
-
-	[Header("Keybinds")]
-	/// <summary> KeyCode for player jump. </summary>
-	[SerializeField] private KeyCode jumpKey = KeyCode.Space;
-	/// <summary> KeyCode for player crouch. </summary>
-	[SerializeField] private KeyCode crouchKey = KeyCode.LeftShift;
-	/// <summary> KeyCode for inspecting and picking up objects. </summary>
-	[SerializeField] private KeyCode pickUpKey = KeyCode.E;
 
 	[Header("Camera Variables")]
 	/// <summary> Minimum angle the player can look upward. </summary>
@@ -89,7 +86,30 @@ public class Player : StateMachine
 		heldObjectLocation.parent = cam.transform;
 	}
 
-	/// <summary> Called once at the start. </summary>
+	private void OnEnable()
+	{
+		// Subscribe input events to player behaviors
+		InputManager.OnJumpDown += Jump;
+		InputManager.OnCrouchDown += Crouch;
+		InputManager.OnCrouchUp += UnCrouch;
+		InputManager.OnPickUpDown += PickUp;
+		InputManager.OnRightClickHeld += Aiming;
+		InputManager.OnRightClickUp += StopAiming;
+		InputManager.OnLeftClickDown += Cut;
+	}
+
+	private void OnDisable()
+	{
+		// Unsubscribe input events to player behaviors
+		InputManager.OnJumpDown -= Jump;
+		InputManager.OnCrouchDown -= Crouch;
+		InputManager.OnCrouchUp -= UnCrouch;
+		InputManager.OnPickUpDown -= PickUp;
+		InputManager.OnRightClickHeld -= Aiming;
+		InputManager.OnRightClickUp -= StopAiming;
+		InputManager.OnLeftClickDown -= Cut;
+	}
+
 	void Start()
 	{
 		Cursor.visible = false;
@@ -97,59 +117,49 @@ public class Player : StateMachine
 		playerCanMove = true;
 		holding = false;
 		looking = false;
+		heartWindow.SetActive(false);
 	}
 
-	/// <summary> Called once per frame. </summary>
 	void Update()
 	{
-
-		if (playerCanMove) // If the player has movement enabled...
+		if (playerCanMove)
 		{
-			Move(); // Move the player.
-			ApplyGravity();
-			Crouch(); // Crouch.
-			Rotate(); // Mouse based rotation for camera and player.
-			Cut(); // Player cut powers.
-
+			Move();
+			ApplyGravity(); 
+			Rotate();
 			characterController.Move(moveDirection);
 		}
 
-		PickUp(); // Ability to pick up is independent from player movement.
+		StuckCrouching();
 		Die();
 	}
 
+	/// <summary> Player die function. </summary>
 	private void Die() { SetState(new Die(this)); }
 
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
 	private void Move()
 	{
-		// Get the Vertical and Horizontal Axes and scale them by movement speed.
 		moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-		//moveDirection.Normalize();
 		Vector3 horizontal = characterController.velocity - characterController.velocity.y * Vector3.up;
 		GetComponent<PlayerAudio>().SetWalkingVelocity(Mathf.RoundToInt(horizontal.magnitude) / speed);
-		// Scale the moveDirection to account for different runtimes.
 		moveDirection *= speed * Time.deltaTime;
 	}
 
 	/// <summary> Applies gravity to the player and includes jump. </summary>
-	void ApplyGravity()
+	private void ApplyGravity()
 	{
 		if (!characterController.isGrounded)
 		{
 			verticalVelocity -= gravity * Time.deltaTime;
 		}
-
-		Jump();
-
-		// Scale the vertical velocity to account for different runtimes.
 		moveDirection.y = verticalVelocity * Time.deltaTime;
 	}
 
 	/// <summary> Player jump function. </summary>
-	void Jump()
+	private void Jump()
 	{
-		if (characterController.isGrounded && Input.GetKeyDown(jumpKey)) SetState(new Jump(this));
+		if (characterController.isGrounded) SetState(new Jump(this));
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
@@ -166,7 +176,7 @@ public class Player : StateMachine
 		transform.localEulerAngles = new Vector3(0, rotationY, 0);
 
 		// Rotate the player camera along the x axis.
-		// Done separately from player rotation so that movement is not hindered by looking up or down.
+		// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
 		cam.transform.localEulerAngles = new Vector3(-rotationX, 0, 0);
 
 		// Allow the player to get out of the mouse lock.
@@ -178,48 +188,67 @@ public class Player : StateMachine
 	}
 
 	/// <summary> Player crouch function. </summary>
-	/// <remarks> Also checks to see if the player can uncrouch. </remarks>
 	private void Crouch()
+	{
+		SetState(new Crouch(this));
+	}
+
+	/// <summary> Player uncrouch function. </summary>
+	/// <remarks> If the player is unable to uncrouch, it sets a bool to enable a check in update. </remarks>
+	private void UnCrouch()
 	{
 		// Ray looking straight up from the player's position.
 		Ray crouchRay = new Ray(transform.position, Vector3.up);
-
-		// Check if the player is pressing the crouch key.
-		if (Input.GetKeyDown(crouchKey)) { SetState(new Crouch(this)); }
-		// Check if there is anything above the player before uncrouching.
-		else if (!Input.GetKey(crouchKey) && !Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4) && crouching) { SetState(new UnCrouch(this)); }
+		if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4) && crouching) { SetState(new UnCrouch(this)); }
+		else { stillCrouching = true; } // The player did not uncrouch
 	}
 
-	/// <summary> Handles player behavior with picking up and inspecting objects. </summary>
-	private void PickUp()
+	/// <summary> If player was unable to uncrouch, perform this check until they can uncrouch. </summary>
+	private void StuckCrouching()
 	{
-		// Check if the player is pressing the pick up key.
-		if (Input.GetKeyDown(pickUpKey))
+		if (stillCrouching)
 		{
-			if (!holding && !looking) { SetState(new PickUp(this)); }
-			else if (looking) { SetState(new Inspect(this)); } // If the player is holding something and inspecting it, when the player presses the pick up key... 
-			else if (holding) { SetState(new Drop(this)); }
-		}
-	}
-
-	/// <summary> Function to aim and apply player cut power. </summary>
-	private void Cut()
-	{
-		if ((Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftControl)) && !holding)
-		{
-			// Aiming...
-			if (!heartWindow.activeSelf) { SetState(new Aiming(this)); }
-			if (Input.GetMouseButtonDown(0)) { SetState(new Cut(this)); }
-		}
-		else
-		{
-			// Not Aiming...
-			if (heartWindow.activeSelf)
+			// Ray looking straight up from the player's position.
+			Ray crouchRay = new Ray(transform.position, Vector3.up);
+			if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4))
 			{
-				heartWindow.SetActive(false);
-				GetComponent<PlayerAudio>().CloseWindow();
+				SetState(new UnCrouch(this));
+				stillCrouching = false;
 			}
 		}
+	}
+
+	/// <summary> Handles player behavior when interacting with objects. </summary>
+	private void PickUp()
+	{
+		if (!holding && !looking) { SetState(new PickUp(this)); }
+		else if (looking) { SetState(new Inspect(this)); } //unused for now
+		else if (holding) { SetState(new Drop(this)); }
+	}
+
+	/// <summary> Player aiming function. </summary>
+	private void Aiming()
+	{
+		if (!heartWindow.activeSelf && !holding) SetState(new Aiming(this));
+		aiming = true;
+	}
+
+	/// <summary> Player stoped aiming function. </summary>
+	private void StopAiming()
+	{
+		// Not Aiming...
+		if (heartWindow.activeSelf)
+		{
+			heartWindow.SetActive(false);
+			GetComponent<PlayerAudio>().CloseWindow();
+		}
+		aiming = false;
+	}
+
+	/// <summary> The player cut function. </summary>
+	private void Cut()
+	{
+		if (aiming) SetState(new Cut(this));
 	}
 
 	/// <summary> Function to get transform of where the held object should be. </summary>

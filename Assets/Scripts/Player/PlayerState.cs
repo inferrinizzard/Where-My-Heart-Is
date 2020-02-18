@@ -17,4 +17,7 @@ public abstract class PlayerState
 
     /// <summary> What a state will do when starting it. </summary>
     public virtual void Start() {}
+
+    /// <summary> What a state will do when ending it. </summary>
+    public virtual void End() {}
 }

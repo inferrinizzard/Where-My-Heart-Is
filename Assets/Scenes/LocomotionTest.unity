@@ -1123,6 +1123,8 @@ MonoBehaviour:
   jumpKey: 32
   crouchKey: 304
   pickUpKey: 101
+  rotationY: 0
+  rotationX: 0
 --- !u!143 &1022084754
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2214,6 +2216,7 @@ GameObject:
   - component: {fileID: 1022084754}
   - component: {fileID: 1022084752}
   - component: {fileID: 1022084755}
+  - component: {fileID: 9141436761204760058}
   m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
@@ -2221,6 +2224,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &9141436761204760058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9141436761204760057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca55f83601883c6428a51108bce61972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpKey: 32
+  crouchKey: 304
+  pickUpKey: 101
 --- !u!1 &9141436761529466688
 GameObject:
   m_ObjectHideFlags: 0
