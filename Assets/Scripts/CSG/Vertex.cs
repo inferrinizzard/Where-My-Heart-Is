@@ -126,8 +126,23 @@ namespace CSG
         /// <returns>Whether this vertex lies inside the area of the given triangle, assuming they share a plane</returns>
         public bool LiesWithinTriangle(Triangle triangle)
         {
+            triangle.UpdateEdges();
+            // starting with b->p
+            for(int i = 0; i < 3; i++)
+            {
+                Vector3 edgeVector = triangle.edges[(i + 1) % 3].GetVector();
+                Vector3 axis = Vector3.Cross(triangle.edges[i].GetVector(), edgeVector);
+                Vector3 toPoint = value - triangle.vertices[(i + 1) % 3].value;
+
+                if (Vector3.SignedAngle(edgeVector, toPoint, axis) <= 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
             // collect intersection points
-            Vector3 castDirection = (triangle.vertices[0].value - triangle.vertices[1].value).normalized;
+            /*Vector3 castDirection = (triangle.vertices[0].value - triangle.vertices[1].value).normalized;
             List<Vector3> positiveIntersections = new List<Vector3>();
             for (int i = 0; i < triangle.vertices.Count; i++)
             {
@@ -151,7 +166,7 @@ namespace CSG
 
             // count #
             // if odd, return true, else return false
-            return positiveIntersections.Count % 2 == 1;// && negativeIntersections.Count % 2 == 1;
+            return positiveIntersections.Count % 2 == 1;// && negativeIntersections.Count % 2 == 1;*/
         }
 
         /// <summary>

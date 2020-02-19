@@ -29,6 +29,11 @@ namespace CSG
             return vertex != null ? new Intersection(triangle, vertex, this) : null;
         }
 
+        public Vector3 GetVector()
+        {
+            return vertices[1].value - vertices[0].value;
+        }
+
         public override string ToString()
         {
             return base.ToString() + ": " + vertices[0] + " :: " + vertices[1];

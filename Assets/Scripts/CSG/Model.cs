@@ -129,12 +129,11 @@ namespace CSG
             {
                 foreach(Triangle triangle in modelB.triangles)
                 {
-                    //Debug.Log("Intersecting edge: " + edge + " with triangle: " + triangle);
                     Intersection intersection = edge.IntersectWithTriangle(triangle);
 
                     if (intersection != null)
                     {
-                        intersection.vertex.referenceFrame = edges[0].referenceFrame;//TODO HAK
+                        intersection.vertex.referenceFrame = edges[0].referenceFrame;//TODO HACKY
                         createdVertices.Add(intersection.vertex);
                         edge.intersections.Add(intersection);
 

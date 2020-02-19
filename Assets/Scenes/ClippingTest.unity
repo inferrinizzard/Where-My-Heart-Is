@@ -675,7 +675,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: e1c8193a5a32ac940ad1ece4b00d9c46,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.67
+      value: 3.46
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: e1c8193a5a32ac940ad1ece4b00d9c46,
         type: 3}
@@ -946,8 +946,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56b2a7f8389870a4eb482fb6ba680c49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  test: 1
-  testRolling: 0
+  test: 0
+  testRolling: 1
   model: {fileID: 1726610377}
   bounds: {fileID: 1321587808}
   output: {fileID: 1302693722}
@@ -1037,7 +1037,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   error: 0.0001
-  limitTo: -1
+  faceIndex: -1
+  edgeLoopIndex: 31
+  earToDraw: 1
 --- !u!1 &1321587808 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: e1c8193a5a32ac940ad1ece4b00d9c46,

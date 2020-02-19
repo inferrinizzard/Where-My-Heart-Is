@@ -50,6 +50,13 @@ namespace CSG
             return perimeter;
         }
 
+        public void UpdateEdges()
+        {
+            edges.Add(new Edge(vertices[0], vertices[1]));
+            edges.Add(new Edge(vertices[1], vertices[2]));
+            edges.Add(new Edge(vertices[2], vertices[0]));
+        }
+
 		/// <summary>
 		/// Determines whether the given Vertex is one of this Triangle's vertices
 		/// </summary>
@@ -96,6 +103,12 @@ namespace CSG
 
         public void Draw(Color color)
         {
+            if(edges.Count == 0)
+            {
+                edges.Add(new Edge(vertices[0], vertices[1]));
+                edges.Add(new Edge(vertices[1], vertices[2]));
+                edges.Add(new Edge(vertices[2], vertices[0]));
+            }
             edges.ForEach(edge => edge.Draw(color));
         }
 	}

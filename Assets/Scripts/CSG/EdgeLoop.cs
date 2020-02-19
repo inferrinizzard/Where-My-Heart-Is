@@ -46,39 +46,32 @@ namespace CSG
 		/// Creates a series of Triangles that cover the surface of this EdgeLoop
 		/// </summary>
 		/// <returns>The created triangles</returns>
-		public List<Triangle> Triangulate()
+		public List<Triangle> Triangulate(int earToDraw)
 		{
-			//Draw(referenceFrame, 60.0f, Color.red);
-			//this.RemoveDuplicates();
-			/*if(vertices.Count < 3)
-			{
-			    return new List<Triangle>();
-			}*/
 			List<Triangle> triangles = new List<Triangle>();
 			List<Vertex> currentVertices = new List<Vertex>(vertices);
+            Triangle nextEar;
 
 			//ear method
 			int i = 0;
+            //Debug.Log("Edge LOPOP");
 			while (currentVertices.Count > 3)
 			{
-				/*EdgeLoop temp = new EdgeLoop();
-				temp.vertices = currentVertices;
-				//Debug.Log(currentVertices.Count);
-				if(currentVertices.Count == 9)
-				{
-				    EdgeLoop foo = new EdgeLoop();
-				    foo.vertices = currentVertices;
-				    //Debug.Log(foo);
-				//temp.Draw(referenceFrame, 60.0f, Color.red);
-				}*/
 				i++;
 				if (i > 100)
 				{
+                    //Debug.Log(triangles[0]);
+                    //currentVertices.ForEach(vertex => vertex.Draw(0.2f, Vector3.up, Color.red));
+                    triangles.ForEach(triangle => triangle.Draw(Color.green));
 					throw new System.Exception("Triangle overflow");
 				}
-				triangles.Add(CreateNextEar(currentVertices));
+                nextEar = CreateNextEar(currentVertices, true);// i == earToDraw
+
+                if (nextEar != null) triangles.Add(nextEar);
 			}
 			triangles.Add(new Triangle(currentVertices[0], currentVertices[1], currentVertices[2]));
+
+            triangles.ForEach(triangle => triangle.Draw(Color.white));
 
 			return triangles;
 		}
@@ -94,7 +87,7 @@ namespace CSG
             return triangles;
         }
 
-		private Triangle CreateNextEar(List<Vertex> currentVertices)
+		private Triangle CreateNextEar(List<Vertex> currentVertices, bool draw)
 		{
 			for (int i = 0; i < currentVertices.Count; i++)
 			{
@@ -108,12 +101,15 @@ namespace CSG
 				if (SignedAngle(a, b) > 0)
 				{
 					Triangle resultingTriangle = new Triangle(currentVertices[i], currentVertices[(i + 1) % currentVertices.Count], currentVertices[(i + 2) % currentVertices.Count]);
-					if (!TriangleContainsAny(currentVertices, resultingTriangle))
+					if (!TriangleContainsAny(currentVertices, resultingTriangle, draw))
 					{
-						//Debug.Log("am happy");
 						currentVertices.RemoveAt((i + 1) % currentVertices.Count);
 						return resultingTriangle;
 					}
+                    else
+                    {
+                        if(draw) resultingTriangle.Draw(Color.cyan);
+                    }
 				}
 			}
 
@@ -128,12 +124,13 @@ namespace CSG
 			return Mathf.Asin(Vector3.Cross(a, b).magnitude / (a.magnitude * b.magnitude));
 		}
 
-		private bool TriangleContainsAny(List<Vertex> vertices, Triangle triangle)
+		private bool TriangleContainsAny(List<Vertex> vertices, Triangle triangle, bool draw)
 		{
 			foreach (Vertex vertex in vertices)
 			{
 				if (!triangle.vertices.Contains(vertex) && vertex.LiesWithinTriangle(triangle))
 				{
+                    if(draw) vertex.Draw(0.8f, Vector3.up, Color.cyan);
 					return true;
 				}
 			}
@@ -187,13 +184,13 @@ namespace CSG
 
         public void Draw(Color color, Color secondaryColor, Color vertexColor)
 		{
-            
-            //float increment = 1f / vertices.Count;
+
+            float increment = 1f / vertices.Count;
             for (int i = 0; i < vertices.Count; i++)
 			{
                 vertices[i].Draw(0.05f, Vector3.forward, vertexColor);
                 vertexColor = Color.blue;
-                color += secondaryColor * 0.05f;
+                color += secondaryColor * increment;
                 //color = new Color(i * increment, i * increment, i * increment);
                 //Debug.Log(i * increment);
                 Debug.DrawLine(vertices[i].value, vertices[(i + 1) % vertices.Count].value, color);

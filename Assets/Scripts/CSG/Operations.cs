@@ -14,8 +14,12 @@ namespace CSG
         [Tooltip("Breakpoint for equality comparisons between floats")]
         [SerializeField] private float error = .01f;
 
-        public int limitTo;
+        [Header("Debug Variables")]
+        public int faceIndex;
+        public int edgeLoopIndex;
 
+        public int earToDraw;
+            
         /// <summary>
         /// Generates the intersection of two shapes
         /// </summary>
@@ -118,13 +122,13 @@ namespace CSG
 
             if (clipInside)
             {
-                if (limitTo > -1)
+                if (faceIndex > -1)
                 {
                     edgeLoops = new List<EdgeLoop>();
-                    if (limitTo < modelA.triangles.Count)
+                    if (faceIndex < modelA.triangles.Count)
                     {
                         //modelA.triangles[limitTo].Draw(Color.red);
-                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[limitTo], modelB, PointContainedByBound));
+                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[faceIndex], modelB, PointContainedByBound));
                         edgeLoops.ForEach(loop => loop.Draw(Color.red, Color.green, Color.blue));
                     }
                 }
@@ -145,12 +149,12 @@ namespace CSG
             }
             else
             {
-                if (limitTo > -1)
+                if (faceIndex > -1)
                 {
                     edgeLoops = new List<EdgeLoop>();
-                    if (limitTo < modelA.triangles.Count)
+                    if (faceIndex < modelA.triangles.Count)
                     {
-                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[limitTo], modelB, PointExcludedByBound));
+                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[faceIndex], modelB, PointExcludedByBound));
                     }
                 }
                 else
@@ -163,22 +167,60 @@ namespace CSG
             }
             Model finalModel = new Model();
 
-            edgeLoops.ForEach(loop =>
+            if(edgeLoopIndex == -1)
             {
-                if (loop.filled)
+                edgeLoops.ForEach(loop =>
                 {
-                    finalModel.AddTriangles(loop.TriangulateFanMethod());
-                }
+                    try
+                    {
+                        if (loop.filled)
+                        {
+                            finalModel.AddTriangles(loop.Triangulate(earToDraw));
+                        }
 
-                bool fillNested = !loop.filled;
-                EdgeLoop nestedLoop = loop.nestedLoop;
-                while (nestedLoop != null)
+                        bool fillNested = !loop.filled;
+                        EdgeLoop nestedLoop = loop.nestedLoop;
+                        while (nestedLoop != null)
+                        {
+                            if (fillNested) finalModel.AddTriangles(nestedLoop.Triangulate(earToDraw));
+                            fillNested = !fillNested;
+                            nestedLoop = nestedLoop.nestedLoop;
+                        }
+                    }
+                    catch
+                    {
+                        Debug.LogError("Failed to triangulate edge loop #" + edgeLoops.IndexOf(loop));
+                        loop.Draw(Color.red, Color.green, Color.blue);
+                    }
+                });
+            }
+            else if(edgeLoopIndex < edgeLoops.Count)
+            {
+                edgeLoops[edgeLoopIndex].Draw(Color.red, Color.green, Color.blue);
+
+                //try
+                //{
+                    if (edgeLoops[edgeLoopIndex].filled)
+                    {
+                        finalModel.AddTriangles(edgeLoops[edgeLoopIndex].Triangulate(earToDraw));
+                    }
+
+                    bool fillNested = !edgeLoops[edgeLoopIndex].filled;
+                    EdgeLoop nestedLoop = edgeLoops[edgeLoopIndex].nestedLoop;
+                    while (nestedLoop != null)
+                    {
+                        if (fillNested) finalModel.AddTriangles(nestedLoop.Triangulate(earToDraw));
+                        fillNested = !fillNested;
+                        nestedLoop = nestedLoop.nestedLoop;
+                    }
+                //}
+                /*catch(Exception e)
                 {
-                    if (fillNested) finalModel.AddTriangles(nestedLoop.TriangulateFanMethod());
-                    fillNested = !fillNested;
-                    nestedLoop = nestedLoop.nestedLoop;
-                }
-            });
+                    Debug.LogError("Failed to triangulate edge loop #" + edgeLoops.IndexOf(edgeLoops[edgeLoopIndex]) + ", ERROR: " + e.Message);
+                    //edgeLoops[edgeLoopIndex].Draw(Color.red, Color.green, Color.blue);
+                }*/
+            }
+            
 
             if (flipNormals) finalModel.FlipNormals();
 
@@ -228,10 +270,8 @@ namespace CSG
                     }
                     catch
                     {
+                        Debug.LogWarning("initial vertex does not have a previous loop to reference, using last found loop instead");
                         loop.filled = !loops.Last().filled;
-                        initialVertex.Draw(1, Vector3.up, Color.red);
-                        Debug.Log(loops.Count);
-                        Debug.Log("aw shit");
                     }
                 }
                 else // 2. a vertex of the original triangle
@@ -381,7 +421,6 @@ namespace CSG
 
             //TODO: THERE CAN BE MULTIPLE NESTED LOOPS!!!!!
             EdgeLoop parentLoop = loops.Find(loop => initialIntersection.vertex.LiesWithinLoop(loop));
-            Debug.Log(createdLoop.vertices.Count);
             createdLoop.MatchNormal(parentLoop);
             while(parentLoop.nestedLoop != null && initialIntersection.vertex.LiesWithinLoop(parentLoop.nestedLoop))
             {
