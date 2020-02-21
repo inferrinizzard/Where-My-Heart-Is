@@ -12,7 +12,7 @@ namespace CSG
     public class Operations : MonoBehaviour
     {
         [Tooltip("Breakpoint for equality comparisons between floats")]
-        [SerializeField] private float error = .01f;
+        public float error;
 
         [Header("Debug Variables")]
         public int faceIndex;
@@ -39,28 +39,17 @@ namespace CSG
             Model clippedA = ClipModelAToModelB(modelA, modelB, true);
             Model clippedB = ClipModelAToModelB(modelB, modelA, true);
 
-            //clippedA.ConvertToLocal(shapeA.transform);
-            //clippedB.ConvertToLocal(shapeB.transform);
-
-            //CombineInstance[] combine = new CombineInstance[1];
-            //combine[0].mesh = clippedA.ToMesh();
-            //combine[0].transform = Matrix4x4.identity;
-            //combine[1].mesh = clippedB.ToMesh();
-            //combine[1].transform = Matrix4x4.identity;
-
-            //ConvertMeshCoordinates(combine[1].mesh, shapeB, shapeA);
-
-            //completedMesh.RecalculateNormals();
-            //completedMesh.RecalculateTangents();
             Model result = Model.Combine(clippedA, clippedB);
             result.ConvertToLocal(shapeA.transform);
 
             return result.ToMesh();
         }
 
+        /// <summary>
+        /// Subtracts shapeB from shapeA
+        /// </summary>
         public Mesh Subtract(GameObject shapeA, GameObject shapeB)
         {
-            //TODO
             Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
             modelA.ConvertToWorld(shapeA.transform);
 
@@ -72,23 +61,20 @@ namespace CSG
             Model clippedA = ClipModelAToModelB(modelA, modelB, false);
             Model clippedB = ClipModelAToModelB(modelB, modelA, true, true);
 
-            CombineInstance[] combine = new CombineInstance[1];
-            combine[0].mesh = clippedA.ToMesh();
-            combine[0].transform = Matrix4x4.identity;
-            combine[1].mesh = clippedB.ToMesh();
-            combine[1].transform = Matrix4x4.identity;
+            Model result = Model.Combine(clippedA, clippedB);
+            result.ConvertToLocal(shapeA.transform);
 
-            ConvertMeshCoordinates(combine[1].mesh, shapeB, shapeA);
-
-            Mesh completedMesh = new Mesh();
-            completedMesh.CombineMeshes(combine);
-            completedMesh.RecalculateNormals();
-            completedMesh.RecalculateTangents();
-
-            return completedMesh;
+            return result.ToMesh();
         }
 
-        public Mesh ClipAToB(GameObject shapeA, GameObject shapeB, bool clipInside = true, bool flipNormals = false)
+        /// <summary>
+        /// Clips the geometry of shapeA to just the component of it bounded by shapeB
+        /// </summary>
+        /// <param name="shapeA"></param>
+        /// <param name="shapeB"></param>
+        /// <param name="clipInside">If true, shapeA will be clipped to only geometry contained by shapeB, if false, it will be clipped only to geometry NOT contained by shapeB</param>
+        /// <returns></returns>
+        public Mesh ClipAToB(GameObject shapeA, GameObject shapeB, bool clipInside = true)
         {
             Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
             modelA.ConvertToWorld(shapeA.transform);
@@ -98,7 +84,7 @@ namespace CSG
 
             modelA.IntersectWith(modelB);//generate all intersections
 
-            Model clippedA = ClipModelAToModelB(modelA, modelB, clipInside, flipNormals);
+            Model clippedA = ClipModelAToModelB(modelA, modelB, clipInside);
 
             clippedA.ConvertToLocal(shapeA.transform);
 
@@ -115,8 +101,6 @@ namespace CSG
         /// <returns>The clipped Mesh</returns>
         private Model ClipModelAToModelB(Model modelA, Model modelB, bool clipInside = true, bool flipNormals = false)
         {
-            List<Egress> egresses = new List<Egress>();
-
             // to create the triangles, we'll need a list of edge loops to triangulate
             List<EdgeLoop> edgeLoops = new List<EdgeLoop>();
 
@@ -140,9 +124,9 @@ namespace CSG
                         {
                             edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointContainedByBound));
                         }
-                        catch
+                        catch(Exception e)
                         {
-                            Debug.Log(modelA.triangles.IndexOf(triangle));
+                            Debug.LogError("Failed to find edge loop for triangle #" + modelA.triangles.IndexOf(triangle) + ", ERROR: " + e.Message);
                         }
                     }
                 }
@@ -167,61 +151,31 @@ namespace CSG
             }
             Model finalModel = new Model();
 
-            if(edgeLoopIndex == -1)
+            edgeLoops.ForEach(loop =>
             {
-                edgeLoops.ForEach(loop =>
+                try
                 {
-                    try
+                    if (loop.filled)
                     {
-                        if (loop.filled)
-                        {
-                            finalModel.AddTriangles(loop.Triangulate(earToDraw));
-                        }
-
-                        bool fillNested = !loop.filled;
-                        EdgeLoop nestedLoop = loop.nestedLoop;
-                        while (nestedLoop != null)
-                        {
-                            if (fillNested) finalModel.AddTriangles(nestedLoop.Triangulate(earToDraw));
-                            fillNested = !fillNested;
-                            nestedLoop = nestedLoop.nestedLoop;
-                        }
-                    }
-                    catch
-                    {
-                        Debug.LogError("Failed to triangulate edge loop #" + edgeLoops.IndexOf(loop));
-                        loop.Draw(Color.red, Color.green, Color.blue);
-                    }
-                });
-            }
-            else if(edgeLoopIndex < edgeLoops.Count)
-            {
-                edgeLoops[edgeLoopIndex].Draw(Color.red, Color.green, Color.blue);
-
-                //try
-                //{
-                    if (edgeLoops[edgeLoopIndex].filled)
-                    {
-                        finalModel.AddTriangles(edgeLoops[edgeLoopIndex].Triangulate(earToDraw));
+                        finalModel.AddTriangles(loop.TriangulateStrip());
                     }
 
-                    bool fillNested = !edgeLoops[edgeLoopIndex].filled;
-                    EdgeLoop nestedLoop = edgeLoops[edgeLoopIndex].nestedLoop;
+                    bool fillNested = !loop.filled;
+                    EdgeLoop nestedLoop = loop.nestedLoop;
                     while (nestedLoop != null)
                     {
-                        if (fillNested) finalModel.AddTriangles(nestedLoop.Triangulate(earToDraw));
+                        if (fillNested) finalModel.AddTriangles(nestedLoop.TriangulateStrip());
                         fillNested = !fillNested;
                         nestedLoop = nestedLoop.nestedLoop;
                     }
-                //}
-                /*catch(Exception e)
+                }
+                catch(Exception e)
                 {
-                    Debug.LogError("Failed to triangulate edge loop #" + edgeLoops.IndexOf(edgeLoops[edgeLoopIndex]) + ", ERROR: " + e.Message);
-                    //edgeLoops[edgeLoopIndex].Draw(Color.red, Color.green, Color.blue);
-                }*/
-            }
+                    Debug.LogError("Failed to triangulate edge loop #" + edgeLoops.IndexOf(loop) + ", ERROR: " + e.Message);
+                    loop.Draw(Color.red, Color.green, Color.blue);
+                }
+            });
             
-
             if (flipNormals) finalModel.FlipNormals();
 
             return finalModel;
@@ -255,6 +209,7 @@ namespace CSG
                 //Debug.Log(currentVertexIndex);
                 // determine whether this loop should be filled or not
                 EdgeLoop loop = new EdgeLoop();
+                loop.triangle = triangle;
 
                 Vertex initialVertex = perimeter[currentVertexIndex];
 
@@ -297,11 +252,14 @@ namespace CSG
                         loop.vertices.AddRange(cut);
                         perimeter[currentVertexIndex].loops.Add(loop);
 
-                        // find the index of the last vertex in the cut (which is always an egress) and get its index in the perimeter
+                        // find the index of the last vertex in the cut and get its index in the perimeter
                         currentVertexIndex = perimeter.IndexOf(cut.Last());
                         perimeter[currentVertexIndex].loops.Add(loop);
+
                         if(perimeter[currentVertexIndex] == initialVertex)
                         {
+                            // if we arrived at the beginning, we've added the initial vertex twice and should remove the second appearence
+                            loop.vertices.RemoveAt(loop.vertices.Count - 1);
                             break;
                         }
                     }
@@ -328,8 +286,6 @@ namespace CSG
             {
                 return !loops.Exists(loop => loop.vertices.Contains(intersection.vertex));
             }).ToList();
-
-            unusedInternalIntersections.ForEach(intersection => intersection.vertex.Draw(0.05f, Vector3.up, Color.red));
 
             overflow = 0;
             while (unusedInternalIntersections.Count > 0)
@@ -408,8 +364,6 @@ namespace CSG
                 overflow++;
                 if (overflow > 100) throw new Exception("Too many iterations in internal loop discovery");
             } while (nextIntersection != null);
-
-            //createdLoop.Draw(Color.red, Color.green, Color.blue);
 
             // if we haven't gotten back to the start, we don't have a valid loop
             if (!currentTriangle.edges.Exists(edge => edge.intersections.Exists(intersection => intersection == initialIntersection))
@@ -534,11 +488,8 @@ namespace CSG
                             done = true;
                         }
 
-                        if (overflow > 100)
-                        {
-                            throw new Exception("Maxiumum iterations exceeded");
-                        }
                         overflow++;
+                        if (overflow > 100) throw new Exception("Maxiumum iterations exceeded");
                     }
                 }
             }

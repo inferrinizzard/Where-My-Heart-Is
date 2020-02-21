@@ -85,6 +85,9 @@ namespace CSG
 			vertices.Reverse();
 		}
 
+        /// <summary>
+        /// Clears cut metadata for all edges of this triangle
+        /// </summary>
         public void ClearMetadata()
         {
             vertices.ForEach(vertex => vertex.loops = new List<EdgeLoop>());
@@ -110,6 +113,12 @@ namespace CSG
                 edges.Add(new Edge(vertices[2], vertices[0]));
             }
             edges.ForEach(edge => edge.Draw(color));
+        }
+
+        public void DrawNormal(Color color)
+        {
+            Vector3 center = (vertices[0].value + vertices[1].value + vertices[2].value) / 3;
+            Debug.DrawLine(center, center + (0.5f * CalculateNormal()), color);
         }
 	}
 

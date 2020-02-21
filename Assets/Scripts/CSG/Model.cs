@@ -70,9 +70,9 @@ namespace CSG
             vertices = uniqueVertices;
 
             CreateEdges();
-
-            //Debug.Log(edges.Count);
         }
+
+        
 
         /// <summary>
         /// Creates an edge object for each unique pair of vertices in this model that share a triangle
@@ -115,14 +115,18 @@ namespace CSG
         {
             List<Vertex> createdVertices = new List<Vertex>();
 
-            createdVertices.AddRange(IntersectAWithB(this, other, new Color(0, 0, 0, 0)));
-            createdVertices.AddRange(IntersectAWithB(other, this, Color.white));
-
+            createdVertices.AddRange(IntersectAWithB(this, other));
+            createdVertices.AddRange(IntersectAWithB(other, this));
 
             return createdVertices;
         }
 
-        private List<Vertex> IntersectAWithB(Model modelA, Model modelB, Color color)
+        /// <summary>
+        /// Collects and stores all intersections of the edges of modelA with the triangles of modelB
+        /// for use in CSG.Operations
+        /// </summary>
+        /// <returns>The list of newly created vertices</returns>
+        private List<Vertex> IntersectAWithB(Model modelA, Model modelB)
         {
             List<Vertex> createdVertices = new List<Vertex>();
             foreach(Edge edge in modelA.edges)
@@ -133,7 +137,6 @@ namespace CSG
 
                     if (intersection != null)
                     {
-                        intersection.vertex.referenceFrame = edges[0].referenceFrame;//TODO HACKY
                         createdVertices.Add(intersection.vertex);
                         edge.intersections.Add(intersection);
 
@@ -187,16 +190,30 @@ namespace CSG
 			}
 		}
 
+        /// <summary>
+        /// Converts the locations of the vertices of this model from the local space of the given transform to world space
+        /// </summary>
+        /// <param name="referenceFrame">The object to reference for coordinate space conversion</param>
         public void ConvertToWorld(Transform referenceFrame)
         {
             vertices.ForEach(vertex => vertex.value = referenceFrame.localToWorldMatrix.MultiplyPoint3x4(vertex.value));
         }
 
+        /// <summary>
+        /// Converts the locations of the vertices of this model from world space to the local space of the given transform
+        /// </summary>
+        /// <param name="referenceFrame">The object to reference for coordinate space conversion</param>
         public void ConvertToLocal(Transform referenceFrame)
         {
             vertices.ForEach(vertex => vertex.value = referenceFrame.worldToLocalMatrix.MultiplyPoint3x4(vertex.value));
         }
 
+        /// <summary>
+        /// Returns whether any vertices of this model are contained by the given model
+        /// </summary>
+        /// <param name="other">The model to check for intersections</param>
+        /// <param name="error">The equality comparison error constant</param>
+        /// <returns>True if a contained vertex is found, false otherwise</returns>
         public bool Intersects(Model other, float error)
         {
             foreach (Vertex vertex in vertices)
@@ -210,6 +227,10 @@ namespace CSG
             return false;
         }
 
+        /// <summary>
+        /// Adds the given triangle and its vertices to the model
+        /// </summary>
+        /// <param name="triangle">The triangle to add</param>
         public void AddTriangle(Triangle triangle)
         {
             triangles.Add(triangle);
@@ -222,6 +243,9 @@ namespace CSG
             });
         }
 
+        /// <summary>
+        /// Adds a list of triangles to the the model
+        /// </summary>
         public void AddTriangles(List<Triangle> trianglesToAdd)
         {
             trianglesToAdd.ForEach(triangle =>
@@ -237,11 +261,18 @@ namespace CSG
             });
         }
 
+        /// <summary>
+        /// Flips the normals of all this model's triangles
+        /// </summary>
         public void FlipNormals()
         {
             triangles.ForEach(triangle => triangle.FlipNormal());
         }
 
+        /// <summary>
+        /// Combines the triangles of the two given models into one model
+        /// </summary>
+        /// <returns>The combined model</returns>
         public static Model Combine(Model modelA, Model modelB)
         {
             Model result = new Model();
@@ -259,6 +290,12 @@ namespace CSG
             );
 
             return result;
+        }
+
+        public void Draw(Color color)
+        {
+            edges.ForEach(edge => edge.Draw(color));
+            triangles.ForEach(triangle => triangle.DrawNormal(Color.green));
         }
     }
 }

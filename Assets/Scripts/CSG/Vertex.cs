@@ -113,12 +113,6 @@ namespace CSG
             return positiveIntersections.Count % 2 == 1;// && negativeIntersections.Count % 2 == 1;
         }
 
-        public bool LiesOnEdge(Edge edge)
-        {
-            float error = 0.001f;
-            return Raycast.PointLiesOnLineSegment(value, edge.vertices[0].value, edge.vertices[1].value, error);
-        }
-
         /// <summary>
         /// Determines whether this vertex lies inside the area of the given triangle, assuming they share a plane
         /// </summary>
@@ -126,47 +120,7 @@ namespace CSG
         /// <returns>Whether this vertex lies inside the area of the given triangle, assuming they share a plane</returns>
         public bool LiesWithinTriangle(Triangle triangle)
         {
-            triangle.UpdateEdges();
-            // starting with b->p
-            for(int i = 0; i < 3; i++)
-            {
-                Vector3 edgeVector = triangle.edges[(i + 1) % 3].GetVector();
-                Vector3 axis = Vector3.Cross(triangle.edges[i].GetVector(), edgeVector);
-                Vector3 toPoint = value - triangle.vertices[(i + 1) % 3].value;
-
-                if (Vector3.SignedAngle(edgeVector, toPoint, axis) <= 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-            // collect intersection points
-            /*Vector3 castDirection = (triangle.vertices[0].value - triangle.vertices[1].value).normalized;
-            List<Vector3> positiveIntersections = new List<Vector3>();
-            for (int i = 0; i < triangle.vertices.Count; i++)
-            {
-                Point3 intersection = Raycast.RayToLineSegment(
-                    this.value,
-                    castDirection,
-                    triangle.vertices[i].value,
-                    triangle.vertices[(i + 1) % triangle.vertices.Count].value);
-                if (intersection != null)
-                {
-                    Vector3 directionToIntersection = (intersection.value - this.value).normalized;
-                    if (Vector3.Dot(directionToIntersection, castDirection) > 0)
-                    {
-                        positiveIntersections.Add(intersection.value);
-                    }
-                }
-            }
-
-            // remove duplicates
-            RemoveDuplicates(positiveIntersections);
-
-            // count #
-            // if odd, return true, else return false
-            return positiveIntersections.Count % 2 == 1;// && negativeIntersections.Count % 2 == 1;*/
+            return Raycast.PointLiesOnTriangle(value, triangle.CalculateNormal(), triangle);
         }
 
         /// <summary>
@@ -188,7 +142,6 @@ namespace CSG
                 }
             }
         }
-
 
         /// <summary>
         /// Determines whether the given point is contained by the given model
@@ -237,68 +190,6 @@ namespace CSG
             return intersectionsAbove % 2 == 1 && intersectionsBelow % 2 == 1;
             // ENDLINQ
         }
-
-        /// <summary>
-        /// Finds and returns the cut among cuts which travels the furthest around the perimeter of the triangle
-        /// </summary>
-        /// <param name="perimeter">The perimeter in question</param>
-        /// <returns>The cut that travels the furthest</returns>
-        /*public Cut GetFurthestCut(List<Vertex> perimeter)
-        {
-            Cut bestCut = null;
-            int bestCutIndex = -1;
-
-            foreach (Cut cut in cuts)
-            {
-                if (cut.traversed == false)
-                {
-                    int perimeterIndex = perimeter.IndexOf(cut[cut.Count - 1]);
-                    if (perimeterIndex > bestCutIndex)
-                    {
-                        bestCut = cut;
-                        bestCutIndex = perimeterIndex;
-                    }
-                }
-            }
-
-            return bestCut;
-        }*/
-
-        /// <summary>
-        /// Finds and returns the cut among cuts which travels the furthest around the perimeter of the triangle 
-        /// while still terminating at a perimeter index between the given constraints.
-        /// </summary>
-        /// <param name="perimeter">The perimeter in question</param>
-        /// <param name="ignore">A cut that should be ignored when searching for the furthest cut</param>
-        /// <param name="minIndex">The minimum index a cut must arrive at to be returned</param>
-        /// <param name="targetIndex">The index of the initial vertex of the current loop being traversed</param>
-        /// <returns>The cut satisfying all constraints</returns>
-        /*public Cut GetFurthestCut(List<Vertex> perimeter, Cut ignore, int minIndex, int targetIndex)
-        {
-            Cut bestCut = null;
-            int bestCutIndex = -1;
-
-            foreach (Cut cut in cuts)
-            {
-                if (cut.traversed == false && cut != ignore)
-                {
-                    int perimeterIndex = perimeter.IndexOf(cut[cut.Count - 1]);
-                    if (perimeterIndex > bestCutIndex)
-                    {
-                        bestCut = cut;
-                        bestCutIndex = perimeterIndex;
-                    }
-                }
-            }
-
-            if (bestCutIndex < minIndex && bestCutIndex != targetIndex)
-            {
-                //Debug.Log(bestCutIndex);
-                return null;
-            }
-
-            return bestCut;
-        }*/
 
         public void Draw(float length, Vector3 direction, Color color)
         {

@@ -84,7 +84,7 @@ public class ClipableObject : MonoBehaviour
 		}
 		else
 		{
-			meshFilter.mesh = operations.ClipAToB(gameObject, other, false);
+			meshFilter.mesh = operations.ClipAToB(gameObject, other);
 		}
 
         UpdateInteractable();
