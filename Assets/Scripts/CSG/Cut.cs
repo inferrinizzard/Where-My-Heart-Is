@@ -19,12 +19,8 @@ namespace CSG
 		/// Creates a shallow copy of this Cut in reverse order
 		/// </summary>
 		/// <returns>The reversed copy</returns>
-
 		public Cut GetReversedCopy()
 		{
-			// AsEnumerable returns a shallow copy of the list
-			//return (Cut)this.AsEnumerable().Reverse().ToList();
-
 			Cut copy = new Cut();
 			for (int i = this.Count - 1; i >= 0; i--)
 			{
