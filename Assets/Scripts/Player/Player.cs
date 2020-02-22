@@ -102,7 +102,7 @@ public class Player : Singleton<Player>, IResetable
 		{
 			transform.position = lastSpawn.position;
 			transform.rotation = lastSpawn.rotation;
-			cam.transform.rotation.eulerAngles.x = lastSpawn.rotation.eulerAngles.x;
+			cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
 		}
 		playerCanMove = true;
 		holding = false;
