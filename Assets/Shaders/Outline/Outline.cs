@@ -52,7 +52,7 @@ public class Outline : MonoBehaviour
 
 		outlineBuffer.filterMode = FilterMode.Point;
 
-		Graphics.Blit(source, dest, outlineMat);
+		Graphics.Blit(outlineBuffer, dest, outlineMat);
 		outlineCam.targetTexture = source;
 		RenderTexture.ReleaseTemporary(outlineBuffer);
 	}

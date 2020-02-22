@@ -20,7 +20,7 @@ public class ScreenOutline : MonoBehaviour
 
 	void Start()
 	{
-		Camera.main.depthTextureMode = Camera.main.depthTextureMode | DepthTextureMode.DepthNormals;
+		// Camera.main.depthTextureMode = Camera.main.depthTextureMode | DepthTextureMode.DepthNormals;
 		// kernel = Gauss(5, 7);
 	}
 
