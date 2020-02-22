@@ -1,18 +1,18 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary> Crouch action state. </summary>
 public class Crouch : PlayerState
 {
-    /// <summary> Constructor. </summary>
-    /// <param name="_player"> Reference to player. </param>
-    public Crouch(Player _player) : base(_player) {}
+	/// <summary> Constructor. </summary>
+	/// <param name="_player"> Reference to player. </param>
+	public Crouch(Player _player) : base(_player) { }
 
-    public override void Start()
-    {
-        player.characterController.height = player.playerHeight / 2; // Make the player crouch.
-        player.GetComponent<PlayerAudio>().CrouchDown(); 
-        player.crouching = true;
-    }
+	public override void Start()
+	{
+		player.characterController.height = player.playerHeight / 2; // Make the player crouch.
+		player.GetComponent<PlayerAudio>().CrouchDown();
+		player.crouching = true;
+	}
 }

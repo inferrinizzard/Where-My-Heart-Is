@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,10 +7,10 @@ public class PickUp : PlayerState
 {
 	/// <summary> Constructor. </summary>
 	/// <param name="_player"> Reference to player. </param>
-	public PickUp(Player _player) : base(_player) {}
+	public PickUp(Player _player) : base(_player) { }
 
-    public override void Start()
-    {
+	public override void Start()
+	{
 		// Raycast for what the player is looking at.
 		RaycastHit hit;
 
@@ -27,5 +27,5 @@ public class PickUp : PlayerState
 
 			//player.playerCanMove = false;
 		}
-    }
+	}
 }

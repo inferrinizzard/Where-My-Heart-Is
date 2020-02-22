@@ -5,8 +5,17 @@ using UnityEngine;
 /// <summary> Handles player movement and player interaction </summary>
 [System.Serializable]
 // public class Player : Singleton<Player>
-public class Player : StateMachine
+public class Player : MonoBehaviour, IStateMachine
 {
+	/// <summary> Reference to the current state. </summary>
+	protected PlayerState State;
+
+	public void SetState(PlayerState state)
+	{
+		State = state;
+		State.Start();
+	}
+
 	/// <summary> Reference to the players last spawn. </summary>
 	[SerializeField] public Transform lastSpawn = default;
 	/// <summary> Reference to player CharacterController. </summary>
@@ -83,7 +92,7 @@ public class Player : StateMachine
 		heldObjectLocation.parent = cam.transform;
 	}
 
-	private void OnEnable()
+	public void OnEnable()
 	{
 		// Subscribe input events to player behaviors
 		InputManager.OnJumpDown += Jump;
@@ -92,10 +101,12 @@ public class Player : StateMachine
 		InputManager.OnPickUpDown += PickUp;
 		InputManager.OnRightClickHeld += Aiming;
 		InputManager.OnRightClickUp += StopAiming;
+		InputManager.OnAltAimKeyHeld += Aiming;
+		InputManager.OnAltAimKeyUp += StopAiming;
 		InputManager.OnLeftClickDown += Cut;
 	}
 
-	private void OnDisable()
+	public void OnDisable()
 	{
 		// Unsubscribe input events to player behaviors
 		InputManager.OnJumpDown -= Jump;
@@ -104,6 +115,8 @@ public class Player : StateMachine
 		InputManager.OnPickUpDown -= PickUp;
 		InputManager.OnRightClickHeld -= Aiming;
 		InputManager.OnRightClickUp -= StopAiming;
+		InputManager.OnAltAimKeyHeld -= Aiming;
+		InputManager.OnAltAimKeyUp -= StopAiming;
 		InputManager.OnLeftClickDown -= Cut;
 	}
 
@@ -122,7 +135,7 @@ public class Player : StateMachine
 		if (playerCanMove)
 		{
 			Move();
-			ApplyGravity(); 
+			ApplyGravity();
 			Rotate();
 			characterController.Move(moveDirection);
 		}
@@ -156,7 +169,7 @@ public class Player : StateMachine
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-		if (characterController.isGrounded) SetState(new Jump(this));
+		if (characterController.isGrounded)SetState(new Jump(this));
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
@@ -226,7 +239,7 @@ public class Player : StateMachine
 	/// <summary> Player aiming function. </summary>
 	private void Aiming()
 	{
-		if (!heartWindow.activeSelf && !holding) SetState(new Aiming(this));
+		if (!heartWindow.activeSelf && !holding)SetState(new Aiming(this));
 		aiming = true;
 	}
 
@@ -244,7 +257,7 @@ public class Player : StateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (aiming) SetState(new Cut(this));
+		if (aiming)SetState(new Cut(this));
 	}
 
 	/// <summary> Function to get transform of where the held object should be. </summary>
