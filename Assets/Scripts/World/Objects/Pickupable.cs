@@ -47,7 +47,7 @@ public class Pickupable : InteractableObject
 	{
 		ClipableObject clipable = GetComponent<ClipableObject>();
 
-		if (clipable != null && !clipable.IntersectsBound(player.heartWindow.GetComponent<Window>().fieldOfView.transform, player.heartWindow.GetComponent<Window>().fieldOfViewModel))
+		if (clipable != null && !clipable.IntersectsBound(player.window.fieldOfView.transform, player.window.fieldOfViewModel))
 		{
 			if (clipable.uncutCopy != null)
 			{

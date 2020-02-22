@@ -4,8 +4,7 @@ using UnityEngine;
 
 /// <summary> Handles player movement and player interaction </summary>
 [System.Serializable]
-// public class Player : Singleton<Player>
-public class Player : MonoBehaviour, IStateMachine
+public class Player : Singleton<Player>, IResetable, IStateMachine
 {
 	/// <summary> Reference to the current state. </summary>
 	protected PlayerState State;
@@ -55,6 +54,7 @@ public class Player : MonoBehaviour, IStateMachine
 	public GameObject heartWindow;
 	/// <summary> Reference to death plane. </summary>
 	public GameObject deathPlane;
+	[HideInInspector] public Window window;
 
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
@@ -78,21 +78,25 @@ public class Player : MonoBehaviour, IStateMachine
 	/// <summary> Stores the X rotation of the player. </summary>
 	[HideInInspector] public float rotationX = 0f;
 
-	private void Awake()
+	void Start()
 	{
-		// base.Awake();
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
 		VFX = cam.GetComponent<Effects>();
 		heartWindow = GetComponentInChildren<Window>().gameObject;
+		window = heartWindow.GetComponent<Window>();
 
 		// Get reference to the player height using the CharacterController's height.
 		playerHeight = characterController.height;
-
 		// Creates an empty game object at the position where a held object should be.
 		heldObjectLocation = new GameObject("HeldObjectLocation").transform;
 		heldObjectLocation.position = cam.transform.position + cam.transform.forward;
 		heldObjectLocation.parent = cam.transform;
+
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+
+		Init();
 	}
 
 	public void OnEnable()
@@ -123,14 +127,20 @@ public class Player : MonoBehaviour, IStateMachine
 		InputManager.OnLeftClickDown -= Cut;
 	}
 
-	void Start()
+	public void Init()
 	{
-		Cursor.visible = false;
-		Cursor.lockState = CursorLockMode.Locked;
+		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
 		playerCanMove = true;
 		holding = false;
 		looking = false;
+		window.world = World.Instance;
 		VFX.ToggleMask(false);
+	}
+
+	public void Reset()
+	{
+		transform.position = Vector3.zero;
+		transform.eulerAngles = Vector3.zero;
 	}
 
 	void Update()
