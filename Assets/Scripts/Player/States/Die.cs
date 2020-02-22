@@ -11,17 +11,26 @@ public class Die : PlayerState
 
 	public override void Start()
 	{
+		if (!player.deathPlane)
+		{
+			Debug.LogWarning("Missing death plane!");
+			return;
+		}
+
 		if (player.transform.position.y < player.deathPlane.position.y)
 		{
-			if (player.lastSpawn == null)Debug.LogWarning("Missing spawn point");
+			if (player.lastSpawn)
+			{
+				// Set the player position to the spawnpoint
+				player.transform.position = player.lastSpawn ? player.lastSpawn.position : Vector3.zero;
+				player.verticalVelocity = 0;
 
-			// Set the player position to the spawnpoint
-			player.transform.position = player.lastSpawn == null ? Vector3.zero : player.lastSpawn.position;
-			player.verticalVelocity = 0;
-
-			// Set the player rotation to the spawnpoint
-			player.rotationX = player.lastSpawn.rotation.x;
-			player.rotationY = player.lastSpawn.rotation.y;
+				// Set the player rotation to the spawnpoint
+				player.rotationX = player.lastSpawn.rotation.x;
+				player.rotationY = player.lastSpawn.rotation.y;
+			}
+			else
+				Debug.LogWarning("Missing spawn point!");
 		}
 	}
 }

@@ -18,7 +18,7 @@ public class PickUp : PlayerState
 		int layerMask = 1 << 9;
 
 		// Raycast to see what the object's tag is. If it is a Pickupable object...
-		if (Physics.Raycast(player.cam.transform.position, player.cam.transform.forward, out hit, player.playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() != null)
+		if (Physics.Raycast(player.cam.transform.position, player.cam.transform.forward, out hit, player.playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
 		{
 			// Store the held object.
 			player.heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();

@@ -11,7 +11,7 @@ public class Cut : PlayerState
 
 	public override void Start()
 	{
-		player.heartWindow.GetComponent<Window>().ApplyCut();
-		player.GetComponent<PlayerAudio>().PlaceWindow();
+		player.window.ApplyCut();
+		player.audioController.PlaceWindow();
 	}
 }

@@ -9,19 +9,13 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Reference to the current state. </summary>
 	protected PlayerState State;
 
-	public void SetState(PlayerState state)
-	{
-		State = state;
-		State.Start();
-	}
-
 	/// <summary> Reference to the players last spawn. </summary>
 	[HideInInspector] public Transform lastSpawn;
 	/// <summary> Reference to player CharacterController. </summary>
 	[HideInInspector] public CharacterController characterController;
 	/// <summary> Reference to player Camera. </summary>
 	[HideInInspector] public Camera cam;
-
+	/// <summary> Reference to FX Controller. </summary>
 	[HideInInspector] public Effects VFX;
 	/// <summary> Empty GameObject for where to put a Pickupable object. </summary>
 	[HideInInspector] public Transform heldObjectLocation;
@@ -54,21 +48,23 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public GameObject heartWindow;
 	/// <summary> Reference to death plane. </summary>
 	[HideInInspector] public Transform deathPlane;
+	/// <summary> Get Window script from GameObject. </summary>
 	[HideInInspector] public Window window;
+	[HideInInspector] public PlayerAudio audioController;
 
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
-	[SerializeField] private float speed = 5f;
+	[SerializeField] float speed = 5f;
 	/// <summary> Player gravity variable. </summary>
-	[SerializeField] private float gravity = 25f;
+	[SerializeField] float gravity = 25f;
 	/// <summary> Player jump force. </summary>
-	[SerializeField] public float jumpForce = 7f;
+	public float jumpForce = 7f;
 	/// <summary> Mouse sensitivity for camera rotation. </summary>
-	[SerializeField] private float mouseSensitivity = 2f;
+	[SerializeField] float mouseSensitivity = 2f;
 	/// <summary> How far the player can reach to pick something up. </summary>
-	[SerializeField] public float playerReach = 4f;
+	public float playerReach = 4f;
 
-	[Header("Camera Variables")]
+	// [Header("Camera Variables")]
 	/// <summary> Minimum angle the player can look upward. </summary>
 	private float minX = -90f;
 	/// <summary> Minimum angle the player can look downward. </summary>
@@ -83,8 +79,9 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
 		VFX = cam.GetComponent<Effects>();
-		heartWindow = GetComponentInChildren<Window>().gameObject;
-		window = heartWindow.GetComponent<Window>();
+		window = GetComponentInChildren<Window>();
+		heartWindow = window.gameObject;
+		audioController = GetComponent<PlayerAudio>();
 
 		// Get reference to the player height using the CharacterController's height.
 		playerHeight = characterController.height;
@@ -93,10 +90,36 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		heldObjectLocation.position = cam.transform.position + cam.transform.forward;
 		heldObjectLocation.parent = cam.transform;
 
-		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
 		Cursor.visible = false;
 
 		Init();
+	}
+
+	public void Init()
+	{
+		deathPlane = GameObject.FindWithTag("Finish")?.transform;
+		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
+		if (lastSpawn)
+		{
+			transform.position = lastSpawn.position;
+			rotationX = lastSpawn.rotation.x;
+			rotationY = lastSpawn.rotation.y;
+			// transform.rotation = lastSpawn.rotation;
+			// cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
+		}
+		playerCanMove = true;
+		holding = false;
+		looking = false;
+		window.world = World.Instance;
+		VFX.ToggleMask(false);
+	}
+
+	///	<summary> reset pos, rendundant </summary>
+	public void Reset()
+	{
+		transform.position = Vector3.zero;
+		transform.eulerAngles = Vector3.zero;
 	}
 
 	public void OnEnable()
@@ -127,28 +150,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		InputManager.OnLeftClickDown -= Cut;
 	}
 
-	public void Init()
+	public void SetState(PlayerState state)
 	{
-		deathPlane = GameObject.FindWithTag("Finish")?.transform;
-		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
-		if (lastSpawn != null)
-		{
-			transform.position = lastSpawn.position;
-			transform.rotation = lastSpawn.rotation;
-			cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
-		}
-		playerCanMove = true;
-		holding = false;
-		looking = false;
-		window.world = World.Instance;
-		VFX.ToggleMask(false);
-	}
-
-	///	<summary> reset pos, rendundant </summary>
-	public void Reset()
-	{
-		transform.position = Vector3.zero;
-		transform.eulerAngles = Vector3.zero;
+		State = state;
+		State.Start();
 	}
 
 	void Update()
@@ -173,7 +178,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
 		Vector3 horizontal = characterController.velocity - characterController.velocity.y * Vector3.up;
-		GetComponent<PlayerAudio>().SetWalkingVelocity(Mathf.RoundToInt(horizontal.magnitude) / speed);
+		audioController.SetWalkingVelocity(Mathf.RoundToInt(horizontal.magnitude) / speed);
 		moveDirection *= speed * Time.deltaTime;
 	}
 
@@ -219,10 +224,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	}
 
 	/// <summary> Player crouch function. </summary>
-	private void Crouch()
-	{
-		SetState(new Crouch(this));
-	}
+	private void Crouch() => SetState(new Crouch(this));
 
 	/// <summary> Player uncrouch function. </summary>
 	/// <remarks> If the player is unable to uncrouch, it sets a bool to enable a check in update. </remarks>
@@ -274,7 +276,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		{
 			heartWindow.SetActive(false);
 			VFX.ToggleMask(false);
-			GetComponent<PlayerAudio>().CloseWindow();
+			audioController.CloseWindow();
 		}
 		aiming = false;
 	}

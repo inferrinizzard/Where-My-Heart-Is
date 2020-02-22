@@ -12,7 +12,7 @@ public class Crouch : PlayerState
 	public override void Start()
 	{
 		player.characterController.height = player.playerHeight / 2; // Make the player crouch.
-		player.GetComponent<PlayerAudio>().CrouchDown();
+		player.audioController.CrouchDown();
 		player.crouching = true;
 	}
 }

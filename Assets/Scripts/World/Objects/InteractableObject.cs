@@ -16,6 +16,6 @@ public abstract class InteractableObject : MonoBehaviour
 
 	protected virtual void Start()
 	{
-		if (hitboxObject != null)hitboxObject.GetComponent<ClipableObject>().tiedInteractable = this;
+		if (hitboxObject) hitboxObject.GetComponent<ClipableObject>().tiedInteractable = this;
 	}
 }

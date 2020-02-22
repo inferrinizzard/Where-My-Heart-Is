@@ -11,7 +11,7 @@ public class Window : MonoBehaviour
 {
 	[HideInInspector] public World world;
 	public GameObject fieldOfView;
-	MeshCollider fovMeshCollider; //assign
+	MeshCollider fovMeshCollider;
 	public CSG.Model fieldOfViewModel;
 
 	CSG.Operations csgOperator;

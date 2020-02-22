@@ -12,7 +12,9 @@ public interface IStateMachine
 	/// <param name="state"> State to be set to. </param>
 	void SetState(PlayerState state);
 
+	/// <summary> Adds event listeners </summary>
 	void OnEnable();
 
+	/// <summary> Removes event listeners </summary>
 	void OnDisable();
 }

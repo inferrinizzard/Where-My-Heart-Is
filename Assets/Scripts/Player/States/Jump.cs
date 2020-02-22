@@ -12,19 +12,18 @@ public class Jump : PlayerState
 	public override void Start()
 	{
 		player.verticalVelocity = player.jumpForce;
-		player.GetComponent<PlayerAudio>().JumpLiftoff();
+		player.audioController.JumpLiftoff();
 		player.jumping = true;
 
 		// Landing sound.
-		PlayerAudio audioManager = player.GetComponent<PlayerAudio>();
 		if (player.jumping)
 		{
 			RaycastHit hit;
 			int mask = ~player.gameObject.layer;
 			Physics.Raycast(new Ray(player.transform.position, Vector3.down), out hit, 5f, mask);
-			if (player.verticalVelocity < 0 && hit.distance < audioManager.landingDistanceThreshold)
+			if (player.verticalVelocity < 0 && hit.distance < player.audioController.landingDistanceThreshold)
 			{
-				player.GetComponent<PlayerAudio>().JumpLanding();
+				player.audioController.JumpLanding();
 				player.jumping = false;
 			}
 		}
