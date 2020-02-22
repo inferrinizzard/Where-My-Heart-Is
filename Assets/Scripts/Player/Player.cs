@@ -22,6 +22,8 @@ public class Player : MonoBehaviour, IStateMachine
 	[HideInInspector] public CharacterController characterController;
 	/// <summary> Reference to player Camera. </summary>
 	[HideInInspector] public Camera cam;
+
+	[HideInInspector] public Effects VFX;
 	/// <summary> Empty GameObject for where to put a Pickupable object. </summary>
 	[HideInInspector] public Transform heldObjectLocation;
 	/// <summary> Reference to a Pickupable object that has been picked up. </summary>
@@ -81,6 +83,7 @@ public class Player : MonoBehaviour, IStateMachine
 		// base.Awake();
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
+		VFX = cam.GetComponent<Effects>();
 		heartWindow = GetComponentInChildren<Window>().gameObject;
 
 		// Get reference to the player height using the CharacterController's height.
@@ -127,7 +130,7 @@ public class Player : MonoBehaviour, IStateMachine
 		playerCanMove = true;
 		holding = false;
 		looking = false;
-		heartWindow.SetActive(false); // Weird bug where the window is active by default.
+		VFX.ToggleMask(false);
 	}
 
 	void Update()
@@ -239,7 +242,10 @@ public class Player : MonoBehaviour, IStateMachine
 	/// <summary> Player aiming function. </summary>
 	private void Aiming()
 	{
-		if (!heartWindow.activeSelf && !holding)SetState(new Aiming(this));
+		if (!heartWindow.activeSelf && !holding)
+		{
+			SetState(new Aiming(this));
+		}
 		aiming = true;
 	}
 
@@ -249,6 +255,7 @@ public class Player : MonoBehaviour, IStateMachine
 		if (heartWindow.activeSelf)
 		{
 			heartWindow.SetActive(false);
+			VFX.ToggleMask(false);
 			GetComponent<PlayerAudio>().CloseWindow();
 		}
 		aiming = false;
@@ -260,10 +267,4 @@ public class Player : MonoBehaviour, IStateMachine
 		if (aiming)SetState(new Cut(this));
 	}
 
-	/// <summary> Function to get transform of where the held object should be. </summary>
-	/// <returns> Returns a reference to the player's heldObjectLocation transform. </returns>
-	public Transform GetHeldObjectLocation()
-	{
-		return heldObjectLocation.transform;
-	}
 }

@@ -1104,6 +1104,7 @@ MonoBehaviour:
   lastSpawn: {fileID: 450033068}
   characterController: {fileID: 0}
   cam: {fileID: 0}
+  VFX: {fileID: 0}
   heldObjectLocation: {fileID: 0}
   heldObject: {fileID: 0}
   verticalVelocity: 0
@@ -1113,6 +1114,7 @@ MonoBehaviour:
   crouching: 0
   holding: 0
   looking: 0
+  aiming: 0
   heartWindow: {fileID: 746259701}
   deathPlane: {fileID: 1631061418}
   speed: 4
@@ -1120,9 +1122,6 @@ MonoBehaviour:
   jumpForce: 6
   mouseSensitivity: 2
   playerReach: 10
-  jumpKey: 32
-  crouchKey: 304
-  pickUpKey: 101
   rotationY: 0
   rotationX: 0
 --- !u!143 &1022084754
@@ -2239,6 +2238,7 @@ MonoBehaviour:
   jumpKey: 32
   crouchKey: 304
   pickUpKey: 101
+  altAimKey: 306
 --- !u!1 &9141436761529466688
 GameObject:
   m_ObjectHideFlags: 0
@@ -2249,7 +2249,8 @@ GameObject:
   m_Component:
   - component: {fileID: 9141436761529466700}
   - component: {fileID: 9141436761529466701}
-  - component: {fileID: 9141436761529466703}
+  - component: {fileID: 9141436761529466690}
+  - component: {fileID: 9141436761529466689}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: Untagged
@@ -2257,6 +2258,33 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &9141436761529466689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9141436761529466688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 304ef6b5992505b42a4a639d031357e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9141436761529466690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9141436761529466688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 496e2ae2f248e934b924c4b926615c06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  realCam: {fileID: 9141436762505825418}
+  merge: {fileID: 4800000, guid: c26889c33fef9234c9d79ce663593d15, type: 3}
+  mask: {fileID: 8400000, guid: 8b4a804e851c7b3438d91bd3bda05033, type: 2}
 --- !u!4 &9141436761529466700
 Transform:
   m_ObjectHideFlags: 0
@@ -2303,10 +2331,10 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: 3
+  m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 4663
   m_RenderingPath: 1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -2318,19 +2346,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &9141436761529466703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9141436761529466688}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd1cb36443466a8479340b2f3a453cea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 659c877e577d10f46b396f4056653233, type: 2}
 --- !u!1 &9141436761858787297
 GameObject:
   m_ObjectHideFlags: 0
@@ -2347,7 +2362,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9141436761858787309
 Transform:
   m_ObjectHideFlags: 0
@@ -2503,7 +2518,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &9141436762368028247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2517,19 +2532,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   outlineMat: {fileID: 2100000, guid: b1505ca081020844fa6ae7168097c724, type: 2}
---- !u!114 &9141436762505825417
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9141436762505825421}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cd1cb36443466a8479340b2f3a453cea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 1e89a8909653258448fe69a9d755c98e, type: 2}
 --- !u!20 &9141436762505825418
 Camera:
   m_ObjectHideFlags: 0
@@ -2558,7 +2560,7 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: 1
+  m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 311
@@ -2607,7 +2609,6 @@ GameObject:
   - component: {fileID: 9141436762505825420}
   - component: {fileID: 9141436762505825418}
   - component: {fileID: 9141436762505825422}
-  - component: {fileID: 9141436762505825417}
   - component: {fileID: 9141436762505825419}
   m_Layer: 8
   m_Name: Real Camera

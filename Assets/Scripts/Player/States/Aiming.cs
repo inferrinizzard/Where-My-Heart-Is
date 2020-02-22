@@ -13,6 +13,7 @@ public class Aiming : PlayerState
 	{
 		// Make the window visible.
 		player.heartWindow.SetActive(true);
+		player.VFX.ToggleMask(true);
 		player.GetComponent<PlayerAudio>().OpenWindow();
 	}
 }
