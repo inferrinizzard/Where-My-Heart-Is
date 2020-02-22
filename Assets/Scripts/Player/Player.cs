@@ -16,7 +16,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	}
 
 	/// <summary> Reference to the players last spawn. </summary>
-	[SerializeField] public Transform lastSpawn = default;
+	[HideInInspector] public Transform lastSpawn;
 	/// <summary> Reference to player CharacterController. </summary>
 	[HideInInspector] public CharacterController characterController;
 	/// <summary> Reference to player Camera. </summary>
@@ -49,11 +49,11 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Vector3 to store and calculate move direction. </summary>
 	private Vector3 moveDirection;
 
-	[Header("Game Object References")]
+	// [Header("Game Object References")]
 	/// <summary> Reference to heart window. </summary>
-	public GameObject heartWindow;
+	[HideInInspector] public GameObject heartWindow;
 	/// <summary> Reference to death plane. </summary>
-	public GameObject deathPlane;
+	[HideInInspector] public Transform deathPlane;
 	[HideInInspector] public Window window;
 
 	[Header("Parametres")]
@@ -129,7 +129,14 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public void Init()
 	{
+		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
+		if (lastSpawn != null)
+		{
+			transform.position = lastSpawn.position;
+			transform.rotation = lastSpawn.rotation;
+			cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
+		}
 		playerCanMove = true;
 		holding = false;
 		looking = false;
@@ -137,6 +144,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		VFX.ToggleMask(false);
 	}
 
+	///	<summary> reset pos, rendundant </summary>
 	public void Reset()
 	{
 		transform.position = Vector3.zero;

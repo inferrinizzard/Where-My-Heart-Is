@@ -11,7 +11,7 @@ public class Die : PlayerState
 
 	public override void Start()
 	{
-		if (player.transform.position.y < player.deathPlane.transform.position.y)
+		if (player.transform.position.y < player.deathPlane.position.y)
 		{
 			if (player.lastSpawn == null)Debug.LogWarning("Missing spawn point");
 

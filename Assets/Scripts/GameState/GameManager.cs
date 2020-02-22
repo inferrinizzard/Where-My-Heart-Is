@@ -30,8 +30,11 @@ public class GameManager : Singleton<GameManager>, IResetable
 		Application.Quit();
 	}
 
+	/// <summary> SceneManager.activeSceneChanged Delegate wrapper </summary>
 	void InitScene(Scene from, Scene to) => instance.Init();
+	//maybe call unload here
 
+	/// <summary> Will delegate sub Init calls </summary>
 	public void Init()
 	{
 		World.Instance.Init();
@@ -39,6 +42,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 		Player.Instance.Init();
 	}
 
+	/// <summary> Will delegate sub Reset calls </summary>
 	public void Reset()
 	{
 		World.Instance.Reset();
@@ -71,9 +75,19 @@ public class GameManager : Singleton<GameManager>, IResetable
 				instance.loadingScreen.SetActive(false);
 				instance.Reset();
 				asyncLoad.allowSceneActivation = true;
+				// instance.StartCoroutine(UnloadScene(name));
 				// instance.Init();
 			}
 			yield return null;
 		}
+	}
+
+	/// <summary> Unloads scene asynchronously </summary>
+	/// <param name="scene"> Name of scene to unload  </param>
+	static IEnumerator UnloadScene(string name)
+	{
+		AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(name);
+		while (!asyncUnload.isDone)
+			yield return null;
 	}
 }
