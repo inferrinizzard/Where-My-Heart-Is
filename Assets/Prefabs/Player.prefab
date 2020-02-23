@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5407968008035840492}
   - component: {fileID: 5407968008035840467}
   - component: {fileID: 5407968008035840464}
+  - component: {fileID: 4516441798131658318}
   - component: {fileID: 5407968008035840466}
   m_Layer: 9
   m_Name: Player
@@ -102,18 +103,45 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lastSpawn: {fileID: 0}
+  characterController: {fileID: 0}
+  cam: {fileID: 0}
+  VFX: {fileID: 0}
   heldObjectLocation: {fileID: 0}
+  heldObject: {fileID: 0}
+  verticalVelocity: 0
+  playerHeight: 0
+  playerCanMove: 1
+  jumping: 0
+  crouching: 0
   holding: 0
   looking: 0
-  heartWindow: {fileID: 6145140127035620908}
-  speed: 5
-  gravity: 25
-  jumpForce: 7
+  aiming: 0
+  heartWindow: {fileID: 0}
+  deathPlane: {fileID: 0}
+  window: {fileID: 0}
+  speed: 4
+  gravity: 20
+  jumpForce: 6
   mouseSensitivity: 2
   playerReach: 10
+  rotationY: 0
+  rotationX: 0
+--- !u!114 &4516441798131658318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5407968008035840471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca55f83601883c6428a51108bce61972, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   jumpKey: 32
   crouchKey: 304
   pickUpKey: 101
+  altAimKey: 306
 --- !u!114 &5407968008035840466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200,22 +228,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3177498604835717905, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
-        type: 3}
-      propertyPath: world
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 31ce0a8a718ba094b9f6c937e3c9676c, type: 3}
 --- !u!4 &5407968007786445904 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
-    type: 3}
-  m_PrefabInstance: {fileID: 7427641284244191036}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &6145140127035620908 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3626422470985271568, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
     type: 3}
   m_PrefabInstance: {fileID: 7427641284244191036}
   m_PrefabAsset: {fileID: 0}

@@ -2,86 +2,86 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary Handles player movement and player interaction </summary>
+/// <summary> Handles player movement and player interaction </summary>
 [System.Serializable]
-// public class Player : Singleton<Player>
-public class Player : Singleton<Player>, IResetable
+public class Player : Singleton<Player>, IResetable, IStateMachine
 {
-	Transform lastSpawn;
+	/// <summary> Reference to the current state. </summary>
+	protected PlayerState State;
 
+	/// <summary> Reference to the players last spawn. </summary>
+	[HideInInspector] public Transform lastSpawn;
 	/// <summary> Reference to player CharacterController. </summary>
-	private CharacterController characterController;
+	[HideInInspector] public CharacterController characterController;
 	/// <summary> Reference to player Camera. </summary>
-	private Camera cam;
-
-	private Effects VFX;
+	[HideInInspector] public Camera cam;
+	/// <summary> Reference to FX Controller. </summary>
+	[HideInInspector] public Effects VFX;
 	/// <summary> Empty GameObject for where to put a Pickupable object. </summary>
 	[HideInInspector] public Transform heldObjectLocation;
 	/// <summary> Reference to a Pickupable object that has been picked up. </summary>
-	private InteractableObject heldObject;
-	/// <summary> Vector3 to store and calculate move direction. </summary>
-	private Vector3 moveDirection;
+	[HideInInspector] public InteractableObject heldObject;
 	/// <summary> Vector3 to store and calculate vertical velocity. </summary>
-	private float verticalVelocity;
+	[HideInInspector] public float verticalVelocity;
 	/// <summary> Player's height. </summary>
-	private float playerHeight;
+	[HideInInspector] public float playerHeight;
 	/// <summary> Whether the player can move or not. </summary>
-	private bool playerCanMove = true;
-
-	private bool jumping = false;
-	private bool crouching = false;
-
-	/// <summary> If the player is holding something or not. </summary>
+	[HideInInspector] public bool playerCanMove = true;
+	/// <summary> Whether the player is jumping or not. </summary>
+	[HideInInspector] public bool jumping = false;
+	/// <summary> Whether the player is crouching or not. </summary>
+	[HideInInspector] public bool crouching = false;
+	/// <summary> Whether the player is holding something or not. </summary>
 	[HideInInspector] public bool holding = false;
 	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
 	[HideInInspector] public bool looking = false;
+	/// <summary> Whether the player in aiming the window or not. </summary>
+	[HideInInspector] public bool aiming = false;
+	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
+	private bool stillCrouching = false;
 
-	GameObject heartWindow;
+	/// <summary> Vector3 to store and calculate move direction. </summary>
+	private Vector3 moveDirection;
+
+	// [Header("Game Object References")]
+	/// <summary> Reference to heart window. </summary>
+	[HideInInspector] public GameObject heartWindow;
+	/// <summary> Reference to death plane. </summary>
+	[HideInInspector] public Transform deathPlane;
+	/// <summary> Get Window script from GameObject. </summary>
 	[HideInInspector] public Window window;
+	[HideInInspector] public PlayerAudio audioController;
 
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
-	[SerializeField] private float speed = 5f;
-
+	[SerializeField] float speed = 5f;
 	/// <summary> Player gravity variable. </summary>
-	[SerializeField] private float gravity = 25f;
-
+	[SerializeField] float gravity = 25f;
 	/// <summary> Player jump force. </summary>
-	[SerializeField] private float jumpForce = 7f;
-
+	public float jumpForce = 7f;
 	/// <summary> Mouse sensitivity for camera rotation. </summary>
-	[SerializeField] private float mouseSensitivity = 2f;
-
+	[SerializeField] float mouseSensitivity = 2f;
 	/// <summary> How far the player can reach to pick something up. </summary>
-	[SerializeField] private float playerReach = 4f;
+	public float playerReach = 4f;
 
-	[Header("Keybinds")]
-	/// <summary> KeyCode for player jump. </summary>
-	[SerializeField] private KeyCode jumpKey = KeyCode.Space;
-	/// <summary> KeyCode for player crouch. </summary>
-	[SerializeField] private KeyCode crouchKey = KeyCode.LeftShift;
-	/// <summary> KeyCode for inspecting and picking up objects. </summary>
-	[SerializeField] private KeyCode pickUpKey = KeyCode.E;
-
-	// Camera Variables
+	// [Header("Camera Variables")]
 	/// <summary> Minimum angle the player can look upward. </summary>
-	float minX = -90f;
+	private float minX = -90f;
 	/// <summary> Minimum angle the player can look downward. </summary>
-	float maxX = 90f;
-
+	private float maxX = 90f;
 	/// <summary> Stores the Y rotation of the player. </summary>
-	float rotationY = 0f;
+	[HideInInspector] public float rotationY = 0f;
 	/// <summary> Stores the X rotation of the player. </summary>
-	float rotationX = 0f;
+	[HideInInspector] public float rotationX = 0f;
 
-	/// <summary> Called once at the start. </summary>
 	void Start()
 	{
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
 		VFX = cam.GetComponent<Effects>();
-		heartWindow = GetComponentInChildren<Window>().gameObject;
-		window = heartWindow.GetComponent<Window>();
+		window = GetComponentInChildren<Window>();
+		heartWindow = window.gameObject;
+		audioController = GetComponent<PlayerAudio>();
 
 		// Get reference to the player height using the CharacterController's height.
 		playerHeight = characterController.height;
@@ -89,24 +89,30 @@ public class Player : Singleton<Player>, IResetable
 		heldObjectLocation = new GameObject("HeldObjectLocation").transform;
 		heldObjectLocation.position = cam.transform.position + cam.transform.forward;
 		heldObjectLocation.parent = cam.transform;
-		Cursor.lockState = CursorLockMode.Locked;
+
+		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
+		Cursor.visible = false;
 
 		Init();
 	}
 
-	///	<summary> will reset movement vars and assign spawnpoint, reset window-world ref </summary>
 	public void Init()
 	{
+		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
-		if (lastSpawn != null)
+		if (lastSpawn)
 		{
 			transform.position = lastSpawn.position;
-			transform.rotation = lastSpawn.rotation;
+			rotationX = lastSpawn.rotation.x;
+			rotationY = lastSpawn.rotation.y;
+			// transform.rotation = lastSpawn.rotation;
+			// cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
 		}
 		playerCanMove = true;
 		holding = false;
 		looking = false;
 		window.world = World.Instance;
+		VFX.ToggleMask(false);
 	}
 
 	///	<summary> reset pos, rendundant </summary>
@@ -116,87 +122,80 @@ public class Player : Singleton<Player>, IResetable
 		transform.eulerAngles = Vector3.zero;
 	}
 
+	public void OnEnable()
+	{
+		// Subscribe input events to player behaviors
+		InputManager.OnJumpDown += Jump;
+		InputManager.OnCrouchDown += Crouch;
+		InputManager.OnCrouchUp += UnCrouch;
+		InputManager.OnPickUpDown += PickUp;
+		InputManager.OnRightClickHeld += Aiming;
+		InputManager.OnRightClickUp += StopAiming;
+		InputManager.OnAltAimKeyHeld += Aiming;
+		InputManager.OnAltAimKeyUp += StopAiming;
+		InputManager.OnLeftClickDown += Cut;
+	}
+
+	public void OnDisable()
+	{
+		// Unsubscribe input events to player behaviors
+		InputManager.OnJumpDown -= Jump;
+		InputManager.OnCrouchDown -= Crouch;
+		InputManager.OnCrouchUp -= UnCrouch;
+		InputManager.OnPickUpDown -= PickUp;
+		InputManager.OnRightClickHeld -= Aiming;
+		InputManager.OnRightClickUp -= StopAiming;
+		InputManager.OnAltAimKeyHeld -= Aiming;
+		InputManager.OnAltAimKeyUp -= StopAiming;
+		InputManager.OnLeftClickDown -= Cut;
+	}
+
+	public void SetState(PlayerState state)
+	{
+		State = state;
+		State.Start();
+	}
+
 	void Update()
 	{
-
-		if (playerCanMove) // If the player has movement enabled...
+		if (playerCanMove)
 		{
-			Move(); // Move the player.
+			Move();
 			ApplyGravity();
-			Crouch(); // Crouch.
-			Rotate(); // Mouse based rotation for camera and player.
-			Cut(); // Player cut powers.
-
+			Rotate();
 			characterController.Move(moveDirection);
 		}
 
-		PickUp(); // Ability to pick up is independent from player movement.
+		StuckCrouching();
 		Die();
 	}
 
-	private void Die()
-	{
-		if (characterController.velocity.y < -30)
-		{
-			if (lastSpawn == null)Debug.LogWarning("Missing spawn point");
-			transform.position = lastSpawn == null ? Vector3.zero : lastSpawn.position;
-			verticalVelocity = 0;
-		}
-	}
+	/// <summary> Player sudoku function. </summary>
+	private void Die() { SetState(new Die(this)); }
 
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
 	private void Move()
 	{
-		// Get the Vertical and Horizontal Axes and scale them by movement speed.
 		moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-		moveDirection.Normalize();
 		Vector3 horizontal = characterController.velocity - characterController.velocity.y * Vector3.up;
-		GetComponent<PlayerAudio>().SetWalkingVelocity(Mathf.RoundToInt(horizontal.magnitude) / speed);
-		// Scale the moveDirection to account for different runtimes.
+		audioController.SetWalkingVelocity(Mathf.RoundToInt(horizontal.magnitude) / speed);
 		moveDirection *= speed * Time.deltaTime;
 	}
 
 	/// <summary> Applies gravity to the player and includes jump. </summary>
-	void ApplyGravity()
+	private void ApplyGravity()
 	{
 		if (!characterController.isGrounded)
 		{
 			verticalVelocity -= gravity * Time.deltaTime;
 		}
-
-		Jump();
-
-		// Scale the vertical velocity to account for different runtimes.
 		moveDirection.y = verticalVelocity * Time.deltaTime;
 	}
 
 	/// <summary> Player jump function. </summary>
-	void Jump()
+	private void Jump()
 	{
-		PlayerAudio audioManager = GetComponent<PlayerAudio>();
-		if (jumping)
-		{
-			RaycastHit hit;
-			int mask = ~gameObject.layer;
-			Physics.Raycast(new Ray(transform.position, Vector3.down), out hit, 5f, mask);
-			if (verticalVelocity < 0 && hit.distance < audioManager.landingDistanceThreshold)
-			{
-				GetComponent<PlayerAudio>().JumpLanding();
-				jumping = false;
-			}
-		}
-
-		if (characterController.isGrounded)
-		{
-
-			if (Input.GetKeyDown(jumpKey))
-			{
-				verticalVelocity = jumpForce;
-				GetComponent<PlayerAudio>().JumpLiftoff();
-				jumping = true;
-			}
-		}
-
+		if (characterController.isGrounded)SetState(new Jump(this));
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
@@ -213,7 +212,7 @@ public class Player : Singleton<Player>, IResetable
 		transform.localEulerAngles = new Vector3(0, rotationY, 0);
 
 		// Rotate the player camera along the x axis.
-		// Done separately from player rotation so that movement is not hindered by looking up or down.
+		// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
 		cam.transform.localEulerAngles = new Vector3(-rotationX, 0, 0);
 
 		// Allow the player to get out of the mouse lock.
@@ -225,110 +224,67 @@ public class Player : Singleton<Player>, IResetable
 	}
 
 	/// <summary> Player crouch function. </summary>
-	/// <remarks> Also checks to see if the player can uncrouch. </remarks>
-	private void Crouch()
+	private void Crouch() => SetState(new Crouch(this));
+
+	/// <summary> Player uncrouch function. </summary>
+	/// <remarks> If the player is unable to uncrouch, it sets a bool to enable a check in update. </remarks>
+	private void UnCrouch()
 	{
 		// Ray looking straight up from the player's position.
 		Ray crouchRay = new Ray(transform.position, Vector3.up);
+		if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4) && crouching) { SetState(new UnCrouch(this)); }
+		else { stillCrouching = true; } // The player did not uncrouch
+	}
 
-		// Check if the player is pressing the crouch key.
-		if (Input.GetKeyDown(crouchKey))
+	/// <summary> If player was unable to uncrouch, perform this check until they can uncrouch. </summary>
+	private void StuckCrouching()
+	{
+		if (stillCrouching)
 		{
-			characterController.height = playerHeight / 2; // Make the player crouch.
-			GetComponent<PlayerAudio>().CrouchDown();
-			crouching = true;
-		}
-
-		// Check if there is anything above the player before uncrouching.
-		else if (!Input.GetKey(crouchKey) && !Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4))
-		{
-			if (crouching)
+			// Ray looking straight up from the player's position.
+			Ray crouchRay = new Ray(transform.position, Vector3.up);
+			if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4))
 			{
-				GetComponent<PlayerAudio>().CrouchUp();
-				characterController.height = playerHeight; // Make the player stand.
-				crouching = false;
+				SetState(new UnCrouch(this));
+				stillCrouching = false;
 			}
 		}
 	}
 
-	/// <summary> Handles player behavior with picking up and inspecting objects. </summary>
+	/// <summary> Handles player behavior when interacting with objects. </summary>
 	private void PickUp()
 	{
-		// Check if the player is pressing the pick up key.
-		if (Input.GetKeyDown(pickUpKey))
-		{
-
-			if (!holding && !looking)
-			{
-				// Raycast for what the player is looking at.
-				RaycastHit hit;
-
-				int layerMask = 1 << 9;
-
-				// Raycast to see what the object's tag is. If it is a Pickupable object...
-				if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() != null)
-				{
-					// Store the held object.
-					heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();
-					heldObject.Interact();
-					heldObject.active = true;
-
-					playerCanMove = true;
-				}
-			}
-			else if (looking) // If the player is holding something and inspecting it, when the player presses the pick up key...
-			{
-				// Stop inspecting the object
-				heldObject.Interact();
-
-				playerCanMove = true;
-			}
-			else if (holding)
-			{
-				// Drop the object.
-				heldObject.Interact();
-
-				heldObject.active = false;
-			}
-		}
+		if (!holding && !looking) { SetState(new PickUp(this)); }
+		else if (looking) { SetState(new Inspect(this)); } //unused for now
+		else if (holding) { SetState(new Drop(this)); }
 	}
 
-	/// <summary> Function to aim and apply player cut power. </summary>
+	/// <summary> Player aiming function. </summary>
+	private void Aiming()
+	{
+		if (!heartWindow.activeSelf && !holding)
+		{
+			SetState(new Aiming(this));
+		}
+		aiming = true;
+	}
+
+	/// <summary> Player stoped aiming function. </summary>
+	private void StopAiming()
+	{
+		if (heartWindow.activeSelf)
+		{
+			heartWindow.SetActive(false);
+			VFX.ToggleMask(false);
+			audioController.CloseWindow();
+		}
+		aiming = false;
+	}
+
+	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if ((Input.GetMouseButton(1) || Input.GetKey(KeyCode.LeftControl)) && !holding)
-		{
-			// Aiming...
-			if (!heartWindow.activeSelf)
-			{
-				heartWindow.SetActive(true);
-				VFX.ToggleMask(true);
-				GetComponent<PlayerAudio>().OpenWindow();
-			}
-			if (Input.GetMouseButtonDown(0))
-			{
-				VFX.ToggleMask(false);
-				heartWindow.GetComponent<Window>().ApplyCut();
-				GetComponent<PlayerAudio>().PlaceWindow();
-			}
-		}
-		else
-		{
-			// Not Aiming...
-			if (heartWindow.activeSelf)
-			{
-				heartWindow.SetActive(false);
-				VFX.ToggleMask(false);
-				GetComponent<PlayerAudio>().CloseWindow();
-			}
-
-		}
+		if (aiming)SetState(new Cut(this));
 	}
 
-	/// <summary> Function to get transform of where the held object should be. </summary>
-	/// <returns> Returns a reference to the player's heldObjectLocation transform. </returns>
-	public Transform GetHeldObjectLocation()
-	{
-		return heldObjectLocation.transform;
-	}
 }

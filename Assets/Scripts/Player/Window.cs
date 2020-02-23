@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /**
@@ -11,7 +12,7 @@ public class Window : MonoBehaviour
 {
 	[HideInInspector] public World world;
 	public GameObject fieldOfView;
-	MeshCollider fovMeshCollider; //assign
+	MeshCollider fovMeshCollider;
 	public CSG.Model fieldOfViewModel;
 
 	CSG.Operations csgOperator;

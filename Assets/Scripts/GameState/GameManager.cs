@@ -32,6 +32,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 
 	/// <summary> SceneManager.activeSceneChanged Delegate wrapper </summary>
 	void InitScene(Scene from, Scene to) => instance.Init();
+	//maybe call unload here
 
 	/// <summary> Will delegate sub Init calls </summary>
 	public void Init()
@@ -74,7 +75,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 				instance.loadingScreen.SetActive(false);
 				instance.Reset();
 				asyncLoad.allowSceneActivation = true;
-				instance.StartCoroutine(UnloadScene(name));
+				// instance.StartCoroutine(UnloadScene(name));
 				// instance.Init();
 			}
 			yield return null;
