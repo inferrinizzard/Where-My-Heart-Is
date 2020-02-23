@@ -37,7 +37,6 @@ public class ClipableObject : MonoBehaviour
 		uncutCopy.transform.localScale = Vector3.one;
 		oldLayer = gameObject.layer;
 		gameObject.layer = 9;
-		//GetComponent<Collider>().enabled = true;
 
 		if (!volumeless)
 		{
@@ -53,8 +52,13 @@ public class ClipableObject : MonoBehaviour
 			GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
 		}
 
-		UpdateInteractable();
-	}
+        UpdateInteractable();
+
+        if (GetComponent<MeshCollider>() != null)
+        {
+            GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
+        }
+    }
 
 	public virtual void Revert()
 	{
@@ -67,8 +71,13 @@ public class ClipableObject : MonoBehaviour
 			DestroyImmediate(uncutCopy);
 		}
 
-		UpdateInteractable();
-	}
+        UpdateInteractable();
+
+        if (GetComponent<MeshCollider>() != null)
+        {
+            GetComponent<MeshCollider>().sharedMesh = initialMesh;
+        }
+    }
 
 	public void Subtract(GameObject other, CSG.Operations operations)
 	{
@@ -85,15 +94,19 @@ public class ClipableObject : MonoBehaviour
 			meshFilter.mesh = operations.ClipAToB(gameObject, other);
 		}
 
-		UpdateInteractable();
-	}
+        UpdateInteractable();
 
-	private void UpdateInteractable()
-	{
-		if (tiedInteractable != null)
-		{
-			tiedInteractable.GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
-			tiedInteractable.gameObject.layer = gameObject.layer;
-		}
-	}
+        if(GetComponent<MeshCollider>() != null)
+        {
+            GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
+        }
+    }
+
+    private void UpdateInteractable()
+    {
+        if(tiedInteractable != null)
+        {
+            tiedInteractable.gameObject.layer = gameObject.layer;
+        }
+    }
 }
