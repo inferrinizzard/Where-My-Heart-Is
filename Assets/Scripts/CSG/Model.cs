@@ -65,6 +65,8 @@ namespace CSG
 
 			mesh.SetTriangles(newTriangles, 0);
 
+            mesh.RecalculateNormals();
+
 			return mesh;
 		}
 
