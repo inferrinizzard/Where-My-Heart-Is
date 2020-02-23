@@ -173,6 +173,7 @@ namespace CSG
 			int[] newTriangles = triangles.SelectMany(triangle => triangle.vertices.Select(vertex => vertex.index)).ToArray();
 
 			mesh.SetTriangles(newTriangles, 0);
+            mesh.RecalculateNormals();
 
 			return mesh;
 		}

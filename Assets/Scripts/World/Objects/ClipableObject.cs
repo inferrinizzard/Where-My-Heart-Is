@@ -67,6 +67,11 @@ public class ClipableObject : MonoBehaviour
 			DestroyImmediate(uncutCopy);
 		}
 
+		if (GetComponent<MeshCollider>() != null)
+		{
+			GetComponent<MeshCollider>().sharedMesh = initialMesh;
+		}
+
 		UpdateInteractable();
 	}
 
@@ -85,6 +90,11 @@ public class ClipableObject : MonoBehaviour
 			meshFilter.mesh = operations.ClipAToB(gameObject, other);
 		}
 
+		if (GetComponent<MeshCollider>() != null)
+		{
+			GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
+		}
+
 		UpdateInteractable();
 	}
 
@@ -92,7 +102,7 @@ public class ClipableObject : MonoBehaviour
 	{
 		if (tiedInteractable != null)
 		{
-			tiedInteractable.GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
+			//tiedInteractable.GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
 			tiedInteractable.gameObject.layer = gameObject.layer;
 		}
 	}
