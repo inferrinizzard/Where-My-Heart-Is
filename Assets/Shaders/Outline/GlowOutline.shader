@@ -1,57 +1,83 @@
 Shader "Outline/Glow"
 {
-	Properties {
-		_Colour ("Outline Colour", Color) = (1, 0, 0, 1)
-		[Range(0,1)] _Occlude ("Occlusion on?", Int) = 1
+	Properties
+	{
+		_MainTex("Main Texture", 2D) = "white" {}
+		_Radius("Width", float) = 1
+		_Intensity("Intensity", float) = 1
 	}
 	SubShader {
+		Tags { "Queue" = "Transparent" }
+
+		Cull Off 
+		ZWrite On 
+		ZTest Always
+
+		// Blend OneMinusDstColor One
+
+		//Blend SrcAlpha OneMinusSrcAlpha
+
 		Pass {
 			CGPROGRAM
-			#pragma vertex vert
+			#pragma vertex vert_img
 			#pragma fragment frag
+
 			#include "UnityCG.cginc"
-			
-			// Properties
-			sampler2D_float _CameraDepthTexture;
-			fixed4 _Colour;
 
-			struct appdata {
-				float4 vertex : POSITION;
-				float3 texCoord : TEXCOORD0;
-			};
+			float _Radius;
+			float _Intensity;
+			sampler2D _MainTex;
 
-			struct v2f {
-				float4 pos : SV_POSITION;
-				float3 texCoord : TEXCOORD0;
-				float linearDepth : TEXCOORD1;
-				float4 screenPos : TEXCOORD2;
-			};
+			sampler2D _GlowMap;
+			float4 _GlowMap_TexelSize;
+			sampler2D _CameraDepthTexture;
+			// o.projPos = ComputeScreenPos(o.vertex);      
 
-			v2f vert(appdata v) {
-				v2f o;
-				o.pos = UnityObjectToClipPos(v.vertex);
-				o.texCoord = v.texCoord;
+			float4 gaussianBlur(sampler2D tex, float2 dir, float dist, float2 uv, float res)
+			{
+				//this will be our RGBA sum
+				float4 sum = float4(0, 0, 0, 0);
 				
-				o.screenPos = ComputeScreenPos(o.pos);
-				o.linearDepth = -(UnityObjectToViewPos(v.vertex).z * _ProjectionParams.w);
+				//the amount to blur, i.e. how far off center to sample from 
+				//1.0 -> blur by one pixel
+				//2.0 -> blur by two pixels, etc.
+				float blur = dist / res; 
+				
+				//the direction of our blur
+				//(1.0, 0.0) -> x-axis blur
+				//(0.0, 1.0) -> y-axis blur
+				float hstep = dir.x;
+				float vstep = dir.y;
+				
+				//apply blurring, using a 9-tap filter with predefined gaussian weights
+				
+				sum += tex2Dlod(tex, float4(uv.x - 4 * blur * hstep, uv.y - 4.0 * blur * vstep, 0, 0)) * 0.0162162162;
+				sum += tex2Dlod(tex, float4(uv.x - 3.0 * blur * hstep, uv.y - 3.0 * blur * vstep, 0, 0)) * 0.0540540541;
+				sum += tex2Dlod(tex, float4(uv.x - 2.0 * blur * hstep, uv.y - 2.0 * blur * vstep, 0, 0)) * 0.1216216216;
+				sum += tex2Dlod(tex, float4(uv.x - 1.0 * blur * hstep, uv.y - 1.0 * blur * vstep, 0, 0)) * 0.1945945946;
+				
+				sum += tex2Dlod(tex, float4(uv.x, uv.y, 0, 0)) * 0.2270270270;
+				
+				sum += tex2Dlod(tex, float4(uv.x + 1.0 * blur * hstep, uv.y + 1.0 * blur * vstep, 0, 0)) * 0.1945945946;
+				sum += tex2Dlod(tex, float4(uv.x + 2.0 * blur * hstep, uv.y + 2.0 * blur * vstep, 0, 0)) * 0.1216216216;
+				sum += tex2Dlod(tex, float4(uv.x + 3.0 * blur * hstep, uv.y + 3.0 * blur * vstep, 0, 0)) * 0.0540540541;
+				sum += tex2Dlod(tex, float4(uv.x + 4.0 * blur * hstep, uv.y + 4.0 * blur * vstep, 0, 0)) * 0.0162162162;
 
-				return o;
+				return float4(sum.rgb, 1.0);
 			}
 
-			float4 frag(v2f i) : COLOR {
-				// decode depth texture info
-				float2 uv = i.screenPos.xy / i.screenPos.w; // normalized screen-space pos
-				float camDepth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv);
-				camDepth = Linear01Depth (camDepth); // converts z buffer value to depth value from 0..1
 
-				float diff = saturate(i.linearDepth - camDepth);
-				return diff < 0.001 ? _Colour : float4(0, 0, 0, 1);
+			fixed4 frag (v2f_img i) : SV_Target {
+				float4 glow = tex2D(_GlowMap, i.uv);
+				float resX = _GlowMap_TexelSize.z;
+				float resY = _GlowMap_TexelSize.w;
+				float4 blurX = gaussianBlur(_GlowMap, float2(1,0), _Radius, i.uv, resX);
+				float4 blurY = gaussianBlur(_GlowMap, float2(0,1), _Radius, i.uv, resY);
 
-				//return float4(camDepth, camDepth, camDepth, 1); // test camera depth value
-				//return float4(i.linearDepth, i.linearDepth, i.linearDepth, 1); // test our depth
-				//return float4(diff, diff, diff, 1);
+				float4 outline = (saturate(blurX + blurY) - glow) * _Intensity;
+
+				return tex2D(_MainTex, i.uv) + outline;
 			}
-
 			ENDCG
 		}
 	}

@@ -15,4 +15,9 @@ public class Effects : MonoBehaviour
 	/// <summary> toggles mask on and off </summary>
 	/// <param name="on"> Is mask on? </summary>
 	public void ToggleMask(bool on) => mask.enabled = on;
+
+	// need:
+	// GlowOutline
+	// turn bloom on and off
+	// EdgeOutline
 }

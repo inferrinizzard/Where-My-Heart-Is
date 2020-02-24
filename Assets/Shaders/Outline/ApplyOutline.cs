@@ -9,16 +9,16 @@ public class ApplyOutline : MonoBehaviour
 	public Camera cam;
 	CommandBuffer glowBuffer;
 	public Transform root;
-	private Dictionary<Camera, CommandBuffer> m_Cameras = new Dictionary<Camera, CommandBuffer>();
+	private Dictionary<Camera, CommandBuffer> cameras = new Dictionary<Camera, CommandBuffer>();
 
 	private void Cleanup()
 	{
-		foreach (var cam in m_Cameras)
+		foreach (var cam in cameras)
 		{
 			if (cam.Key)
 				cam.Key.RemoveCommandBuffer(CameraEvent.BeforeLighting, cam.Value);
 		}
-		m_Cameras.Clear();
+		cameras.Clear();
 	}
 
 	public void OnDisable()
@@ -41,16 +41,13 @@ public class ApplyOutline : MonoBehaviour
 		}
 
 		var cam = Camera.current;
-		if (!cam)
-			return;
-
-		if (m_Cameras.ContainsKey(cam))
+		if (!cam || cameras.ContainsKey(cam))
 			return;
 
 		// create new command buffer
 		glowBuffer = new CommandBuffer();
 		glowBuffer.name = "Glow Map buffer";
-		m_Cameras[cam] = glowBuffer;
+		cameras[cam] = glowBuffer;
 
 		// create render texture for glow map
 		int tempID = Shader.PropertyToID("_Temp1");
