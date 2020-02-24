@@ -1,4 +1,6 @@
-﻿Shader "Custom/TextureTest"
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+Shader "Custom/TextureTest"
 {
 	Properties {
 		_Color ("Tint Color 1", Color) = (1,1,1,1)
@@ -18,15 +20,15 @@
 		[PowerSlider(8)] _FresnelExponent ("Fresnel Exponent", Range(0, 4)) = 1
 	}
 	SubShader {
-		Tags { "RenderType"="Opaque" }
+		Tags { "RenderType"="Opaque" "LightMode"="ForwardBase"}
 		LOD 200
 
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows
+		#pragma surface surf Standard fullforwardshadows vertex:vert
 
 		// Use shader model 3.0 target, to get nicer looking lighting
-		#pragma target 3.0
+		#pragma target 3.5
 
 		sampler2D _BlotchTex;
 		sampler2D _DetailTex;
@@ -49,6 +51,7 @@
 			float2 uv_RampTex;
 			float3 worldNormal;
 			float3 viewDir;
+			float3 lightDir;
 		};
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -57,6 +60,30 @@
 		UNITY_INSTANCING_BUFFER_START(Props)
 		// put more per-instance properties here
 		UNITY_INSTANCING_BUFFER_END(Props)
+
+		void vert (inout appdata_full v, out Input o) {
+			UNITY_INITIALIZE_OUTPUT(Input,o);
+			// _WorldSpaceLightPos0.xyz // stores directional light world pos
+
+			// float4 vertWorldPos = mul(unity_ObjectToWorld, v.vertex);
+			// half dotP = -dot(normalize(v.vertex.xyz - vertWorldPos), _WorldSpaceLightPos0.xyz);
+			// o.lightDir = dotP;
+
+			// TANGENT_SPACE_ROTATION;
+			// o.lightDir = mul(rotation, ObjSpaceLightDir(v.vertex));
+
+			// o.lightDir = ObjSpaceLightDir(v.vertex);
+			// o.lightDir = WorldSpaceLightDir(v.vertex);
+			// o.lightDir = unity_LightPosition[0];
+
+			// o.lightDir = normalize(_WorldSpaceLightPos0.xyz - mul(unity_ObjectToWorld, v.vertex));
+
+			// unity_4LightPosX0[0], unity_4LightPosY0[0], unity_4LightPosZ0[0] // stores x,y,z of first 4 point lights 
+			// for loop
+
+			float3 lightPos = float3(unity_4LightPosX0[0], unity_4LightPosY0[0], unity_4LightPosZ0[0]);
+			o.lightDir = normalize(lightPos - mul(unity_ObjectToWorld, v.vertex));
+		}
 
 		fixed4 screen (fixed4 colA, fixed4 colB) {
 			fixed4 white = fixed4(1, 1, 1, 1);
@@ -74,7 +101,8 @@
 			c -= _BlotchSub;			
 			c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
 
-			float f = dot(IN.worldNormal, IN.viewDir);
+			float f = dot(IN.worldNormal, IN.lightDir);
+			// float f = dot(IN.worldNormal, IN.viewDir);
 			f = pow(f, _FresnelExponent);
 
 			c = saturate(c * .3 + f);
@@ -90,6 +118,8 @@
 			// o.Albedo = ink;
 			
 			o.Albedo = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength);
+			// o.Albedo = IN.lightDir;
+			// o.Albedo = dot(IN.worldNormal, IN.viewDir);
 
 			// o.Albedo = saturate(c*.3+f) * fixed3(1, 1, 1);
 		}
