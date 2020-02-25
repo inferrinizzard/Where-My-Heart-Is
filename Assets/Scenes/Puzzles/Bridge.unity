@@ -673,7 +673,7 @@ GameObject:
   - component: {fileID: 758378407}
   - component: {fileID: 758378406}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: Outline Manager (IGNORE ME)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -686,13 +686,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 758378405}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b74220d8a90a986409ce73686e565930, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 966455456}
-  root: {fileID: 2012778224}
+  root: {fileID: 0}
 --- !u!65 &758378407
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -764,7 +764,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &966455456 stripped
 Camera:
@@ -1459,6 +1459,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5407968007786445907, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_RenderingPath
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1513,11 +1518,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5407968007786445907, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_RenderingPath
-      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5407968007786445906, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}

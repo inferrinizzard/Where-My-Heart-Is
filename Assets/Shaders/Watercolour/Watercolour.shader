@@ -1,6 +1,4 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
-Shader "Custom/TextureTest"
+﻿Shader "Custom/Watercolour"
 {
 	Properties {
 		_Color ("Tint Color 1", Color) = (1,1,1,1)
@@ -81,8 +79,15 @@ Shader "Custom/TextureTest"
 			// unity_4LightPosX0[0], unity_4LightPosY0[0], unity_4LightPosZ0[0] // stores x,y,z of first 4 point lights 
 			// for loop
 
-			float3 lightPos = float3(unity_4LightPosX0[0], unity_4LightPosY0[0], unity_4LightPosZ0[0]);
-			o.lightDir = normalize(lightPos - mul(unity_ObjectToWorld, v.vertex));
+			// float3 lightPos = float3(unity_4LightPosX0[0], unity_4LightPosY0[0], unity_4LightPosZ0[0]);
+			// o.lightDir = normalize(lightPos - mul(unity_ObjectToWorld, v.vertex));
+
+			float3 lightDir = float3(0, 0, 0);
+			for(int i = 0; i < 4; i++){
+				float3 lightPos = float3(unity_4LightPosX0[i], unity_4LightPosY0[i], unity_4LightPosZ0[i]);
+				lightDir += lightPos - mul(unity_ObjectToWorld, v.vertex);
+			}
+			o.lightDir = normalize(lightDir);
 		}
 
 		fixed4 screen (fixed4 colA, fixed4 colB) {
