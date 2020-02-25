@@ -15,6 +15,7 @@ public class Effects : MonoBehaviour
 	void Start()
 	{
 		ToggleGlowOutline(true);
+		// ToggleEdgeOutline(true);
 	}
 
 	/// <summary> toggles mask on and off </summary>
@@ -29,6 +30,16 @@ public class Effects : MonoBehaviour
 			Shader.EnableKeyword("OUTLINE_GLOW");
 		else
 			Shader.DisableKeyword("OUTLINE_GLOW");
+	}
+
+	/// <summary> toggles edge outline on and off </summary>
+	/// <param name="on"> Is edge outline on? </summary>
+	public void ToggleEdgeOutline(bool on)
+	{
+		if (on)
+			Shader.EnableKeyword("OUTLINE_EDGE");
+		else
+			Shader.DisableKeyword("OUTLINE_EDGE");
 	}
 
 	// need:
