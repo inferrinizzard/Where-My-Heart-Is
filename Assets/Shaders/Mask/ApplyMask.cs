@@ -55,7 +55,7 @@ public class ApplyMask : MonoBehaviour
 		var mask2D = new Texture2D(mask.width, mask.height);
 		mask2D.ReadPixels(new Rect(0, 0, mask.width, mask.height), 0, 0);
 		mask2D.Apply();
-		screenMat.SetTexture("_Mask", mask2D);
+		Shader.SetGlobalTexture("_Mask", mask2D);
 
 		RenderTexture.active = screen;
 

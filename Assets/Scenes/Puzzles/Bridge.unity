@@ -1531,6 +1531,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5407968007786445907, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_RenderingPath
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1586,14 +1591,19 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5407968007786445907, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_RenderingPath
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 5407968007786445906, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5407968007786445906, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: mask
+      value: 
+      objectReference: {fileID: 8400000, guid: 8b4a804e851c7b3438d91bd3bda05033, type: 2}
+    - target: {fileID: 5407968007786445905, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: glowOutline
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1704,6 +1714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   glowMaterial: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
+  depthCheck: 1
 --- !u!1 &2136642746
 GameObject:
   m_ObjectHideFlags: 0

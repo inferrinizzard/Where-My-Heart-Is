@@ -1,4 +1,4 @@
-﻿Shader "Outline/Screen"{
+﻿Shader "Outline/Edge"{
 	Properties{
 		[HideInInspector]_MainTex ("Texture", 2D) = "white" {}
 		_OutlineColor ("Outline Color", Color) = (0,0,0,1)
