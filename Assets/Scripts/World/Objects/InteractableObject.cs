@@ -9,13 +9,9 @@ public abstract class InteractableObject : MonoBehaviour
 	[HideInInspector] public bool active;
 	public abstract void Interact();
 
-	private void Awake()
-	{
-		player = Player.Instance;
-	}
-
 	protected virtual void Start()
 	{
-		if (hitboxObject) hitboxObject.GetComponent<ClipableObject>().tiedInteractable = this;
+        player = Player.Instance;
+        if (hitboxObject) hitboxObject.GetComponent<ClipableObject>().tiedInteractable = this;
 	}
 }

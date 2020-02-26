@@ -24,6 +24,7 @@ public class Key : Pickupable
 
 	public override void Interact()
 	{
+        Debug.Log("here");
 		if (!player.holding)
 		{
 			player.holding = true;
