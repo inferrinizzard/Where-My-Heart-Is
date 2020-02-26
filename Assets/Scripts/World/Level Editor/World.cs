@@ -38,11 +38,11 @@ public class World : Singleton<World>, IResetable
 	{
 		foreach (Transform child in worldContainer.transform)
 		{
-            Debug.Log(child);
+			// Debug.Log(child);
 			if (child.GetComponent<MeshFilter>())
 			{
 				child.gameObject.layer = LayerMask.NameToLayer(layer);
-				if (child.GetComponent<ClipableObject>() == null)
+				if (!child.GetComponent<ClipableObject>())
 				{
 					child.gameObject.AddComponent<ClipableObject>();
 				}
@@ -74,7 +74,7 @@ public class World : Singleton<World>, IResetable
 		{
 			foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
 			{
-				if (obj.isClipped) obj.Revert();
+				if (obj.isClipped)obj.Revert();
 			}
 		}
 	}
