@@ -34,6 +34,7 @@ public class CollectableObject : InteractableObject
 
 	public override void Interact()
 	{
+        Debug.Log("here");
 		spatialTarget = player.transform.position;
 		rotationalTarget = Quaternion.LookRotation(player.transform.forward, Vector3.up).eulerAngles;
 		pickingUp = true;
