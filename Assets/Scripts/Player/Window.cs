@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using System.Linq;
 
 /**
  * <summary>
@@ -10,86 +10,52 @@ using UnityEngine;
  * */
 public class Window : MonoBehaviour
 {
-	[HideInInspector] public World world;
-	public GameObject fieldOfView;
-	MeshCollider fovMeshCollider;
-	public CSG.Model fieldOfViewModel;
+    public World world;
+    public GameObject fieldOfView;
+    MeshCollider fovMeshCollider; //assign
+    public CSG.Model fieldOfViewModel;
 
-	CSG.Operations csgOperator;
+    private CSG.Operations csgOperator;
 
-	void Start()
-	{
-		world = World.Instance;
-		csgOperator = GetComponent<CSG.Operations>();
-		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
-		fovMeshCollider = fieldOfView.GetComponent<MeshCollider>();
-	}
+    void Start()
+    {
+        csgOperator = GetComponent<CSG.Operations>();
+        fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
+    }
 
-	public void ApplyCut()
-	{
-		world.ResetCut();
+    public void ApplyCut()
+    {
+        world.ResetCut();
 
-		// real world objects get intersected with the bound
-		foreach (ClipableObject clipableObject in world.GetRealObjects())
-		{
-			// less expensive, less accurate intersection check
-			if (fovMeshCollider.bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
-			{
-				// more expensive, more accurate intersection check
-				if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
-				{
-					clipableObject.UnionWith(fieldOfView, csgOperator);
-				}
-			}
-		}
+        world.GetRealObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfView, csgOperator); });
+        world.GetDreamObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfView, csgOperator); });
 
-		// dream world objects get the bound subtracted from them
-		foreach (ClipableObject clipableObject in world.GetDreamObjects())
-		{
-			// less expensive, less accurate intersection check
-			if (fovMeshCollider.bounds.Intersects(clipableObject.GetComponent<Collider>().bounds))
-			{
-				// more expensive, more accurate intersection check
-				if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
-				{
-					clipableObject.Subtract(fieldOfView, csgOperator);
-				}
-			}
-		}
+        foreach (EntangledClipable entangled in world.GetEntangledObjects())
+        {
+            // clip the immediate children of entangled
+            //if (IntersectsBounds(entangled.realVersion)) entangled.realVersion.UnionWith(fieldOfView, csgOperator);
+            //if (IntersectsBounds(entangled.dreamVersion)) entangled.dreamVersion.Subtract(fieldOfView, csgOperator);
 
-		// entangled objects have both real and dream world components, which are cut properly by their entangled clipable
-		foreach (EntangledClipable clipableObject in world.GetEntangledObjects())
-		{
-			foreach (ClipableObject clipable in clipableObject.transform.GetComponentsInChildren<ClipableObject>())
-			{
-				if (clipable == clipableObject)continue;
-				// less expensive, less accurate intersection check
-				if (fovMeshCollider.bounds.Intersects(clipable.GetComponent<MeshFilter>().mesh.bounds))
-				{
-					// more expensive, more accurate intersection check
-					if (clipable.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
-					{
-						if (clipable.gameObject.layer == 9)
-						{
-							clipable.Subtract(fieldOfView, csgOperator);
-						}
-						else
-						{
-							clipable.UnionWith(fieldOfView, csgOperator);
-						}
-					}
-				}
-			}
-			/*// less expensive, less accurate intersection check
-			if (fovMeshCollider.bounds.Intersects(clipableObject.realVersion.GetComponent<Collider>().bounds) ||
-				fovMeshCollider.bounds.Intersects(clipableObject.dreamVersion.GetComponent<Collider>().bounds))
-			{
-				// more expensive, more accurate intersection check
-				if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
-				{
-					clipableObject.UnionWith(fieldOfView, csgOperator);
-				}
-			}*/
-		}
-	}
+            // clip any children below them to the correct world
+            entangled.realObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
+                clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfView, csgOperator); });
+            entangled.dreamObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
+                clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfView, csgOperator); });
+        }
+    }
+
+    private bool IntersectsBounds(ClipableObject clipableObject)
+    {
+        // less expensive, less accurate intersection check
+        if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<MeshFilter>().mesh.bounds))
+        {
+            // more expensive, more accurate intersection check
+            if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
