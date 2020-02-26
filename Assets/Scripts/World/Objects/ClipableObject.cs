@@ -37,7 +37,6 @@ public class ClipableObject : MonoBehaviour
 		uncutCopy.transform.localScale = Vector3.one;
 		oldLayer = gameObject.layer;
 		gameObject.layer = 9;
-		//GetComponent<Collider>().enabled = true;
 
 		if (!volumeless)
 		{
@@ -58,21 +57,21 @@ public class ClipableObject : MonoBehaviour
 
 	public virtual void Revert()
 	{
-        isClipped = false;
+		isClipped = false;
 		gameObject.layer = oldLayer;
 		meshFilter.mesh = initialMesh;
 		//GetComponent<Collider>().enabled = false;
-		if (uncutCopy != null)
+		if (uncutCopy)
 		{
 			DestroyImmediate(uncutCopy);
 		}
 
-		if (GetComponent<MeshCollider>() != null)
+		UpdateInteractable();
+
+		if (GetComponent<MeshCollider>())
 		{
 			GetComponent<MeshCollider>().sharedMesh = initialMesh;
 		}
-
-		UpdateInteractable();
 	}
 
 	public void Subtract(GameObject other, CSG.Operations operations)
@@ -90,19 +89,18 @@ public class ClipableObject : MonoBehaviour
 			meshFilter.mesh = operations.ClipAToB(gameObject, other);
 		}
 
-		if (GetComponent<MeshCollider>() != null)
+		UpdateInteractable();
+
+		if (GetComponent<MeshCollider>())
 		{
 			GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
 		}
-
-		UpdateInteractable();
 	}
 
 	private void UpdateInteractable()
 	{
 		if (tiedInteractable != null)
 		{
-			//tiedInteractable.GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
 			tiedInteractable.gameObject.layer = gameObject.layer;
 		}
 	}
