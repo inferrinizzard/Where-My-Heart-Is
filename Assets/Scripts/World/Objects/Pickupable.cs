@@ -15,7 +15,7 @@ public class Pickupable : InteractableObject
 		if (active)
 		{
 			// If the object is being inspected, run Looking.
-			if (player.looking)Looking();
+			if (player.looking) Looking();
 		}
 	}
 

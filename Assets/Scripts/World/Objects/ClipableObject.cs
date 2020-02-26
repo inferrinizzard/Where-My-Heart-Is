@@ -19,7 +19,11 @@ public class ClipableObject : MonoBehaviour
 		isClipped = false;
 
 		meshFilter = GetComponent<MeshFilter>() ?? gameObject.AddComponent<MeshFilter>();
-		if (meshFilter)initialMesh = meshFilter.mesh;
+        if(GetComponent<MeshCollider>() == null)
+        {
+            gameObject.AddComponent<MeshCollider>();
+        }
+		if (meshFilter) initialMesh = meshFilter.mesh;
 		oldLayer = gameObject.layer;
 	}
 
