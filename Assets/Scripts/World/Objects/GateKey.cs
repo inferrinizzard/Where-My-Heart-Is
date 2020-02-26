@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class GateKey : Pickupable
 {
-    public Transform target;
     public Gate gate;
     public float distanceThreshold;
 
@@ -21,7 +20,7 @@ public class GateKey : Pickupable
         if (Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold)
         {
             gate.Open();
-            Destroy(this);
+            Destroy(gameObject);
         }
     }
 }

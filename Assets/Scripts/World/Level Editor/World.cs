@@ -38,6 +38,7 @@ public class World : Singleton<World>, IResetable
 	{
 		foreach (Transform child in worldContainer.transform)
 		{
+            Debug.Log(child);
 			if (child.GetComponent<MeshFilter>())
 			{
 				child.gameObject.layer = LayerMask.NameToLayer(layer);

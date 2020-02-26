@@ -18,7 +18,7 @@ public class EntangledClipable : ClipableObject
             child.gameObject.layer = realObject.layer;
             if (child.GetComponent<MeshFilter>() != null)
             {
-                child.gameObject.AddComponent<ClipableObject>();
+                if(!child.gameObject.GetComponent<ClipableObject>()) child.gameObject.AddComponent<ClipableObject>();
             }
         }
 
@@ -27,7 +27,7 @@ public class EntangledClipable : ClipableObject
             child.gameObject.layer = dreamObject.layer;
             if (child.GetComponent<MeshFilter>() != null)
             {
-                child.gameObject.AddComponent<ClipableObject>();
+                if (!child.gameObject.GetComponent<ClipableObject>()) child.gameObject.AddComponent<ClipableObject>();
             }
         }
     }
