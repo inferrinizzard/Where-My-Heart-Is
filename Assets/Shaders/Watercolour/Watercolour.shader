@@ -87,7 +87,8 @@
 				float3 lightPos = float3(unity_4LightPosX0[i], unity_4LightPosY0[i], unity_4LightPosZ0[i]);
 				lightDir += lightPos - mul(unity_ObjectToWorld, v.vertex);
 			}
-			o.lightDir = normalize(lightDir);
+			o.lightDir = lightDir / 4;
+			// o.lightDir = normalize(lightDir);
 		}
 
 		fixed4 screen (fixed4 colA, fixed4 colB) {
@@ -106,7 +107,7 @@
 			c -= _BlotchSub;			
 			c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
 
-			float f = dot(IN.worldNormal, IN.lightDir);
+			float f = 1 - dot(IN.worldNormal, IN.lightDir);
 			// float f = dot(IN.worldNormal, IN.viewDir);
 			f = pow(f, _FresnelExponent);
 
