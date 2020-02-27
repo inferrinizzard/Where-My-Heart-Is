@@ -49,6 +49,7 @@
 			float3 worldNormal;
 			float3 viewDir;
 			float3 lightDir;
+			float lightAtten;
 		};
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -81,13 +82,30 @@
 			// float3 lightPos = float3(unity_4LightPosX0[0], unity_4LightPosY0[0], unity_4LightPosZ0[0]);
 			// o.lightDir = normalize(lightPos - mul(unity_ObjectToWorld, v.vertex));
 
+			// unity_4LightAtten0
+
 			float3 lightDir = float3(0, 0, 0);
-			for(int i = 0; i < 4; i++){
+			float lightAtten = 0;
+			int lights = 4;
+			for(int i = 0; i < 4; i++) {
 				float3 lightPos = float3(unity_4LightPosX0[i], unity_4LightPosY0[i], unity_4LightPosZ0[i]);
-				lightDir += lightPos - mul(unity_ObjectToWorld, v.vertex);
+				if(lightPos[0] == 0 && lightPos[1] == 0 && lightPos[2] == 0) {
+					lights--;
+					continue;
+				}
+				lightDir += normalize(lightPos - mul(unity_ObjectToWorld, v.vertex));
+				lightAtten += (1 - unity_4LightAtten0[i]) * length(unity_LightColor[0]);
+				// lightAtten += length(unity_LightColor[0]);
 			}
-			o.lightDir = lightDir / 4;
+			o.lightDir = lightDir / lights;
+			o.lightAtten = lightAtten / lights;
 			// o.lightDir = normalize(lightDir);
+
+			// bgolus god fix
+			// float range = (0.005 * sqrt(1000000 - unity_4LightAtten0.x)) / sqrt(unity_4LightAtten0.x);
+			// float attenUV = distance(float3(unity_4LightPosX0.x, unity_4LightPosY0.x, unity_4LightPosZ0.x), f.worldPos.xyz) / range;
+			// float atten = tex2D(_LightTextureB0, (attenUV * attenUV).xx).UNITY_ATTEN_CHANNEL;
+			// float atten = saturate(1.0 / (1.0 + 25.0*attenUV*attenUV) * saturate((1 - attenUV) * 5.0));
 		}
 
 		fixed4 screen (fixed4 colA, fixed4 colB) {
@@ -106,7 +124,7 @@
 			c -= _BlotchSub;			
 			c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
 
-			float f = 1 - dot(IN.worldNormal, IN.lightDir);
+			float f = dot(IN.worldNormal, IN.lightDir) * IN.lightAtten;
 			// float f = dot(IN.worldNormal, IN.viewDir);
 			f = pow(f, _FresnelExponent);
 
@@ -122,8 +140,8 @@
 			// o.Albedo = ink;
 			
 			o.Albedo = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength);
-			// o.Albedo = IN.lightDir;
-			// o.Albedo = dot(IN.worldNormal, IN.viewDir);
+			// o.Albedo = IN.lightDir * IN.lightAtten;
+			// o.Albedo = dot(IN.worldNormal, IN.lightDir);
 		}
 		ENDCG
 	}
