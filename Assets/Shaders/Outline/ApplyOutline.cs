@@ -9,16 +9,30 @@ public class ApplyOutline : MonoBehaviour
 	public Camera cam;
 	CommandBuffer glowBuffer;
 	public Transform root;
-	private Dictionary<Camera, CommandBuffer> cameras = new Dictionary<Camera, CommandBuffer>();
+	// private Dictionary<Camera, CommandBuffer> cameras = new Dictionary<Camera, CommandBuffer>();
+
+	void Start()
+	{
+		glowBuffer = new CommandBuffer();
+		int tempID = Shader.PropertyToID("_Temp1");
+		glowBuffer.GetTemporaryRT(tempID, -1, -1, 24, FilterMode.Bilinear);
+		glowBuffer.SetRenderTarget(tempID);
+		glowBuffer.ClearRenderTarget(true, true, Color.black);
+		glowBuffer.SetGlobalTexture("_GlowMap", tempID);
+
+		cam.AddCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
+	}
 
 	private void Cleanup()
 	{
-		foreach (var cam in cameras)
-		{
-			if (cam.Key)
-				cam.Key.RemoveCommandBuffer(CameraEvent.BeforeLighting, cam.Value);
-		}
-		cameras.Clear();
+		// foreach (var cam in cameras)
+		// {
+		// 	if (cam.Key)
+		// 		cam.Key.RemoveCommandBuffer(CameraEvent.BeforeLighting, cam.Value);
+		// }
+		// cameras.Clear();
+
+		cam.RemoveCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
 	}
 
 	public void OnDisable()
@@ -40,20 +54,22 @@ public class ApplyOutline : MonoBehaviour
 			return;
 		}
 
-		var cam = Camera.current;
-		if (!cam || cameras.ContainsKey(cam))
-			return;
+		// var cam = Camera.current;
+		// if (!cam || cameras.ContainsKey(cam))
+		// 	return;
 
 		// create new command buffer
-		glowBuffer = new CommandBuffer();
-		glowBuffer.name = "Glow Map buffer";
-		cameras[cam] = glowBuffer;
+		var tempBuffer = new CommandBuffer();
+		tempBuffer.name = "Glow Map buffer";
+		glowBuffer = tempBuffer;
+
+		// cameras[cam] = tempBuffer;
 
 		// create render texture for glow map
 		int tempID = Shader.PropertyToID("_Temp1");
-		glowBuffer.GetTemporaryRT(tempID, -1, -1, 24, FilterMode.Bilinear);
-		glowBuffer.SetRenderTarget(tempID);
-		glowBuffer.ClearRenderTarget(true, true, Color.black); // clear before drawing to it each frame!!
+		tempBuffer.GetTemporaryRT(tempID, -1, -1, 24, FilterMode.Bilinear);
+		tempBuffer.SetRenderTarget(tempID);
+		tempBuffer.ClearRenderTarget(true, true, Color.black); // clear before drawing to it each frame!!
 
 		// draw all glow objects to it
 		foreach (OutlineObject o in root.GetComponentsInChildren<OutlineObject>())
@@ -61,13 +77,13 @@ public class ApplyOutline : MonoBehaviour
 			Renderer r = o.GetComponent<Renderer>();
 			Material glowMat = o.glowMaterial;
 			if (r && glowMat)
-				glowBuffer.DrawRenderer(r, glowMat);
+				tempBuffer.DrawRenderer(r, glowMat);
 		}
 
 		// set render texture as globally accessable 'glow map' texture
-		glowBuffer.SetGlobalTexture("_GlowMap", tempID);
+		tempBuffer.SetGlobalTexture("_GlowMap", tempID);
 
 		// add this command buffer to the pipeline
-		cam.AddCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
+		cam.AddCommandBuffer(CameraEvent.BeforeLighting, tempBuffer);
 	}
 }

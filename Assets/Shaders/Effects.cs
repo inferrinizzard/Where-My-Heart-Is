@@ -7,6 +7,9 @@ public class Effects : MonoBehaviour
 	/// <summary> reference to Mask controller </summary>
 	ApplyMask mask;
 
+	bool glowOn = false;
+	bool edgeOn = false;
+
 	void Awake()
 	{
 		mask = GetComponent<ApplyMask>();
@@ -14,13 +17,28 @@ public class Effects : MonoBehaviour
 
 	void Start()
 	{
-		ToggleGlowOutline(true);
+		// ToggleGlowOutline(true);
 		// ToggleEdgeOutline(true);
+	}
+
+	void Update()
+	{ // debug toggles
+		if (Input.GetKeyDown(KeyCode.Alpha1))
+			ToggleGlowOutline(glowOn = !glowOn);
+		if (Input.GetKeyDown(KeyCode.Alpha2))
+			ToggleEdgeOutline(edgeOn = !edgeOn);
 	}
 
 	/// <summary> toggles mask on and off </summary>
 	/// <param name="on"> Is mask on? </summary>
-	public void ToggleMask(bool on) => mask.enabled = on;
+	// public void ToggleMask(bool on) => mask.enabled = on;
+	public void ToggleMask(bool on)
+	{
+		if (on)
+			Shader.EnableKeyword("MASK");
+		else
+			Shader.DisableKeyword("MASK");
+	}
 
 	/// <summary> toggles glow outline on and off </summary>
 	/// <param name="on"> Is glow outline on? </summary>

@@ -90,7 +90,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 496e2ae2f248e934b924c4b926615c06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  realCam: {fileID: 3177498604957221194}
   merge: {fileID: 4800000, guid: c26889c33fef9234c9d79ce663593d15, type: 3}
   mask: {fileID: 8400000, guid: 8b4a804e851c7b3438d91bd3bda05033, type: 2}
 --- !u!114 &3177498603613522797
@@ -105,34 +104,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 304ef6b5992505b42a4a639d031357e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3177498604835717905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3626422470985271568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 162a7fe1a33786a4ebc31132733adefe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  world: {fileID: 0}
-  fieldOfView: {fileID: 4715912093843633485}
---- !u!64 &3177498604835717906
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4715912093843633485}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 1
-  m_CookingOptions: 14
-  m_Mesh: {fileID: -2124705421725058983, guid: e1c8193a5a32ac940ad1ece4b00d9c46, type: 3}
 --- !u!1 &3177498604957221190
 GameObject:
   m_ObjectHideFlags: 0
@@ -202,7 +173,7 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 0
+  m_HDR: 1
   m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
@@ -231,6 +202,34 @@ Skybox:
   m_GameObject: {fileID: 3177498604957221190}
   m_Enabled: 1
   m_CustomSkybox: {fileID: 2100000, guid: 1ba41477df0c43d449e4f9d60546b09d, type: 2}
+--- !u!114 &3177498604835717905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3626422470985271568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 162a7fe1a33786a4ebc31132733adefe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  world: {fileID: 0}
+  fieldOfView: {fileID: 4715912093843633485}
+--- !u!64 &3177498604835717906
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4715912093843633485}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 1
+  m_CookingOptions: 14
+  m_Mesh: {fileID: -2124705421725058983, guid: e1c8193a5a32ac940ad1ece4b00d9c46, type: 3}
 --- !u!1001 &3177498604835717933
 PrefabInstance:
   m_ObjectHideFlags: 0

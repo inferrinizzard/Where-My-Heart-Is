@@ -6,7 +6,7 @@ Shader "Mask/Merge"
 		_Real("Real", 2D) = "white" {}
 
 		_Radius("Width", float) = 5
-		_Intensity("Intensity", float) = 2
+		_Intensity("Intensity", float) = 5
 	}
 	SubShader {
 		Tags { "Queue" = "Transparent" }
@@ -23,6 +23,7 @@ Shader "Mask/Merge"
 			#pragma vertex vert_img
 			#pragma fragment frag
 
+			#pragma shader_feature MASK
 			#pragma shader_feature OUTLINE_GLOW
 			#pragma shader_feature OUTLINE_EDGE
 			#pragma shader_feature BLOOM
@@ -48,22 +49,26 @@ Shader "Mask/Merge"
 			float _DepthBias;
 
 			fixed4 frag (v2f_img i) : SV_Target {
-				float mask = tex2D(_Mask, i.uv).r;
 				float4 output;
-				if(mask > .5) {
-					output = tex2D(_Real, i.uv);
-				}
-				else {
+				#if MASK
+					float mask = tex2D(_Mask, i.uv).r;
+					if(mask > .5) {
+						output = tex2D(_Real, i.uv);
+					}
+					else {
+						output = tex2D(_Dream, i.uv);
+					}
+				#else
 					output = tex2D(_Dream, i.uv);
-				}
+				#endif
 
 				#if OUTLINE_GLOW || OUTLINE_EDGE
 					float4 glow = tex2D(_GlowMap, i.uv);
 				#endif
 
 				#if OUTLINE_GLOW
-					if(mask > .5)
-					{
+					// if(mask > .5)
+					// {
 						float resX = _GlowMap_TexelSize.z;
 						float resY = _GlowMap_TexelSize.w;
 						float4 blurX = gaussianBlur(_GlowMap, float2(1,0), _Radius, i.uv, resX); //9 lookups
@@ -72,10 +77,15 @@ Shader "Mask/Merge"
 						float4 outline = (saturate(blurX + blurY) - glow) * _Intensity;
 
 						output += outline;
-					}
+						// return outline;
+					// }
 				#endif
 
 				#if OUTLINE_EDGE
+					
+				#endif
+
+				#if BLOOM
 					
 				#endif
 
