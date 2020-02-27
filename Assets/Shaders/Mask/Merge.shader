@@ -6,7 +6,7 @@ Shader "Mask/Merge"
 		_Real("Real", 2D) = "white" {}
 
 		_Radius("Width", float) = 5
-		_Intensity("Intensity", float) = 5
+		// _Intensity("Intensity", float) = 5
 	}
 	SubShader {
 		Tags { "Queue" = "Transparent" }
@@ -40,6 +40,7 @@ Shader "Mask/Merge"
 			sampler2D _CameraDepthTexture;
 			float _Radius;
 			float _Intensity;
+			float4 _Filter;
 
 			sampler2D _CameraDepthNormalsTexture;
 			float4 _CameraDepthNormalsTexture_TexelSize;
@@ -47,6 +48,24 @@ Shader "Mask/Merge"
 			float _NormalBias;
 			float _DepthMult;
 			float _DepthBias;
+
+			half3 Sample (float2 uv) { return tex2D(_GlowMap, uv).rgb; }
+
+			half3 SampleBox (float2 uv, float delta) {
+				float4 o = _GlowMap_TexelSize.xyxy * float2(-delta, delta).xxyy;
+				half3 s = Sample(uv + o.xy) + Sample(uv + o.zy) +
+				Sample(uv + o.xw) + Sample(uv + o.zw);
+				return s * 0.25;
+			}
+
+			half3 Prefilter (half3 c) {
+				half brightness = max(c.r, max(c.g, c.b));
+				half soft = brightness - _Filter.y;
+				soft = clamp(soft, 0, _Filter.z);
+				soft *= soft * _Filter.w;
+				half contribution = max(soft, brightness - _Filter.x) / max(brightness, 0.00001);
+				return c * contribution;
+			}
 
 			fixed4 frag (v2f_img i) : SV_Target {
 				float4 output;
@@ -69,14 +88,23 @@ Shader "Mask/Merge"
 				#if OUTLINE_GLOW
 					// if(mask > .5)
 					// {
-						float resX = _GlowMap_TexelSize.z;
-						float resY = _GlowMap_TexelSize.w;
-						float4 blurX = gaussianBlur(_GlowMap, float2(1,0), _Radius, i.uv, resX); //9 lookups
-						float4 blurY = gaussianBlur(_GlowMap, float2(0,1), _Radius, i.uv, resY); //9 lookups
+						if(glow.r == 0)
+						{
+							float resX = _GlowMap_TexelSize.z;
+							float resY = _GlowMap_TexelSize.w;
+							float4 blurX = gaussianBlur(_GlowMap, float2(1,0), _Radius, i.uv, resX); //9 lookups
+							float4 blurY = gaussianBlur(_GlowMap, float2(0,1), _Radius, i.uv, resY); //9 lookups
 
-						float4 outline = (saturate(blurX + blurY) - glow) * _Intensity;
+							float4 outline = (blurX + blurY) * _Intensity;
 
-						output += outline;
+							#if BLOOM
+								half4 c = half4(Prefilter(SampleBox(i.uv, 1)), 1);
+								c.rgb += _Intensity * SampleBox(i.uv, 0.5);
+								outline += c;
+							#endif
+
+							output += outline;
+						}
 						// return outline;
 					// }
 				#endif
@@ -85,9 +113,6 @@ Shader "Mask/Merge"
 					
 				#endif
 
-				#if BLOOM
-					
-				#endif
 
 				return output;
 			}

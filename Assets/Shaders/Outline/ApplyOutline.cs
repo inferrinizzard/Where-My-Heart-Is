@@ -9,16 +9,33 @@ public class ApplyOutline : MonoBehaviour
 	public Camera cam;
 	CommandBuffer glowBuffer;
 	public Transform root;
+
+	OutlineObject[] glowObjects = new OutlineObject[0];
+
+	[Range(0, 10)] public float intensity = 1;
+	[Range(0, 10)] public float threshold = 1;
+	[Range(0, 1)] public float softThreshold = 0.5f;
 	// private Dictionary<Camera, CommandBuffer> cameras = new Dictionary<Camera, CommandBuffer>();
 
 	void Start()
 	{
+		glowObjects = root.GetComponentsInChildren<OutlineObject>();
+
 		glowBuffer = new CommandBuffer();
 		int tempID = Shader.PropertyToID("_Temp1");
 		glowBuffer.GetTemporaryRT(tempID, -1, -1, 24, FilterMode.Bilinear);
 		glowBuffer.SetRenderTarget(tempID);
 		glowBuffer.ClearRenderTarget(true, true, Color.black);
 		glowBuffer.SetGlobalTexture("_GlowMap", tempID);
+
+		float knee = threshold * softThreshold;
+		Vector4 filter;
+		filter.x = threshold;
+		filter.y = filter.x - knee;
+		filter.z = 2f * knee;
+		filter.w = 0.25f / (knee + 0.00001f);
+		glowBuffer.SetGlobalVector("_Filter", filter);
+		glowBuffer.SetGlobalFloat("_Intensity", Mathf.GammaToLinearSpace(intensity));
 
 		cam.AddCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
 	}
@@ -32,7 +49,8 @@ public class ApplyOutline : MonoBehaviour
 		// }
 		// cameras.Clear();
 
-		cam.RemoveCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
+		if (glowBuffer != null)
+			cam.RemoveCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
 	}
 
 	public void OnDisable()
@@ -72,7 +90,7 @@ public class ApplyOutline : MonoBehaviour
 		tempBuffer.ClearRenderTarget(true, true, Color.black); // clear before drawing to it each frame!!
 
 		// draw all glow objects to it
-		foreach (OutlineObject o in root.GetComponentsInChildren<OutlineObject>())
+		foreach (OutlineObject o in glowObjects)
 		{
 			Renderer r = o.GetComponent<Renderer>();
 			Material glowMat = o.glowMaterial;

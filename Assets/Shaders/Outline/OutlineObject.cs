@@ -8,5 +8,10 @@ public class OutlineObject : MonoBehaviour
 	public Material glowMaterial;
 
 	// <summary> If the outline cares about occlusion (probably only canvas is false) </summary>
-	public bool depthCheck = true;
+	[SerializeField] bool depthCheck = true;
+
+	void Awake()
+	{
+		glowMaterial.SetInt("_Occlusion", depthCheck ? 1 : 0);
+	}
 }

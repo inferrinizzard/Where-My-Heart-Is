@@ -9,6 +9,7 @@ public class Effects : MonoBehaviour
 
 	bool glowOn = false;
 	bool edgeOn = false;
+	bool bloomOn = true;
 
 	void Awake()
 	{
@@ -27,6 +28,8 @@ public class Effects : MonoBehaviour
 			ToggleGlowOutline(glowOn = !glowOn);
 		if (Input.GetKeyDown(KeyCode.Alpha2))
 			ToggleEdgeOutline(edgeOn = !edgeOn);
+		if (Input.GetKeyDown(KeyCode.Alpha3))
+			ToggleBloom(bloomOn = !bloomOn);
 	}
 
 	/// <summary> toggles mask on and off </summary>
@@ -60,7 +63,12 @@ public class Effects : MonoBehaviour
 			Shader.DisableKeyword("OUTLINE_EDGE");
 	}
 
-	// need:
-	// turn bloom on and off
-	// EdgeOutline
+	public void ToggleBloom(bool on)
+	{
+		if (on)
+			Shader.EnableKeyword("BLOOM");
+		else
+			Shader.DisableKeyword("BLOOM");
+	}
+
 }
