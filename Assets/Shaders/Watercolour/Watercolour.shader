@@ -1,4 +1,4 @@
-﻿Shader "Custom/Watercolour"
+﻿Shader "Watercolour/Main"
 {
 	Properties {
 		_Color ("Tint Color 1", Color) = (1,1,1,1)
@@ -19,11 +19,13 @@
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" "LightMode"="ForwardBase"}
-		// Tags { "RenderType"="Opaque"}
 		LOD 200
 
+		Blend SrcAlpha OneMinusSrcAlpha
+
 		CGPROGRAM
-		#pragma surface surf Standard fullforwardshadows vertex:vert
+		// #pragma surface surf Standard fullforwardshadows vertex:vert
+		#pragma surface surf Standard fullforwardshadows
 		#pragma target 3.5
 		#pragma debug
 
@@ -48,65 +50,56 @@
 			float2 uv_RampTex;
 			float3 worldNormal;
 			float3 viewDir;
-			float3 lightDir;
-			float lightAtten;
+			// float3 lightDir;
+			// float lightAtten;
 		};
 
-		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
-		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
-		// #pragma instancing_options assumeuniformscaling
 		UNITY_INSTANCING_BUFFER_START(Props)
 		// put more per-instance properties here
 		UNITY_INSTANCING_BUFFER_END(Props)
 
-		void vert (inout appdata_full v, out Input o) {
-			UNITY_INITIALIZE_OUTPUT(Input, o);
-			// _WorldSpaceLightPos0.xyz // stores directional light world pos
+		// void vert (inout appdata_base v, out Input o) {
+			// 	UNITY_INITIALIZE_OUTPUT(Input, o);
+			// 	// _WorldSpaceLightPos0.xyz // stores directional light world pos
 
-			// float4 vertWorldPos = mul(unity_ObjectToWorld, v.vertex);
-			// half dotP = -dot(normalize(v.vertex.xyz - vertWorldPos), _WorldSpaceLightPos0.xyz);
-			// o.lightDir = dotP;
+			// 	// half dotP = -dot(normalize(v.vertex.xyz - vertWorldPos), _WorldSpaceLightPos0.xyz);
+			// 	// o.lightDir = dotP;
 
-			// TANGENT_SPACE_ROTATION;
-			// o.lightDir = mul(rotation, ObjSpaceLightDir(v.vertex));
+			// 	// TANGENT_SPACE_ROTATION;
+			// 	// o.lightDir = mul(rotation, ObjSpaceLightDir(v.vertex));
 
-			// o.lightDir = ObjSpaceLightDir(v.vertex);
-			// o.lightDir = WorldSpaceLightDir(v.vertex);
-			// o.lightDir = unity_LightPosition[0];
+			// 	// o.lightDir = ObjSpaceLightDir(v.vertex);
+			// 	// o.lightDir = WorldSpaceLightDir(v.vertex);
+			// 	// o.lightDir = unity_LightPosition[0];
 
-			// o.lightDir = normalize(_WorldSpaceLightPos0.xyz - mul(unity_ObjectToWorld, v.vertex));
+			// 	// o.lightDir = normalize(_WorldSpaceLightPos0.xyz - mul(unity_ObjectToWorld, v.vertex));
 
-			// unity_4LightPosX0[0], unity_4LightPosY0[0], unity_4LightPosZ0[0] // stores x,y,z of first 4 point lights 
-			// for loop
+			// 	float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
-			// float3 lightPos = float3(unity_4LightPosX0[0], unity_4LightPosY0[0], unity_4LightPosZ0[0]);
-			// o.lightDir = normalize(lightPos - mul(unity_ObjectToWorld, v.vertex));
+			// 	float3 lightDir = float3(0, 0, 0);
+			// 	float lightAtten = 0;
+			// 	int lights = 4;
+			
+			// 	for(int i = 0; i < 4; i++) {
+				// 		float3 lightPos = float3(unity_4LightPosX0[i], unity_4LightPosY0[i], unity_4LightPosZ0[i]);
+				// 		if(lightPos[0] == 0 && lightPos[1] == 0 && lightPos[2] == 0) {
+					// 			lights--;
+					// 			continue;
+				// 		}
+				// 		lightDir += normalize(lightPos - worldPos);
+				// 		lightAtten += (1 - unity_4LightAtten0[i]) * length(unity_LightColor[0]);
+				// 		// lightAtten += length(unity_LightColor[0]);
+			// 	}
+			// 	o.lightDir = lightDir / lights;
+			// 	o.lightAtten = lightAtten / lights;
+			// 	// o.lightDir = normalize(lightDir);
 
-			// unity_4LightAtten0
-
-			float3 lightDir = float3(0, 0, 0);
-			float lightAtten = 0;
-			int lights = 4;
-			for(int i = 0; i < 4; i++) {
-				float3 lightPos = float3(unity_4LightPosX0[i], unity_4LightPosY0[i], unity_4LightPosZ0[i]);
-				if(lightPos[0] == 0 && lightPos[1] == 0 && lightPos[2] == 0) {
-					lights--;
-					continue;
-				}
-				lightDir += normalize(lightPos - mul(unity_ObjectToWorld, v.vertex));
-				lightAtten += (1 - unity_4LightAtten0[i]) * length(unity_LightColor[0]);
-				// lightAtten += length(unity_LightColor[0]);
-			}
-			o.lightDir = lightDir / lights;
-			o.lightAtten = lightAtten / lights;
-			// o.lightDir = normalize(lightDir);
-
-			// bgolus god fix
-			// float range = (0.005 * sqrt(1000000 - unity_4LightAtten0.x)) / sqrt(unity_4LightAtten0.x);
-			// float attenUV = distance(float3(unity_4LightPosX0.x, unity_4LightPosY0.x, unity_4LightPosZ0.x), f.worldPos.xyz) / range;
-			// float atten = tex2D(_LightTextureB0, (attenUV * attenUV).xx).UNITY_ATTEN_CHANNEL;
-			// float atten = saturate(1.0 / (1.0 + 25.0*attenUV*attenUV) * saturate((1 - attenUV) * 5.0));
-		}
+			// 	// bgolus god fix
+			// 	// float range = (0.005 * sqrt(1000000 - unity_4LightAtten0[0]])) / sqrt(unity_4LightAtten0[0]]);
+			// 	// float attenUV = distance(lightPos, worldPos) / range;
+			// 	// float atten = saturate(1.0 / (1.0 + 25.0 * attenUV*attenUV) * saturate((1 - attenUV) * 5.0));
+			// 	// float atten = tex2D(_LightTextureB0, (attenUV * attenUV).xx).UNITY_ATTEN_CHANNEL;
+		// }
 
 		fixed4 screen (fixed4 colA, fixed4 colB) {
 			fixed4 white = fixed4(1, 1, 1, 1);
@@ -124,8 +117,8 @@
 			c -= _BlotchSub;			
 			c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
 
-			float f = dot(IN.worldNormal, IN.lightDir) * IN.lightAtten;
-			// float f = dot(IN.worldNormal, IN.viewDir);
+			// float f = dot(IN.worldNormal, IN.lightDir) * IN.lightAtten;
+			float f = dot(IN.worldNormal, IN.viewDir);
 			f = pow(f, _FresnelExponent);
 
 			c = saturate(c * .3 + f);
