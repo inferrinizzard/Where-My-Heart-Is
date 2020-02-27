@@ -19,14 +19,13 @@
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" "LightMode"="ForwardBase"}
+		// Tags { "RenderType"="Opaque"}
 		LOD 200
 
 		CGPROGRAM
-		// Physically based Standard lighting model, and enable shadows on all light types
 		#pragma surface surf Standard fullforwardshadows vertex:vert
-
-		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.5
+		#pragma debug
 
 		sampler2D _BlotchTex;
 		sampler2D _DetailTex;
@@ -60,7 +59,7 @@
 		UNITY_INSTANCING_BUFFER_END(Props)
 
 		void vert (inout appdata_full v, out Input o) {
-			UNITY_INITIALIZE_OUTPUT(Input,o);
+			UNITY_INITIALIZE_OUTPUT(Input, o);
 			// _WorldSpaceLightPos0.xyz // stores directional light world pos
 
 			// float4 vertWorldPos = mul(unity_ObjectToWorld, v.vertex);
@@ -118,7 +117,6 @@
 			fixed4 tint = tex2D (_BlotchTex, IN.uv_BlotchTex / _TintScale);	
 			tint = lerp(_Color, _Color2, tint.r);
 			
-			// fixed4 ink = screen(_InkCol, fixed4(c, c, c, 1));
 			fixed4 ink = screen(_InkCol, fixed4(c, c, c, 1));
 
 			// o.Albedo = ink;
@@ -126,8 +124,6 @@
 			o.Albedo = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength);
 			// o.Albedo = IN.lightDir;
 			// o.Albedo = dot(IN.worldNormal, IN.viewDir);
-
-			// o.Albedo = saturate(c*.3+f) * fixed3(1, 1, 1);
 		}
 		ENDCG
 	}
