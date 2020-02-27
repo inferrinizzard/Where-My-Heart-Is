@@ -766,6 +766,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 966455456}
   root: {fileID: 2012778224}
+  intensity: 1
+  threshold: 1
+  softThreshold: 0.5
 --- !u!65 &758378407
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1714,7 +1717,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   glowMaterial: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
-  depthCheck: 1
+  depthCheck: 0
 --- !u!1 &2136642746
 GameObject:
   m_ObjectHideFlags: 0

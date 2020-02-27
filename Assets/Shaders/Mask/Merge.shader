@@ -71,12 +71,7 @@ Shader "Mask/Merge"
 				float4 output;
 				#if MASK
 					float mask = tex2D(_Mask, i.uv).r;
-					if(mask > .5) {
-						output = tex2D(_Real, i.uv);
-					}
-					else {
-						output = tex2D(_Dream, i.uv);
-					}
+					output = mask > .5 ? tex2D(_Real, i.uv) : tex2D(_Dream, i.uv);
 				#else
 					output = tex2D(_Dream, i.uv);
 				#endif
@@ -98,7 +93,7 @@ Shader "Mask/Merge"
 							float4 outline = (blurX + blurY) * _Intensity;
 
 							#if BLOOM
-								half4 c = half4(Prefilter(SampleBox(i.uv, 1)), 1);
+								float4 c = float4(Prefilter(SampleBox(i.uv, 1)), 1);
 								c.rgb += _Intensity * SampleBox(i.uv, 0.5);
 								outline += c;
 							#endif
@@ -116,6 +111,7 @@ Shader "Mask/Merge"
 
 				return output;
 			}
+			
 			ENDCG
 		}
 	}

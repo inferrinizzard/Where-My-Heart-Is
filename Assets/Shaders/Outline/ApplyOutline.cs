@@ -49,7 +49,7 @@ public class ApplyOutline : MonoBehaviour
 		// }
 		// cameras.Clear();
 
-		if (glowBuffer != null)
+		if (glowBuffer != null && cam)
 			cam.RemoveCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
 	}
 
