@@ -47,11 +47,13 @@ public class Window : MonoBehaviour
     private bool IntersectsBounds(ClipableObject clipableObject)
     {
         // less expensive, less accurate intersection check
-        if (fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<MeshFilter>().mesh.bounds))
+        if (true || fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<MeshFilter>().mesh.bounds))
         {
+            Debug.Log("Bounding box check succeeded for: " + clipableObject.gameObject);
             // more expensive, more accurate intersection check
             if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
             {
+                Debug.Log("Complex success: " + clipableObject.gameObject);
                 return true;
             }
         }

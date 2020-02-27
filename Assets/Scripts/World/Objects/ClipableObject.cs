@@ -29,6 +29,11 @@ public class ClipableObject : MonoBehaviour
 
 	public virtual bool IntersectsBound(Transform boundTransform, CSG.Model bound)
 	{
+        Debug.Log(gameObject);
+        if(meshFilter.mesh== null)
+        {
+            return false;
+        }
 		CSG.Model model = new CSG.Model(meshFilter.mesh);
 		model.ConvertCoordinates(transform, boundTransform);
 		return model.Intersects(bound, 0.001f);
