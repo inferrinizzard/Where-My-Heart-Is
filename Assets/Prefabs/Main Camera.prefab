@@ -63,11 +63,11 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: 3
+  m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4663
-  m_RenderingPath: 1
+  m_RenderingPath: 3
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
@@ -90,7 +90,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 496e2ae2f248e934b924c4b926615c06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  realCam: {fileID: 3177498604957221194}
   merge: {fileID: 4800000, guid: c26889c33fef9234c9d79ce663593d15, type: 3}
   mask: {fileID: 8400000, guid: 8b4a804e851c7b3438d91bd3bda05033, type: 2}
 --- !u!114 &3177498603613522797
@@ -166,7 +165,7 @@ Camera:
   field of view: 60
   orthographic: 0
   orthographic size: 5
-  m_Depth: 1
+  m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4407
@@ -300,6 +299,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: limitTo
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
         type: 3}
