@@ -15,5 +15,6 @@ public class Aiming : PlayerState
 		player.heartWindow.SetActive(true);
 		player.VFX.ToggleMask(true);
 		player.audioController.OpenWindow();
+        Debug.Log("opening window");
 	}
 }

@@ -39,6 +39,9 @@ public class PlayerAudio : MonoBehaviour
         walkInstance.start();
 
         windowInstance = FMODUnity.RuntimeManager.CreateInstance(WindowEvent);
+        windowInstance.setParameterByName("Heart World Type", 2);
+        windowInstance.start();
+
 
         currentSurface = WalkingSurface.Surface.Stone;
     }
@@ -73,12 +76,11 @@ public class PlayerAudio : MonoBehaviour
     public void OpenWindow()
     {
         windowInstance.setParameterByName("WindowState", 1);
-        windowInstance.start();
     }
 
     public void PlaceWindow()
     {
-        windowInstance.setParameterByName("WindowState", 2);
+        windowInstance.setParameterByName("WindowState", 1);
     }
 
     public void CloseWindow()

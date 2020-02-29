@@ -1056,6 +1056,42 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 337923702}
   m_Mesh: {fileID: -5198267681279241171, guid: 3e7fa92335577f048b95a820cdc3d591, type: 3}
+--- !u!1 &374586265 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: d739997c3956144448ac1b722b68f372,
+    type: 3}
+  m_PrefabInstance: {fileID: 464332726}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &374586266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374586265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 686f24558b99bb34ba8c1b923e26b635, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 0}
+  player: {fileID: 0}
+  active: 0
+  threshold: 1
+  sceneTarget: Swap
+--- !u!65 &374586267
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374586265}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 22.21, y: 36.8, z: 10}
+  m_Center: {x: -95.14, y: 8.04, z: 0}
 --- !u!1001 &378038317
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1597,6 +1633,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: canvas_autumn
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: d739997c3956144448ac1b722b68f372,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d739997c3956144448ac1b722b68f372,
         type: 3}
@@ -2681,6 +2722,50 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
+--- !u!1 &534222006
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 534222008}
+  - component: {fileID: 534222007}
+  m_Layer: 0
+  m_Name: AudioMaster
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &534222007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534222006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83f3444e4d274d6498d3f14fc9c5385e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AmbientEvent: event:/Ambient/Autumn Ambience
+--- !u!4 &534222008
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 534222006}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 38.76577, y: -21.765213, z: -52.73712}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &556869965
 PrefabInstance:
   m_ObjectHideFlags: 0

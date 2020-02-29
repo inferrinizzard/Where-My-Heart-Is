@@ -5,7 +5,7 @@
 			<value>Window</value>
 		</property>
 		<property name="outputFormat">
-			<value>2</value>
+			<value>1</value>
 		</property>
 		<relationship name="folder">
 			<destination>{1de5eeac-7177-434f-8153-e5eaadbd5231}</destination>
@@ -297,7 +297,6 @@
 	<object class="MixerBusEffectChain" id="{9d475646-9ac0-45b1-a608-90544f76ab25}">
 		<relationship name="effects">
 			<destination>{f6ca146b-d07e-4714-a1a2-d2e760273666}</destination>
-			<destination>{d599c648-b4b9-4780-bfdd-065155d53693}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{61bb81a6-b99d-4902-ad0b-7068171d05bb}" />
@@ -384,10 +383,10 @@
 		<relationship name="automationPoints">
 			<destination>{6030bd77-8bc5-4bda-b1d9-4717cea59e45}</destination>
 			<destination>{bb30a553-00bb-43bb-a3b2-87447634823e}</destination>
+			<destination>{2e18098b-7269-4bb4-918a-64b91b5e7a50}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusFader" id="{f6ca146b-d07e-4714-a1a2-d2e760273666}" />
-	<object class="SpatialiserEffect" id="{d599c648-b4b9-4780-bfdd-065155d53693}" />
 	<object class="AutomationCurve" id="{61ac8366-84c9-4f2a-80c6-44e52e5c6e57}">
 		<relationship name="parameter">
 			<destination>{766f4fdd-123f-4f45-b1d8-005154d5bca4}</destination>
@@ -432,7 +431,15 @@
 			<value>1</value>
 		</property>
 		<property name="value">
-			<value>0</value>
+			<value>-5</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{2e18098b-7269-4bb4-918a-64b91b5e7a50}">
+		<property name="position">
+			<value>0.20000000000000001</value>
+		</property>
+		<property name="value">
+			<value>-16</value>
 		</property>
 	</object>
 	<object class="AutomationPoint" id="{70ab92d1-6b95-4fce-95f2-aca94063bb9d}">

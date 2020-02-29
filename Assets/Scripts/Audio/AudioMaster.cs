@@ -13,6 +13,7 @@ public class AudioMaster : Singleton<AudioMaster>
     void Start()
     {
         ambientInstance = FMODUnity.RuntimeManager.CreateInstance(AmbientEvent);
+        ambientInstance.setParameterByName("Play Song", 1);
         ambientInstance.start();
     }
 
