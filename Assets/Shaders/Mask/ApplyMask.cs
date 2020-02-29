@@ -73,7 +73,6 @@ public class ApplyMask : MonoBehaviour
 		Graphics.Blit(source, dest, screenMat);
 		ClearRT(real, realCam);
 		ClearRT(source, mainCam);
-		// GL.ClearWithSkybox(true, mainCam);
 	}
 
 	void ClearRT(RenderTexture r, Camera cam)
