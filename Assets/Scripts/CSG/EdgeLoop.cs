@@ -25,6 +25,8 @@ namespace CSG
 		/// </summary>
 		public bool filled;
 
+        public Triangle triangle;
+
 		/// <summary>
 		/// Creates an empty EdgeLoop
 		/// </summary>
@@ -43,92 +45,119 @@ namespace CSG
 		}
 
 		/// <summary>
-		/// Creates a series of Triangles that cover the surface of this EdgeLoop
+		/// Succesively removes the best candidate triangle from the edge loop until none remain.
+        /// Currently unreliable.
 		/// </summary>
 		/// <returns>The created triangles</returns>
-		public List<Triangle> Triangulate(GameObject referenceFrame)
+		public List<Triangle> TriangulateEarMethod(int earToDraw)
 		{
-			//Draw(referenceFrame, 60.0f, Color.red);
-			//this.RemoveDuplicates();
-			/*if(vertices.Count < 3)
-			{
-			    return new List<Triangle>();
-			}*/
+            vertices.ForEach(vertex => vertex.Draw(0.5f, new Vector3(Random.value, Random.value, 1).normalized, Color.magenta));
 			List<Triangle> triangles = new List<Triangle>();
 			List<Vertex> currentVertices = new List<Vertex>(vertices);
+            Triangle nextEar;
 
 			//ear method
 			int i = 0;
 			while (currentVertices.Count > 3)
 			{
-				/*EdgeLoop temp = new EdgeLoop();
-				temp.vertices = currentVertices;
-				//Debug.Log(currentVertices.Count);
-				if(currentVertices.Count == 9)
-				{
-				    EdgeLoop foo = new EdgeLoop();
-				    foo.vertices = currentVertices;
-				    //Debug.Log(foo);
-				//temp.Draw(referenceFrame, 60.0f, Color.red);
-				}*/
+                Debug.Log(currentVertices.Count);
 				i++;
 				if (i > 100)
 				{
-					throw new System.Exception("Triangle overflow");
+                    triangles.ForEach(triangle => triangle.Draw(Color.green));
+                    currentVertices.ForEach(vertex =>
+                    {
+                        Debug.Log(vertex);
+                        vertex.Draw(0.05f, Vector3.up, Color.magenta);
+                    }
+                    );
+                    Debug.LogError("Too many iterations while triangulating edge loop, aborting.");
+                    return triangles;
 				}
-				triangles.Add(CreateNextEar(currentVertices));
+                nextEar = CreateNextEar(currentVertices);
+
+                if (nextEar != null) triangles.Add(nextEar);
 			}
 			triangles.Add(new Triangle(currentVertices[0], currentVertices[1], currentVertices[2]));
 
 			return triangles;
 		}
 
-		private Triangle CreateNextEar(List<Vertex> currentVertices)
-		{
-			for (int i = 0; i < currentVertices.Count; i++)
-			{
-				Vector3 a = currentVertices[i].value - currentVertices[(i + 1) % currentVertices.Count].value;
-				Vector3 b = currentVertices[(i + 2) % currentVertices.Count].value - currentVertices[(i + 1) % currentVertices.Count].value;
-				/*Debug.Log(currentVertices[i] + " :: " + currentVertices[(i + 1) % currentVertices.Count] + " :: " + currentVertices[(i + 2) % currentVertices.Count]);
-				Debug.Log((currentVertices[i].value - currentVertices[(i + 1) % currentVertices.Count].value).ToString("F4"));
-				Debug.Log(currentVertices[(i + 2) % currentVertices.Count].value - currentVertices[(i + 1) % currentVertices.Count].value);
-				Debug.Log(SignedAngle(a, b));*/
-				//if (Vector3.SignedAngle(a, b, Vector3.Cross(a, b)) > 0)
-				if (SignedAngle(a, b) > 0)
-				{
-					Triangle resultingTriangle = new Triangle(currentVertices[i], currentVertices[(i + 1) % currentVertices.Count], currentVertices[(i + 2) % currentVertices.Count]);
-					if (!TriangleContainsAny(currentVertices, resultingTriangle))
-					{
-						//Debug.Log("am happy");
-						currentVertices.RemoveAt((i + 1) % currentVertices.Count);
-						return resultingTriangle;
-					}
-				}
-			}
+        /// <summary>
+        /// Helper method for triangulateEar. Selects the best candidate for the next ear and creates the triangle for it, 
+        /// removing the peak of the ear from the vertex list
+        /// </summary>
+        /// <param name="currentVertices">The remaining vertices to search for ears</param>
+        /// <returns>The triangle created from the ear, or null if no ear candidates are found</returns>
+        private Triangle CreateNextEar(List<Vertex> currentVertices)
+        {
+            for (int i = 0; i < currentVertices.Count; i++)
+            {
+                Vector3 a = currentVertices[i].value - currentVertices[(i + 1) % currentVertices.Count].value;
+                Vector3 b = currentVertices[(i + 2) % currentVertices.Count].value - currentVertices[(i + 1) % currentVertices.Count].value;
 
-			return null;
-		}
+                //TODO
+                /*if (SignedAngle(a, b) > 0)
+                {
+                    Triangle resultingTriangle = new Triangle(currentVertices[i], currentVertices[(i + 1) % currentVertices.Count], currentVertices[(i + 2) % currentVertices.Count]);
+                    if (!TriangleContainsAny(vertices, resultingTriangle))
+                    {
+                        currentVertices.RemoveAt((i + 1) % currentVertices.Count);
+                        return resultingTriangle;
+                    }
+                }*/
+            }
 
-		private float SignedAngle(Vector3 a, Vector3 b)
-		{
-			//Vector3 cross = Vector3.Cross(a, b);
-			//int  = Mathf.Sign
-			//Debug.Log(Mathf.Sign(Mathf.Asin(Vector3.Cross(a, b).magnitude / (a.magnitude * b.magnitude))));
-			return Mathf.Asin(Vector3.Cross(a, b).magnitude / (a.magnitude * b.magnitude));
-		}
+            return null;
+        }
 
-		private bool TriangleContainsAny(List<Vertex> vertices, Triangle triangle)
-		{
-			foreach (Vertex vertex in vertices)
-			{
-				if (!triangle.vertices.Contains(vertex) && vertex.LiesWithinTriangle(triangle))
-				{
-					return true;
-				}
-			}
 
-			return false;
-		}
+        /// <summary>
+        /// Uses a simple fan method to triangulate this edge loop
+        /// </summary>
+        /// <returns>The created triangles</returns>
+        public List<Triangle> TriangulateFan()
+        {
+            List<Triangle> triangles = new List<Triangle>();
+            for(int i = 0; i < vertices.Count - 2; i++)
+            {
+                triangles.Add(new Triangle(vertices[0], vertices[i+1], vertices[i+2]));
+            }
+
+            return triangles;
+        }
+
+        /// <summary>
+        /// Uses a simple strip method to triangulate this edge loop
+        /// </summary>
+        /// <returns>The created triangles</returns>
+        public List<Triangle> TriangulateStrip()
+        {
+            List<Triangle> triangles = new List<Triangle>();
+
+            List<int> indicies = new List<int>();
+            indicies.Add(0);
+            indicies.Add(vertices.Count - 1);
+            indicies.Add(1);
+
+            triangles.Add(new Triangle(vertices[indicies[2]], vertices[indicies[1]], vertices[indicies[0]]));
+
+            int i = 1;
+            while (i < Mathf.FloorToInt((vertices.Count)/2))
+            {
+                indicies.RemoveAt(0);//dequeue
+                indicies.Add(vertices.Count - 1 - i);
+                triangles.Add(new Triangle(vertices[indicies[0]], vertices[indicies[1]], vertices[indicies[2]]));
+
+                i++;
+
+                indicies.RemoveAt(0);//dequeue
+                indicies.Add(i);
+                triangles.Add(new Triangle(vertices[indicies[2]], vertices[indicies[1]], vertices[indicies[0]]));
+            }
+
+            return triangles;
+        }
 
 		/// <summary>
 		/// Finds the unit vector normal to the plane defined by this EdgeLoop
@@ -139,37 +168,45 @@ namespace CSG
 			return Vector3.Cross(vertices[0].value - vertices[1].value, vertices[2].value - vertices[1].value).normalized;
 		}
 
-		public void RemoveDuplicates()
-		{
-			for (int i = vertices.Count - 1; i > 0; i--)
-			{
-				for (int k = i - 1; k >= 0; k--)
-				{
-					/*Debug.Log(vertices[i]);
-					Debug.Log(vertices[k]);
-					Debug.Log(Vector3.Distance(vertices[i].value, vertices[k].value));*/
-					if (Vector3.Distance(vertices[i].value, vertices[k].value) < 0.0001)
-					{
-						//Debug.Log("removing " + i);
-						vertices.RemoveAt(i);
-						break;
-					}
-				}
-			}
-		}
+        /// <summary>
+        /// Flips the normal of this edge loop by reversing the order of the vertex list
+        /// </summary>
+        public void FlipNormal()
+        {
+            vertices.Reverse();
+        }
+
+        /// <summary>
+        /// Determines whether this edge loop's normal matches the normal of the given edge loop, and flips this edge
+        /// loop's normal if they don't match
+        /// </summary>
+        /// <param name="toMatch">The edge loop whose normal should be matched</param>
+        public void MatchNormal(EdgeLoop toMatch)
+        {
+            if (Vector3.Distance(this.GetNormal(), toMatch.GetNormal()) > 0.0001)
+            {
+                this.FlipNormal();
+            }
+        }
 
 		public override string ToString() =>
-			$"{base.ToString()}::{string.Join("::", vertices.Select(v => (v.value.ToString("F4") + " (" + (v is Egress) + ")")))}";
-		private void Draw(GameObject referenceFrame, float time, Color color)
+			$"{base.ToString()}::{string.Join("::", vertices.Select(v => (v.value.ToString("F4") + " (" + (v.fromIntersection) + ")")))}";
+
+        /// <summary>
+        /// Draws each edge comprising this edge loop (as well as its vertices) in the editor window for debugging purposes.
+        /// The edges will change color in a gradient, adding the secondary color.
+        /// </summary>
+        /// <param name="color">The initial color of edges drawn</param>
+        /// <param name="secondaryColor">The added color to edges drawn</param>
+        /// <param name="vertexColor">The color that the vertices of the edge loop are drawn in</param>
+        public void Draw(Color color, Color secondaryColor, Color vertexColor)
 		{
-			float increment = 1f / vertices.Count;
-			/*Debug.Log(vertices.Count);
-			Debug.Log(increment);*/
-			for (int i = 0; i < vertices.Count; i++)
+            float increment = 1f / vertices.Count;
+            for (int i = 0; i < vertices.Count; i++)
 			{
-				color = new Color(i * increment, i * increment, i * increment);
-				//Debug.Log(i * increment);
-				Debug.DrawLine(referenceFrame.transform.localToWorldMatrix * vertices[i].value, referenceFrame.transform.localToWorldMatrix * vertices[(i + 1) % vertices.Count].value, color, time);
+                vertices[i].Draw(0.05f, Vector3.forward, vertexColor);
+                color += secondaryColor * increment;
+                Debug.DrawLine(vertices[i].value, vertices[(i + 1) % vertices.Count].value, color);
 			}
 		}
 

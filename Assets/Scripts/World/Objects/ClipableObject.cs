@@ -6,26 +6,34 @@ public class ClipableObject : MonoBehaviour
 {
 	public bool volumeless;
 
-    [HideInInspector] public InteractableObject tiedInteractable;
+	[HideInInspector] public InteractableObject tiedInteractable;
 	[HideInInspector] public bool isClipped;
-    [HideInInspector] public GameObject uncutCopy;
+	[HideInInspector] public GameObject uncutCopy;
 
 	private int oldLayer;
 	private Mesh initialMesh;
 	private MeshFilter meshFilter;
-
 
 	void Awake()
 	{
 		isClipped = false;
 
 		meshFilter = GetComponent<MeshFilter>() ?? gameObject.AddComponent<MeshFilter>();
-		if(meshFilter != null) initialMesh = meshFilter.mesh;
+        if(GetComponent<MeshCollider>() == null)
+        {
+            gameObject.AddComponent<MeshCollider>();
+        }
+		if (meshFilter) initialMesh = meshFilter.mesh;
 		oldLayer = gameObject.layer;
 	}
 
 	public virtual bool IntersectsBound(Transform boundTransform, CSG.Model bound)
 	{
+        Debug.Log(gameObject);
+        if(meshFilter.mesh== null)
+        {
+            return false;
+        }
 		CSG.Model model = new CSG.Model(meshFilter.mesh);
 		model.ConvertCoordinates(transform, boundTransform);
 		return model.Intersects(bound, 0.001f);
@@ -38,8 +46,6 @@ public class ClipableObject : MonoBehaviour
 		uncutCopy.transform.localScale = Vector3.one;
 		oldLayer = gameObject.layer;
 		gameObject.layer = 9;
-		//GetComponent<Collider>().enabled = true;
-        
 
 		if (!volumeless)
 		{
@@ -50,29 +56,34 @@ public class ClipableObject : MonoBehaviour
 			meshFilter.mesh = operations.ClipAToB(gameObject, other);
 		}
 
-        if (GetComponent<MeshCollider>() != null)
-        {
-            GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
-        }
+		if (GetComponent<MeshCollider>())
+		{
+			GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
+		}
 
-        UpdateInteractable();
-    }
+		UpdateInteractable();
+	}
 
-    public virtual void Revert()
+	public virtual void Revert()
 	{
-        isClipped = false;
+		isClipped = false;
 		gameObject.layer = oldLayer;
 		meshFilter.mesh = initialMesh;
 		//GetComponent<Collider>().enabled = false;
-        if (uncutCopy != null)
-        {
-            DestroyImmediate(uncutCopy);
-        }
+		if (uncutCopy)
+		{
+			DestroyImmediate(uncutCopy);
+		}
 
-        UpdateInteractable();
-    }
+		UpdateInteractable();
 
-    public void Subtract(GameObject other, CSG.Operations operations)
+		if (GetComponent<MeshCollider>())
+		{
+			GetComponent<MeshCollider>().sharedMesh = initialMesh;
+		}
+	}
+
+	public void Subtract(GameObject other, CSG.Operations operations)
 	{
 		isClipped = true;
 
@@ -84,18 +95,22 @@ public class ClipableObject : MonoBehaviour
 		}
 		else
 		{
-			meshFilter.mesh = operations.ClipAToB(gameObject, other, false);
+			meshFilter.mesh = operations.ClipAToB(gameObject, other);
 		}
 
-        UpdateInteractable();
-    }
+		UpdateInteractable();
 
-    private void UpdateInteractable()
-    {
-        if(tiedInteractable != null)
-        {
-            tiedInteractable.GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
-            tiedInteractable.gameObject.layer = gameObject.layer;
-        }
-    }
+		if (GetComponent<MeshCollider>())
+		{
+			GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
+		}
+	}
+
+	private void UpdateInteractable()
+	{
+		if (tiedInteractable != null)
+		{
+			tiedInteractable.gameObject.layer = gameObject.layer;
+		}
+	}
 }

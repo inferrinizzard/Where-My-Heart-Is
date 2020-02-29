@@ -15,7 +15,7 @@ public class Pickupable : InteractableObject
 		if (active)
 		{
 			// If the object is being inspected, run Looking.
-			if (player.looking)Looking();
+			if (player.looking) Looking();
 		}
 	}
 
@@ -27,8 +27,8 @@ public class Pickupable : InteractableObject
 		float rotY = Input.GetAxis("Mouse Y") * 2f;
 
 		// Rotate the object based on previous rotations.
-		transform.rotation = Quaternion.AngleAxis(-rotX, player.GetHeldObjectLocation().up) * transform.rotation;
-		transform.rotation = Quaternion.AngleAxis(rotY, player.GetHeldObjectLocation().forward) * transform.rotation;
+		transform.rotation = Quaternion.AngleAxis(-rotX, player.heldObjectLocation.up) * transform.rotation;
+		transform.rotation = Quaternion.AngleAxis(rotY, player.heldObjectLocation.forward) * transform.rotation;
 	}
 
 	public void PickUp()
@@ -39,7 +39,7 @@ public class Pickupable : InteractableObject
 		initialRotation = transform.rotation;
 
 		oldParent = transform.parent;
-		transform.parent = player.GetHeldObjectLocation(); // set the new parent to the hold object location object
+		transform.parent = player.heldObjectLocation; // set the new parent to the hold object location object
 		transform.localPosition = Vector3.zero; // set the position to local zero to match the position of the hold object location target
 	}
 
@@ -47,7 +47,7 @@ public class Pickupable : InteractableObject
 	{
 		ClipableObject clipable = GetComponent<ClipableObject>();
 
-		if (clipable != null && !clipable.IntersectsBound(player.heartWindow.GetComponent<Window>().fieldOfView.transform, player.heartWindow.GetComponent<Window>().fieldOfViewModel))
+		if (clipable != null && !clipable.IntersectsBound(player.window.fieldOfView.transform, player.window.fieldOfViewModel))
 		{
 			if (clipable.uncutCopy != null)
 			{

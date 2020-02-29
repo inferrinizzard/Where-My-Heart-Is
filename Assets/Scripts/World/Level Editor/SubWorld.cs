@@ -5,25 +5,33 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class SubWorld : MonoBehaviour
 {
-	int count = 0;
-
 #if UNITY_EDITOR
-	void Start()
+	void AddMeshCollider(Transform t)
 	{
-		count = transform.childCount;
+		if (t.GetComponent<MeshFilter>())
+		{
+			if (!t.GetComponent<MeshCollider>())
+				t.gameObject.AddComponent<MeshCollider>();
+			while (t.GetComponents<MeshCollider>().Length > 1)
+				DestroyImmediate(t.GetComponent<MeshCollider>());
+		}
+		else if (t.GetComponent<MeshCollider>())
+			DestroyImmediate(t.GetComponent<MeshCollider>());
+		foreach (Transform child in t)
+			AddMeshCollider(child);
 	}
 
 	void OnTransformChildrenChanged()
 	{
-		count = transform.childCount;
+		if (Application.isPlaying)return;
 		foreach (Transform child in transform)
-			if (child.GetComponent<WorldObject>() == null)
-			{
-				int numComponents = child.GetComponents<Component>().Length;
-				var worldObjRef = child.gameObject.AddComponent<WorldObject>();
-				for (int i = 0; i < numComponents; i++)
-					UnityEditorInternal.ComponentUtility.MoveComponentUp(worldObjRef);
-			}
+			AddMeshCollider(child);
+	}
+
+	void Start()
+	{
+		if (Application.isPlaying)
+			Destroy(this);
 	}
 #endif
 }
