@@ -105,7 +105,26 @@ Shader "Mask/Merge"
 				#endif
 
 				#if OUTLINE_EDGE
-					
+					if(glow.r == 0)
+					{
+						int NumberOfIterations = 9;
+						
+						//split texel size into smaller words
+						float TX_x = _GlowMap_TexelSize.x;
+						float TX_y = _GlowMap_TexelSize.y;
+						
+						//and a final intensity that increments based on surrounding intensities.
+						float4 ColorIntensityInRadius = float4(0, 0, 0, 1);
+						
+						for(int k = 0; k < NumberOfIterations; k++) {
+							for(int j = 0; j < NumberOfIterations; j++) {
+								//increase our output color by the pixels in the area
+								ColorIntensityInRadius += tex2D(_GlowMap, i.uv.xy + 
+								float2((k-NumberOfIterations / 2) * TX_x, (j - NumberOfIterations / 2) * TX_y));
+							}
+						}
+						output += ColorIntensityInRadius * _Intensity;
+					}
 				#endif
 
 

@@ -15,7 +15,6 @@ public class ApplyOutline : MonoBehaviour
 	[Range(0, 10)] public float intensity = 1;
 	[Range(0, 10)] public float threshold = 1;
 	[Range(0, 1)] public float softThreshold = 0.5f;
-	// private Dictionary<Camera, CommandBuffer> cameras = new Dictionary<Camera, CommandBuffer>();
 
 	void Start()
 	{
@@ -42,46 +41,24 @@ public class ApplyOutline : MonoBehaviour
 
 	private void Cleanup()
 	{
-		// foreach (var cam in cameras)
-		// {
-		// 	if (cam.Key)
-		// 		cam.Key.RemoveCommandBuffer(CameraEvent.BeforeLighting, cam.Value);
-		// }
-		// cameras.Clear();
-
 		if (glowBuffer != null && cam)
 			cam.RemoveCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
 	}
 
-	public void OnDisable()
-	{
-		Cleanup();
-	}
+	public void OnDisable() => Cleanup();
 
-	public void OnEnable()
-	{
-		Cleanup();
-	}
+	public void OnEnable() => Cleanup();
 
 	public void OnWillRenderObject()
 	{
-		var render = gameObject.activeInHierarchy && enabled;
-		if (!render)
-		{
-			Cleanup();
+		Cleanup();
+		if (!(gameObject.activeInHierarchy && enabled))
 			return;
-		}
-
-		// var cam = Camera.current;
-		// if (!cam || cameras.ContainsKey(cam))
-		// 	return;
 
 		// create new command buffer
 		var tempBuffer = new CommandBuffer();
 		tempBuffer.name = "Glow Map buffer";
 		glowBuffer = tempBuffer;
-
-		// cameras[cam] = tempBuffer;
 
 		// create render texture for glow map
 		int tempID = Shader.PropertyToID("_Temp1");
@@ -92,10 +69,11 @@ public class ApplyOutline : MonoBehaviour
 		// draw all glow objects to it
 		foreach (OutlineObject o in glowObjects)
 		{
-			Renderer r = o.GetComponent<Renderer>();
+			// Renderer r = o.GetComponent<Renderer>();
 			Material glowMat = o.glowMaterial;
-			if (r && glowMat)
-				tempBuffer.DrawRenderer(r, glowMat);
+			foreach (Renderer r in o.GetComponentsInChildren<Renderer>())
+				if (r && glowMat)
+					tempBuffer.DrawRenderer(r, glowMat);
 		}
 
 		// set render texture as globally accessable 'glow map' texture

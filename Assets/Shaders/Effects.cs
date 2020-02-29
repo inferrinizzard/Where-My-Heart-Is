@@ -18,8 +18,8 @@ public class Effects : MonoBehaviour
 
 	void Start()
 	{
-		// ToggleGlowOutline(true);
-		// ToggleEdgeOutline(true);
+		ToggleGlowOutline(glowOn);
+		ToggleEdgeOutline(edgeOn);
 	}
 
 	void Update()
