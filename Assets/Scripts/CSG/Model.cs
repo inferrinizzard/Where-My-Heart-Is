@@ -264,6 +264,17 @@ namespace CSG
             });
         }
 
+        public void RemoveVertex(Vertex vertex)
+        {
+            vertex.triangles.ForEach(triangle => RemoveTriangle(triangle));
+            edges = edges.Where(edge => !edge.vertices.Contains(vertex)).ToList();
+        }
+
+        public void RemoveTriangle(Triangle triangle)
+        {
+            triangles.Remove(triangle);
+        }
+
         /// <summary>
         /// Flips the normals of all this model's triangles
         /// </summary>
