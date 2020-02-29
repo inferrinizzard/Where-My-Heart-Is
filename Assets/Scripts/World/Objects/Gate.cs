@@ -5,11 +5,16 @@ using UnityEngine;
 public class Gate : MonoBehaviour
 {
     public float rotationAngle;
+    public float rotationTime;
     public Transform leftDoor;
     public Transform rightDoor;
     public GameObject keyHole;
 
+    private float currentRotation;
+
     private bool open;
+    private bool opening;
+    private float rotationDelta;
 
     private void Start()
     {
@@ -22,14 +27,30 @@ public class Gate : MonoBehaviour
         {
             Open();
         }*/
+        if(opening)
+        {
+            Debug.Log("opening");
+            leftDoor.Rotate(Vector3.up, rotationDelta * Time.deltaTime);
+            rightDoor.Rotate(Vector3.up, -rotationDelta * Time.deltaTime);
+        }
+    }
+
+    private void DoneOpening()
+    {
+        Debug.Log("end");
+
+        opening = false;
     }
 
     public void Open()
     {
         if (open) return;
         open = true;
+        opening = true;
+        Debug.Log("start");
+        rotationDelta = rotationAngle / rotationTime;
 
-        leftDoor.Rotate(Vector3.up, rotationAngle);
-        rightDoor.Rotate(Vector3.up, -rotationAngle);
+        currentRotation = 0;
+        Invoke("DoneOpening", rotationTime);
     }
 }
