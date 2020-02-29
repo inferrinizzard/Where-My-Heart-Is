@@ -6,7 +6,7 @@ using UnityEngine;
 public class ApplyMask : MonoBehaviour
 {
 	///<summary> Reference to Real World Cam, temp Mask Cam </summary>
-	Camera realCam, maskCam;
+	Camera realCam, maskCam, mainCam;
 	///<summary> Shader that combines views </summary>
 	[SerializeField] Shader merge = default;
 	///<summary> Generated material for merge shader </summary>
@@ -21,6 +21,7 @@ public class ApplyMask : MonoBehaviour
 		screenMat = new Material(merge);
 
 		// get ref to real world cam and assign generated RenderTexture
+		mainCam = GetComponent<Camera>();
 		realCam = this.GetComponentOnlyInChildren<Camera>();
 		real = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
 		real.name = "Real World";
@@ -70,15 +71,16 @@ public class ApplyMask : MonoBehaviour
 		screenMat.SetTexture("_Dream", source);
 		screenMat.SetTexture("_Real", real);
 		Graphics.Blit(source, dest, screenMat);
-		ClearRT(real);
-		ClearRT(source);
+		ClearRT(real, realCam);
+		ClearRT(source, mainCam);
 	}
 
-	void ClearRT(RenderTexture r)
+	void ClearRT(RenderTexture r, Camera cam)
 	{
 		RenderTexture rt = UnityEngine.RenderTexture.active;
 		UnityEngine.RenderTexture.active = r;
-		GL.Clear(true, true, Color.clear);
+		GL.ClearWithSkybox(true, cam);
+		// GL.Clear(true, true, Color.clear);
 		UnityEngine.RenderTexture.active = rt;
 	}
 
