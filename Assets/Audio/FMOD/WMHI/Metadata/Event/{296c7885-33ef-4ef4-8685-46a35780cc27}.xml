@@ -521,9 +521,6 @@
 		<relationship name="destination">
 			<destination>{276902f6-17e8-477f-845c-8b0a1107f1b5}</destination>
 		</relationship>
-		<relationship name="triggerConditions">
-			<destination>{7d031591-8588-45bd-b9df-c9b292513ed9}</destination>
-		</relationship>
 	</object>
 	<object class="TransitionRegion" id="{a1638737-a473-431a-96ec-2afc683733f7}">
 		<property name="position">
@@ -543,9 +540,6 @@
 		</relationship>
 		<relationship name="destination">
 			<destination>{276902f6-17e8-477f-845c-8b0a1107f1b5}</destination>
-		</relationship>
-		<relationship name="triggerConditions">
-			<destination>{eeada1f3-e3c5-4f26-8631-99d8131a9907}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusEffectChain" id="{0cec33b8-fa7f-4d0f-8607-0ca7bceba026}">
@@ -698,17 +692,6 @@
 			<destination>{4ea47d1f-c8e6-4e87-9317-3f64d3669e4d}</destination>
 		</relationship>
 	</object>
-	<object class="ParameterCondition" id="{7d031591-8588-45bd-b9df-c9b292513ed9}">
-		<property name="minimum">
-			<value>2</value>
-		</property>
-		<property name="maximum">
-			<value>2</value>
-		</property>
-		<relationship name="parameter">
-			<destination>{4ea47d1f-c8e6-4e87-9317-3f64d3669e4d}</destination>
-		</relationship>
-	</object>
 	<object class="TransitionTimeline" id="{1d732e26-73a3-4942-a14a-55b138618818}">
 		<property name="length">
 			<value>2</value>
@@ -724,17 +707,6 @@
 			<destination>{7beb21fc-bca9-4d76-9b27-07a2db3b71f0}</destination>
 			<destination>{18328c5c-be97-4164-8e77-5199265c3277}</destination>
 			<destination>{ad1318ca-1dff-435e-a5bd-e863be5ab6bb}</destination>
-		</relationship>
-	</object>
-	<object class="ParameterCondition" id="{eeada1f3-e3c5-4f26-8631-99d8131a9907}">
-		<property name="minimum">
-			<value>2</value>
-		</property>
-		<property name="maximum">
-			<value>2</value>
-		</property>
-		<relationship name="parameter">
-			<destination>{4ea47d1f-c8e6-4e87-9317-3f64d3669e4d}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusFader" id="{4156e25d-9e50-4f39-8f66-12453cc095fb}" />
