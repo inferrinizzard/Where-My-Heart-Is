@@ -11,9 +11,11 @@ using System.Linq;
 public class Window : MonoBehaviour
 {
     public World world;
+    public new Camera camera;
+    public GameObject fieldOfViewSource;
     public GameObject fieldOfView;
-    MeshCollider fovMeshCollider; //assign
     public CSG.Model fieldOfViewModel;
+    public Material tempMaterial;
 
     private CSG.Operations csgOperator;
 
@@ -21,6 +23,7 @@ public class Window : MonoBehaviour
     {
         csgOperator = GetComponent<CSG.Operations>();
         fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
+        Invoke("CreateFoVMesh", 1);//TODO: extreme hack
     }
 
     public void ApplyCut()
@@ -58,5 +61,72 @@ public class Window : MonoBehaviour
         }
 
         return false;
+    }
+
+    private void CreateFoVMesh()
+    {
+        Bounds sceneBound = GetSceneBounds();
+
+        float distance = sceneBound.extents.magnitude * 2;
+        Debug.Log(distance);
+
+        Mesh sourceMesh = fieldOfViewSource.GetComponent<MeshFilter>().mesh;
+
+        CSG.Model model = new CSG.Model(fieldOfViewSource.GetComponent<MeshFilter>().mesh);
+        List<CSG.Vertex> toIgnore = new List<CSG.Vertex>();
+        model.vertices.ForEach(vertex =>
+        {
+            if (vertex.triangles.Count > 2)
+            {
+                toIgnore.Add(vertex);
+            }
+        }
+        );
+
+        model.ConvertToWorld(fieldOfView.transform);
+
+        // project out the points of the original surface
+        model.vertices.ForEach(vertex =>
+        {
+            vertex.value = camera.transform.position + (vertex.value - camera.transform.position).normalized * distance;
+        }
+        );
+        // flip their normals
+
+        // now create the sides of the view
+        CSG.Vertex originVertex = new CSG.Vertex(0, camera.transform.position);
+
+        model.edges.ForEach(edge =>
+        {
+            if(!toIgnore.Contains(edge.vertices[0]) && !toIgnore.Contains(edge.vertices[1]))
+            {
+                model.AddTriangle(new CSG.Triangle(originVertex, edge.vertices[1], edge.vertices[0]));
+            }
+        });
+        model.edges.ForEach(edge => edge.Draw(Color.red));
+        // convert to local space of the camera
+        model.ConvertToLocal(camera.transform);
+
+        fieldOfView.GetComponent<MeshFilter>().mesh = model.ToMesh();
+        fieldOfView.GetComponent<MeshCollider>().sharedMesh = fieldOfView.GetComponent<MeshFilter>().mesh;
+        fieldOfView.transform.position = camera.transform.position;
+        fieldOfView.transform.rotation = camera.transform.rotation;
+        fieldOfView.GetComponent<MeshFilter>().mesh.RecalculateNormals();
+    }
+
+
+
+    private Bounds GetSceneBounds()
+    {
+        ClipableObject[] clipables = FindObjectsOfType<ClipableObject>();
+
+        Bounds bound = clipables[0].GetComponent<MeshCollider>().bounds;
+     
+        for (int i = 1; i < clipables.Length; i++)
+        {
+            bound.Encapsulate(clipables[i].GetComponent<MeshCollider>().bounds);
+        }
+
+        return bound;
     }
 }
