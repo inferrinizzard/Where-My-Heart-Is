@@ -1,7 +1,7 @@
 float4 gaussianBlur(sampler2D tex, float2 dir, float dist, float2 uv, float res)
 	{
 		//this will be our RGBA sum
-		float4 sum = float4(0, 0, 0, 0);
+		float4 sum = float4(0, 0, 0, 1);
 		
 		//the amount to blur, i.e. how far off center to sample from 
 		//1.0 -> blur by one pixel
@@ -28,5 +28,5 @@ float4 gaussianBlur(sampler2D tex, float2 dir, float dist, float2 uv, float res)
 		sum += tex2Dlod(tex, float4(uv.x + 3.0 * blur * hstep, uv.y + 3.0 * blur * vstep, 0, 0)) * 0.0540540541;
 		sum += tex2Dlod(tex, float4(uv.x + 4.0 * blur * hstep, uv.y + 4.0 * blur * vstep, 0, 0)) * 0.0162162162;
 
-		return float4(sum.rgb, 1.0);
+		return sum;
 	}

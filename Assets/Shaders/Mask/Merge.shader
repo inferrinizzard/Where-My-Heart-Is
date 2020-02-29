@@ -120,7 +120,7 @@ Shader "Mask/Merge"
 							for(int j = 0; j < NumberOfIterations; j++) {
 								//increase our output color by the pixels in the area
 								ColorIntensityInRadius += tex2D(_GlowMap, i.uv.xy + 
-								float2((k-NumberOfIterations / 2) * TX_x, (j - NumberOfIterations / 2) * TX_y));
+								float2((k - NumberOfIterations / 2) * TX_x, (j - NumberOfIterations / 2) * TX_y));
 							}
 						}
 						output += ColorIntensityInRadius * _Intensity;
