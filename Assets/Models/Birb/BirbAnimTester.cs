@@ -21,4 +21,9 @@ public class BirbAnimTester : MonoBehaviour
 		if (Input.GetKeyDown(idleKey))
 			anim.SetBool("IsIdle", true);
 	}
+
+	public void setFlying()
+	{
+		anim.SetBool("IsFlying", true);
+	}
 }

@@ -120,6 +120,26 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &862253761 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
+    type: 3}
+  m_PrefabInstance: {fileID: 1561989943}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &862253762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 862253761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c3cec8e06daa664e8afc978aa4130fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleKey: 49
+  flyKey: 50
 --- !u!4 &862253763 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
@@ -171,7 +191,18 @@ MonoBehaviour:
   delayField: {fileID: 0}
   pointReachedEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 862253762}
+        m_MethodName: setFlying
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Flying
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &887053058
 MonoBehaviour:
   m_ObjectHideFlags: 2
