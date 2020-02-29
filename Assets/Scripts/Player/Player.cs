@@ -52,6 +52,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public Window window;
 	[HideInInspector] public PlayerAudio audioController;
 
+	[Header("UI")]
+	/// <summary> Reference for interactPrompt UI object. </summary>
+	[SerializeField] public GameObject interactPrompt;
+
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
 	[SerializeField] float speed = 5f;
@@ -166,6 +170,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 			characterController.Move(moveDirection);
 		}
 
+		UpdateInteractPrompt();
 		StuckCrouching();
 		Die();
 	}
@@ -287,4 +292,23 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		if (aiming)SetState(new Cut(this));
 	}
 
+	/// <summary> Interact prompt handling. </summary>
+	private void UpdateInteractPrompt()
+	{
+		// Raycast for what the player is looking at.
+		RaycastHit hit;
+
+		// Make sure it is in the right layer
+		int layerMask = 1 << 9;
+
+		// Raycast to see what the object's tag is. If it is a Pickupable object...
+		if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
+		{
+			interactPrompt.SetActive(true);
+		}
+		else
+		{
+			interactPrompt.SetActive(false);
+		}
+	}
 }
