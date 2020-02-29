@@ -96,7 +96,7 @@
 	</object>
 	<object class="GroupTrack" id="{a442317c-6a45-47a1-a389-d2d96bf57354}">
 		<relationship name="modules">
-			<destination>{599083c2-2422-49a0-9de9-cc7ff298a522}</destination>
+			<destination>{d612021f-bb6f-4e1a-9c98-c775377d54be}</destination>
 		</relationship>
 		<relationship name="mixerGroup">
 			<destination>{c10bce7a-5ffb-4748-848d-dcd26e692e2e}</destination>
@@ -108,7 +108,7 @@
 			<destination>{7c7ceff8-401f-487f-99e9-9c72549954b3}</destination>
 			<destination>{23025a4d-1fcd-421d-ba27-d5eab0c58fc0}</destination>
 			<destination>{361a15fe-678e-4b35-929d-6160cb68216a}</destination>
-			<destination>{599083c2-2422-49a0-9de9-cc7ff298a522}</destination>
+			<destination>{d612021f-bb6f-4e1a-9c98-c775377d54be}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{da8d9274-54db-4e93-a859-d493848a309d}">
@@ -216,15 +216,21 @@
 			<destination>{da8d9274-54db-4e93-a859-d493848a309d}</destination>
 		</relationship>
 	</object>
-	<object class="SingleSound" id="{599083c2-2422-49a0-9de9-cc7ff298a522}">
+	<object class="SingleSound" id="{d612021f-bb6f-4e1a-9c98-c775377d54be}">
+		<property name="length">
+			<value>0.5</value>
+		</property>
 		<relationship name="triggerConditions">
-			<destination>{4d6637e4-079e-49d4-b56f-a5ad81e2fc3a}</destination>
+			<destination>{16d50560-2e63-4e71-b9d5-0a47208f4ac8}</destination>
 		</relationship>
 		<relationship name="audioFile">
-			<destination>{084624a1-21a1-4d04-8e97-a1a5a2de20b2}</destination>
+			<destination>{d1817706-6014-45c9-b0b1-83b2006854f9}</destination>
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{c10bce7a-5ffb-4748-848d-dcd26e692e2e}">
+		<property name="volume">
+			<value>-9.5</value>
+		</property>
 		<property name="name">
 			<value>Stone</value>
 		</property>
@@ -313,7 +319,7 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{a02de505-b940-4da5-bbed-13b4dc8e6b8f}" />
-	<object class="ParameterCondition" id="{4d6637e4-079e-49d4-b56f-a5ad81e2fc3a}">
+	<object class="ParameterCondition" id="{16d50560-2e63-4e71-b9d5-0a47208f4ac8}">
 		<property name="minimum">
 			<value>1</value>
 		</property>

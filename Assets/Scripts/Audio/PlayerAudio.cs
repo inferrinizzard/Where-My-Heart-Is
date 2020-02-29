@@ -13,11 +13,11 @@ public class PlayerAudio : MonoBehaviour
     [FMODUnity.EventRef]
     public string JumpLandingEvent;
 
-    [FMODUnity.EventRef]
+   /* [FMODUnity.EventRef]
     public string CrouchDownEvent;
 
     [FMODUnity.EventRef]
-    public string CrouchUpEvent;
+    public string CrouchUpEvent;*/
 
     [FMODUnity.EventRef]
     public string WalkEvent;
@@ -29,12 +29,45 @@ public class PlayerAudio : MonoBehaviour
     private FMOD.Studio.EventInstance walkInstance;
     private FMOD.Studio.EventInstance windowInstance;
 
+    private WalkingSurface.Surface currentSurface;
+
+    private bool jumping;
+
     private void Start()
     {
         walkInstance = FMODUnity.RuntimeManager.CreateInstance(WalkEvent);
         walkInstance.start();
 
         windowInstance = FMODUnity.RuntimeManager.CreateInstance(WindowEvent);
+
+        currentSurface = WalkingSurface.Surface.Stone;
+    }
+
+    private void Update()
+    {
+        if(jumping)
+        {
+            if (GetComponent<CharacterController>().isGrounded)
+            {
+                jumping = false;
+                JumpLanding();
+            }
+        }
+        RaycastHit hit;
+        if(Physics.Raycast(transform.position, Vector3.down, out hit))
+        {
+            WalkingSurface surface = hit.transform.gameObject.GetComponent<WalkingSurface>();
+            if (surface != null)
+            {
+                currentSurface = surface.surface;
+                walkInstance.setParameterByName("Surface", (float) surface.surface);
+            }
+            else
+            {
+                currentSurface = WalkingSurface.Surface.Stone;
+                walkInstance.setParameterByName("Surface", (float) WalkingSurface.Surface.Stone);
+            }
+        }
     }
 
     public void OpenWindow()
@@ -55,26 +88,37 @@ public class PlayerAudio : MonoBehaviour
 
     public void JumpLiftoff()
     {
-        FMODUnity.RuntimeManager.PlayOneShot(JumpLiftoffEvent, transform.position);
+        FMOD.Studio.EventInstance instance = FMODUnity.RuntimeManager.CreateInstance(JumpLiftoffEvent);
+        instance.setParameterByName("Surface", (float) currentSurface);
+        instance.start();
+        windowInstance.setParameterByName("WindowState", 0);
+        jumping = true;
     }
 
     public void JumpLanding()
     {
-        FMODUnity.RuntimeManager.PlayOneShot(JumpLandingEvent, transform.position);
+        FMOD.Studio.EventInstance instance = FMODUnity.RuntimeManager.CreateInstance(JumpLandingEvent);
+        instance.setParameterByName("Surface", (float)currentSurface);
+        instance.start();
     }
 
     public void CrouchDown()
     {
-        FMODUnity.RuntimeManager.PlayOneShot(CrouchDownEvent, transform.position);
+        //FMODUnity.RuntimeManager.PlayOneShot(CrouchDownEvent, transform.position);
     }
 
     public void CrouchUp()
     {
-        FMODUnity.RuntimeManager.PlayOneShot(CrouchUpEvent, transform.position);
+        //FMODUnity.RuntimeManager.PlayOneShot(CrouchUpEvent, transform.position);
     }
 
     public void SetWalkingVelocity(float value)
     {
+        if(jumping)
+        {
+            walkInstance.setParameterByName("Velocity", 0);
+            return;
+        }
         walkInstance.setParameterByName("Velocity", value);
     }
 }

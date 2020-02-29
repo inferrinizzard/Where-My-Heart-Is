@@ -10,8 +10,6 @@ public class Gate : MonoBehaviour
     public Transform rightDoor;
     public GameObject keyHole;
 
-    private float currentRotation;
-
     private bool open;
     private bool opening;
     private float rotationDelta;
@@ -50,7 +48,6 @@ public class Gate : MonoBehaviour
         Debug.Log("start");
         rotationDelta = rotationAngle / rotationTime;
 
-        currentRotation = 0;
         Invoke("DoneOpening", rotationTime);
     }
 }
