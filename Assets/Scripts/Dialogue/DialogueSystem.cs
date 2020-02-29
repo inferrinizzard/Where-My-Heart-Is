@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary> Handles the inputting of text from a json file and displaying of text onto the screen. </summary>
 public class DialogueSystem : MonoBehaviour
 {
     /// <summary> File name of the JSON to parse. </summary>
