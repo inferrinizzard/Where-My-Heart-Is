@@ -30,7 +30,7 @@ namespace CSG
         /// <param name="mesh">The Mesh to parse</param>
         public Model(Mesh mesh)
         {
-            vertices = mesh.vertices.Select((vertex, index) => new Vertex(index, vertex)).ToList();
+            vertices = mesh.vertices.Select((vertex, index) => new Vertex(index, vertex, mesh.uv[index])).ToList();
             List<Vertex> uniqueVertices = new List<Vertex>();
             foreach (Vertex vertex in vertices)
             {
@@ -41,6 +41,7 @@ namespace CSG
                 }
                 else
                 {
+                    existingVertex.UV2 = vertex.UV;
                     uniqueVertices.Add(existingVertex);
                 }
             }
@@ -160,14 +161,25 @@ namespace CSG
             //TODO: each face may need to have its vertices inputed as separate things
 			Mesh mesh = new Mesh();
 
+            List<Vector2> uvs = new List<Vector2>();
+
 			// reindex vertices and add them to the mesh
 			List<Vector3> createdVertices = vertices.Select((vertex, index) =>
 			{
 				vertex.index = index;
+                if (vertex.UV != null)
+                {
+                    uvs.Add(vertex.UV);
+                }
+                else
+                {
+                    uvs.Add(new Vector2(0, 0));
+                }
 				return vertex.value;
 			}).ToList();
 
 			mesh.SetVertices(createdVertices);
+            mesh.SetUVs(0, uvs);
 
 			// add triangles to mesh
 			int[] newTriangles = triangles.SelectMany(triangle => triangle.vertices.Select(vertex => vertex.index)).ToArray();

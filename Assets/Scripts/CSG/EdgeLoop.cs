@@ -25,6 +25,8 @@ namespace CSG
 		/// </summary>
 		public bool filled;
 
+        public bool shadeFlat;
+
         public Triangle triangle;
 
 		/// <summary>
