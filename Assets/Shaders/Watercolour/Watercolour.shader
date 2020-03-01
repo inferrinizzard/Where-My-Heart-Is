@@ -60,20 +60,6 @@
 
 		// void vert (inout appdata_base v, out Input o) {
 			// 	UNITY_INITIALIZE_OUTPUT(Input, o);
-			// 	// _WorldSpaceLightPos0.xyz // stores directional light world pos
-
-			// 	// half dotP = -dot(normalize(v.vertex.xyz - vertWorldPos), _WorldSpaceLightPos0.xyz);
-			// 	// o.lightDir = dotP;
-
-			// 	// TANGENT_SPACE_ROTATION;
-			// 	// o.lightDir = mul(rotation, ObjSpaceLightDir(v.vertex));
-
-			// 	// o.lightDir = ObjSpaceLightDir(v.vertex);
-			// 	// o.lightDir = WorldSpaceLightDir(v.vertex);
-			// 	// o.lightDir = unity_LightPosition[0];
-
-			// 	// o.lightDir = normalize(_WorldSpaceLightPos0.xyz - mul(unity_ObjectToWorld, v.vertex));
-
 			// 	float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
 			// 	float3 lightDir = float3(0, 0, 0);
@@ -117,7 +103,7 @@
 			c -= _BlotchSub;			
 			c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
 
-			// float f = dot(IN.worldNormal, IN.lightDir) * IN.lightAtten;
+			// float f = (1 - dot(IN.worldNormal, IN.lightDir)) * IN.lightAtten;
 			float f = dot(IN.worldNormal, IN.viewDir);
 			f = pow(f, _FresnelExponent);
 
@@ -130,8 +116,6 @@
 			
 			fixed4 ink = screen(_InkCol, fixed4(c, c, c, 1));
 
-			// o.Albedo = ink;
-			
 			o.Albedo = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength);
 			// o.Albedo = IN.lightDir * IN.lightAtten;
 			// o.Albedo = dot(IN.worldNormal, IN.lightDir);

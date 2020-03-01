@@ -16,7 +16,7 @@ Shader "Mask/Merge"
 		ZWrite Off 
 		ZTest Always
 
-		//Blend SrcAlpha OneMinusSrcAlpha
+		// Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass {
 			CGPROGRAM
