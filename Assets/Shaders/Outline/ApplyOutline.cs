@@ -24,7 +24,7 @@ public class ApplyOutline : MonoBehaviour
 		int tempID = Shader.PropertyToID("_Temp1");
 		glowBuffer.GetTemporaryRT(tempID, -1, -1, 24, FilterMode.Bilinear);
 		glowBuffer.SetRenderTarget(tempID);
-		glowBuffer.ClearRenderTarget(true, true, Color.black);
+		glowBuffer.ClearRenderTarget(true, true, Color.clear);
 		glowBuffer.SetGlobalTexture("_GlowMap", tempID);
 
 		float knee = threshold * softThreshold;
@@ -33,8 +33,8 @@ public class ApplyOutline : MonoBehaviour
 		filter.y = filter.x - knee;
 		filter.z = 2f * knee;
 		filter.w = 0.25f / (knee + 0.00001f);
-		glowBuffer.SetGlobalVector("_Filter", filter);
-		glowBuffer.SetGlobalFloat("_Intensity", Mathf.GammaToLinearSpace(intensity));
+		// glowBuffer.SetGlobalVector("_Filter", filter);
+		// glowBuffer.SetGlobalFloat("_Intensity", Mathf.GammaToLinearSpace(intensity));
 
 		cam.AddCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
 	}
