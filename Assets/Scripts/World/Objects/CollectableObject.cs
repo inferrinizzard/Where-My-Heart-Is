@@ -23,7 +23,6 @@ public class CollectableObject : InteractableObject
 		if (pickingUp)
 		{
 			transform.position = Vector3.Lerp(transform.position, spatialTarget, 5f * Time.deltaTime);
-			//transform.rotation = Quaternion.Euler(Vector3.Lerp(transform.rotation.eulerAngles, rotationalTarget, 4f * Time.deltaTime));
 
 			if (Vector3.Distance(transform.position, spatialTarget) < threshold)
 			{

@@ -39,7 +39,7 @@ namespace CSG
 
         public void Draw(Color color)
         {
-            Debug.DrawLine(vertices[0].value, vertices[1].value, color);
+            Debug.DrawLine(vertices[0].value, vertices[1].value, color, 60f);
         }
     }
 }

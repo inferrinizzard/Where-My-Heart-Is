@@ -119,11 +119,13 @@ MonoBehaviour:
   heartWindow: {fileID: 0}
   deathPlane: {fileID: 0}
   window: {fileID: 0}
+  audioController: {fileID: 0}
   speed: 4
   gravity: 20
   jumpForce: 6
   mouseSensitivity: 2
   playerReach: 10
+  windowEnabled: 1
   rotationY: 0
   rotationX: 0
 --- !u!114 &4516441798131658318
@@ -155,12 +157,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   landingDistanceThreshold: 1.9
-  JumpLiftoffEvent: event:/Jump - Liftoff
-  JumpLandingEvent: event:/Jump - Landing
-  CrouchDownEvent: event:/Crouch - Down
-  CrouchUpEvent: event:/Crouch - Up
-  WalkEvent: event:/Walking
-  WindowEvent: event:/Window
+  JumpLiftoffEvent: event:/Player Movement/Jump - Liftoff
+  JumpLandingEvent: event:/Player Movement/Jump - Landing
+  WalkEvent: event:/Player Movement/Walking/Walking - V2
+  WindowEvent: event:/Ambient/Window
 --- !u!1001 &7427641284244191036
 PrefabInstance:
   m_ObjectHideFlags: 0
