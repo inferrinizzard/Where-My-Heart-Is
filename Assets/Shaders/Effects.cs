@@ -5,10 +5,10 @@ using UnityEngine;
 public class Effects : MonoBehaviour
 {
 	/// <summary> reference to Mask controller </summary>
-	ApplyMask mask;
+	public static ApplyMask mask;
 
 	bool glowOn = false;
-	bool edgeOn = false;
+	bool edgeOn = true;
 	bool bloomOn = true;
 
 	void Awake()

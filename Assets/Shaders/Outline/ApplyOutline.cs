@@ -18,6 +18,7 @@ public class ApplyOutline : MonoBehaviour
 
 	void Start()
 	{
+        //cam = Camera.main;
 		glowObjects = root.GetComponentsInChildren<OutlineObject>();
 
 		glowBuffer = new CommandBuffer();

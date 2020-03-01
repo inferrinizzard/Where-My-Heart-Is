@@ -79,8 +79,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
     public override void Awake()
     {
-        Player other = FindObjectsOfType<Player>().ToList().Find(p => p != this);
-        if(other != null)this.windowEnabled = other.windowEnabled;
+        //Player other = FindObjectsOfType<Player>().ToList().Find(p => p != this);
+        //if(other != null) this.windowEnabled = other.windowEnabled;
         base.Awake();
     }
 
@@ -108,6 +108,9 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public void Init()
 	{
+        heartWindow.SetActive(true);
+        GetComponentInChildren<ApplyMask>().CreateMask();
+        heartWindow.SetActive(false);
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
 		if (lastSpawn)
