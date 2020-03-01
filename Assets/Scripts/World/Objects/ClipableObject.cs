@@ -10,29 +10,32 @@ public class ClipableObject : MonoBehaviour
 	[HideInInspector] public bool isClipped;
 	[HideInInspector] public GameObject uncutCopy;
 
+	Material mat;
+
 	private int oldLayer;
 	private Mesh initialMesh;
 	private MeshFilter meshFilter;
 
 	void Awake()
 	{
+		mat = GetComponent<MeshRenderer>().material;
 		isClipped = false;
 
 		meshFilter = GetComponent<MeshFilter>() ?? gameObject.AddComponent<MeshFilter>();
-        if(GetComponent<MeshCollider>() == null)
-        {
-            gameObject.AddComponent<MeshCollider>();
-        }
-		if (meshFilter) initialMesh = meshFilter.mesh;
+		if (GetComponent<MeshCollider>() == null)
+		{
+			gameObject.AddComponent<MeshCollider>();
+		}
+		if (meshFilter)initialMesh = meshFilter.mesh;
 		oldLayer = gameObject.layer;
 	}
 
 	public virtual bool IntersectsBound(Transform boundTransform, CSG.Model bound)
 	{
-        if(meshFilter.mesh == null)
-        {
-            return false;
-        }
+		if (meshFilter.mesh == null)
+		{
+			return false;
+		}
 		CSG.Model model = new CSG.Model(meshFilter.mesh);
 		model.ConvertCoordinates(transform, boundTransform);
 		return model.Intersects(bound, 0.001f);
@@ -41,6 +44,7 @@ public class ClipableObject : MonoBehaviour
 	public virtual void UnionWith(GameObject other, CSG.Operations operations)
 	{
 		isClipped = true;
+		mat.SetInt("_Dissolve", 0);
 		uncutCopy = GameObject.Instantiate(gameObject, transform.position, transform.rotation, transform);
 		uncutCopy.transform.localScale = Vector3.one;
 		oldLayer = gameObject.layer;
@@ -66,6 +70,7 @@ public class ClipableObject : MonoBehaviour
 	public virtual void Revert()
 	{
 		isClipped = false;
+		mat.SetInt("_Dissolve", 1);
 		gameObject.layer = oldLayer;
 		meshFilter.mesh = initialMesh;
 		//GetComponent<Collider>().enabled = false;
@@ -85,6 +90,7 @@ public class ClipableObject : MonoBehaviour
 	public void Subtract(GameObject other, CSG.Operations operations)
 	{
 		isClipped = true;
+		mat.SetInt("_Dissolve", 0);
 
 		oldLayer = gameObject.layer;
 

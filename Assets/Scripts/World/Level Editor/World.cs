@@ -46,6 +46,9 @@ public class World : Singleton<World>, IResetable
 				{
 					child.gameObject.AddComponent<ClipableObject>();
 				}
+
+				if (layer == "Real")
+					child.GetComponent<MeshRenderer>().material.SetInt("_Dissolve", 1);
 			}
 
 			ConfigureWorld(layer, child); // do this recursively to hit everything in the given world

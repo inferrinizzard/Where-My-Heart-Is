@@ -84,4 +84,11 @@ public class ApplyMask : MonoBehaviour
 		UnityEngine.RenderTexture.active = rt;
 	}
 
+	// void OnEnable()
+	// {
+	// 	if (ReplacementShader != null)
+	// 		realCam.SetReplacementShader(ReplacementShader, "Dissolve");
+	// }
+
+	// void OnDisable() => realCam.ResetReplacementShader();
 }
