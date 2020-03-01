@@ -5,8 +5,8 @@ Shader "Mask/Merge"
 		_Dream("Dream", 2D) = "white" {}
 		_Real("Real", 2D) = "white" {}
 
-		_Radius("Width", float) = 5
-		// _Intensity("Intensity", float) = 5
+		_Radius("Width", float) = 10
+		_Intensity("Intensity", float) = 2
 	}
 	SubShader {
 		Tags { "Queue" = "Transparent" }
@@ -16,7 +16,7 @@ Shader "Mask/Merge"
 		ZWrite Off 
 		ZTest Always
 
-		//Blend SrcAlpha OneMinusSrcAlpha
+		// Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass {
 			CGPROGRAM
@@ -83,7 +83,7 @@ Shader "Mask/Merge"
 				#if OUTLINE_GLOW
 					// if(mask > .5)
 					// {
-						if(glow.r == 0)
+						if(glow.r == 0 && glow.g == 0 && glow.b == 0)
 						{
 							float resX = _GlowMap_TexelSize.z;
 							float resY = _GlowMap_TexelSize.w;
@@ -99,6 +99,7 @@ Shader "Mask/Merge"
 							#endif
 
 							output += outline;
+							// return outline;
 						}
 						// return outline;
 					// }
@@ -124,6 +125,7 @@ Shader "Mask/Merge"
 							}
 						}
 						output += ColorIntensityInRadius * _Intensity;
+						// return ColorIntensityInRadius;
 					}
 				#endif
 
