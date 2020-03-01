@@ -15,8 +15,6 @@ public class GateKey : Pickupable
 
     public override void Interact()
     {
-        Debug.Log(Vector3.Distance(transform.position, gate.keyHole.transform.position));
-
         if (Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold)
         {
             gate.Open();

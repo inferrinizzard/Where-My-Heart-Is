@@ -103,10 +103,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		if (lastSpawn)
 		{
 			transform.position = lastSpawn.position;
-			rotationX = lastSpawn.rotation.x;
-			rotationY = lastSpawn.rotation.y;
-			// transform.rotation = lastSpawn.rotation;
-			// cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
+			rotationX = lastSpawn.eulerAngles.x;
+			rotationY = lastSpawn.eulerAngles.y;
+			//transform.rotation = lastSpawn.rotation;
+			//cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
 		}
 		playerCanMove = true;
 		holding = false;
