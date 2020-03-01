@@ -73,6 +73,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public float rotationY = 0f;
 	/// <summary> Stores the X rotation of the player. </summary>
 	[HideInInspector] public float rotationX = 0f;
+	int _ViewDirID = Shader.PropertyToID("_ViewDir");
 
 	void Start()
 	{
@@ -215,6 +216,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
 		cam.transform.localEulerAngles = new Vector3(-rotationX, 0, 0);
 
+		Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
+
 		// Allow the player to get out of the mouse lock.
 		if (Input.GetKey(KeyCode.Escape))
 		{
@@ -265,6 +268,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		if (!heartWindow.activeSelf && !holding)
 		{
 			SetState(new Aiming(this));
+			print(cam.transform.forward.normalized);
 		}
 		aiming = true;
 	}

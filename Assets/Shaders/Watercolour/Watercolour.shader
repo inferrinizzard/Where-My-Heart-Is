@@ -44,7 +44,9 @@
 		fixed4 _Color2;
 		fixed4 _InkCol;
 		half _FresnelExponent;
+
 		int _Dissolve;
+		float3 _ViewDir;
 
 		struct Input {
 			float2 uv_BlotchTex;
@@ -54,7 +56,6 @@
 			float3 worldNormal;
 			float3 worldPos;
 			float3 viewDir;
-			float3 viewD;
 			// float3 lightDir;
 			// float lightAtten;
 		};
@@ -90,8 +91,6 @@
 			// 	// float attenUV = distance(lightPos, worldPos) / range;
 			// 	// float atten = saturate(1.0 / (1.0 + 25.0 * attenUV*attenUV) * saturate((1 - attenUV) * 5.0));
 			// 	// float atten = tex2D(_LightTextureB0, (attenUV * attenUV).xx).UNITY_ATTEN_CHANNEL;
-
-			o.viewD = normalize(WorldSpaceViewDir(v.vertex));
 		}
 
 		fixed4 screen (fixed4 colA, fixed4 colB) {
@@ -106,8 +105,8 @@
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
 			if(_Dissolve == 1) {
-				float camDist = distance(IN.worldPos, _WorldSpaceCameraPos + IN.viewD * 6 + float3(0, 1, 0));
-				float isVisible = tex2D(_DetailTex, IN.uv_DetailTex).r * 0.999 - exp(-camDist * .75);
+				float camDist = distance(IN.worldPos, _WorldSpaceCameraPos + float3(_ViewDir.x, max(0, _ViewDir.y), _ViewDir.z));
+				float isVisible = tex2D(_DetailTex, IN.uv_DetailTex).r * 0.999 - exp(-camDist);
 				clip(isVisible);
 			}
 

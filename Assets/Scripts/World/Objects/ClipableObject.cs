@@ -11,6 +11,7 @@ public class ClipableObject : MonoBehaviour
 	[HideInInspector] public GameObject uncutCopy;
 
 	Material mat;
+	int _DissolveID = Shader.PropertyToID("_Dissolve");
 
 	private int oldLayer;
 	private Mesh initialMesh;
@@ -44,7 +45,7 @@ public class ClipableObject : MonoBehaviour
 	public virtual void UnionWith(GameObject other, CSG.Operations operations)
 	{
 		isClipped = true;
-		mat.SetInt("_Dissolve", 0);
+		mat.SetInt(_DissolveID, 0);
 		uncutCopy = GameObject.Instantiate(gameObject, transform.position, transform.rotation, transform);
 		uncutCopy.transform.localScale = Vector3.one;
 		oldLayer = gameObject.layer;
@@ -70,7 +71,7 @@ public class ClipableObject : MonoBehaviour
 	public virtual void Revert()
 	{
 		isClipped = false;
-		mat.SetInt("_Dissolve", 1);
+		mat.SetInt(_DissolveID, 1);
 		gameObject.layer = oldLayer;
 		meshFilter.mesh = initialMesh;
 		//GetComponent<Collider>().enabled = false;
@@ -90,7 +91,7 @@ public class ClipableObject : MonoBehaviour
 	public void Subtract(GameObject other, CSG.Operations operations)
 	{
 		isClipped = true;
-		mat.SetInt("_Dissolve", 0);
+		mat.SetInt(_DissolveID, 0);
 
 		oldLayer = gameObject.layer;
 
