@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,9 +12,12 @@ public class GameManager : Singleton<GameManager>, IResetable
 	GameObject loadingScreen;
 	/// <summary> Slider for Loading Bar  </summary>
 	Slider loadingBar;
+	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "ComplexGate", "HalfCut 1", "Final" };
+	public int sceneIndex = -1;
 
 	void Start()
 	{
+		sceneIndex = levels.ToList().FindIndex(name => name == SceneManager.GetActiveScene().name);
 		// get Loading Screen UI ref
 		loadingScreen = transform.GetChild(0).GetChild(0).gameObject; // better find
 		// get Slider ref
@@ -38,7 +42,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 	public void Init()
 	{
 		World.Instance.Init();
-		World.Instance.name += $"[{SceneManager.GetActiveScene().name}]";
+		World.Instance.name += $"[{levels[++sceneIndex]}]";
 		Player.Instance.Init();
 	}
 

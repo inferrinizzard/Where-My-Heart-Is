@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 /// <summary> Handles player movement and player interaction </summary>
 [System.Serializable]
@@ -65,7 +65,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
 
-    public bool windowEnabled = false;
+	public bool windowEnabled = false;
 
 	// [Header("Camera Variables")]
 	/// <summary> Minimum angle the player can look upward. </summary>
@@ -77,14 +77,14 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Stores the X rotation of the player. </summary>
 	[HideInInspector] public float rotationX = 0f;
 
-    public override void Awake()
-    {
-        //Player other = FindObjectsOfType<Player>().ToList().Find(p => p != this);
-        //if(other != null) this.windowEnabled = other.windowEnabled;
-        base.Awake();
-    }
+	public override void Awake()
+	{
+		//Player other = FindObjectsOfType<Player>().ToList().Find(p => p != this);
+		//if(other != null) this.windowEnabled = other.windowEnabled;
+		base.Awake();
+	}
 
-    void Start()
+	void Start()
 	{
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
@@ -108,9 +108,9 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public void Init()
 	{
-        heartWindow.SetActive(true);
-        GetComponentInChildren<ApplyMask>().CreateMask();
-        heartWindow.SetActive(false);
+		// heartWindow.SetActive(true);
+		// GetComponentInChildren<ApplyMask>().CreateMask();
+		// heartWindow.SetActive(false);
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
 		if (lastSpawn)

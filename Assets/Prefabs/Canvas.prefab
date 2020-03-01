@@ -1054,6 +1054,7 @@ GameObject:
   - component: {fileID: 203059685182156960}
   - component: {fileID: 203059685182156974}
   - component: {fileID: 203059685182156975}
+  - component: {fileID: 9211694324306730243}
   m_Layer: 0
   m_Name: canvas_autumn
   m_TagString: Untagged
@@ -1096,7 +1097,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 203059685182156961}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 686f24558b99bb34ba8c1b923e26b635, type: 3}
   m_Name: 
@@ -1106,6 +1107,22 @@ MonoBehaviour:
   active: 0
   threshold: 0.3
   sceneTarget: 
+--- !u!114 &9211694324306730243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203059685182156961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7053a5b33f617b41aa3b284f75d894c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 203059686380578862}
+  player: {fileID: 0}
+  active: 0
+  threshold: 0.5
 --- !u!1 &203059685307545870
 GameObject:
   m_ObjectHideFlags: 0
@@ -1940,6 +1957,7 @@ GameObject:
   - component: {fileID: 203059686410404397}
   - component: {fileID: 203059686410404395}
   - component: {fileID: 203059686410404396}
+  - component: {fileID: 1822086574867330719}
   m_Layer: 0
   m_Name: canvas_autumn
   m_TagString: Untagged
@@ -1982,7 +2000,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 203059686410404398}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 686f24558b99bb34ba8c1b923e26b635, type: 3}
   m_Name: 
@@ -1992,6 +2010,22 @@ MonoBehaviour:
   active: 0
   threshold: 0.3
   sceneTarget: 
+--- !u!114 &1822086574867330719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203059686410404398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7053a5b33f617b41aa3b284f75d894c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 203059684820443479}
+  player: {fileID: 0}
+  active: 0
+  threshold: 0.5
 --- !u!1 &203059686410720106
 GameObject:
   m_ObjectHideFlags: 0

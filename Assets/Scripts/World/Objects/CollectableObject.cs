@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CollectableObject : InteractableObject
 {
-	public float threshold;
+	[SerializeField] float threshold = 1f;
 
 	private bool pickingUp;
 	private Vector3 spatialTarget;
@@ -33,7 +33,7 @@ public class CollectableObject : InteractableObject
 
 	public override void Interact()
 	{
-        Debug.Log("here");
+		Debug.Log("here");
 		spatialTarget = player.transform.position;
 		rotationalTarget = Quaternion.LookRotation(player.transform.forward, Vector3.up).eulerAngles;
 		pickingUp = true;
