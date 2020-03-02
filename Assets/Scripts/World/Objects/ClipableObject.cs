@@ -19,7 +19,7 @@ public class ClipableObject : MonoBehaviour
 
 	void Awake()
 	{
-		mat = GetComponent<MeshRenderer>().material;
+		mat = GetComponentInChildren<MeshRenderer>().material;
 		isClipped = false;
 
 		meshFilter = GetComponent<MeshFilter>() ?? gameObject.AddComponent<MeshFilter>();

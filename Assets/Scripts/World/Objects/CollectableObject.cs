@@ -4,41 +4,43 @@ using UnityEngine;
 
 public class CollectableObject : InteractableObject
 {
-	public float threshold;
-
-	private bool pickingUp;
 	private Vector3 spatialTarget;
 	private Vector3 rotationalTarget;
 
-	[SerializeField] string sceneTarget = "";
-
-	protected override void Start()
-	{
-		base.Start();
-		pickingUp = false;
-	}
-
-	private void Update()
-	{
-		if (pickingUp)
-		{
-			transform.position = Vector3.Lerp(transform.position, spatialTarget, 5f * Time.deltaTime);
-
-			if (Vector3.Distance(transform.position, spatialTarget) < threshold)
-			{
-				gameObject.SetActive(false);
-			}
-		}
-	}
-
 	public override void Interact()
 	{
-        Debug.Log("here");
-		spatialTarget = player.transform.position;
-		rotationalTarget = Quaternion.LookRotation(player.transform.forward, Vector3.up).eulerAngles;
-		pickingUp = true;
-		if (sceneTarget != "")
-			GameManager.Instance.ChangeLevel(sceneTarget);
+		StartCoroutine(Collect(player.transform.position, transform.eulerAngles));
+		// Debug.Log("here");
+		// spatialTarget = player.transform.position;
+		// rotationalTarget = Quaternion.LookRotation(player.transform.forward, Vector3.up).eulerAngles;
+		// pickingUp = true;
+		// if (sceneTarget != "")
+		// 	GameManager.Instance.ChangeLevel(sceneTarget);
 	}
 
+	protected IEnumerator Collect(Vector3 spatialTarget, Vector3 rotationalTarget, float time = .5f)
+	{
+		foreach (Collider c in GetComponentsInChildren<Collider>())
+			Destroy(c);
+		float start = Time.time;
+		bool inProgress = true;
+
+		Vector3 startPos = transform.position;
+		Vector3 startEulers = transform.eulerAngles;
+		while (inProgress)
+		{
+			yield return null;
+			float step = Time.time - start;
+			transform.position = Vector3.Lerp(startPos, spatialTarget, step / time);
+			transform.eulerAngles = Vector3.Lerp(startEulers, rotationalTarget, step / time);
+			if (step > time)
+				inProgress = false;
+		}
+		CollectEndAction();
+	}
+
+	protected virtual void CollectEndAction()
+	{
+		gameObject.SetActive(false);
+	}
 }

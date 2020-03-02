@@ -29,7 +29,9 @@
 		// #pragma surface surf Standard fullforwardshadows vertex:vert
 		#pragma surface surf Standard fullforwardshadows
 		#pragma target 3.5
-		#pragma debug
+		// #pragma debug
+
+		#pragma shader_feature DISSOLVE
 
 		sampler2D _BlotchTex;
 		sampler2D _DetailTex;
@@ -104,11 +106,13 @@
 		}
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
-			if(_Dissolve == 1) {
-				float camDist = distance(IN.worldPos, _WorldSpaceCameraPos + float3(_ViewDir.x, max(0, _ViewDir.y), _ViewDir.z));
-				float isVisible = tex2D(_DetailTex, IN.uv_DetailTex).r * 0.999 - exp(-camDist);
-				clip(isVisible);
-			}
+			#if DISSOLVE
+				if(_Dissolve == 1) {
+					float camDist = distance(IN.worldPos, _WorldSpaceCameraPos + float3(_ViewDir.x, max(0, _ViewDir.y), _ViewDir.z));
+					float isVisible = tex2D(_DetailTex, IN.uv_DetailTex).r * 0.999 - exp(-camDist);
+					clip(isVisible);
+				}
+			#endif
 
 			fixed c = tex2D (_BlotchTex, IN.uv_BlotchTex).r;
 			c *= _BlotchMulti;

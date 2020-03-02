@@ -15,6 +15,7 @@ public class ApplyMask : MonoBehaviour
 	RenderTexture real;
 	///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
 	public RenderTexture mask;
+	public Texture2D m2d;
 
 	void Start()
 	{
@@ -33,6 +34,12 @@ public class ApplyMask : MonoBehaviour
 		// mask.Create();
 		// mask.name = "Internal Mask";
 
+		CreateMask();
+		// RenderTexture.ReleaseTemporary(mask);
+	}
+
+	public void CreateMask()
+	{
 		// spawn temp mask cam and configure transform
 		maskCam = new GameObject("Mask Cam").AddComponent<Camera>();
 		maskCam.transform.position = Vector3.zero;
@@ -56,6 +63,7 @@ public class ApplyMask : MonoBehaviour
 		var mask2D = new Texture2D(mask.width, mask.height);
 		mask2D.ReadPixels(new Rect(0, 0, mask.width, mask.height), 0, 0);
 		mask2D.Apply();
+		m2d = mask2D; //VS GHETTO
 		Shader.SetGlobalTexture("_Mask", mask2D);
 
 		RenderTexture.active = screen;

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary> Handles player movement and player interaction </summary>
@@ -52,6 +53,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public Window window;
 	[HideInInspector] public PlayerAudio audioController;
 
+	[Header("UI")]
+	/// <summary> Reference for interactPrompt UI object. </summary>
+	[SerializeField] public GameObject interactPrompt;
+
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
 	[SerializeField] float speed = 5f;
@@ -64,6 +69,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
 
+	public bool windowEnabled = false;
+
 	// [Header("Camera Variables")]
 	/// <summary> Minimum angle the player can look upward. </summary>
 	private float minX = -90f;
@@ -74,6 +81,13 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Stores the X rotation of the player. </summary>
 	[HideInInspector] public float rotationX = 0f;
 	int _ViewDirID = Shader.PropertyToID("_ViewDir");
+
+	public override void Awake()
+	{
+		//Player other = FindObjectsOfType<Player>().ToList().Find(p => p != this);
+		//if(other != null) this.windowEnabled = other.windowEnabled;
+		base.Awake();
+	}
 
 	void Start()
 	{
@@ -99,6 +113,9 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public void Init()
 	{
+		// heartWindow.SetActive(true);
+		// GetComponentInChildren<ApplyMask>().CreateMask();
+		// heartWindow.SetActive(false);
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
 		if (lastSpawn)
@@ -167,6 +184,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 			characterController.Move(moveDirection);
 		}
 
+		UpdateInteractPrompt();
 		StuckCrouching();
 		Die();
 	}
@@ -265,10 +283,9 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Player aiming function. </summary>
 	private void Aiming()
 	{
-		if (!heartWindow.activeSelf && !holding)
+		if (windowEnabled && !heartWindow.activeSelf && !holding)
 		{
 			SetState(new Aiming(this));
-			print(cam.transform.forward.normalized);
 		}
 		aiming = true;
 	}
@@ -291,4 +308,26 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		if (aiming)SetState(new Cut(this));
 	}
 
+	/// <summary> Interact prompt handling. </summary>
+	private void UpdateInteractPrompt()
+	{
+		// Raycast for what the player is looking at.
+		RaycastHit hit;
+
+		// Make sure it is in the right layer
+		int layerMask = 1 << 9;
+
+		if (interactPrompt != null)
+		{
+			// Raycast to see what the object's tag is. If it is a Pickupable object...
+			if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
+			{
+				interactPrompt.SetActive(true);
+			}
+			else
+			{
+				interactPrompt.SetActive(false);
+			}
+		}
+	}
 }
