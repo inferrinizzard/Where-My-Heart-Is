@@ -27,7 +27,7 @@
 
 		CGPROGRAM
 		// #pragma surface surf Standard fullforwardshadows vertex:vert
-		#pragma surface surf Standard fullforwardshadows
+		#pragma surface surf Standard noforwardadd
 		#pragma target 3.5
 		// #pragma debug
 

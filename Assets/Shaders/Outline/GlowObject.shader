@@ -2,7 +2,7 @@ Shader "Outline/GlowObject"
 {
 	Properties {
 		_Colour ("Outline Colour", Color) = (1, 0, 0, 1)
-		[Range(0,1)] _Occlude ("Occlusion on?", Int) = 1
+		[MaterialToggle] _Occlude ("Occlusion on?", Int) = 1
 	}
 	SubShader {
 		Pass {

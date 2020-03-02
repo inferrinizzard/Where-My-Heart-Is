@@ -186,7 +186,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 		UpdateInteractPrompt();
 		StuckCrouching();
-		// Die();
+		Die();
 	}
 
 	/// <summary> Player sudoku function. </summary>

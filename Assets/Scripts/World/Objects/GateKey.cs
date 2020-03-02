@@ -4,13 +4,8 @@ using UnityEngine;
 
 public class GateKey : Pickupable
 {
-	public Gate gate;
-	public float distanceThreshold;
-
-	public void Update()
-	{
-
-	}
+	[SerializeField] Gate gate = default;
+	[SerializeField] float distanceThreshold = .5f;
 
 	public override void Interact()
 	{
