@@ -31,7 +31,7 @@
 		#pragma target 3.5
 		// #pragma debug
 
-		#pragma shader_feature DISSOLVE
+		#pragma multi_compile_local __ DISSOLVE DISSOLVE_MANUAL
 
 		sampler2D _BlotchTex;
 		sampler2D _DetailTex;
@@ -49,6 +49,7 @@
 
 		int _Dissolve;
 		float3 _ViewDir;
+		float _ManualDissolve;
 
 		struct Input {
 			float2 uv_BlotchTex;
@@ -112,6 +113,9 @@
 					float isVisible = tex2D(_DetailTex, IN.uv_DetailTex).r * 0.999 - exp(-camDist);
 					clip(isVisible);
 				}
+			#elif DISSOLVE_MANUAL
+				float isVisible = tex2D(_DetailTex, IN.uv_DetailTex).r * 0.999 - _ManualDissolve;
+				clip(isVisible);
 			#endif
 
 			fixed c = tex2D (_BlotchTex, IN.uv_BlotchTex).r;

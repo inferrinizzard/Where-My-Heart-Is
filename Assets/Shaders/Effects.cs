@@ -61,4 +61,28 @@ public class Effects : MonoBehaviour
 			Shader.DisableKeyword(keyword);
 	}
 
+	public static IEnumerator DissolveOnDrop(GateKey obj, float time = .25f)
+	{
+		obj.transform.parent = obj.oldParent;
+		Material mat = obj.GetComponent<MeshRenderer>().material;
+		mat.EnableKeyword("DISSOLVE_MANUAL");
+		int ManualDissolveID = Shader.PropertyToID("_ManualDissolve");
+
+		float start = Time.time;
+		bool inProgress = true;
+
+		while (inProgress)
+		{
+			yield return null;
+			float step = Time.time - start;
+			mat.SetFloat(ManualDissolveID, step / time);
+			if (step > time)
+				inProgress = false;
+		}
+		mat.DisableKeyword("DISSOLVE_MANUAL");
+		mat.SetFloat(ManualDissolveID, 1);
+
+		obj.Interact();
+		obj.active = false;
+	}
 }
