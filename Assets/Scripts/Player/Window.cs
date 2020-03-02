@@ -23,7 +23,7 @@ public class Window : MonoBehaviour
 	{
 		csgOperator = GetComponent<CSG.Operations>();
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
-		Invoke("CreateFoVMesh", 1); //TODO: extreme hack
+		Invoke("CreateFoVMesh", 0.5f); //TODO: extreme hack
 	}
 
 	public void ApplyCut()
@@ -64,7 +64,9 @@ public class Window : MonoBehaviour
 		return false;
 	}
 
-	private void CreateFoVMesh()
+    bool foo = false;
+
+	public void CreateFoVMesh()
 	{
 		Bounds sceneBound = GetSceneBounds();
 
@@ -104,12 +106,9 @@ public class Window : MonoBehaviour
 		});
 		model.edges.ForEach(edge => edge.Draw(Color.red));
 		// convert to local space of the camera
-		model.ConvertToLocal(camera.transform);
-
+		model.ConvertToLocal(fieldOfView.transform);
 		fieldOfView.GetComponent<MeshFilter>().mesh = model.ToMesh();
 		fieldOfView.GetComponent<MeshCollider>().sharedMesh = fieldOfView.GetComponent<MeshFilter>().mesh;
-		fieldOfView.transform.position = camera.transform.position;
-		fieldOfView.transform.rotation = camera.transform.rotation;
 		fieldOfView.GetComponent<MeshFilter>().mesh.RecalculateNormals();
 	}
 

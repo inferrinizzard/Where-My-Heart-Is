@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 4ae888627536169469f26c3be32b0069, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -3586,6 +3586,7 @@ GameObject:
   - component: {fileID: 623060889}
   - component: {fileID: 623060888}
   - component: {fileID: 623060890}
+  - component: {fileID: 623060891}
   m_Layer: 8
   m_Name: Cube[Real]
   m_TagString: Untagged
@@ -3669,6 +3670,19 @@ MonoBehaviour:
   tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
+--- !u!114 &623060891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 623060886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68683eb0311f6214ea17bbf54e3b6631, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  surface: 2
 --- !u!1 &626461619 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 47bf270df5c5f5d498628118f388b4eb,
@@ -3800,7 +3814,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 633934962}
   m_LocalRotation: {x: 0.03061503, y: -0.051635448, z: -0.99610674, w: 0.06455872}
-  m_LocalPosition: {x: -2.7, y: -2.8, z: 8.8}
+  m_LocalPosition: {x: -2.7, y: -2.76, z: 8.8}
   m_LocalScale: {x: 1679.1504, y: 1240.5193, z: 2491.275}
   m_Children: []
   m_Father: {fileID: 1151857859}
@@ -10314,11 +10328,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
-        type: 3}
-      propertyPath: m_Name
-      value: DeathPlane
-      objectReference: {fileID: 0}
     - target: {fileID: 4037872479478507742, guid: 584309737b83dd34496c239b4a574f67,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10373,6 +10382,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
+        type: 3}
+      propertyPath: m_Name
+      value: DeathPlane
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 584309737b83dd34496c239b4a574f67, type: 3}
@@ -12566,11 +12580,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12625,6 +12634,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_Name
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 6145140127035620908, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
@@ -22416,11 +22430,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2682051114935348212, guid: c1ad9c75fb5753e4886d56e6b2740636,
-        type: 3}
-      propertyPath: m_Name
-      value: Spawn Point
-      objectReference: {fileID: 0}
     - target: {fileID: 2682051114935348213, guid: c1ad9c75fb5753e4886d56e6b2740636,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -22475,6 +22484,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682051114935348212, guid: c1ad9c75fb5753e4886d56e6b2740636,
+        type: 3}
+      propertyPath: m_Name
+      value: Spawn Point
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1ad9c75fb5753e4886d56e6b2740636, type: 3}
@@ -24356,11 +24370,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 550076407586660571, guid: 7821d63c43cf5954590d7f2d89f29fcf,
-        type: 3}
-      propertyPath: m_Name
-      value: UI
-      objectReference: {fileID: 0}
     - target: {fileID: 550076407586660575, guid: 7821d63c43cf5954590d7f2d89f29fcf,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -24465,6 +24474,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 550076407586660571, guid: 7821d63c43cf5954590d7f2d89f29fcf,
+        type: 3}
+      propertyPath: m_Name
+      value: UI
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7821d63c43cf5954590d7f2d89f29fcf, type: 3}
