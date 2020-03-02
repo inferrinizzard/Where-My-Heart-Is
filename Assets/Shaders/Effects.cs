@@ -9,7 +9,7 @@ public class Effects : MonoBehaviour
 
 	bool glowOn = false;
 	bool edgeOn = true;
-	bool bloomOn = true;
+	// bool bloomOn = true;
 	bool dissolveOn = false;
 
 	void Awake()

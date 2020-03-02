@@ -113,10 +113,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public void Init()
 	{
-        // heartWindow.SetActive(true);
-        // GetComponentInChildren<ApplyMask>().CreateMask();
-        // heartWindow.SetActive(false);
-        interactPrompt = GameObject.FindWithTag("InteractPrompt");
+		// heartWindow.SetActive(true);
+		// GetComponentInChildren<ApplyMask>().CreateMask();
+		// heartWindow.SetActive(false);
+		interactPrompt = GameObject.FindWithTag("InteractPrompt");
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
 		if (lastSpawn)
@@ -132,7 +132,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		looking = false;
 		window.world = World.Instance;
 		VFX.ToggleMask(false);
-        window.Invoke("CreateFoVMesh", 1);
+		window.Invoke("CreateFoVMesh", 1);
 	}
 
 	///	<summary> reset pos, rendundant </summary>
@@ -146,13 +146,14 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		// Subscribe input events to player behaviors
 		InputManager.OnJumpDown += Jump;
-		InputManager.OnCrouchDown += Crouch;
-		InputManager.OnCrouchUp += UnCrouch;
+		// InputManager.OnCrouchDown += Crouch;
+		// InputManager.OnCrouchUp += UnCrouch;
+		// InputManager.OnCrouchUp += EndState;
 		InputManager.OnPickUpDown += PickUp;
-		InputManager.OnRightClickHeld += Aiming;
-		InputManager.OnRightClickUp += StopAiming;
-		InputManager.OnAltAimKeyHeld += Aiming;
-		InputManager.OnAltAimKeyUp += StopAiming;
+		InputManager.OnRightClickDown += Aiming;
+		InputManager.OnRightClickUp += EndState;
+		InputManager.OnAltAimKeyDown += Aiming;
+		InputManager.OnAltAimKeyUp += EndState;
 		InputManager.OnLeftClickDown += Cut;
 	}
 
@@ -160,14 +161,21 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		// Unsubscribe input events to player behaviors
 		InputManager.OnJumpDown -= Jump;
-		InputManager.OnCrouchDown -= Crouch;
-		InputManager.OnCrouchUp -= UnCrouch;
+		// InputManager.OnCrouchDown -= Crouch;
+		// InputManager.OnCrouchUp -= UnCrouch;
+		// InputManager.OnCrouchUp -= EndState;
 		InputManager.OnPickUpDown -= PickUp;
-		InputManager.OnRightClickHeld -= Aiming;
-		InputManager.OnRightClickUp -= StopAiming;
-		InputManager.OnAltAimKeyHeld -= Aiming;
-		InputManager.OnAltAimKeyUp -= StopAiming;
+		InputManager.OnRightClickDown -= Aiming;
+		InputManager.OnRightClickUp -= EndState;
+		InputManager.OnAltAimKeyDown -= Aiming;
+		InputManager.OnAltAimKeyUp -= EndState;
 		InputManager.OnLeftClickDown -= Cut;
+	}
+
+	void EndState()
+	{
+		State.End();
+		State = null;
 	}
 
 	public void SetState(PlayerState state)
@@ -188,11 +196,35 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 		UpdateInteractPrompt();
 		StuckCrouching();
-		Die();
+		// Die();
 	}
 
 	/// <summary> Player sudoku function. </summary>
-	private void Die() { SetState(new Die(this)); }
+	// private void Die() => SetState(new Die(this));
+	private void Die()
+	{
+		if (!deathPlane)
+		{
+			Debug.LogWarning("Missing death plane!");
+			return;
+		}
+
+		if (transform.position.y < deathPlane.position.y)
+		{
+			if (lastSpawn)
+			{
+				// Set the position to the spawnpoint
+				transform.position = lastSpawn ? lastSpawn.position : Vector3.zero;
+				verticalVelocity = 0;
+
+				// Set the rotation to the spawnpoint
+				rotationX = lastSpawn.rotation.x;
+				rotationY = lastSpawn.rotation.y;
+			}
+			else
+				Debug.LogWarning("Missing spawn point!");
+		}
+	}
 
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
 	private void Move()
@@ -292,18 +324,6 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		aiming = true;
 	}
 
-	/// <summary> Player stoped aiming function. </summary>
-	private void StopAiming()
-	{
-		if (heartWindow.activeSelf)
-		{
-			heartWindow.SetActive(false);
-			VFX.ToggleMask(false);
-			audioController.CloseWindow();
-		}
-		aiming = false;
-	}
-
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
@@ -313,22 +333,25 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Interact prompt handling. </summary>
 	private void UpdateInteractPrompt()
 	{
-		// Raycast for what the player is looking at.
-		RaycastHit hit;
-
-		// Make sure it is in the right layer
-		int layerMask = 1 << 9;
-
-		if (interactPrompt != null)
+		if (!aiming)
 		{
-			// Raycast to see what the object's tag is. If it is a Pickupable object...
-			if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
+			// Raycast for what the player is looking at.
+			RaycastHit hit;
+
+			// Make sure it is in the right layer
+			int layerMask = 1 << 9;
+
+			if (interactPrompt != null)
 			{
-				interactPrompt.SetActive(true);
-			}
-			else
-			{
-				interactPrompt.SetActive(false);
+				// Raycast to see what the object's tag is. If it is a Pickupable object...
+				if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
+				{
+					interactPrompt.SetActive(true);
+				}
+				else
+				{
+					interactPrompt.SetActive(false);
+				}
 			}
 		}
 	}
