@@ -86,11 +86,8 @@ public class GameManager : Singleton<GameManager>, IResetable
 		while (inProgress)
 		{
 			float step = Time.time - start;
-			// instance.loadingScreen.SetActive(true);
-			// instance.loadingBar.normalizedValue = asyncLoad.progress / .9f;
-
 			float minProgress = Mathf.Min(asyncLoad.progress / .9f, step / time);
-			transitionMat.SetFloat(_CutoffID, minProgress * 2);
+			transitionMat.SetFloat(_CutoffID, minProgress * 2); // add curve here
 
 			if (asyncLoad.progress >= .9f && step > time)
 			{
@@ -102,8 +99,8 @@ public class GameManager : Singleton<GameManager>, IResetable
 
 				Effects.mask.transitionMat = null;
 
-				// instance.StartCoroutine(UnloadScene(name));
-				// instance.Init();
+				instance.StartCoroutine(UnloadScene(name));
+				instance.Init();
 			}
 			yield return null;
 		}

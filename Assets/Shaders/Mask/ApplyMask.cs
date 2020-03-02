@@ -18,14 +18,15 @@ public class ApplyMask : MonoBehaviour
 	///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
 	public RenderTexture mask;
 	public Texture2D m2d;
-	public Texture2D dissolveTexture, curSave;
+	[SerializeField] Texture2D dissolveTexture = default;
+	Texture2D curSave;
 
-	//shader prop ids
+	//shader prop ids with rename
 
 	void Start()
 	{
 		screenMat = new Material(merge);
-		// curSave = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+		curSave = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
 
 		// get ref to real world cam and assign generated RenderTexture
 		mainCam = GetComponent<Camera>();
@@ -106,10 +107,18 @@ public class ApplyMask : MonoBehaviour
 
 	public void AssignTransitionMat(Texture2D preview)
 	{
-		// curSave.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-		// curSave.Apply();
+		// StartCoroutine(GetScreen());
+		curSave.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+		curSave.Apply();
 		transitionMat = new Material(transition);
 		transitionMat.SetTexture("_BackgroundTex", preview);
 		transitionMat.SetTexture("_TransitionTex", dissolveTexture);
+	}
+
+	IEnumerator GetScreen()
+	{
+		yield return new WaitForEndOfFrame();
+		curSave.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+		curSave.Apply();
 	}
 }

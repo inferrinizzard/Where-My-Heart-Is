@@ -91,8 +91,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   merge: {fileID: 4800000, guid: c26889c33fef9234c9d79ce663593d15, type: 3}
+  transition: {fileID: 4800000, guid: 203e6b86e7f730c43b8f1ff3d99b9270, type: 3}
+  transitionMat: {fileID: 0}
   mask: {fileID: 8400000, guid: 8b4a804e851c7b3438d91bd3bda05033, type: 2}
   m2d: {fileID: 0}
+  dissolveTexture: {fileID: 2800000, guid: 27652fb6e8e6045458cfd167c5531c0b, type: 3}
+  curSave: {fileID: 0}
 --- !u!114 &3177498603613522797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,20 +291,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: limitTo
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: limitTo
-      value: -1
-      objectReference: {fileID: 0}
     - target: {fileID: 2182867183277312575, guid: 363b9a74c27aeba43ab8c35665f02ff7,
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: limitTo
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: limitTo
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 7884385905051823265, guid: 363b9a74c27aeba43ab8c35665f02ff7,
         type: 3}
