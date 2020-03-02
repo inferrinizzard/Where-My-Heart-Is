@@ -99,8 +99,8 @@ public class GameManager : Singleton<GameManager>, IResetable
 
 				Effects.mask.transitionMat = null;
 
-				instance.StartCoroutine(UnloadScene(name));
-				instance.Init();
+				// instance.StartCoroutine(UnloadScene(name));
+				// instance.Init();
 			}
 			yield return null;
 		}

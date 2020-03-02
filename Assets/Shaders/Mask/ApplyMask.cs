@@ -105,20 +105,14 @@ public class ApplyMask : MonoBehaviour
 		UnityEngine.RenderTexture.active = rt;
 	}
 
-	public void AssignTransitionMat(Texture2D preview)
+	public IEnumerator PreTransition(Texture2D preview, string scene)
 	{
-		// StartCoroutine(GetScreen());
+		yield return new WaitForEndOfFrame();
 		curSave.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
 		curSave.Apply();
 		transitionMat = new Material(transition);
 		transitionMat.SetTexture("_BackgroundTex", preview);
 		transitionMat.SetTexture("_TransitionTex", dissolveTexture);
-	}
-
-	IEnumerator GetScreen()
-	{
-		yield return new WaitForEndOfFrame();
-		curSave.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-		curSave.Apply();
+		GameManager.Instance.ChangeLevel(scene);
 	}
 }
