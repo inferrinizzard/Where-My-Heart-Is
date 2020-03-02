@@ -238,7 +238,12 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-		if (characterController.isGrounded)SetState(new Jump(this));
+		if (characterController.isGrounded)
+		{
+			var tempState = State;
+			SetState(new Jump(this));
+			State = tempState;
+		}
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>

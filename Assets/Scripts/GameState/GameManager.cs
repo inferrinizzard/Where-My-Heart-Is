@@ -12,11 +12,13 @@ public class GameManager : Singleton<GameManager>, IResetable
 	GameObject loadingScreen;
 	/// <summary> Slider for Loading Bar  </summary>
 	Slider loadingBar;
-	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "ComplexGate", "HalfCut 1", "Final" };
+	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "ComplexGate", "HalfCut 1", "AutumnFinal" };
 	public int sceneIndex = -1;
+	public ApplyOutline outlineManager;
 
 	void Start()
 	{
+		outlineManager = GetComponentInChildren<ApplyOutline>();
 		sceneIndex = levels.ToList().FindIndex(name => name == SceneManager.GetActiveScene().name);
 		// get Loading Screen UI ref
 		loadingScreen = transform.GetChild(0).GetChild(0).gameObject; // better find
@@ -24,6 +26,10 @@ public class GameManager : Singleton<GameManager>, IResetable
 		loadingBar = loadingScreen.GetComponentInChildren<Slider>();
 
 		World.Instance.name += $" [{SceneManager.GetActiveScene().name}]";
+
+		outlineManager.cam = Player.Instance.cam;
+		outlineManager.root = World.Instance.transform;
+
 		SceneManager.activeSceneChanged += instance.InitScene;
 	}
 
@@ -44,6 +50,8 @@ public class GameManager : Singleton<GameManager>, IResetable
 		World.Instance.Init();
 		World.Instance.name += $"[{levels[++sceneIndex]}]";
 		Player.Instance.Init();
+		outlineManager.cam = Player.Instance.cam;
+		outlineManager.root = World.Instance.transform;
 	}
 
 	/// <summary> Will delegate sub Reset calls </summary>

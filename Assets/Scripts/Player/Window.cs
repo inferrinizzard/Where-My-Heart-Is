@@ -10,7 +10,7 @@ using UnityEngine;
  * */
 public class Window : MonoBehaviour
 {
-	public World world;
+	[HideInInspector] public World world;
 	public new Camera camera;
 	public GameObject fieldOfViewSource;
 	public GameObject fieldOfView;
