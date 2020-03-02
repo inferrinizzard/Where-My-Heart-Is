@@ -6,17 +6,17 @@ using UnityEngine;
 public class Effects : MonoBehaviour
 {
 	/// <summary> reference to Mask controller </summary>
-	// public static ApplyMask mask;
+	public static ApplyMask mask;
 
 	bool glowOn = false;
 	bool edgeOn = true;
 	bool bloomOn = true;
 	bool dissolveOn = false;
 
-	// void Awake()
-	// {
-	// 	mask = GetComponent<ApplyMask>();
-	// }
+	void Awake()
+	{
+		mask = GetComponent<ApplyMask>();
+	}
 
 	void Start()
 	{

@@ -72,21 +72,36 @@ public class GameManager : Singleton<GameManager>, IResetable
 
 	/// <summary> Loads scene asynchronously, will transition when ready </summary>
 	/// <param name="scene"> Name of scene to load  </param>
-	static IEnumerator LoadScene(string name)
+	static IEnumerator LoadScene(string name, float time = 3)
 	{
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
 		asyncLoad.allowSceneActivation = false;
-		float start = Time.time;
-		while (!asyncLoad.isDone)
-		{
-			instance.loadingScreen.SetActive(true);
-			instance.loadingBar.normalizedValue = asyncLoad.progress / .9f;
 
-			if (asyncLoad.progress >= .9f && Time.time - start > 1)
+		float start = Time.time;
+		bool inProgress = true;
+
+		var transitionMat = Effects.mask.transitionMat;
+		int _CutoffID = Shader.PropertyToID("_Cutoff");
+
+		while (inProgress)
+		{
+			float step = Time.time - start;
+			// instance.loadingScreen.SetActive(true);
+			// instance.loadingBar.normalizedValue = asyncLoad.progress / .9f;
+
+			float minProgress = Mathf.Min(asyncLoad.progress / .9f, step / time);
+			transitionMat.SetFloat(_CutoffID, minProgress * 2);
+
+			if (asyncLoad.progress >= .9f && step > time)
 			{
+				inProgress = false;
+
 				instance.loadingScreen.SetActive(false);
 				instance.Reset();
 				asyncLoad.allowSceneActivation = true;
+
+				Effects.mask.transitionMat = null;
+
 				// instance.StartCoroutine(UnloadScene(name));
 				// instance.Init();
 			}
