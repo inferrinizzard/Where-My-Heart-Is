@@ -113,9 +113,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public void Init()
 	{
-		// heartWindow.SetActive(true);
-		// GetComponentInChildren<ApplyMask>().CreateMask();
-		// heartWindow.SetActive(false);
+        // heartWindow.SetActive(true);
+        // GetComponentInChildren<ApplyMask>().CreateMask();
+        // heartWindow.SetActive(false);
+        interactPrompt = GameObject.FindWithTag("InteractPrompt");
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
 		if (lastSpawn)
@@ -131,6 +132,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		looking = false;
 		window.world = World.Instance;
 		VFX.ToggleMask(false);
+        window.Invoke("CreateFoVMesh", 1);
 	}
 
 	///	<summary> reset pos, rendundant </summary>
