@@ -15,4 +15,11 @@ public class Crouch : PlayerState
 		player.audioController.CrouchDown();
 		player.crouching = true;
 	}
+
+	public override void End()
+	{
+		player.audioController.CrouchUp();
+		player.characterController.height = player.playerHeight; // Make the player stand.
+		player.crouching = false;
+	}
 }

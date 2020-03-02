@@ -53,6 +53,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public Window window;
 	[HideInInspector] public PlayerAudio audioController;
 
+	[Header("UI")]
+	/// <summary> Reference for interactPrompt UI object. </summary>
+	[SerializeField] public GameObject interactPrompt;
+
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
 	[SerializeField] float speed = 5f;
@@ -65,7 +69,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
 
-	public bool windowEnabled = false;
+	public bool windowEnabled = true;
 
 	// [Header("Camera Variables")]
 	/// <summary> Minimum angle the player can look upward. </summary>
@@ -76,13 +80,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public float rotationY = 0f;
 	/// <summary> Stores the X rotation of the player. </summary>
 	[HideInInspector] public float rotationX = 0f;
-
-	public override void Awake()
-	{
-		//Player other = FindObjectsOfType<Player>().ToList().Find(p => p != this);
-		//if(other != null) this.windowEnabled = other.windowEnabled;
-		base.Awake();
-	}
+	int _ViewDirID = Shader.PropertyToID("_ViewDir");
 
 	void Start()
 	{
@@ -108,9 +106,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public void Init()
 	{
-		// heartWindow.SetActive(true);
-		// GetComponentInChildren<ApplyMask>().CreateMask();
-		// heartWindow.SetActive(false);
+		interactPrompt = GameObject.FindWithTag("InteractPrompt");
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
 		if (lastSpawn)
@@ -126,6 +122,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		looking = false;
 		window.world = World.Instance;
 		VFX.ToggleMask(false);
+		window.Invoke("CreateFoVMesh", 1);
 	}
 
 	///	<summary> reset pos, rendundant </summary>
@@ -139,13 +136,14 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		// Subscribe input events to player behaviors
 		InputManager.OnJumpDown += Jump;
-		InputManager.OnCrouchDown += Crouch;
-		InputManager.OnCrouchUp += UnCrouch;
+		// InputManager.OnCrouchDown += Crouch;
+		// InputManager.OnCrouchUp += UnCrouch;
+		// InputManager.OnCrouchUp += EndState;
 		InputManager.OnPickUpDown += PickUp;
-		InputManager.OnRightClickHeld += Aiming;
-		InputManager.OnRightClickUp += StopAiming;
-		InputManager.OnAltAimKeyHeld += Aiming;
-		InputManager.OnAltAimKeyUp += StopAiming;
+		InputManager.OnRightClickDown += Aiming;
+		InputManager.OnRightClickUp += EndState;
+		InputManager.OnAltAimKeyDown += Aiming;
+		InputManager.OnAltAimKeyUp += EndState;
 		InputManager.OnLeftClickDown += Cut;
 	}
 
@@ -153,14 +151,21 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		// Unsubscribe input events to player behaviors
 		InputManager.OnJumpDown -= Jump;
-		InputManager.OnCrouchDown -= Crouch;
-		InputManager.OnCrouchUp -= UnCrouch;
+		// InputManager.OnCrouchDown -= Crouch;
+		// InputManager.OnCrouchUp -= UnCrouch;
+		// InputManager.OnCrouchUp -= EndState;
 		InputManager.OnPickUpDown -= PickUp;
-		InputManager.OnRightClickHeld -= Aiming;
-		InputManager.OnRightClickUp -= StopAiming;
-		InputManager.OnAltAimKeyHeld -= Aiming;
-		InputManager.OnAltAimKeyUp -= StopAiming;
+		InputManager.OnRightClickDown -= Aiming;
+		InputManager.OnRightClickUp -= EndState;
+		InputManager.OnAltAimKeyDown -= Aiming;
+		InputManager.OnAltAimKeyUp -= EndState;
 		InputManager.OnLeftClickDown -= Cut;
+	}
+
+	void EndState()
+	{
+		State.End();
+		State = null;
 	}
 
 	public void SetState(PlayerState state)
@@ -179,12 +184,37 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 			characterController.Move(moveDirection);
 		}
 
+		UpdateInteractPrompt();
 		StuckCrouching();
 		Die();
 	}
 
 	/// <summary> Player sudoku function. </summary>
-	private void Die() { SetState(new Die(this)); }
+	// private void Die() => SetState(new Die(this));
+	private void Die()
+	{
+		if (!deathPlane)
+		{
+			Debug.LogWarning("Missing death plane!");
+			return;
+		}
+
+		if (transform.position.y < deathPlane.position.y)
+		{
+			if (lastSpawn)
+			{
+				// Set the position to the spawnpoint
+				transform.position = lastSpawn ? lastSpawn.position : Vector3.zero;
+				verticalVelocity = 0;
+
+				// Set the rotation to the spawnpoint
+				rotationX = lastSpawn.rotation.x;
+				rotationY = lastSpawn.rotation.y;
+			}
+			else
+				Debug.LogWarning("Missing spawn point!");
+		}
+	}
 
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
 	private void Move()
@@ -208,7 +238,12 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-		if (characterController.isGrounded)SetState(new Jump(this));
+		if (characterController.isGrounded)
+		{
+			var tempState = State;
+			SetState(new Jump(this));
+			State = tempState;
+		}
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
@@ -227,6 +262,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		// Rotate the player camera along the x axis.
 		// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
 		cam.transform.localEulerAngles = new Vector3(-rotationX, 0, 0);
+
+		Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
 
 		// Allow the player to get out of the mouse lock.
 		if (Input.GetKey(KeyCode.Escape))
@@ -269,29 +306,23 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		if (!holding && !looking) { SetState(new PickUp(this)); }
 		else if (looking) { SetState(new Inspect(this)); } //unused for now
-		else if (holding) { SetState(new Drop(this)); }
+		else if (holding)
+		{
+			if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
+				StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
+			else
+				SetState(new Drop(this));
+		}
 	}
 
 	/// <summary> Player aiming function. </summary>
 	private void Aiming()
 	{
-		if (windowEnabled && !heartWindow.activeSelf && !holding)
+		if (windowEnabled && !holding)
 		{
 			SetState(new Aiming(this));
 		}
 		aiming = true;
-	}
-
-	/// <summary> Player stoped aiming function. </summary>
-	private void StopAiming()
-	{
-		if (heartWindow.activeSelf)
-		{
-			heartWindow.SetActive(false);
-			VFX.ToggleMask(false);
-			audioController.CloseWindow();
-		}
-		aiming = false;
 	}
 
 	/// <summary> The player cut function. </summary>
@@ -300,4 +331,29 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		if (aiming)SetState(new Cut(this));
 	}
 
+	/// <summary> Interact prompt handling. </summary>
+	private void UpdateInteractPrompt()
+	{
+		if (!aiming)
+		{
+			// Raycast for what the player is looking at.
+			RaycastHit hit;
+
+			// Make sure it is in the right layer
+			int layerMask = 1 << 9;
+
+			if (interactPrompt != null)
+			{
+				// Raycast to see what the object's tag is. If it is a Pickupable object...
+				if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
+				{
+					interactPrompt.SetActive(true);
+				}
+				else
+				{
+					interactPrompt.SetActive(false);
+				}
+			}
+		}
+	}
 }

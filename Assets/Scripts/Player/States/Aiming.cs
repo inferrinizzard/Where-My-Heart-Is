@@ -16,4 +16,12 @@ public class Aiming : PlayerState
 		player.VFX.ToggleMask(true);
 		player.audioController.OpenWindow();
 	}
+
+	public override void End()
+	{
+		player.heartWindow.SetActive(false);
+		player.VFX.ToggleMask(false);
+		player.audioController.CloseWindow();
+		player.aiming = false;
+	}
 }

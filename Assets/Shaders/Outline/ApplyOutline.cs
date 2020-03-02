@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[ExecuteInEditMode]
 public class ApplyOutline : MonoBehaviour
 {
 	public Camera cam;
@@ -18,7 +17,7 @@ public class ApplyOutline : MonoBehaviour
 
 	void Start()
 	{
-        //cam = Camera.main;
+		//cam = Camera.main;
 		glowObjects = root.GetComponentsInChildren<OutlineObject>();
 
 		glowBuffer = new CommandBuffer();

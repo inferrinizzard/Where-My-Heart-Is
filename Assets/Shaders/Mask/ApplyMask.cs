@@ -91,5 +91,4 @@ public class ApplyMask : MonoBehaviour
 		// GL.Clear(true, true, Color.clear);
 		UnityEngine.RenderTexture.active = rt;
 	}
-
 }

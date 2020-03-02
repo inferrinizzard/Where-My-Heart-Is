@@ -92,6 +92,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   merge: {fileID: 4800000, guid: c26889c33fef9234c9d79ce663593d15, type: 3}
   mask: {fileID: 8400000, guid: 8b4a804e851c7b3438d91bd3bda05033, type: 2}
+  m2d: {fileID: 0}
 --- !u!114 &3177498603613522797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,7 +115,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3177498604957221191}
   - component: {fileID: 3177498604957221194}
-  - component: {fileID: 3177498604957221193}
   - component: {fileID: 3177498604957221192}
   m_Layer: 8
   m_Name: Real Camera
@@ -180,19 +180,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!114 &3177498604957221193
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3177498604957221190}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c085a0d869b6bc741806961e62f42325, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMat: {fileID: 2100000, guid: 6abbd9c41a583574fb0833007c877c88, type: 2}
 --- !u!45 &3177498604957221192
 Skybox:
   m_ObjectHideFlags: 0

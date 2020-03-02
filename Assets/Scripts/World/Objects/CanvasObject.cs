@@ -5,7 +5,7 @@ using UnityEngine;
 public class CanvasObject : CollectableObject
 {
 	public Texture2D preview;
-	[SerializeField] string manualTarget = "Bridge";
+	[SerializeField] string manualTarget = "";
 
 	public override void Interact()
 	{

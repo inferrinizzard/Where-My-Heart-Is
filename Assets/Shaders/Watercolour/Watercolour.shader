@@ -16,6 +16,8 @@
 		_BlotchSub ("Blotch Subtract", Range(0,8)) = 2
 
 		[PowerSlider(8)] _FresnelExponent ("Fresnel Exponent", Range(0, 4)) = 1
+
+		_Dissolve ("Dissolve", int) = 0
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" "LightMode"="ForwardBase"}
@@ -27,7 +29,9 @@
 		// #pragma surface surf Standard fullforwardshadows vertex:vert
 		#pragma surface surf Standard fullforwardshadows
 		#pragma target 3.5
-		#pragma debug
+		// #pragma debug
+
+		#pragma multi_compile_local __ DISSOLVE DISSOLVE_MANUAL
 
 		sampler2D _BlotchTex;
 		sampler2D _DetailTex;
@@ -43,12 +47,17 @@
 		fixed4 _InkCol;
 		half _FresnelExponent;
 
+		int _Dissolve;
+		float3 _ViewDir;
+		float _ManualDissolve;
+
 		struct Input {
 			float2 uv_BlotchTex;
 			float2 uv_DetailTex;
 			float2 uv_PaperTex;
 			float2 uv_RampTex;
 			float3 worldNormal;
+			float3 worldPos;
 			float3 viewDir;
 			// float3 lightDir;
 			// float lightAtten;
@@ -58,8 +67,8 @@
 		// put more per-instance properties here
 		UNITY_INSTANCING_BUFFER_END(Props)
 
-		// void vert (inout appdata_base v, out Input o) {
-			// 	UNITY_INITIALIZE_OUTPUT(Input, o);
+		void vert (inout appdata_base v, out Input o) {
+			UNITY_INITIALIZE_OUTPUT(Input, o);
 			// 	float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
 			// 	float3 lightDir = float3(0, 0, 0);
@@ -85,7 +94,7 @@
 			// 	// float attenUV = distance(lightPos, worldPos) / range;
 			// 	// float atten = saturate(1.0 / (1.0 + 25.0 * attenUV*attenUV) * saturate((1 - attenUV) * 5.0));
 			// 	// float atten = tex2D(_LightTextureB0, (attenUV * attenUV).xx).UNITY_ATTEN_CHANNEL;
-		// }
+		}
 
 		fixed4 screen (fixed4 colA, fixed4 colB) {
 			fixed4 white = fixed4(1, 1, 1, 1);
@@ -98,6 +107,17 @@
 		}
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
+			#if DISSOLVE
+				if(_Dissolve == 1) {
+					float camDist = distance(IN.worldPos, _WorldSpaceCameraPos + float3(_ViewDir.x, max(0, _ViewDir.y), _ViewDir.z));
+					float isVisible = tex2D(_DetailTex, IN.uv_DetailTex).r * 0.999 - exp(-camDist);
+					clip(isVisible);
+				}
+			#elif DISSOLVE_MANUAL
+				float isVisible = tex2D(_DetailTex, IN.uv_DetailTex).r * 0.999 - _ManualDissolve;
+				clip(isVisible);
+			#endif
+
 			fixed c = tex2D (_BlotchTex, IN.uv_BlotchTex).r;
 			c *= _BlotchMulti;
 			c -= _BlotchSub;			

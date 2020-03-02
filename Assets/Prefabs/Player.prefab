@@ -15,9 +15,10 @@ GameObject:
   - component: {fileID: 5407968008035840464}
   - component: {fileID: 4516441798131658318}
   - component: {fileID: 5407968008035840466}
+  - component: {fileID: 3117186014438385119}
   m_Layer: 9
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -120,11 +121,12 @@ MonoBehaviour:
   deathPlane: {fileID: 0}
   window: {fileID: 0}
   audioController: {fileID: 0}
+  interactPrompt: {fileID: 0}
   speed: 4
   gravity: 20
   jumpForce: 6
   mouseSensitivity: 2
-  playerReach: 10
+  playerReach: 3
   windowEnabled: 1
   rotationY: 0
   rotationX: 0
@@ -156,11 +158,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf3f6b277a54e2441a5459f9d82b2df8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  landingDistanceThreshold: 1.9
+  landingDistanceThreshold: 1
   JumpLiftoffEvent: event:/Player Movement/Jump - Liftoff
   JumpLandingEvent: event:/Player Movement/Jump - Landing
   WalkEvent: event:/Player Movement/Walking/Walking - V2
   WindowEvent: event:/Ambient/Window
+--- !u!114 &3117186014438385119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5407968008035840471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ListenerNumber: -1
 --- !u!1001 &7427641284244191036
 PrefabInstance:
   m_ObjectHideFlags: 0

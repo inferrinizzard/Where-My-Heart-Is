@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary> Handles the behavior of an object that can be picked up. </summary>
 public class Pickupable : InteractableObject
 {
-	protected Transform oldParent;
+	[HideInInspector] public Transform oldParent;
 
 	protected Vector3 initialPosition;
 	protected Quaternion initialRotation;
@@ -15,7 +15,7 @@ public class Pickupable : InteractableObject
 		if (active)
 		{
 			// If the object is being inspected, run Looking.
-			if (player.looking) Looking();
+			if (player.looking)Looking();
 		}
 	}
 

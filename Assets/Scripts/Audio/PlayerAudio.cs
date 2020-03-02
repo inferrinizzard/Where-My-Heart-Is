@@ -57,7 +57,7 @@ public class PlayerAudio : MonoBehaviour
             }
         }
         RaycastHit hit;
-        if(Physics.Raycast(transform.position, Vector3.down, out hit))
+        if(Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, 1 << 9))
         {
             WalkingSurface surface = hit.transform.gameObject.GetComponent<WalkingSurface>();
             if (surface != null)
@@ -71,6 +71,12 @@ public class PlayerAudio : MonoBehaviour
                 walkInstance.setParameterByName("Surface", (float) WalkingSurface.Surface.Stone);
             }
         }
+    }
+
+    public void SetWindowWorld(float worldIndex)
+    {
+        windowInstance.setParameterByName("Heart World Type", worldIndex);
+
     }
 
     public void OpenWindow()
