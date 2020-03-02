@@ -4,50 +4,40 @@ using UnityEngine;
 
 public class Gate : MonoBehaviour
 {
-    public float rotationAngle;
-    public float rotationTime;
-    public Transform leftDoor;
-    public Transform rightDoor;
-    public GameObject keyHole;
+	[SerializeField] float rotationAngle = 50;
+	[SerializeField] float rotationTime = 1;
+	[SerializeField] Transform leftDoor = default;
+	[SerializeField] Transform rightDoor = default;
+	public Transform keyHole;
 
-    private bool open;
-    private bool opening;
-    private float rotationDelta;
+	private bool open = false;
 
-    private void Start()
-    {
-        open = false;
-    }
+	public void Open()
+	{
+		if (!open)
+		{
+			open = true;
+			StartCoroutine(OpenGate(rotationAngle, rotationTime));
+		}
+	}
 
-    private void Update()
-    {
-        /*if(Input.GetKeyDown(KeyCode.Space))
-        {
-            Open();
-        }*/
-        if(opening)
-        {
-            Debug.Log("opening");
-            leftDoor.Rotate(Vector3.up, rotationDelta * Time.deltaTime);
-            rightDoor.Rotate(Vector3.up, -rotationDelta * Time.deltaTime);
-        }
-    }
+	IEnumerator OpenGate(float angle, float time)
+	{
+		float start = Time.time;
+		bool inProgress = true;
 
-    private void DoneOpening()
-    {
-        Debug.Log("end");
+		var leftStart = leftDoor.eulerAngles;
+		var rightStart = rightDoor.eulerAngles;
 
-        opening = false;
-    }
+		while (inProgress)
+		{
+			yield return null;
+			float step = Time.time - start;
+			leftDoor.eulerAngles = leftStart + Vector3.up * (angle * step / time);
+			rightDoor.eulerAngles = rightStart + Vector3.up * (-angle * step / time);
 
-    public void Open()
-    {
-        if (open) return;
-        open = true;
-        opening = true;
-        Debug.Log("start");
-        rotationDelta = rotationAngle / rotationTime;
-
-        Invoke("DoneOpening", rotationTime);
-    }
+			if (step > time)
+				inProgress = false;
+		}
+	}
 }

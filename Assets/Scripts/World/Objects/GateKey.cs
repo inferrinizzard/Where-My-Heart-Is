@@ -22,5 +22,5 @@ public class GateKey : Pickupable
 		base.Interact();
 	}
 
-	public bool GateCheck() => Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold;
+	public bool GateCheck() => Vector3.Distance(transform.position, gate.keyHole.position) < distanceThreshold;
 }
