@@ -283,7 +283,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Player aiming function. </summary>
 	private void Aiming()
 	{
-		if (windowEnabled && !heartWindow.activeSelf && !holding)
+		if (windowEnabled && !holding)
 		{
 			SetState(new Aiming(this));
 		}
