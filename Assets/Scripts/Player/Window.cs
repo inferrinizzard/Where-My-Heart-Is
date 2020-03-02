@@ -64,8 +64,6 @@ public class Window : MonoBehaviour
 		return false;
 	}
 
-    bool foo = false;
-
 	public void CreateFoVMesh()
 	{
 		Bounds sceneBound = GetSceneBounds();
