@@ -10,6 +10,7 @@ public class Effects : MonoBehaviour
 	bool glowOn = false;
 	bool edgeOn = true;
 	bool bloomOn = true;
+	bool dissolveOn = false;
 
 	void Awake()
 	{
@@ -20,55 +21,44 @@ public class Effects : MonoBehaviour
 	{
 		ToggleGlowOutline(glowOn);
 		ToggleEdgeOutline(edgeOn);
+		ToggleDissolve(dissolveOn);
 	}
 
 	void Update()
 	{ // debug toggles
-		if (Input.GetKeyDown(KeyCode.Alpha1))
-			ToggleGlowOutline(glowOn = !glowOn);
-		if (Input.GetKeyDown(KeyCode.Alpha2))
-			ToggleEdgeOutline(edgeOn = !edgeOn);
-		if (Input.GetKeyDown(KeyCode.Alpha3))
-			ToggleBloom(bloomOn = !bloomOn);
+		// if (Input.GetKeyDown(KeyCode.Alpha1))
+		// 	ToggleGlowOutline(glowOn = !glowOn);
+		// if (Input.GetKeyDown(KeyCode.Alpha2))
+		// 	ToggleEdgeOutline(edgeOn = !edgeOn);
+		// if (Input.GetKeyDown(KeyCode.Alpha3))
+		// 	ToggleBloom(bloomOn = !bloomOn);
+		// if (Input.GetKeyDown(KeyCode.Alpha4))
+		// 	ToggleDissolve(dissolveOn = !dissolveOn);
 	}
 
 	/// <summary> toggles mask on and off </summary>
 	/// <param name="on"> Is mask on? </summary>
 	// public void ToggleMask(bool on) => mask.enabled = on;
-	public void ToggleMask(bool on)
-	{
-		if (on)
-			Shader.EnableKeyword("MASK");
-		else
-			Shader.DisableKeyword("MASK");
-	}
+	public void ToggleMask(bool on) => ToggleEffect(on, "MASK");
 
 	/// <summary> toggles glow outline on and off </summary>
 	/// <param name="on"> Is glow outline on? </summary>
-	public void ToggleGlowOutline(bool on)
-	{
-		if (on)
-			Shader.EnableKeyword("OUTLINE_GLOW");
-		else
-			Shader.DisableKeyword("OUTLINE_GLOW");
-	}
+	public void ToggleGlowOutline(bool on) => ToggleEffect(on, "OUTLINE_GLOW");
 
 	/// <summary> toggles edge outline on and off </summary>
 	/// <param name="on"> Is edge outline on? </summary>
-	public void ToggleEdgeOutline(bool on)
-	{
-		if (on)
-			Shader.EnableKeyword("OUTLINE_EDGE");
-		else
-			Shader.DisableKeyword("OUTLINE_EDGE");
-	}
+	public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE_EDGE");
 
-	public void ToggleBloom(bool on)
+	public void ToggleBloom(bool on) => ToggleEffect(on, "BLOOM");
+
+	public void ToggleDissolve(bool on) => ToggleEffect(on, "DISSOLVE");
+
+	void ToggleEffect(bool on, string keyword)
 	{
 		if (on)
-			Shader.EnableKeyword("BLOOM");
+			Shader.EnableKeyword(keyword);
 		else
-			Shader.DisableKeyword("BLOOM");
+			Shader.DisableKeyword(keyword);
 	}
 
 }

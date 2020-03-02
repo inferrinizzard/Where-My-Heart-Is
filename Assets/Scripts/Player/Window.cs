@@ -66,7 +66,6 @@ public class Window : MonoBehaviour
 
 	private void CreateFoVMesh()
 	{
-		Debug.Log("here");
 		Bounds sceneBound = GetSceneBounds();
 
 		float distance = sceneBound.extents.magnitude * 2;

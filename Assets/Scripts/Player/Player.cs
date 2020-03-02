@@ -286,7 +286,6 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		if (windowEnabled && !heartWindow.activeSelf && !holding)
 		{
 			SetState(new Aiming(this));
-			print(cam.transform.forward.normalized);
 		}
 		aiming = true;
 	}
@@ -318,14 +317,17 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		// Make sure it is in the right layer
 		int layerMask = 1 << 9;
 
-		// Raycast to see what the object's tag is. If it is a Pickupable object...
-		if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
+		if (interactPrompt != null)
 		{
-			interactPrompt.SetActive(true);
-		}
-		else
-		{
-			interactPrompt.SetActive(false);
+			// Raycast to see what the object's tag is. If it is a Pickupable object...
+			if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
+			{
+				interactPrompt.SetActive(true);
+			}
+			else
+			{
+				interactPrompt.SetActive(false);
+			}
 		}
 	}
 }
