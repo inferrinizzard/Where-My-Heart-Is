@@ -29,6 +29,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public float playerHeight;
 	/// <summary> Whether the player can move or not. </summary>
 	[HideInInspector] public bool playerCanMove = true;
+	[HideInInspector] public bool playerCanRotate = true;
 	/// <summary> Whether the player is jumping or not. </summary>
 	[HideInInspector] public bool jumping = false;
 	/// <summary> Whether the player is crouching or not. </summary>
@@ -75,7 +76,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public bool windowEnabled = true;
 
-	public bool active;
+	public bool sceneActive;
 
 	public GameObject fadeInObject;
 	public float fadeInLength;
@@ -98,7 +99,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	void Start()
 	{
-		active = true;
+		sceneActive = true;
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
 		VFX = cam.GetComponent<Effects>();
@@ -149,7 +150,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public void BeginSceneTransition()
 	{
-		active = false;
+		sceneActive = false;
 		fadeInObject.SetActive(true);
 		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
 	}
@@ -176,13 +177,14 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		{
 			dialogueSystem.TextComplete -= EndSceneTransitionHelper;
 		}
-		Player.Instance.active = true;
+		Player.Instance.sceneActive = true;
 		BeginFadeIn();
 	}
 
 	private void BeginFadeIn()
 	{
 		playFade = true;
+		playerCanRotate = false;
 		fadeInObject.SetActive(true);
 		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
 		CancelInvoke("EndFadeIn");
@@ -193,6 +195,9 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		playFade = false;
 		fadeInObject.SetActive(false);
+		playerCanRotate = true;
+		if (Raycast() == null)
+			interactPrompt.SetActive(false);
 	}
 
 	///	<summary> reset pos, rendundant </summary>
@@ -256,7 +261,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	void FixedUpdate()
 	{
-		if (active)
+		if (sceneActive)
 		{
 			if (playerCanMove)
 			{
@@ -333,27 +338,29 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
 	private void Rotate()
 	{
-		// Get the rotation from the Mouse X and Mouse Y Axes and scale them by mouseSensitivity.
-		rotationY += Input.GetAxis("Mouse X") * mouseSensitivity;
-		rotationX += Input.GetAxis("Mouse Y") * mouseSensitivity;
+		if (playerCanRotate)
+		{ // Get the rotation from the Mouse X and Mouse Y Axes and scale them by mouseSensitivity.
+			rotationY += Input.GetAxis("Mouse X") * mouseSensitivity;
+			rotationX += Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-		// Limit the rotation along the x axis.
-		rotationX = Mathf.Clamp(rotationX, minX, maxX);
+			// Limit the rotation along the x axis.
+			rotationX = Mathf.Clamp(rotationX, minX, maxX);
 
-		// Rotate the player along the y axis.
-		transform.localEulerAngles = new Vector3(0, rotationY, 0);
+			// Rotate the player along the y axis.
+			transform.localEulerAngles = new Vector3(0, rotationY, 0);
 
-		// Rotate the player camera along the x axis.
-		// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
-		cam.transform.localEulerAngles = new Vector3(-rotationX, 0, 0);
+			// Rotate the player camera along the x axis.
+			// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
+			cam.transform.localEulerAngles = new Vector3(-rotationX, 0, 0);
 
-		Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
+			Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
 
-		// Allow the player to get out of the mouse lock.
-		if (Input.GetKey(KeyCode.Escape))
-		{
-			Cursor.lockState = CursorLockMode.None;
-			Cursor.visible = true;
+			// Allow the player to get out of the mouse lock.
+			if (Input.GetKey(KeyCode.Escape))
+			{
+				Cursor.lockState = CursorLockMode.None;
+				Cursor.visible = true;
+			}
 		}
 	}
 
@@ -405,11 +412,11 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Player aiming function. </summary>
 	private void Aiming()
 	{
-		if (windowEnabled && !holding)
+		aiming = true;
+		if (windowEnabled && !holding && sceneActive)
 		{
 			StartCoroutine(WaitAndAim(heartAnimDuration));
 		}
-		aiming = true;
 	}
 
 	/// <summary> The player cut function. </summary>
@@ -424,30 +431,25 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		if (!aiming && interactPrompt)
 		{
 			// Raycast for what the player is looking at.
-			RaycastHit hit;
-
-			// Make sure it is in the right layer
-			int layerMask = 1 << 9;
-
-			// Raycast to see what the object's tag is. If it is a Pickupable object...
+			Transform hit = Raycast();
 
 			if (heldObject is Placeable && (heldObject as Placeable).PlaceConditionsMet())
 			{
 				interactPrompt.GetComponent<Text>().text = "Press E to Place Canvas";
 				interactPrompt.SetActive(true);
 			}
-			else if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() || !pickedUpFirst)
+			else if (hit != null && hit.GetComponent<InteractableObject>() || !pickedUpFirst)
 			{
 				if (!holding && playerCanMove)
 				{
-					if (hit.transform != null && (bool)hit.transform.GetComponent<BirbAnimTester>())
+					if (hit != null && (bool)hit.GetComponent<BirbAnimTester>())
 						interactPrompt.GetComponent<Text>().text = "Press E to Interact with Bird";
-					else if (hit.transform != null && (bool)hit.transform.GetComponent<CanvasObject>())
+					else if (hit != null && (bool)hit.GetComponent<CanvasObject>())
 						interactPrompt.GetComponent<Text>().text = "Press E to Enter Canvas";
 					else
 						interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
 					interactPrompt.SetActive(true);
-					if (hit.transform != null && hit.transform.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
+					if (hit != null && hit.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
 					{
 						interactPrompt.SetActive(false);
 						return;
@@ -478,6 +480,11 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		bool inProgress = true;
 		while (inProgress)
 		{
+			if (!aiming)
+			{
+				StartCoroutine(Repos(.5f));
+				yield break;
+			}
 			yield return null;
 			float step = Time.time - start;
 			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / time);
@@ -502,11 +509,19 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		{
 			yield return null;
 			float step = Time.time - start;
-			anim.transform.localPosition = Vector3.Lerp(startPos, heartStartPos, step / time);
-			anim.transform.localEulerAngles = Vector3.Lerp(startEulers, heartStartEulers, step / time);
+			anim.transform.localPosition = Vector3.Lerp(heartStartPos, startPos, 1 - step / time);
+			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, startEulers, 1 - step / time);
 
 			if (step > time)
 				inProgress = false;
 		}
+	}
+
+	Transform Raycast()
+	{
+		RaycastHit hit;
+		if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, 1 << 9))
+			return hit.transform;
+		return null;
 	}
 }
