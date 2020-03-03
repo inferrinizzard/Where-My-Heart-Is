@@ -61,7 +61,7 @@ public class BirbAnimTester : MonoBehaviour
     {/*
         Debug.Log(currCurve);
         Debug.Log(curves[currCurve].DistanceRatio);*/
-        if(currCurve < curves.Length)
+        if(currCurve < curves.Length && currCurve != -1)
         {
             if (curves[currCurve].DistanceRatio > 0)
             {
