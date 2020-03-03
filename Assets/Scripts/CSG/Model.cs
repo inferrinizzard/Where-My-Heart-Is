@@ -30,7 +30,16 @@ namespace CSG
         /// <param name="mesh">The Mesh to parse</param>
         public Model(Mesh mesh)
         {
-            vertices = mesh.vertices.Select((vertex, index) => new Vertex(index, vertex, mesh.uv[index])).ToList();
+            vertices = new List<Vertex>();
+            if(mesh.vertices.Length == mesh.uv.Length)
+            {
+                vertices = mesh.vertices.Select((vertex, index) => new Vertex(index, vertex, mesh.uv[index])).ToList();
+            }
+            else
+            {
+                vertices = mesh.vertices.Select((vertex, index) => new Vertex(index, vertex, new Vector2(0, 0))).ToList();
+            }
+
             List<Vertex> uniqueVertices = new List<Vertex>();
             foreach (Vertex vertex in vertices)
             {

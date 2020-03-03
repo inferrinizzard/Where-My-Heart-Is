@@ -33,7 +33,7 @@ public class DialogueSystem : MonoBehaviour
 
     private void Start()
 	{
-		ParseText();
+		//ParseText();
 	}
 
 	void Update()

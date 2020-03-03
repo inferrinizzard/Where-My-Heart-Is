@@ -81,6 +81,7 @@ public class Window : MonoBehaviour
 				toIgnore.Add(vertex);
 			}
 		});
+       
 
 		model.ConvertToWorld(fieldOfView.transform);
 
@@ -113,13 +114,15 @@ public class Window : MonoBehaviour
 	{
 		ClipableObject[] clipables = FindObjectsOfType<ClipableObject>();
 
+        Debug.Log(clipables.Length);
 		Bounds bound = clipables[0].GetComponent<MeshCollider>().bounds;
 
 		for (int i = 1; i < clipables.Length; i++)
 		{
 			bound.Encapsulate(clipables[i].GetComponent<MeshCollider>().bounds);
 		}
+        Debug.Log(clipables.Length);
 
-		return bound;
+        return bound;
 	}
 }
