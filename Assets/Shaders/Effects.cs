@@ -1,4 +1,4 @@
-﻿#define DEBUG
+﻿// #define DEBUG
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +12,7 @@ public class Effects : MonoBehaviour
 
 	void Start()
 	{
+		ToggleMask(false);
 		ToggleGlowOutline(glowOn);
 		ToggleEdgeOutline(edgeOn);
 		ToggleDissolve(dissolveOn);
@@ -59,8 +60,8 @@ public class Effects : MonoBehaviour
 	public static IEnumerator DissolveOnDrop(GateKey obj, float time = .25f)
 	{
 		obj.transform.parent = obj.oldParent;
-        Player.Instance.holding = false;
-        obj.GetComponent<Collider>().enabled = false;
+		Player.Instance.holding = false;
+		obj.GetComponent<Collider>().enabled = false;
 		Material mat = obj.GetComponent<MeshRenderer>().material;
 		mat.EnableKeyword("DISSOLVE_MANUAL");
 		int ManualDissolveID = Shader.PropertyToID("_ManualDissolve");
@@ -79,9 +80,9 @@ public class Effects : MonoBehaviour
 		mat.DisableKeyword("DISSOLVE_MANUAL");
 		mat.SetFloat(ManualDissolveID, 1);
 
-        Player.Instance.holding = true;
-        obj.Interact();
-        obj.GetComponent<Collider>().enabled = true;
-        obj.active = false;
+		Player.Instance.holding = true;
+		obj.Interact();
+		obj.GetComponent<Collider>().enabled = true;
+		obj.active = false;
 	}
 }

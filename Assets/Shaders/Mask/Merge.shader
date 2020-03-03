@@ -23,10 +23,10 @@ Shader "Mask/Merge"
 			#pragma vertex vert_img
 			#pragma fragment frag
 
-			#pragma shader_feature MASK
-			#pragma shader_feature OUTLINE_GLOW
-			#pragma shader_feature OUTLINE_EDGE
-			#pragma shader_feature BLOOM
+			#pragma multi_compile __ MASK
+			#pragma multi_compile __ OUTLINE_GLOW
+			#pragma multi_compile __ OUTLINE_EDGE
+			#pragma multi_compile __ BLOOM
 
 			#include "UnityCG.cginc"
 			#include "../GaussianBlur.cginc"
