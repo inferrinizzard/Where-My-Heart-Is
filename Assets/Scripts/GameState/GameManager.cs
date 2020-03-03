@@ -20,8 +20,8 @@ public class GameManager : Singleton<GameManager>, IResetable
 
 		World.Instance.name += $" [{SceneManager.GetActiveScene().name}]";
 
-		outlineManager.cam = Player.Instance.cam;
-		outlineManager.root = World.Instance.transform;
+		//outlineManager.cam = Player.Instance.cam;
+		//outlineManager.root = World.Instance.transform;
 
 		SceneManager.sceneLoaded += instance.InitScene;
 	}
