@@ -45,12 +45,13 @@ public class GameManager : Singleton<GameManager>, IResetable
         Debug.Log(sceneIndex);
         World.Instance.name += $"[{levels[sceneIndex]}]";
 		Player.Instance.Init();
-		outlineManager.cam = Player.Instance.cam;
-		outlineManager.root = World.Instance.transform;
-	}
 
-	/// <summary> Will delegate sub Reset calls </summary>
-	public void Reset()
+        //outlineManager.cam = Player.Instance.cam;
+        //outlineManager.root = World.Instance.transform;
+    }
+
+    /// <summary> Will delegate sub Reset calls </summary>
+    public void Reset()
 	{
         //SceneManager.activeSceneChanged -= instance.InitScene;
         World.Instance.Reset();
@@ -70,7 +71,10 @@ public class GameManager : Singleton<GameManager>, IResetable
 	/// <param name="scene"> Name of scene to load  </param>
 	static IEnumerator LoadScene(string name, float time = 3)
 	{
-		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
+        Player.Instance.active = false;
+
+
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
 		instance.duringLoad = true;
 		asyncLoad.allowSceneActivation = false;
 
@@ -101,11 +105,13 @@ public class GameManager : Singleton<GameManager>, IResetable
 			}
 			yield return null;
 		}
-	}
+        Player.Instance.active = true;
 
-	/// <summary> Unloads scene asynchronously </summary>
-	/// <param name="scene"> Name of scene to unload  </param>
-	static IEnumerator UnloadScene(string name)
+    }
+
+    /// <summary> Unloads scene asynchronously </summary>
+    /// <param name="scene"> Name of scene to unload  </param>
+    static IEnumerator UnloadScene(string name)
 	{
 		AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(name);
 		while (!asyncUnload.isDone)

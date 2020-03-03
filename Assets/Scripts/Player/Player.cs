@@ -74,6 +74,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public bool windowEnabled = true;
 
+    public bool active;
+
 	// [Header("Camera Variables")]
 	/// <summary> Minimum angle the player can look upward. </summary>
 	private float minX = -90f;
@@ -87,6 +89,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	void Start()
 	{
+        active = true;
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
 		VFX = cam.GetComponent<Effects>();
@@ -112,12 +115,16 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		interactPrompt = GameObject.FindWithTag("InteractPrompt");
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
+        Debug.Log(deathPlane);
+        Debug.Log(deathPlane.transform.position);
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
+        Debug.Log(lastSpawn.transform.position);
 		if (lastSpawn)
 		{
 			transform.position = lastSpawn.position;
 			rotationX = lastSpawn.eulerAngles.x;
 			rotationY = lastSpawn.eulerAngles.y;
+            Debug.Log(transform.position);
 			//transform.rotation = lastSpawn.rotation;
 			//cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
 		}
@@ -181,17 +188,20 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	void FixedUpdate()
 	{
-		if (playerCanMove)
-		{
-			Move();
-			ApplyGravity();
-			Rotate();
-			characterController.Move(moveDirection);
-		}
+        if(active)
+        {
+            if (playerCanMove)
+            {
+                Move();
+                ApplyGravity();
+                Rotate();
+                characterController.Move(moveDirection);
+            }
 
-		UpdateInteractPrompt();
-		StuckCrouching();
-		Die();
+            UpdateInteractPrompt();
+            StuckCrouching();
+            Die();
+        }
 	}
 
 	/// <summary> Player sudoku function. </summary>
@@ -210,6 +220,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 			{
 				// Set the position to the spawnpoint
 				transform.position = lastSpawn ? lastSpawn.position : Vector3.zero;
+                Debug.Log(Vector3.zero);
 				verticalVelocity = 0;
 
 				// Set the rotation to the spawnpoint

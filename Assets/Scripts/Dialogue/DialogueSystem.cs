@@ -70,8 +70,9 @@ public class DialogueSystem : MonoBehaviour
 
     public IEnumerator WriteDialogue(string text)
     {
-        textQueue = new string[1];
-        textQueue[0] = text;
+        /*textQueue = new string[1];
+        textQueue[0] = text;*/
+        textQueue = text.Split('/');
         activeLineCount = 0;
         charCount = 0;
         if (!typing && activeLineCount < textQueue.Length)
@@ -96,7 +97,9 @@ public class DialogueSystem : MonoBehaviour
 			typing = false;
 			charCount = 0;
 			activeLineCount++;
-			StartCoroutine(WriteDialogue(1));
+            float delay = (1f / 30f) * textQueue[activeLineCount - 1].Length;
+            delay = Mathf.Clamp(delay, 0.5f, 1f);
+			StartCoroutine(WriteDialogue(delay));
 		}
 	}
 

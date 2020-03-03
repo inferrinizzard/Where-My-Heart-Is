@@ -65,7 +65,6 @@ public class BirbAnimTester : MonoBehaviour
         {
             if (curves[currCurve].DistanceRatio > 0)
             {
-                Debug.Log("called!");
             }
             if (curves[currCurve].DistanceRatio > 0.99f)
             {

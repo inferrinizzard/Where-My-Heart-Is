@@ -12,7 +12,13 @@ public abstract class InteractableObject : MonoBehaviour
     public string flavorText;
     public DialogueSystem dialogue;
 
-	public abstract void Interact();
+	public virtual void Interact()
+    {
+        if (hasFlavorText)
+        {
+            StartCoroutine(dialogue.WriteDialogue(flavorText));
+        }
+    }
 
 	protected virtual void Start()
 	{

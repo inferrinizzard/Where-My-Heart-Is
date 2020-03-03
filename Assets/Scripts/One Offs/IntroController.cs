@@ -8,6 +8,8 @@ public class IntroController : MonoBehaviour
     public PlayerTrigger trigger;
     public BirbAnimTester birdAnim;
     public CanvasObject canvas;
+
+    private bool initialized = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -39,6 +41,10 @@ public class IntroController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (!initialized)
+        {
+            AudioMaster.Instance.SetAmbientVariable("Play Song", 0);
+        }
+
     }
 }
