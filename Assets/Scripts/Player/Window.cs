@@ -69,7 +69,6 @@ public class Window : MonoBehaviour
 		Bounds sceneBound = GetSceneBounds();
 
 		float distance = sceneBound.extents.magnitude * 2;
-		Debug.Log(distance);
 
 		Mesh sourceMesh = fieldOfViewSource.GetComponent<MeshFilter>().mesh;
 

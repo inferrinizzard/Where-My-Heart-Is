@@ -11,13 +11,21 @@ public class Placeable : Pickupable
     {
         base.Interact();
 
-        if(Vector3.Distance(transform.position, placeTarget.transform.position) < placeDistanceThreshold)
+        if(PlaceConditionsMet())
         {
             PutDown();
             transform.parent = placeTarget.transform;
             transform.localPosition = Vector3.zero;
             transform.localRotation = Quaternion.identity;
             transform.localScale = Vector3.one;
+
+            gameObject.AddComponent<CanvasObject>().manualTarget = "Bridge";
+            Destroy(this);
         }
+    }
+
+    public bool PlaceConditionsMet()
+    {
+        return Vector3.Distance(transform.position, placeTarget.transform.position) < placeDistanceThreshold;
     }
 }

@@ -30,7 +30,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 		outlineManager.cam = Player.Instance.cam;
 		outlineManager.root = World.Instance.transform;
 
-		SceneManager.activeSceneChanged += instance.InitScene;
+		// SceneManager.activeSceneChanged += instance.InitScene;
 	}
 
 	/// <summary> Closes the Application </summary>
@@ -40,15 +40,22 @@ public class GameManager : Singleton<GameManager>, IResetable
 		Application.Quit();
 	}
 
-	/// <summary> SceneManager.activeSceneChanged Delegate wrapper </summary>
-	void InitScene(Scene from, Scene to) => instance.Init();
+    /// <summary> SceneManager.activeSceneChanged Delegate wrapper </summary>
+    void InitScene(Scene from, Scene to)
+    {
+        print($"scene {SceneManager.GetActiveScene().name} from {this}" );
+        Debug.Break();
+        instance.Init();
+    }
 	//maybe call unload here
 
 	/// <summary> Will delegate sub Init calls </summary>
 	public void Init()
 	{
 		World.Instance.Init();
-		World.Instance.name += $"[{levels[++sceneIndex]}]";
+        ++sceneIndex;
+        Debug.Log(sceneIndex);
+        World.Instance.name += $"[{levels[sceneIndex]}]";
 		Player.Instance.Init();
 		outlineManager.cam = Player.Instance.cam;
 		outlineManager.root = World.Instance.transform;
@@ -57,7 +64,8 @@ public class GameManager : Singleton<GameManager>, IResetable
 	/// <summary> Will delegate sub Reset calls </summary>
 	public void Reset()
 	{
-		World.Instance.Reset();
+        SceneManager.activeSceneChanged -= instance.InitScene;
+        World.Instance.Reset();
 		Player.Instance.Reset();
 	}
 
@@ -88,7 +96,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 				instance.Reset();
 				asyncLoad.allowSceneActivation = true;
 				// instance.StartCoroutine(UnloadScene(name));
-				// instance.Init();
+				// Instance.Init();
 			}
 			yield return null;
 		}

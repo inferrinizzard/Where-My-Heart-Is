@@ -41,7 +41,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public bool aiming = false;
 	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
 	private bool stillCrouching = false;
-    private bool pickedUpFirst = false;
+    public bool pickedUpFirst = false;
 
     /// <summary> Vector3 to store and calculate move direction. </summary>
     private Vector3 moveDirection;
@@ -306,10 +306,9 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Handles player behavior when interacting with objects. </summary>
 	private void PickUp()
 	{
-
         if (!holding && !looking)
         {
-            pickedUpFirst = true;
+            
             SetState(new PickUp(this));
         }
 		else if (looking) { SetState(new Inspect(this)); } //unused for now
@@ -350,22 +349,31 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 			// Make sure it is in the right layer
 			int layerMask = 1 << 9;
 
-			if (interactPrompt != null)
+
+            // Raycast to see what the object's tag is. If it is a Pickupable object...
+
+            if (interactPrompt != null)
 			{
-                // Raycast to see what the object's tag is. If it is a Pickupable object...
-                if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() || !pickedUpFirst)
+                if(heldObject is Placeable && (heldObject as Placeable).PlaceConditionsMet())
                 {
-                    if(!holding)
+                    interactPrompt.GetComponent<Text>().text = "Press E to Place Canvas";
+                    interactPrompt.SetActive(true);
+                }
+                else if(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() || !pickedUpFirst)
+				{
+                    if (hit.transform != null && hit.transform.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
                     {
-                        interactPrompt.GetComponent<Text>().text = "Press E to Interact";
-                        interactPrompt.SetActive(true);
+                        interactPrompt.SetActive(false);
+                        return;
                     }
-                }
-                else
-                {
-                    interactPrompt.SetActive(false);
-                }
-            }
+                    interactPrompt.GetComponent<Text>().text = "Press E to Pick Up Objects";
+                    interactPrompt.SetActive(true);
+				}
+				else
+				{
+					interactPrompt.SetActive(false);
+				}
+			}
 		}
 	}
 

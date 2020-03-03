@@ -15,5 +15,6 @@ public class Drop : PlayerState
 		player.heldObject.Interact();
 
 		player.heldObject.active = false;
+        player.heldObject = null;
 	}
 }
