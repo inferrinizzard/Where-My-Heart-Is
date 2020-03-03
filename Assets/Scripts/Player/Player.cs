@@ -53,8 +53,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public Transform deathPlane;
 	/// <summary> Get Window script from GameObject. </summary>
 	[HideInInspector] public Animator anim;
-	Transform heartTarget;
 	[HideInInspector] public Window window;
+	[HideInInspector] public ApplyMask mask;
 	[HideInInspector] public PlayerAudio audioController;
 
 	[Header("UI")]
@@ -75,6 +75,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public bool windowEnabled = true;
 
+	public bool active;
+
 	// [Header("Camera Variables")]
 	/// <summary> Minimum angle the player can look upward. </summary>
 	private float minX = -90f;
@@ -92,16 +94,17 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	void Start()
 	{
+		active = true;
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
 		VFX = cam.GetComponent<Effects>();
 		window = GetComponentInChildren<Window>();
 		heartWindow = window.gameObject;
+		mask = GetComponentInChildren<ApplyMask>();
 		audioController = GetComponent<PlayerAudio>();
 		anim = GetComponentInChildren<Animator>();
 		anim.SetFloat("Speed", heartAnimSpeed);
 		heartAnimDuration = anim.runtimeAnimatorController.animationClips[0].length / heartAnimSpeed;
-		heartTarget = GameObject.Find("Heart Target").transform;
 		heartStartPos = anim.transform.localPosition;
 		heartStartEulers = anim.transform.localEulerAngles;
 
@@ -122,12 +125,16 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		interactPrompt = GameObject.FindWithTag("InteractPrompt");
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
+		Debug.Log(deathPlane);
+		Debug.Log(deathPlane.transform.position);
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
+		Debug.Log(lastSpawn.transform.position);
 		if (lastSpawn)
 		{
 			transform.position = lastSpawn.position;
 			rotationX = lastSpawn.eulerAngles.x;
 			rotationY = lastSpawn.eulerAngles.y;
+			Debug.Log(transform.position);
 			//transform.rotation = lastSpawn.rotation;
 			//cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
 		}
@@ -178,29 +185,33 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	void EndState()
 	{
-		State.End();
+		State?.End();
 		State = null;
 	}
 
 	public void SetState(PlayerState state)
 	{
+		EndState();
 		State = state;
 		State.Start();
 	}
 
-	void Update()
+	void FixedUpdate()
 	{
-		if (playerCanMove)
+		if (active)
 		{
-			Move();
-			ApplyGravity();
-			Rotate();
-			characterController.Move(moveDirection);
-		}
+			if (playerCanMove)
+			{
+				Move();
+				ApplyGravity();
+				Rotate();
+				characterController.Move(moveDirection);
+			}
 
-		UpdateInteractPrompt();
-		StuckCrouching();
-		Die();
+			UpdateInteractPrompt();
+			StuckCrouching();
+			Die();
+		}
 	}
 
 	/// <summary> Player sudoku function. </summary>
@@ -219,6 +230,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 			{
 				// Set the position to the spawnpoint
 				transform.position = lastSpawn ? lastSpawn.position : Vector3.zero;
+				Debug.Log(Vector3.zero);
 				verticalVelocity = 0;
 
 				// Set the rotation to the spawnpoint
@@ -318,19 +330,17 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Handles player behavior when interacting with objects. </summary>
 	private void PickUp()
 	{
-		if (!holding && !looking)
+		if (!GameManager.Instance.duringLoad)
 		{
-
-			SetState(new PickUp(this));
-		}
-		else if (looking) { SetState(new Inspect(this)); } //unused for now
-		else if (holding)
-		{
-			Debug.Log("letgo");
-			if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
-				StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
-			else
-				SetState(new Drop(this));
+			if (!holding && !looking) { SetState(new PickUp(this)); }
+			else if (looking) { SetState(new Inspect(this)); } //unused for now
+			else if (holding)
+			{
+				if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
+					StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
+				else
+					SetState(new Drop(this));
+			}
 		}
 	}
 
@@ -347,7 +357,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (aiming && windowEnabled && !holding)SetState(new Cut(this));
+		if (aiming && windowEnabled && !holding) SetState(new Cut(this));
 	}
 
 	/// <summary> Interact prompt handling. </summary>
@@ -401,14 +411,17 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		anim.SetBool("Aiming", true);
 
+		var heartTargetPos = new Vector3(.01f, -.5f, 1.19f); // VS GHETTO
+		var heartTargetEulers = new Vector3(0, 90, -21.5f); // VS GHETTO
+
 		float start = Time.time;
 		bool inProgress = true;
 		while (inProgress)
 		{
 			yield return null;
 			float step = Time.time - start;
-			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTarget.localPosition, step / time);
-			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTarget.localEulerAngles, step / time);
+			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / time);
+			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTargetEulers, step / time);
 
 			if (step > time)
 				inProgress = false;

@@ -7,6 +7,8 @@ public class AutumnFinalController : MonoBehaviour
     public PlayerTrigger zone1;
     public PlayerTrigger zone2;
     public PlayerTrigger zone3;
+    public PlayerTrigger zone4;
+    public BirbAnimTester birbAnim;
 
     private float songState = 0;
 
@@ -25,6 +27,9 @@ public class AutumnFinalController : MonoBehaviour
             zone1.OnPlayerEnter += ProgressSongTo1;
             zone2.OnPlayerEnter += ProgressSongTo2;
             zone3.OnPlayerEnter += ProgressSongTo3;
+            zone4.OnPlayerEnter += FinalBirdMove;
+
+            birbAnim.StopChirps();
         }
     }
 
@@ -32,6 +37,7 @@ public class AutumnFinalController : MonoBehaviour
     {
         if(songState < 1)
         {
+            birbAnim.StartNextCurve();
             songState = 1;
             AudioMaster.Instance.SetMusicVariable("Autumn Tension State", 1);
         }
@@ -41,6 +47,7 @@ public class AutumnFinalController : MonoBehaviour
     {
         if (songState < 2)
         {
+            birbAnim.StartNextCurve(); 
             songState = 2;
             AudioMaster.Instance.SetMusicVariable("Autumn Tension State", 2);
         }
@@ -50,8 +57,16 @@ public class AutumnFinalController : MonoBehaviour
     {
         if (songState < 3)
         {
+            birbAnim.StartNextCurve();
             songState = 3;
             AudioMaster.Instance.SetMusicVariable("Autumn Tension State", 3);
         }
     }
+
+    public void FinalBirdMove()
+    {
+        birbAnim.StartNextCurve();
+    }
+
+   
 }

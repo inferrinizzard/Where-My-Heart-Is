@@ -9,13 +9,19 @@ public class ApplyMask : MonoBehaviour
 	Camera realCam, maskCam, mainCam;
 	///<summary> Shader that combines views </summary>
 	[SerializeField] Shader merge = default;
-	///<summary> Generated material for merge shader </summary>
+	[SerializeField] Shader transition = default;
+	///<summary> Generated material for screen shader </summary>
 	Material screenMat;
+	[HideInInspector] public Material transitionMat;
 	///<summary> Generated RenderTexture for Real World </summary>
 	RenderTexture real;
 	///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
 	public RenderTexture mask;
 	public Texture2D m2d;
+	[SerializeField] Texture2D dissolveTexture = default;
+	Texture2D curSave;
+
+	//shader prop ids with rename
 
 	void Start()
 	{
@@ -75,12 +81,18 @@ public class ApplyMask : MonoBehaviour
 
 	void OnRenderImage(RenderTexture source, RenderTexture dest)
 	{
-		// pass both cameras to screen per render
-		screenMat.SetTexture("_Dream", source);
-		screenMat.SetTexture("_Real", real);
-		Graphics.Blit(source, dest, screenMat);
-		ClearRT(real, realCam);
-		ClearRT(source, mainCam);
+		if (transitionMat == null)
+		{ // pass both cameras to screen per render
+			screenMat.SetTexture("_Dream", source);
+			screenMat.SetTexture("_Real", real);
+			Graphics.Blit(source, dest, screenMat);
+			ClearRT(real, realCam);
+			ClearRT(source, mainCam);
+		}
+		else
+		{
+			Graphics.Blit(curSave, dest, transitionMat);
+		}
 	}
 
 	void ClearRT(RenderTexture r, Camera cam)
@@ -90,5 +102,17 @@ public class ApplyMask : MonoBehaviour
 		GL.ClearWithSkybox(true, cam);
 		// GL.Clear(true, true, Color.clear);
 		UnityEngine.RenderTexture.active = rt;
+	}
+
+	public IEnumerator PreTransition(Texture2D preview, string scene)
+	{
+		yield return new WaitForEndOfFrame();
+		curSave = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+		curSave.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+		curSave.Apply();
+		transitionMat = new Material(transition);
+		transitionMat.SetTexture("_BackgroundTex", preview);
+		transitionMat.SetTexture("_TransitionTex", dissolveTexture);
+		GameManager.Instance.ChangeLevel(scene);
 	}
 }

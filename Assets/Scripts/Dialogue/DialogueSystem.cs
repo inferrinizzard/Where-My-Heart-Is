@@ -24,7 +24,7 @@ public class DialogueSystem : MonoBehaviour
 	/// <summary> The current index of the line being typed. </summary>
 	private int activeLineCount = 0;
 	/// <summary> The speed that the text types at. </summary>
-	private float textSpeed = 0.1f;
+	private float textSpeed = 0.04f;
 	/// <summary> An object reference to parse the JSON into. </summary>
 	private JsonParsable json;
 
@@ -35,10 +35,10 @@ public class DialogueSystem : MonoBehaviour
 
 	void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Z) && activeLineCount == 0 && !typing) // For testing, start the dialogue process when the Z key is pressed.
+		/*if (Input.GetKeyDown(KeyCode.Z) && activeLineCount == 0 && !typing) // For testing, start the dialogue process when the Z key is pressed.
 		{
-			StartCoroutine(WriteDialogue(0));
-		}
+			StartCoroutine(WriteDialogue("Heres some string or something"));
+		}*/
 	}
 
 	/// <summary> Parses the input JSON file into the text queue. </summary>
@@ -68,6 +68,21 @@ public class DialogueSystem : MonoBehaviour
 		}
 	}
 
+    public IEnumerator WriteDialogue(string text)
+    {
+        /*textQueue = new string[1];
+        textQueue[0] = text;*/
+        textQueue = text.Split('/');
+        activeLineCount = 0;
+        charCount = 0;
+        if (!typing && activeLineCount < textQueue.Length)
+        {
+            typing = true;
+            InvokeRepeating("AdvanceText", 0f, textSpeed);
+        }
+        yield return null;
+    }
+
 	/// <summary> Types out the current line character by character, then resets variables for recursive call to WriteDialogue. </summary>
 	public void AdvanceText()
 	{
@@ -82,7 +97,9 @@ public class DialogueSystem : MonoBehaviour
 			typing = false;
 			charCount = 0;
 			activeLineCount++;
-			StartCoroutine(WriteDialogue(1));
+            float delay = (1f / 30f) * textQueue[activeLineCount - 1].Length;
+            delay = Mathf.Clamp(delay, 0.5f, 1f);
+			StartCoroutine(WriteDialogue(delay));
 		}
 	}
 

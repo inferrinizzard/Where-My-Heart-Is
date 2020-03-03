@@ -58,11 +58,22 @@ public class AudioMaster : Singleton<AudioMaster>
         musicInstance.setParameterByName(name, value);
     }
 
+    public void SetAmbientVariable(string name, float value)
+    {
+        ambientInstance.setParameterByName(name, value);
+    }
+
     public void SetWinter()
     {
         ambientInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         ambientInstance = FMODUnity.RuntimeManager.CreateInstance(WinterAmbientEvent);
         ambientInstance.start();
+    }
+
+    public void StopAll()
+    {
+        ambientInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
     }
 
     public void SetSpring()

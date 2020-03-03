@@ -8,6 +8,7 @@ public class BirbAnimTester : MonoBehaviour
     [SerializeField] private KeyCode idleKey = KeyCode.Alpha1;
     [SerializeField] private KeyCode flyKey = KeyCode.Alpha2;
     [SerializeField] private BGCcCursor[] curves;
+    public float flySpeed;
 
     [FMODUnity.EventRef]
     public string FlapEvent;
@@ -41,6 +42,8 @@ public class BirbAnimTester : MonoBehaviour
         FMODUnity.RuntimeManager.AttachInstanceToGameObject(chirpInstance, GetComponent<Transform>(), GetComponent<Rigidbody>());
         flapInstance.start();
         chirpInstance.start();
+
+        currCurve = -1;
     }
 
 	void Update()
@@ -58,11 +61,10 @@ public class BirbAnimTester : MonoBehaviour
     {/*
         Debug.Log(currCurve);
         Debug.Log(curves[currCurve].DistanceRatio);*/
-        if(currCurve < curves.Length)
+        if(currCurve < curves.Length && currCurve != -1)
         {
             if (curves[currCurve].DistanceRatio > 0)
             {
-                Debug.Log("called!");
             }
             if (curves[currCurve].DistanceRatio > 0.99f)
             {
@@ -70,13 +72,13 @@ public class BirbAnimTester : MonoBehaviour
                 flapInstance.setParameterByName("Flying", 0);
 
                 curves[currCurve].GetComponent<BGCcTrs>().Speed = 0;
-                currCurve++;
             }
         }
     }
 
     public void StartNextCurve()
     {
+        currCurve++;
         curves[currCurve].enabled = true;
         StartCoroutine(NextCurve());
     }
@@ -90,7 +92,12 @@ public class BirbAnimTester : MonoBehaviour
 
             anim.SetBool("IsFlying", true);
             yield return new WaitForSeconds(0.8f);
-            curves[currCurve].GetComponent<BGCcTrs>().Speed = 3;
+            curves[currCurve].GetComponent<BGCcTrs>().Speed = flySpeed;
         }
+    }
+
+    public void StopChirps()
+    {
+        chirpInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
     }
 }

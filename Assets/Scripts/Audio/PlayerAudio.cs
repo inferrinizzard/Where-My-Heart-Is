@@ -87,6 +87,7 @@ public class PlayerAudio : MonoBehaviour
     public void PlaceWindow()
     {
         windowInstance.setParameterByName("WindowState", 1);
+        CloseWindow();
     }
 
     public void CloseWindow()
