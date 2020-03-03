@@ -6,7 +6,7 @@ using UnityEngine;
 public class CanvasObject : CollectableObject
 {
 	public Texture2D preview;
-	[SerializeField] public string manualTarget = "";
+	[SerializeField] string manualTarget = "";
 
     public event Action OnInteract;
 
@@ -21,12 +21,7 @@ public class CanvasObject : CollectableObject
 
 	protected override void CollectEndAction()
 	{
-		// pass in on start load
-		// set shader flag
-		// continually set global float in coro
-		if (manualTarget != "")
-			GameManager.Instance.ChangeLevel(manualTarget);
-		else
-			GameManager.Instance.ChangeLevel(GameManager.Instance.levels[GameManager.Instance.sceneIndex + 1]);
+		StartCoroutine(Player.Instance.mask.PreTransition(preview, GameManager.Instance.levels[GameManager.Instance.sceneIndex + 1]));
+		// StartCoroutine(Effects.mask.PreTransition(preview, manualTarget == "" ? "Intro" : manualTarget));
 	}
 }

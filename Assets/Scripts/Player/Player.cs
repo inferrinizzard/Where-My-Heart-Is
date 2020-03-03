@@ -53,6 +53,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public Transform deathPlane;
 	/// <summary> Get Window script from GameObject. </summary>
 	[HideInInspector] public Window window;
+	[HideInInspector] public ApplyMask mask;
 	[HideInInspector] public PlayerAudio audioController;
 
 	[Header("UI")]
@@ -91,6 +92,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		VFX = cam.GetComponent<Effects>();
 		window = GetComponentInChildren<Window>();
 		heartWindow = window.gameObject;
+		mask = GetComponentInChildren<ApplyMask>();
 		audioController = GetComponent<PlayerAudio>();
 
 		// Get reference to the player height using the CharacterController's height.
@@ -166,7 +168,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	void EndState()
 	{
-		if(State != null) State.End();
+		State?.End();
 		State = null;
 	}
 
@@ -177,7 +179,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		State.Start();
 	}
 
-	void Update()
+	void FixedUpdate()
 	{
 		if (playerCanMove)
 		{
@@ -307,19 +309,17 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Handles player behavior when interacting with objects. </summary>
 	private void PickUp()
 	{
-        if (!holding && !looking)
-        {
-            
-            SetState(new PickUp(this));
-        }
-		else if (looking) { SetState(new Inspect(this)); } //unused for now
-		else if (holding)
+		if (!GameManager.Instance.duringLoad)
 		{
-            Debug.Log("letgo");
-			if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
-				StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
-			else
-				SetState(new Drop(this));
+			if (!holding && !looking) { SetState(new PickUp(this)); }
+			else if (looking) { SetState(new Inspect(this)); } //unused for now
+			else if (holding)
+			{
+				if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
+					StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
+				else
+					SetState(new Drop(this));
+			}
 		}
 	}
 

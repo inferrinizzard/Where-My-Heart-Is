@@ -8,29 +8,22 @@ using UnityEngine.UI;
 /// <summary> Constrols app macro and scene manipulations </summary>
 public class GameManager : Singleton<GameManager>, IResetable
 {
-	/// <summary> UI Image wrapper for Loading Screen  </summary>
-	GameObject loadingScreen;
-	/// <summary> Slider for Loading Bar  </summary>
-	Slider loadingBar;
-	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "ComplexGate", "HalfCut 1", "AutumnFinal" };
+	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "ComplexGate", "OneCut", "HalfCut 1", "AutumnFinal" };
 	public int sceneIndex = -1;
 	public ApplyOutline outlineManager;
+	public bool duringLoad;
 
 	void Start()
 	{
 		outlineManager = GetComponentInChildren<ApplyOutline>();
 		sceneIndex = levels.ToList().FindIndex(name => name == SceneManager.GetActiveScene().name);
-		// get Loading Screen UI ref
-		loadingScreen = transform.GetChild(0).GetChild(0).gameObject; // better find
-		// get Slider ref
-		loadingBar = loadingScreen.GetComponentInChildren<Slider>();
 
 		World.Instance.name += $" [{SceneManager.GetActiveScene().name}]";
 
 		outlineManager.cam = Player.Instance.cam;
 		outlineManager.root = World.Instance.transform;
 
-		// SceneManager.activeSceneChanged += instance.InitScene;
+		SceneManager.sceneLoaded += instance.InitScene;
 	}
 
 	/// <summary> Closes the Application </summary>
@@ -40,13 +33,8 @@ public class GameManager : Singleton<GameManager>, IResetable
 		Application.Quit();
 	}
 
-    /// <summary> SceneManager.activeSceneChanged Delegate wrapper </summary>
-    void InitScene(Scene from, Scene to)
-    {
-        print($"scene {SceneManager.GetActiveScene().name} from {this}" );
-        Debug.Break();
-        instance.Init();
-    }
+	/// <summary> SceneManager.activeSceneChanged Delegate wrapper </summary>
+	void InitScene(Scene from, LoadSceneMode mode = LoadSceneMode.Single) => instance.Init();
 	//maybe call unload here
 
 	/// <summary> Will delegate sub Init calls </summary>
@@ -80,21 +68,34 @@ public class GameManager : Singleton<GameManager>, IResetable
 
 	/// <summary> Loads scene asynchronously, will transition when ready </summary>
 	/// <param name="scene"> Name of scene to load  </param>
-	static IEnumerator LoadScene(string name)
+	static IEnumerator LoadScene(string name, float time = 3)
 	{
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
+		instance.duringLoad = true;
 		asyncLoad.allowSceneActivation = false;
-		float start = Time.time;
-		while (!asyncLoad.isDone)
-		{
-			instance.loadingScreen.SetActive(true);
-			instance.loadingBar.normalizedValue = asyncLoad.progress / .9f;
 
-			if (asyncLoad.progress >= .9f && Time.time - start > 1)
+		float start = Time.time;
+		bool inProgress = true;
+
+		var transitionMat = Player.Instance.mask.transitionMat;
+		int _CutoffID = Shader.PropertyToID("_Cutoff");
+
+		while (inProgress)
+		{
+			float step = Time.time - start;
+			float minProgress = Mathf.Min(asyncLoad.progress / .9f, step / time);
+			transitionMat.SetFloat(_CutoffID, minProgress * 2); // add curve here
+
+			if (asyncLoad.progress >= .9f && step > time)
 			{
-				instance.loadingScreen.SetActive(false);
+				inProgress = false;
+
 				instance.Reset();
 				asyncLoad.allowSceneActivation = true;
+
+				Player.Instance.mask.transitionMat = null;
+				instance.duringLoad = false;
+
 				// instance.StartCoroutine(UnloadScene(name));
 				// Instance.Init();
 			}
