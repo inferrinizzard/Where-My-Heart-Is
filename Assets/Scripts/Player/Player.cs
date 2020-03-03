@@ -77,6 +77,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	public bool active;
 
+	public GameObject fadeInObject;
+	public float fadeInLength;
+	public bool playFade;
+
 	// [Header("Camera Variables")]
 	/// <summary> Minimum angle the player can look upward. </summary>
 	private float minX = -90f;
@@ -117,6 +121,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
 		Cursor.visible = false;
+		BeginFadeIn();
 
 		Init();
 	}
@@ -140,6 +145,54 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		window.world = World.Instance;
 		VFX.ToggleMask(false);
 		window.Invoke("CreateFoVMesh", 1);
+	}
+
+	public void BeginSceneTransition()
+	{
+		active = false;
+		fadeInObject.SetActive(true);
+		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+	}
+
+	public void EndSceneTransition()
+	{
+		DialoguePacket packet = FindObjectOfType<DialoguePacket>();
+		if (packet != null)
+		{
+			DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
+			StartCoroutine(dialogueSystem.WriteDialogue(packet.text));
+			dialogueSystem.TextComplete += EndSceneTransitionHelper;
+		}
+		else
+		{
+			EndSceneTransitionHelper();
+		}
+
+	}
+
+	private void EndSceneTransitionHelper(DialogueSystem dialogueSystem = null)
+	{
+		if (dialogueSystem != null)
+		{
+			dialogueSystem.TextComplete -= EndSceneTransitionHelper;
+		}
+		Player.Instance.active = true;
+		BeginFadeIn();
+	}
+
+	private void BeginFadeIn()
+	{
+		playFade = true;
+		fadeInObject.SetActive(true);
+		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+		CancelInvoke("EndFadeIn");
+		Invoke("EndFadeIn", fadeInLength);
+	}
+
+	private void EndFadeIn()
+	{
+		playFade = false;
+		fadeInObject.SetActive(false);
 	}
 
 	///	<summary> reset pos, rendundant </summary>
@@ -190,6 +243,15 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		EndState();
 		State = state;
 		State.Start();
+	}
+
+	void Update()
+	{
+		if (playFade == true)
+		{
+			Color oldColor = fadeInObject.GetComponent<SpriteRenderer>().color;
+			fadeInObject.GetComponent<SpriteRenderer>().color = new Color(oldColor.r, oldColor.g, oldColor.b, oldColor.a - (Time.deltaTime / fadeInLength));
+		}
 	}
 
 	void FixedUpdate()
@@ -378,9 +440,12 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 			{
 				if (!holding && playerCanMove)
 				{
-					interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
 					if (hit.transform != null && (bool)hit.transform.GetComponent<BirbAnimTester>())
 						interactPrompt.GetComponent<Text>().text = "Press E to Interact with Bird";
+					else if (hit.transform != null && (bool)hit.transform.GetComponent<CanvasObject>())
+						interactPrompt.GetComponent<Text>().text = "Press E to Enter Canvas";
+					else
+						interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
 					interactPrompt.SetActive(true);
 					if (hit.transform != null && hit.transform.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
 					{

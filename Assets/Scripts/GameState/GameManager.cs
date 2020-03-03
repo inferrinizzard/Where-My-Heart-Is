@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// <summary> Constrols app macro and scene manipulations </summary>
 public class GameManager : Singleton<GameManager>, IResetable
 {
-	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "ComplexGate", "OneCut", "HalfCut 1", "AutumnFinal" };
+	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "OneCut", "ComplexGate", "HalfCut 1", "AutumnFinal" };
 	public int sceneIndex = -1;
 	public ApplyOutline outlineManager;
 	public bool duringLoad;
@@ -71,8 +71,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 	/// <param name="scene"> Name of scene to load  </param>
 	static IEnumerator LoadScene(string name, float time = 3)
 	{
-        Player.Instance.active = false;
-
+        Player.Instance.BeginSceneTransition();
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
 		instance.duringLoad = true;
@@ -105,8 +104,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 			}
 			yield return null;
 		}
-        Player.Instance.active = true;
-
+        Player.Instance.EndSceneTransition();
     }
 
     /// <summary> Unloads scene asynchronously </summary>

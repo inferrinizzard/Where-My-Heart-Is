@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerTrigger : MonoBehaviour
 {
     public event Action OnPlayerEnter;
+    public event Action<PlayerTrigger> OnPlayerEnterID;
     public bool destroyAfterTrigger;
     public DialogueSystem dialogueSystem;
 
@@ -20,6 +21,7 @@ public class PlayerTrigger : MonoBehaviour
                 StartCoroutine(dialogueSystem.WriteDialogue(flavor));
             }
             OnPlayerEnter?.Invoke();
+            OnPlayerEnterID?.Invoke(this);
             if (destroyAfterTrigger)
             {
                 Destroy(this);

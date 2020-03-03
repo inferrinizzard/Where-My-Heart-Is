@@ -1167,7 +1167,7 @@ MonoBehaviour:
       bgCurvePointComponentValues: []
       bgCurvePointGOValues: []
   - controlType: 1
-    positionLocal: {x: -10.322183, y: -9.625306, z: -34.04375}
+    positionLocal: {x: -11.665476, y: -9.625305, z: -34.04375}
     controlFirstLocal: {x: -0.0899086, y: 0.6999998, z: -2.1980782}
     controlSecondLocal: {x: 0.0899086, y: -0.6999998, z: 2.1980782}
     pointTransform: {fileID: 0}
@@ -1356,6 +1356,7 @@ MonoBehaviour:
   curves:
   - {fileID: 501060391}
   - {fileID: 1954565016}
+  pathTriggers: []
   flySpeed: 5
   FlapEvent: event:/Bird/Fly
   ChirpEvent: event:/Bird/Bird Chirp
@@ -2508,7 +2509,7 @@ MonoBehaviour:
     the most of it./\u2026/Anyway, I hope you're healthy and safe./Just give me or
     your Mom a call, if you need anything/Love you, baby girl"
   dialogue: {fileID: 0}
-  InteractSoundEvent: event:/Gate/Gate Open
+  InteractSoundEvent: 
 --- !u!1001 &1362077804
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3146,7 +3147,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: cc5867b25ee1d4455839c2c697aa840b,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.62000084
+      value: 0.95
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: cc5867b25ee1d4455839c2c697aa840b,
         type: 3}
@@ -3230,6 +3231,107 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: f7cf1786379c34af79f288573cc5d4ba, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cc5867b25ee1d4455839c2c697aa840b, type: 3}
+--- !u!1 &1671600423 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -8052994932809076077, guid: cc5867b25ee1d4455839c2c697aa840b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1671600422}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1671600424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671600423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b06e6ec93a7f14f980c989c5861493, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 0}
+  player: {fileID: 0}
+  active: 0
+  hasFlavorText: 1
+  flavorText: "\u2018American History and Institutions\u2019"
+  dialogue: {fileID: 0}
+  InteractSoundEvent: 
+--- !u!1 &1671600425 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2591225120272460760, guid: cc5867b25ee1d4455839c2c697aa840b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1671600422}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1671600426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671600425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b06e6ec93a7f14f980c989c5861493, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 0}
+  player: {fileID: 0}
+  active: 0
+  hasFlavorText: 1
+  flavorText: "'Ordinary Differential Equations\u2019"
+  dialogue: {fileID: 0}
+  InteractSoundEvent: 
+--- !u!1 &1671600427 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2533727357823585025, guid: cc5867b25ee1d4455839c2c697aa840b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1671600422}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1671600428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671600427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b06e6ec93a7f14f980c989c5861493, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 0}
+  player: {fileID: 0}
+  active: 0
+  hasFlavorText: 1
+  flavorText: "\u2018Introduction to Drawing and Painting\u2019/I wanna take this
+    soo bad..."
+  dialogue: {fileID: 0}
+  InteractSoundEvent: 
+--- !u!1 &1671600429 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -3857676757983399380, guid: cc5867b25ee1d4455839c2c697aa840b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1671600422}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1671600430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671600429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b06e6ec93a7f14f980c989c5861493, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 0}
+  player: {fileID: 0}
+  active: 0
+  hasFlavorText: 1
+  flavorText: "\u2018Geography of National Parks in California'"
+  dialogue: {fileID: 0}
+  InteractSoundEvent: 
 --- !u!4 &1702593675 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: c8bae08773fa8584a9a89698fa8442f7,
@@ -3718,7 +3820,7 @@ MonoBehaviour:
   closed: 0
   points:
   - controlType: 1
-    positionLocal: {x: -10.322183, y: -9.625306, z: -34.04375}
+    positionLocal: {x: -11.665476, y: -9.625305, z: -34.04375}
     controlFirstLocal: {x: -0.08990859, y: 0.69999975, z: -2.198078}
     controlSecondLocal: {x: 0.08990859, y: -0.69999975, z: 2.198078}
     pointTransform: {fileID: 0}
@@ -4156,6 +4258,7 @@ MonoBehaviour:
   placeTarget: {fileID: 87532652}
   birdAnim: {fileID: 612707667}
   introController: {fileID: 39484338}
+  preview: {fileID: 0}
 --- !u!1001 &2222679496232976199
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4293,6 +4396,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 971412799066102647, guid: 7821d63c43cf5954590d7f2d89f29fcf,
+        type: 3}
+      propertyPath: m_FontData.m_VerticalOverflow
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 971412799066102647, guid: 7821d63c43cf5954590d7f2d89f29fcf,
+        type: 3}
+      propertyPath: m_FontData.m_HorizontalOverflow
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7821d63c43cf5954590d7f2d89f29fcf, type: 3}
@@ -4515,7 +4628,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1740563254691644387}
   m_LocalRotation: {x: -0.12859787, y: -0.04343388, z: -0.69531476, w: 0.70577157}
-  m_LocalPosition: {x: 0.6275495, y: 0.30903196, z: -8.3807}
+  m_LocalPosition: {x: -0.01, y: 0.30903196, z: -8.301}
   m_LocalScale: {x: 1.0609844, y: 0.6991254, z: 0.0057862424}
   m_Children: []
   m_Father: {fileID: 1119408122471527479}
@@ -4642,6 +4755,31 @@ PrefabInstance:
         type: 3}
       propertyPath: earToDraw
       value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857401503889292443, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_Name
+      value: FadeIn
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857401503889292443, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1970347788946779078, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1970347788946779078, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1970347788946779078, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.442
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce2e34029942daa4c845cd2ceec80c14, type: 3}

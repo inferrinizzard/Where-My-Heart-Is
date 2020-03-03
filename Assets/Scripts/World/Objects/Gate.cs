@@ -8,6 +8,10 @@ public class Gate : MonoBehaviour
 	[SerializeField] float rotationTime = 1;
 	[SerializeField] Transform leftDoor = default;
 	[SerializeField] Transform rightDoor = default;
+
+    [FMODUnity.EventRef]
+    public string GateOpenEvent;
+
 	public GameObject keyHole;
 
 	private bool open = false;
@@ -28,6 +32,8 @@ public class Gate : MonoBehaviour
 
 		var leftStart = leftDoor.eulerAngles;
 		var rightStart = rightDoor.eulerAngles;
+
+        FMODUnity.RuntimeManager.PlayOneShot(GateOpenEvent, transform.position);
 
 		while (inProgress)
 		{

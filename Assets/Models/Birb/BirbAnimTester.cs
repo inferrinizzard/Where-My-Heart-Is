@@ -8,6 +8,7 @@ public class BirbAnimTester : MonoBehaviour
     [SerializeField] private KeyCode idleKey = KeyCode.Alpha1;
     [SerializeField] private KeyCode flyKey = KeyCode.Alpha2;
     [SerializeField] private BGCcCursor[] curves;
+    public List<PlayerTrigger> pathTriggers;
     public float flySpeed;
 
     [FMODUnity.EventRef]
@@ -42,6 +43,7 @@ public class BirbAnimTester : MonoBehaviour
         FMODUnity.RuntimeManager.AttachInstanceToGameObject(chirpInstance, GetComponent<Transform>(), GetComponent<Rigidbody>());
         flapInstance.start();
         chirpInstance.start();
+        pathTriggers.ForEach(trigger => trigger.OnPlayerEnterID += StartNextCurveID);
 
         currCurve = -1;
     }
@@ -66,7 +68,7 @@ public class BirbAnimTester : MonoBehaviour
             if (curves[currCurve].DistanceRatio > 0)
             {
             }
-            if (curves[currCurve].DistanceRatio > 0.99f)
+            if (curves[currCurve].DistanceRatio > 0.999f)
             {
                 anim.SetBool("IsFlying", false);
                 flapInstance.setParameterByName("Flying", 0);
@@ -81,6 +83,15 @@ public class BirbAnimTester : MonoBehaviour
         currCurve++;
         curves[currCurve].enabled = true;
         StartCoroutine(NextCurve());
+    }
+
+    public void StartNextCurveID(PlayerTrigger trigger)
+    {
+        if(pathTriggers.Contains(trigger))
+        {
+            trigger.OnPlayerEnterID -= StartNextCurveID;
+            StartNextCurve();
+        }
     }
 
     private IEnumerator NextCurve()

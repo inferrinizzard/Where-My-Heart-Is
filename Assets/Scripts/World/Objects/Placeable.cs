@@ -8,6 +8,7 @@ public class Placeable : Pickupable
     public GameObject placeTarget;
     public BirbAnimTester birdAnim;
     public IntroController introController;
+    public Texture2D preview;
 
     public override void Interact()
     {
@@ -23,6 +24,7 @@ public class Placeable : Pickupable
 
             CanvasObject canvas = gameObject.AddComponent<CanvasObject>();
             canvas.manualTarget = "Bridge";
+            canvas.preview = preview;
             introController.SetCanvas(canvas);
             Destroy(this);
         }
