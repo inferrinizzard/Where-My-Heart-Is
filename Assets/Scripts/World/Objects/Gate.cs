@@ -8,7 +8,7 @@ public class Gate : MonoBehaviour
 	[SerializeField] float rotationTime = 1;
 	[SerializeField] Transform leftDoor = default;
 	[SerializeField] Transform rightDoor = default;
-	public Transform keyHole;
+	public GameObject keyHole;
 
 	private bool open = false;
 
