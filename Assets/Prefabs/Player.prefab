@@ -117,9 +117,11 @@ MonoBehaviour:
   holding: 0
   looking: 0
   aiming: 0
+  pickedUpFirst: 0
   heartWindow: {fileID: 0}
   deathPlane: {fileID: 0}
   window: {fileID: 0}
+  mask: {fileID: 0}
   audioController: {fileID: 0}
   interactPrompt: {fileID: 0}
   speed: 4
@@ -128,6 +130,9 @@ MonoBehaviour:
   mouseSensitivity: 2
   playerReach: 3
   windowEnabled: 1
+  active: 0
+  fadeInObject: {fileID: 6857401503889292443}
+  fadeInLength: 3
   rotationY: 0
   rotationX: 0
 --- !u!114 &4516441798131658318
@@ -183,11 +188,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5407968008035840465}
     m_Modifications:
-    - target: {fileID: 3177498603613522795, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
-        type: 3}
-      propertyPath: m_Name
-      value: Main Camera
-      objectReference: {fileID: 0}
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -243,11 +243,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3177498603613522795, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
+        type: 3}
+      propertyPath: m_Name
+      value: Main Camera
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 31ce0a8a718ba094b9f6c937e3c9676c, type: 3}
 --- !u!4 &5407968007786445904 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
+    type: 3}
+  m_PrefabInstance: {fileID: 7427641284244191036}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6857401503889292443 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4052723104553257895, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
     type: 3}
   m_PrefabInstance: {fileID: 7427641284244191036}
   m_PrefabAsset: {fileID: 0}

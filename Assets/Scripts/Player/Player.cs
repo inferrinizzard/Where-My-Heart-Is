@@ -76,6 +76,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
     public bool active;
 
+    public GameObject fadeInObject;
+    public float fadeInLength;
+    public bool playFade;
+
 	// [Header("Camera Variables")]
 	/// <summary> Minimum angle the player can look upward. </summary>
 	private float minX = -90f;
@@ -107,24 +111,21 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
 		Cursor.visible = false;
+        BeginFadeIn();
 
-		Init();
+        Init();
 	}
 
 	public void Init()
 	{
 		interactPrompt = GameObject.FindWithTag("InteractPrompt");
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
-        Debug.Log(deathPlane);
-        Debug.Log(deathPlane.transform.position);
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
-        Debug.Log(lastSpawn.transform.position);
 		if (lastSpawn)
 		{
 			transform.position = lastSpawn.position;
 			rotationX = lastSpawn.eulerAngles.x;
 			rotationY = lastSpawn.eulerAngles.y;
-            Debug.Log(transform.position);
 			//transform.rotation = lastSpawn.rotation;
 			//cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
 		}
@@ -134,12 +135,60 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		window.world = World.Instance;
 		VFX.ToggleMask(false);
 		window.Invoke("CreateFoVMesh", 1);
-	}
+    }
+
+    public void BeginSceneTransition()
+    {
+        active = false;
+        fadeInObject.SetActive(true);
+        fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+    }
+
+    public void EndSceneTransition()
+    {
+        DialoguePacket packet = FindObjectOfType<DialoguePacket>();
+        if (packet != null)
+        {
+            DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
+            StartCoroutine(dialogueSystem.WriteDialogue(packet.text));
+            dialogueSystem.TextComplete += EndSceneTransitionHelper;
+        }
+        else
+        {
+            EndSceneTransitionHelper();
+        }
+     
+    }
+
+    private void EndSceneTransitionHelper(DialogueSystem dialogueSystem = null)
+    {
+        if(dialogueSystem != null)
+        {
+            dialogueSystem.TextComplete -= EndSceneTransitionHelper;
+        }
+        Player.Instance.active = true;
+        BeginFadeIn();
+    }
+
+    private void BeginFadeIn()
+    {
+        playFade = true;
+        fadeInObject.SetActive(true);
+        fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+        CancelInvoke("EndFadeIn");
+        Invoke("EndFadeIn", fadeInLength);
+    }
+
+    private void EndFadeIn()
+    {
+        playFade = false;
+        fadeInObject.SetActive(false);
+    }
 
 	///	<summary> reset pos, rendundant </summary>
 	public void Reset()
 	{
-		transform.position = Vector3.zero;
+        transform.position = Vector3.zero;
 		transform.eulerAngles = Vector3.zero;
 	}
 
@@ -185,6 +234,15 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		State = state;
 		State.Start();
 	}
+
+    void Update()
+    {
+        if(playFade == true)
+        {
+            Color oldColor = fadeInObject.GetComponent<SpriteRenderer>().color;
+            fadeInObject.GetComponent<SpriteRenderer>().color = new Color(oldColor.r, oldColor.g, oldColor.b, oldColor.a - (Time.deltaTime/fadeInLength));
+        }
+    }
 
 	void FixedUpdate()
 	{

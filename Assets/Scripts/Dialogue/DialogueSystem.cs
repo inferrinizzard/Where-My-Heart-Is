@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 /// <summary> Handles the inputting of text from a json file and displaying of text onto the screen. </summary>
 public class DialogueSystem : MonoBehaviour
@@ -28,7 +29,9 @@ public class DialogueSystem : MonoBehaviour
 	/// <summary> An object reference to parse the JSON into. </summary>
 	private JsonParsable json;
 
-	private void Start()
+    public event Action<DialogueSystem> TextComplete;
+
+    private void Start()
 	{
 		ParseText();
 	}
@@ -106,6 +109,7 @@ public class DialogueSystem : MonoBehaviour
 	/// <summary> Sets the UI text to be empty. </summary>
 	public void EndText()
 	{
-		uiText.text = "";
+        TextComplete?.Invoke(this);
+        uiText.text = "";
 	}
 }
