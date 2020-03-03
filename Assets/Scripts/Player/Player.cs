@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary> Handles player movement and player interaction </summary>
 [System.Serializable]
@@ -314,6 +315,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		else if (looking) { SetState(new Inspect(this)); } //unused for now
 		else if (holding)
 		{
+            Debug.Log("letgo");
 			if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
 				StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
 			else
@@ -334,7 +336,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (aiming && windowEnabled)SetState(new Cut(this));
+		if (aiming && windowEnabled && !holding)SetState(new Cut(this));
 	}
 
 	/// <summary> Interact prompt handling. </summary>
@@ -350,16 +352,26 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 			if (interactPrompt != null)
 			{
-				// Raycast to see what the object's tag is. If it is a Pickupable object...
-				if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() || !pickedUpFirst)
-				{
-					interactPrompt.SetActive(true);
-				}
-				else
-				{
-					interactPrompt.SetActive(false);
-				}
-			}
+                // Raycast to see what the object's tag is. If it is a Pickupable object...
+                if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() || !pickedUpFirst)
+                {
+                    if(!holding)
+                    {
+                        interactPrompt.GetComponent<Text>().text = "Press E to Interact";
+                        interactPrompt.SetActive(true);
+                    }
+                }
+                else
+                {
+                    interactPrompt.SetActive(false);
+                }
+            }
 		}
 	}
+
+    public void GateInteractPrompt()
+    {
+        interactPrompt.SetActive(true);
+        interactPrompt.GetComponent<Text>().text = "Press E to Unlock";
+    }
 }

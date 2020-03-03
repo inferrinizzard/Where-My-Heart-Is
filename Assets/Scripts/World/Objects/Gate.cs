@@ -17,7 +17,7 @@ public class Gate : MonoBehaviour
 		if (!open)
 		{
 			open = true;
-			StartCoroutine(OpenGate(rotationAngle, rotationTime));
+            StartCoroutine(OpenGate(rotationAngle, rotationTime));
 		}
 	}
 
