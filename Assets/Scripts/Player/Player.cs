@@ -40,9 +40,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public bool aiming = false;
 	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
 	private bool stillCrouching = false;
+    private bool pickedUpFirst = false;
 
-	/// <summary> Vector3 to store and calculate move direction. </summary>
-	private Vector3 moveDirection;
+    /// <summary> Vector3 to store and calculate move direction. </summary>
+    private Vector3 moveDirection;
 
 	// [Header("Game Object References")]
 	/// <summary> Reference to heart window. </summary>
@@ -304,7 +305,12 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Handles player behavior when interacting with objects. </summary>
 	private void PickUp()
 	{
-		if (!holding && !looking) { SetState(new PickUp(this)); }
+
+        if (!holding && !looking)
+        {
+            pickedUpFirst = true;
+            SetState(new PickUp(this));
+        }
 		else if (looking) { SetState(new Inspect(this)); } //unused for now
 		else if (holding)
 		{
@@ -328,7 +334,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (aiming)SetState(new Cut(this));
+		if (aiming && windowEnabled)SetState(new Cut(this));
 	}
 
 	/// <summary> Interact prompt handling. </summary>
@@ -345,7 +351,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 			if (interactPrompt != null)
 			{
 				// Raycast to see what the object's tag is. If it is a Pickupable object...
-				if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
+				if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() || !pickedUpFirst)
 				{
 					interactPrompt.SetActive(true);
 				}
