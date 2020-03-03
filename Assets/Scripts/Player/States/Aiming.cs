@@ -19,6 +19,8 @@ public class Aiming : PlayerState
 
 	public override void End()
 	{
+		player.anim.SetBool("Aiming", false);
+		player.RevertAim();
 		player.heartWindow.SetActive(false);
 		player.VFX.ToggleMask(false);
 		player.audioController.CloseWindow();

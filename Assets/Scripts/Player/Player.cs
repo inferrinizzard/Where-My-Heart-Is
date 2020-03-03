@@ -41,10 +41,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public bool aiming = false;
 	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
 	private bool stillCrouching = false;
-    public bool pickedUpFirst = false;
+	public bool pickedUpFirst = false;
 
-    /// <summary> Vector3 to store and calculate move direction. </summary>
-    private Vector3 moveDirection;
+	/// <summary> Vector3 to store and calculate move direction. </summary>
+	private Vector3 moveDirection;
 
 	// [Header("Game Object References")]
 	/// <summary> Reference to heart window. </summary>
@@ -52,6 +52,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Reference to death plane. </summary>
 	[HideInInspector] public Transform deathPlane;
 	/// <summary> Get Window script from GameObject. </summary>
+	[HideInInspector] public Animator anim;
+	Transform heartTarget;
 	[HideInInspector] public Window window;
 	[HideInInspector] public PlayerAudio audioController;
 
@@ -82,6 +84,10 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public float rotationY = 0f;
 	/// <summary> Stores the X rotation of the player. </summary>
 	[HideInInspector] public float rotationX = 0f;
+
+	[SerializeField] float heartAnimSpeed = 5;
+	float heartAnimDuration;
+	Vector3 heartStartPos, heartStartEulers;
 	int _ViewDirID = Shader.PropertyToID("_ViewDir");
 
 	void Start()
@@ -92,6 +98,12 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		window = GetComponentInChildren<Window>();
 		heartWindow = window.gameObject;
 		audioController = GetComponent<PlayerAudio>();
+		anim = GetComponentInChildren<Animator>();
+		anim.SetFloat("Speed", heartAnimSpeed);
+		heartAnimDuration = anim.runtimeAnimatorController.animationClips[0].length / heartAnimSpeed;
+		heartTarget = GameObject.Find("Heart Target").transform;
+		heartStartPos = anim.transform.localPosition;
+		heartStartEulers = anim.transform.localEulerAngles;
 
 		// Get reference to the player height using the CharacterController's height.
 		playerHeight = characterController.height;
@@ -306,15 +318,15 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Handles player behavior when interacting with objects. </summary>
 	private void PickUp()
 	{
-        if (!holding && !looking)
-        {
-            
-            SetState(new PickUp(this));
-        }
+		if (!holding && !looking)
+		{
+
+			SetState(new PickUp(this));
+		}
 		else if (looking) { SetState(new Inspect(this)); } //unused for now
 		else if (holding)
 		{
-            Debug.Log("letgo");
+			Debug.Log("letgo");
 			if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
 				StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
 			else
@@ -327,7 +339,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		if (windowEnabled && !holding)
 		{
-			SetState(new Aiming(this));
+			StartCoroutine(WaitAndAim(heartAnimDuration));
 		}
 		aiming = true;
 	}
@@ -349,28 +361,27 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 			// Make sure it is in the right layer
 			int layerMask = 1 << 9;
 
+			// Raycast to see what the object's tag is. If it is a Pickupable object...
 
-            // Raycast to see what the object's tag is. If it is a Pickupable object...
-
-            if (interactPrompt != null)
+			if (interactPrompt != null)
 			{
-                if(heldObject is Placeable && (heldObject as Placeable).PlaceConditionsMet())
-                {
-                    interactPrompt.GetComponent<Text>().text = "Press E to Place Canvas";
-                    interactPrompt.SetActive(true);
-                }
-                else if(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() || !pickedUpFirst)
+				if (heldObject is Placeable && (heldObject as Placeable).PlaceConditionsMet())
 				{
-					if(!holding && playerCanMove)
-                    {
-                    	interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
-                        interactPrompt.SetActive(true);
+					interactPrompt.GetComponent<Text>().text = "Press E to Place Canvas";
+					interactPrompt.SetActive(true);
+				}
+				else if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() || !pickedUpFirst)
+				{
+					if (!holding && playerCanMove)
+					{
+						interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
+						interactPrompt.SetActive(true);
 						if (hit.transform != null && hit.transform.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
-                    	{
-                        	interactPrompt.SetActive(false);
-                        	return;
-                    	}
-                    }
+						{
+							interactPrompt.SetActive(false);
+							return;
+						}
+					}
 				}
 				else
 				{
@@ -380,9 +391,49 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		}
 	}
 
-    public void GateInteractPrompt()
-    {
-        interactPrompt.SetActive(true);
-        interactPrompt.GetComponent<Text>().text = "Press E to Unlock";
-    }
+	public void GateInteractPrompt()
+	{
+		interactPrompt.SetActive(true);
+		interactPrompt.GetComponent<Text>().text = "Press E to Unlock";
+	}
+
+	IEnumerator WaitAndAim(float time)
+	{
+		anim.SetBool("Aiming", true);
+
+		float start = Time.time;
+		bool inProgress = true;
+		while (inProgress)
+		{
+			yield return null;
+			float step = Time.time - start;
+			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTarget.localPosition, step / time);
+			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTarget.localEulerAngles, step / time);
+
+			if (step > time)
+				inProgress = false;
+		}
+		SetState(new Aiming(this));
+	}
+
+	public void RevertAim() => StartCoroutine(Repos(heartAnimDuration / 1.5f));
+
+	IEnumerator Repos(float time)
+	{
+		Vector3 startPos = anim.transform.localPosition;
+		Vector3 startEulers = anim.transform.localEulerAngles;
+
+		float start = Time.time;
+		bool inProgress = true;
+		while (inProgress)
+		{
+			yield return null;
+			float step = Time.time - start;
+			anim.transform.localPosition = Vector3.Lerp(startPos, heartStartPos, step / time);
+			anim.transform.localEulerAngles = Vector3.Lerp(startEulers, heartStartEulers, step / time);
+
+			if (step > time)
+				inProgress = false;
+		}
+	}
 }
