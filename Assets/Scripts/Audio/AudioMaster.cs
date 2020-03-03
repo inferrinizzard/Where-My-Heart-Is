@@ -13,6 +13,12 @@ public class AudioMaster : Singleton<AudioMaster>
     [FMODUnity.EventRef]
     public string TensionMusicEvent;
 
+    [FMODUnity.EventRef]
+    public string IntroMusicEvent;
+
+    [FMODUnity.EventRef]
+    public string MainThemeEvent;
+
 
     private FMOD.Studio.EventInstance ambientInstance;
     private FMOD.Studio.EventInstance musicInstance;
@@ -23,12 +29,27 @@ public class AudioMaster : Singleton<AudioMaster>
         ambientInstance = FMODUnity.RuntimeManager.CreateInstance(AutumnAmbientEvent);
         ambientInstance.setParameterByName("Play Song", 1);
         ambientInstance.start();
+        StartIntroTheme();
     }
 
     public void StartTensionTheme()
     {
         musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         musicInstance = FMODUnity.RuntimeManager.CreateInstance(TensionMusicEvent);
+        musicInstance.start();
+    }
+
+    public void StartIntroTheme()
+    {
+        musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        musicInstance = FMODUnity.RuntimeManager.CreateInstance(IntroMusicEvent);
+        musicInstance.start();
+    }
+
+    public void StartMainTheme()
+    {
+        musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        musicInstance = FMODUnity.RuntimeManager.CreateInstance(MainThemeEvent);
         musicInstance.start();
     }
 
