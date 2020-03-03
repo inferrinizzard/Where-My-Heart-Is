@@ -51,6 +51,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	[HideInInspector] public Transform deathPlane;
 	/// <summary> Get Window script from GameObject. </summary>
 	[HideInInspector] public Window window;
+	[HideInInspector] public ApplyMask mask;
 	[HideInInspector] public PlayerAudio audioController;
 
 	[Header("UI")]
@@ -89,6 +90,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		VFX = cam.GetComponent<Effects>();
 		window = GetComponentInChildren<Window>();
 		heartWindow = window.gameObject;
+		mask = GetComponentInChildren<ApplyMask>();
 		audioController = GetComponent<PlayerAudio>();
 
 		// Get reference to the player height using the CharacterController's height.
@@ -174,7 +176,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		State.Start();
 	}
 
-	void Update()
+	void FixedUpdate()
 	{
 		if (playerCanMove)
 		{

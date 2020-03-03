@@ -9,7 +9,6 @@ public class CanvasObject : CollectableObject
 	public string manualTarget;
 	public override void Interact()
 	{
-		//prevent move/rotate here
 		StartCoroutine(Collect(
 			player.transform.position + player.cam.transform.forward,
 			new Vector3(player.rotationX - 25f, player.rotationY, 0)));
@@ -17,7 +16,7 @@ public class CanvasObject : CollectableObject
 
 	protected override void CollectEndAction()
 	{
-		StartCoroutine(Effects.mask.PreTransition(preview, GameManager.Instance.levels[GameManager.Instance.sceneIndex + 1]));
+		StartCoroutine(Player.Instance.mask.PreTransition(preview, GameManager.Instance.levels[GameManager.Instance.sceneIndex + 1]));
 		// StartCoroutine(Effects.mask.PreTransition(preview, manualTarget == "" ? "Intro" : manualTarget));
 	}
 }

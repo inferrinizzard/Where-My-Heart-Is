@@ -8,10 +8,6 @@ using UnityEngine.UI;
 /// <summary> Constrols app macro and scene manipulations </summary>
 public class GameManager : Singleton<GameManager>, IResetable
 {
-	/// <summary> UI Image wrapper for Loading Screen  </summary>
-	GameObject loadingScreen;
-	/// <summary> Slider for Loading Bar  </summary>
-	Slider loadingBar;
 	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "ComplexGate", "OneCut", "HalfCut 1", "AutumnFinal" };
 	public int sceneIndex = -1;
 	public ApplyOutline outlineManager;
@@ -21,10 +17,6 @@ public class GameManager : Singleton<GameManager>, IResetable
 	{
 		outlineManager = GetComponentInChildren<ApplyOutline>();
 		sceneIndex = levels.ToList().FindIndex(name => name == SceneManager.GetActiveScene().name);
-		// get Loading Screen UI ref
-		loadingScreen = transform.GetChild(0).GetChild(0).gameObject; // better find
-		// get Slider ref
-		loadingBar = loadingScreen.GetComponentInChildren<Slider>();
 
 		World.Instance.name += $" [{SceneManager.GetActiveScene().name}]";
 
@@ -42,18 +34,12 @@ public class GameManager : Singleton<GameManager>, IResetable
 	}
 
 	/// <summary> SceneManager.activeSceneChanged Delegate wrapper </summary>
-	// void InitScene(Scene from, LoadSceneMode mode = LoadSceneMode.Single) => instance.Init();
-	void InitScene(Scene from, LoadSceneMode mode = LoadSceneMode.Single)
-	{
-		print(this);
-		instance.Init();
-	}
+	void InitScene(Scene from, LoadSceneMode mode = LoadSceneMode.Single) => instance.Init();
 	//maybe call unload here
 
 	/// <summary> Will delegate sub Init calls </summary>
 	public void Init()
 	{
-		print(SceneManager.GetActiveScene().name);
 		World.Instance.Init();
 		World.Instance.name += $"[{levels[++sceneIndex]}]";
 		Player.Instance.Init();
@@ -88,7 +74,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 		float start = Time.time;
 		bool inProgress = true;
 
-		var transitionMat = Effects.mask.transitionMat;
+		var transitionMat = Player.Instance.mask.transitionMat;
 		int _CutoffID = Shader.PropertyToID("_Cutoff");
 
 		while (inProgress)
@@ -101,11 +87,10 @@ public class GameManager : Singleton<GameManager>, IResetable
 			{
 				inProgress = false;
 
-				instance.loadingScreen.SetActive(false);
 				instance.Reset();
 				asyncLoad.allowSceneActivation = true;
 
-				Effects.mask.transitionMat = null;
+				Player.Instance.mask.transitionMat = null;
 				instance.duringLoad = false;
 
 				// instance.StartCoroutine(UnloadScene(name));

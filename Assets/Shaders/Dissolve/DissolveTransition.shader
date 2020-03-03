@@ -21,8 +21,6 @@ Shader "Dissolve/Transition"
 
 			#include "UnityCG.cginc"
 
-			float4 _MainTex_TexelSize;
-
 			sampler2D _TransitionTex;
 			sampler2D _MainTex;
 			sampler2D _BackgroundTex;
@@ -35,9 +33,10 @@ Shader "Dissolve/Transition"
 				fixed4 col = tex2D(_MainTex, i.uv + _Cutoff * direction);
 
 				if (transit.b < _Cutoff)
-				return col = lerp(col, tex2D(_BackgroundTex, i.uv), (_Cutoff - transit.b) / transit.b);
+				return float4(tex2D(_BackgroundTex, i.uv).rgb, 1 - (_Cutoff - transit.b) / transit.b); // fade with alpha
+				// return col = lerp(col, tex2D(_BackgroundTex, i.uv), (_Cutoff - transit.b) / transit.b);
 
-				return col;
+				return float4(col.rgb,  (_Cutoff - transit.b) / transit.b);
 			}					
 			ENDCG
 		}
