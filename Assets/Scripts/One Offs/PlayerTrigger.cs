@@ -19,7 +19,6 @@ public class PlayerTrigger : MonoBehaviour
         {
             StartCoroutine(dialogueSystem.WriteDialogue(flavor));
         }
-            OnPlayerEnter();
             if(destroyAfterTrigger)
             {
                 Destroy(this);
