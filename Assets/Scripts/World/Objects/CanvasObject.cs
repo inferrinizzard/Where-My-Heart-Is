@@ -5,6 +5,8 @@ using UnityEngine;
 public class CanvasObject : CollectableObject
 {
 	public Texture2D preview;
+
+	public string manualTarget;
 	public override void Interact()
 	{
 		//prevent move/rotate here
@@ -16,5 +18,6 @@ public class CanvasObject : CollectableObject
 	protected override void CollectEndAction()
 	{
 		StartCoroutine(Effects.mask.PreTransition(preview, GameManager.Instance.levels[GameManager.Instance.sceneIndex + 1]));
+		// StartCoroutine(Effects.mask.PreTransition(preview, manualTarget == "" ? "Intro" : manualTarget));
 	}
 }

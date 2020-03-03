@@ -304,14 +304,17 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Handles player behavior when interacting with objects. </summary>
 	private void PickUp()
 	{
-		if (!holding && !looking) { SetState(new PickUp(this)); }
-		else if (looking) { SetState(new Inspect(this)); } //unused for now
-		else if (holding)
+		if (!GameManager.Instance.duringLoad)
 		{
-			if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
-				StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
-			else
-				SetState(new Drop(this));
+			if (!holding && !looking) { SetState(new PickUp(this)); }
+			else if (looking) { SetState(new Inspect(this)); } //unused for now
+			else if (holding)
+			{
+				if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
+					StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
+				else
+					SetState(new Drop(this));
+			}
 		}
 	}
 

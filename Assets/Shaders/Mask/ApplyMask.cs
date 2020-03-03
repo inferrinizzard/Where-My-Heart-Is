@@ -26,7 +26,6 @@ public class ApplyMask : MonoBehaviour
 	void Start()
 	{
 		screenMat = new Material(merge);
-		curSave = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
 
 		// get ref to real world cam and assign generated RenderTexture
 		mainCam = GetComponent<Camera>();
@@ -108,6 +107,7 @@ public class ApplyMask : MonoBehaviour
 	public IEnumerator PreTransition(Texture2D preview, string scene)
 	{
 		yield return new WaitForEndOfFrame();
+		curSave = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
 		curSave.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
 		curSave.Apply();
 		transitionMat = new Material(transition);

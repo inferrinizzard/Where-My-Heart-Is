@@ -12,9 +12,10 @@ public class GameManager : Singleton<GameManager>, IResetable
 	GameObject loadingScreen;
 	/// <summary> Slider for Loading Bar  </summary>
 	Slider loadingBar;
-	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "ComplexGate", "HalfCut 1", "AutumnFinal" };
+	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "ComplexGate", "OneCut", "HalfCut 1", "AutumnFinal" };
 	public int sceneIndex = -1;
 	public ApplyOutline outlineManager;
+	public bool duringLoad;
 
 	void Start()
 	{
@@ -30,7 +31,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 		outlineManager.cam = Player.Instance.cam;
 		outlineManager.root = World.Instance.transform;
 
-		SceneManager.activeSceneChanged += instance.InitScene;
+		SceneManager.sceneLoaded += instance.InitScene;
 	}
 
 	/// <summary> Closes the Application </summary>
@@ -41,12 +42,18 @@ public class GameManager : Singleton<GameManager>, IResetable
 	}
 
 	/// <summary> SceneManager.activeSceneChanged Delegate wrapper </summary>
-	void InitScene(Scene from, Scene to) => instance.Init();
+	// void InitScene(Scene from, LoadSceneMode mode = LoadSceneMode.Single) => instance.Init();
+	void InitScene(Scene from, LoadSceneMode mode = LoadSceneMode.Single)
+	{
+		print(this);
+		instance.Init();
+	}
 	//maybe call unload here
 
 	/// <summary> Will delegate sub Init calls </summary>
 	public void Init()
 	{
+		print(SceneManager.GetActiveScene().name);
 		World.Instance.Init();
 		World.Instance.name += $"[{levels[++sceneIndex]}]";
 		Player.Instance.Init();
@@ -75,6 +82,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 	static IEnumerator LoadScene(string name, float time = 3)
 	{
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
+		instance.duringLoad = true;
 		asyncLoad.allowSceneActivation = false;
 
 		float start = Time.time;
@@ -98,6 +106,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 				asyncLoad.allowSceneActivation = true;
 
 				Effects.mask.transitionMat = null;
+				instance.duringLoad = false;
 
 				// instance.StartCoroutine(UnloadScene(name));
 				// instance.Init();
