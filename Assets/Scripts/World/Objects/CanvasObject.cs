@@ -6,7 +6,7 @@ using UnityEngine;
 public class CanvasObject : CollectableObject
 {
 	public Texture2D preview;
-	[SerializeField] string manualTarget = "";
+	[SerializeField] public string manualTarget = "";
 
     public event Action OnInteract;
 

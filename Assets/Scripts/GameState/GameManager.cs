@@ -52,7 +52,7 @@ public class GameManager : Singleton<GameManager>, IResetable
 	/// <summary> Will delegate sub Reset calls </summary>
 	public void Reset()
 	{
-        SceneManager.activeSceneChanged -= instance.InitScene;
+        //SceneManager.activeSceneChanged -= instance.InitScene;
         World.Instance.Reset();
 		Player.Instance.Reset();
 	}
