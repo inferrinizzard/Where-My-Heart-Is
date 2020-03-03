@@ -7,6 +7,8 @@ public class BirbAnimTester : MonoBehaviour
 	public KeyCode idleKey = KeyCode.Alpha1;
 	public KeyCode flyKey = KeyCode.Alpha2;
 	Animator anim;
+
+    public float GlidePercent = 0.4f;
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -27,4 +29,12 @@ public class BirbAnimTester : MonoBehaviour
             anim.SetBool("IsFlying", false);
         }
 	}
+
+    public void _UpdateGlide()
+    {
+        if (Random.Range(0f, 1f) < GlidePercent)
+            anim.SetBool("IsGliding", true);
+        else
+            anim.SetBool("IsGliding", false);
+    }
 }
