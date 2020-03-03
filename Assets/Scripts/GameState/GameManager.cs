@@ -1,23 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary> Constrols app macro and scene manipulations </summary>
-public class GameManager : Singleton<GameManager>
+public class GameManager : Singleton<GameManager>, IResetable
 {
-	/// <summary> UI Image wrapper for Loading Screen  </summary>
-	GameObject loadingScreen;
-	/// <summary> Slider for Loading Bar  </summary>
-	Slider loadingBar;
+	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "OneCut", "ComplexGate", "HalfCut 1", "AutumnFinal" };
+	public int sceneIndex = -1;
+	public ApplyOutline outlineManager;
+	public bool duringLoad;
 
 	void Start()
 	{
-		// get Loading Screen UI ref
-		loadingScreen = transform.GetChild(0).GetChild(0).gameObject; // better find
-		// get Slider ref
-		loadingBar = loadingScreen.GetComponentInChildren<Slider>();
+		outlineManager = GetComponentInChildren<ApplyOutline>();
+		sceneIndex = levels.ToList().FindIndex(name => name == SceneManager.GetActiveScene().name);
+
+		World.Instance.name += $" [{SceneManager.GetActiveScene().name}]";
+
+		//outlineManager.cam = Player.Instance.cam;
+		//outlineManager.root = World.Instance.transform;
+
+		SceneManager.sceneLoaded += instance.InitScene;
 	}
 
 	/// <summary> Closes the Application </summary>
@@ -25,6 +31,31 @@ public class GameManager : Singleton<GameManager>
 	{
 		// prompt
 		Application.Quit();
+	}
+
+	/// <summary> SceneManager.activeSceneChanged Delegate wrapper </summary>
+	void InitScene(Scene from, LoadSceneMode mode = LoadSceneMode.Single) => instance.Init();
+	//maybe call unload here
+
+	/// <summary> Will delegate sub Init calls </summary>
+	public void Init()
+	{
+		World.Instance.Init();
+        ++sceneIndex;
+        Debug.Log(sceneIndex);
+        World.Instance.name += $"[{levels[sceneIndex]}]";
+		Player.Instance.Init();
+
+        //outlineManager.cam = Player.Instance.cam;
+        //outlineManager.root = World.Instance.transform;
+    }
+
+    /// <summary> Will delegate sub Reset calls </summary>
+    public void Reset()
+	{
+        //SceneManager.activeSceneChanged -= instance.InitScene;
+        World.Instance.Reset();
+		Player.Instance.Reset();
 	}
 
 	public void ChangeLevel(string scene) => Transition(scene); // temp, to be deleted
@@ -38,22 +69,50 @@ public class GameManager : Singleton<GameManager>
 
 	/// <summary> Loads scene asynchronously, will transition when ready </summary>
 	/// <param name="scene"> Name of scene to load  </param>
-	static IEnumerator LoadScene(string name)
+	static IEnumerator LoadScene(string name, float time = 3)
 	{
-		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
-		asyncLoad.allowSceneActivation = false;
-		float start = Time.time;
-		while (!asyncLoad.isDone)
-		{
-			instance.loadingScreen.SetActive(true);
-			instance.loadingBar.normalizedValue = asyncLoad.progress / .9f;
+        Player.Instance.BeginSceneTransition();
 
-			if (asyncLoad.progress >= .9f && Time.time - start > 1)
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
+		instance.duringLoad = true;
+		asyncLoad.allowSceneActivation = false;
+
+		float start = Time.time;
+		bool inProgress = true;
+
+		var transitionMat = Player.Instance.mask.transitionMat;
+		int _CutoffID = Shader.PropertyToID("_Cutoff");
+
+		while (inProgress)
+		{
+			float step = Time.time - start;
+			float minProgress = Mathf.Min(asyncLoad.progress / .9f, step / time);
+			transitionMat.SetFloat(_CutoffID, minProgress * 2); // add curve here
+
+			if (asyncLoad.progress >= .9f && step > time)
 			{
+				inProgress = false;
+
+				instance.Reset();
 				asyncLoad.allowSceneActivation = true;
-				instance.loadingScreen.SetActive(false);
+
+				Player.Instance.mask.transitionMat = null;
+				instance.duringLoad = false;
+
+				// instance.StartCoroutine(UnloadScene(name));
+				// Instance.Init();
 			}
 			yield return null;
 		}
+        Player.Instance.EndSceneTransition();
+    }
+
+    /// <summary> Unloads scene asynchronously </summary>
+    /// <param name="scene"> Name of scene to unload  </param>
+    static IEnumerator UnloadScene(string name)
+	{
+		AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(name);
+		while (!asyncUnload.isDone)
+			yield return null;
 	}
 }

@@ -18,7 +18,7 @@ public class EntangledClipable : ClipableObject
             child.gameObject.layer = realObject.layer;
             if (child.GetComponent<MeshFilter>() != null)
             {
-                child.gameObject.AddComponent<ClipableObject>();
+                if(!child.gameObject.GetComponent<ClipableObject>()) child.gameObject.AddComponent<ClipableObject>();
             }
         }
 
@@ -27,7 +27,7 @@ public class EntangledClipable : ClipableObject
             child.gameObject.layer = dreamObject.layer;
             if (child.GetComponent<MeshFilter>() != null)
             {
-                child.gameObject.AddComponent<ClipableObject>();
+                if (!child.gameObject.GetComponent<ClipableObject>()) child.gameObject.AddComponent<ClipableObject>();
             }
         }
     }
@@ -95,17 +95,19 @@ public class EntangledClipable : ClipableObject
 		foreach (MeshFilter filter in createdObject.GetComponentsInChildren<MeshFilter>())
 		{
 			filter.gameObject.layer = LayerMask.NameToLayer(layer);
-			if (filter.gameObject.GetComponent<MeshFilter>() != null)
+			if (filter.gameObject.GetComponent<MeshFilter>() != null && filter.gameObject.GetComponent<Collider>() == null)
 				filter.gameObject.AddComponent<MeshCollider>();
 			if (filter.gameObject.GetComponent<ClipableObject>() == null)
 				filter.gameObject.AddComponent<ClipableObject>();
 		}
 
 		createdObject.layer = LayerMask.NameToLayer(layer);
-		if (createdObject.GetComponent<MeshFilter>())
+		if (createdObject.GetComponent<MeshFilter>() != null)
 		{
-			createdObject.AddComponent<MeshCollider>();
-			return createdObject.AddComponent<ClipableObject>();
+            if(createdObject.GetComponent<Collider>() == null) createdObject.AddComponent<MeshCollider>();
+            if(createdObject.GetComponent<ClipableObject>() == null) createdObject.AddComponent<ClipableObject>();
+
+            return createdObject.GetComponent<ClipableObject>();
 		}
 
 		return null;
