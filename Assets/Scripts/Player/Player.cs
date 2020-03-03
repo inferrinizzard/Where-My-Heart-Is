@@ -314,7 +314,6 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		else if (looking) { SetState(new Inspect(this)); } //unused for now
 		else if (holding)
 		{
-            Debug.Log("letgo");
 			if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
 				StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
 			else

@@ -41,6 +41,11 @@ public class Pickupable : InteractableObject
 		oldParent = transform.parent;
 		transform.parent = player.heldObjectLocation; // set the new parent to the hold object location object
 		transform.localPosition = Vector3.zero; // set the position to local zero to match the position of the hold object location target
+
+        if(hasFlavorText)
+        {
+            StartCoroutine(dialogue.WriteDialogue(flavorText));
+        }
 	}
 
 	public void PutDown()

@@ -35,10 +35,10 @@ public class DialogueSystem : MonoBehaviour
 
 	void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Z) && activeLineCount == 0 && !typing) // For testing, start the dialogue process when the Z key is pressed.
+		/*if (Input.GetKeyDown(KeyCode.Z) && activeLineCount == 0 && !typing) // For testing, start the dialogue process when the Z key is pressed.
 		{
-			StartCoroutine(WriteDialogue(0));
-		}
+			StartCoroutine(WriteDialogue("Heres some string or something"));
+		}*/
 	}
 
 	/// <summary> Parses the input JSON file into the text queue. </summary>
@@ -67,6 +67,20 @@ public class DialogueSystem : MonoBehaviour
 			EndText(); // Clears text once there are no more lines to display.
 		}
 	}
+
+    public IEnumerator WriteDialogue(string text)
+    {
+        textQueue = new string[1];
+        textQueue[0] = text;
+        activeLineCount = 0;
+        charCount = 0;
+        if (!typing && activeLineCount < textQueue.Length)
+        {
+            typing = true;
+            InvokeRepeating("AdvanceText", 0f, textSpeed);
+        }
+        yield return null;
+    }
 
 	/// <summary> Types out the current line character by character, then resets variables for recursive call to WriteDialogue. </summary>
 	public void AdvanceText()
