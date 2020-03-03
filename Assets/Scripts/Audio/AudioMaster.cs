@@ -65,6 +65,12 @@ public class AudioMaster : Singleton<AudioMaster>
         ambientInstance.start();
     }
 
+    public void StopAll()
+    {
+        ambientInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+    }
+
     public void SetSpring()
     {
         ambientInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
