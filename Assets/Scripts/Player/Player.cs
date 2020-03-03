@@ -166,12 +166,13 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 	void EndState()
 	{
-		State.End();
+		if(State != null) State.End();
 		State = null;
 	}
 
 	public void SetState(PlayerState state)
 	{
+        EndState();
 		State = state;
 		State.Start();
 	}
