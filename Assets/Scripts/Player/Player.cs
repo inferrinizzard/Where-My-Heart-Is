@@ -125,16 +125,12 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		interactPrompt = GameObject.FindWithTag("InteractPrompt");
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
-		Debug.Log(deathPlane);
-		Debug.Log(deathPlane.transform.position);
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
-		Debug.Log(lastSpawn.transform.position);
 		if (lastSpawn)
 		{
 			transform.position = lastSpawn.position;
 			rotationX = lastSpawn.eulerAngles.x;
 			rotationY = lastSpawn.eulerAngles.y;
-			Debug.Log(transform.position);
 			//transform.rotation = lastSpawn.rotation;
 			//cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
 		}
@@ -363,7 +359,7 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	/// <summary> Interact prompt handling. </summary>
 	private void UpdateInteractPrompt()
 	{
-		if (!aiming)
+		if (!aiming && interactPrompt)
 		{
 			// Raycast for what the player is looking at.
 			RaycastHit hit;
@@ -373,30 +369,29 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 
 			// Raycast to see what the object's tag is. If it is a Pickupable object...
 
-			if (interactPrompt != null)
+			if (heldObject is Placeable && (heldObject as Placeable).PlaceConditionsMet())
 			{
-				if (heldObject is Placeable && (heldObject as Placeable).PlaceConditionsMet())
+				interactPrompt.GetComponent<Text>().text = "Press E to Place Canvas";
+				interactPrompt.SetActive(true);
+			}
+			else if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() || !pickedUpFirst)
+			{
+				if (!holding && playerCanMove)
 				{
-					interactPrompt.GetComponent<Text>().text = "Press E to Place Canvas";
+					interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
+					if (hit.transform != null && (bool)hit.transform.GetComponent<BirbAnimTester>())
+						interactPrompt.GetComponent<Text>().text = "Press E to Interact with Bird";
 					interactPrompt.SetActive(true);
-				}
-				else if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() || !pickedUpFirst)
-				{
-					if (!holding && playerCanMove)
+					if (hit.transform != null && hit.transform.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
 					{
-						interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
-						interactPrompt.SetActive(true);
-						if (hit.transform != null && hit.transform.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
-						{
-							interactPrompt.SetActive(false);
-							return;
-						}
+						interactPrompt.SetActive(false);
+						return;
 					}
 				}
-				else
-				{
-					interactPrompt.SetActive(false);
-				}
+			}
+			else
+			{
+				interactPrompt.SetActive(false);
 			}
 		}
 	}
