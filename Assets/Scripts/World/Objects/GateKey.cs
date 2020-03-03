@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GateKey : Pickupable
 {
@@ -17,5 +18,13 @@ public class GateKey : Pickupable
 		base.Interact();
 	}
 
-	public bool GateCheck() => Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold;
+    private void Update()
+    {
+        if(GateCheck())
+        {
+            player.GateInteractPrompt();
+        }
+    }
+
+    public bool GateCheck() => Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold;
 }

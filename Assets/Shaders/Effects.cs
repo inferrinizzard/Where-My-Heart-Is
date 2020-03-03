@@ -67,6 +67,8 @@ public class Effects : MonoBehaviour
 	public static IEnumerator DissolveOnDrop(GateKey obj, float time = .25f)
 	{
 		obj.transform.parent = obj.oldParent;
+        Player.Instance.holding = false;
+        obj.GetComponent<Collider>().enabled = false;
 		Material mat = obj.GetComponent<MeshRenderer>().material;
 		mat.EnableKeyword("DISSOLVE_MANUAL");
 		int ManualDissolveID = Shader.PropertyToID("_ManualDissolve");
@@ -85,7 +87,9 @@ public class Effects : MonoBehaviour
 		mat.DisableKeyword("DISSOLVE_MANUAL");
 		mat.SetFloat(ManualDissolveID, 1);
 
-		obj.Interact();
-		obj.active = false;
+        Player.Instance.holding = true;
+        obj.Interact();
+        obj.GetComponent<Collider>().enabled = true;
+        obj.active = false;
 	}
 }
