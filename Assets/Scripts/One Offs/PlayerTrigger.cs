@@ -13,14 +13,14 @@ public class PlayerTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Player")
+        if (other.tag == "Player")
         {
-        if(flavor != "")
-        {
-            StartCoroutine(dialogueSystem.WriteDialogue(flavor));
-        }
-            OnPlayerEnter();
-            if(destroyAfterTrigger)
+            if (flavor != "")
+            {
+                StartCoroutine(dialogueSystem.WriteDialogue(flavor));
+            }
+            OnPlayerEnter?.Invoke();
+            if (destroyAfterTrigger)
             {
                 Destroy(this);
             }
