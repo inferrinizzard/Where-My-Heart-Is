@@ -6,12 +6,14 @@ public class Placeable : Pickupable
 {
     public float placeDistanceThreshold;
     public GameObject placeTarget;
+    public BirbAnimTester birdAnim;
+    public IntroController introController;
 
     public override void Interact()
     {
         base.Interact();
 
-        if(PlaceConditionsMet())
+        if (PlaceConditionsMet())
         {
             PutDown();
             transform.parent = placeTarget.transform;
@@ -19,8 +21,14 @@ public class Placeable : Pickupable
             transform.localRotation = Quaternion.identity;
             transform.localScale = Vector3.one;
 
-            gameObject.AddComponent<CanvasObject>().manualTarget = "Bridge";
+            CanvasObject canvas = gameObject.AddComponent<CanvasObject>();
+            canvas.manualTarget = "Bridge";
+            introController.SetCanvas(canvas);
             Destroy(this);
+        }
+        else if(Player.Instance.heldObject == this)
+        {
+            birdAnim.StartNextCurve();
         }
     }
 

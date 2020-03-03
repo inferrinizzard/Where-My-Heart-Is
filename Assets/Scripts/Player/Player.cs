@@ -361,13 +361,16 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
                 }
                 else if(Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>() || !pickedUpFirst)
 				{
-                    if (hit.transform != null && hit.transform.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
+					if(!holding && playerCanMove)
                     {
-                        interactPrompt.SetActive(false);
-                        return;
+                    	interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
+                        interactPrompt.SetActive(true);
+						if (hit.transform != null && hit.transform.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
+                    	{
+                        	interactPrompt.SetActive(false);
+                        	return;
+                    	}
                     }
-                    interactPrompt.GetComponent<Text>().text = "Press E to Pick Up Objects";
-                    interactPrompt.SetActive(true);
 				}
 				else
 				{
