@@ -24,7 +24,7 @@ public class DialogueSystem : MonoBehaviour
 	/// <summary> The current index of the line being typed. </summary>
 	private int activeLineCount = 0;
 	/// <summary> The speed that the text types at. </summary>
-	private float textSpeed = 0.1f;
+	private float textSpeed = 0.04f;
 	/// <summary> An object reference to parse the JSON into. </summary>
 	private JsonParsable json;
 
