@@ -2,37 +2,54 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class World : Singleton<World>, IResetable
+public class World : MonoBehaviour
 {
+    public static World Instance;
+
 	public Transform realWorldContainer;
 	public Transform dreamWorldContainer;
 	public Transform entangledWorldContainer;
 
-	public void Start()
+    public void Awake()
+    {
+        Instance = this;
+    }
+
+    public void Start()
 	{
-		Init();
-	}
+        realWorldContainer = transform.Find("Real World");
+        dreamWorldContainer = transform.Find("Dream World");
+        entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform;
 
-	/// <summary> configures children and related clipables, interactables </summary>
-	public void Init()
+        ConfigureWorld("Real", realWorldContainer);
+        ConfigureWorld("Dream", dreamWorldContainer);
+    }
+
+    /*public void Initialize()
+    {
+        realWorldContainer = transform.Find("Real World");
+        dreamWorldContainer = transform.Find("Dream World");
+        entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform;
+
+        ConfigureWorld("Real", realWorldContainer);
+        ConfigureWorld("Dream", dreamWorldContainer);
+    }*/
+
+	/*/// <summary> configures children and related clipables, interactables </summary>
+	public void OnBeginTransition()
 	{
-		realWorldContainer = transform.Find("Real World");
-		dreamWorldContainer = transform.Find("Dream World");
-		entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform;
+        Initialize();
+	}*/
 
-		ConfigureWorld("Real", realWorldContainer);
-		ConfigureWorld("Dream", dreamWorldContainer);
-	}
-
-	/// <summary> removes refs and deletes current to pass singleton to next world </summary>
-	public void Reset()
+	/*/// <summary> removes refs and deletes current to pass singleton to next world </summary>
+	public void OnCompleteTransition()
 	{
 		realWorldContainer = null;
 		dreamWorldContainer = null;
 		entangledWorldContainer = null;
 		instance = null;
 		Destroy(gameObject);
-	}
+	}*/
 
 	private void ConfigureWorld(string layer, Transform worldContainer)
 	{

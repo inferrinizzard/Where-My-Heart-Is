@@ -6,56 +6,34 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary> Constrols app macro and scene manipulations </summary>
-public class GameManager : Singleton<GameManager>, IResetable
+public class GameManager : Singleton<GameManager>
 {
 	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "OneCut", "ComplexGate", "HalfCut 1", "AutumnFinal" };
 	public int sceneIndex = -1;
-	public ApplyOutline outlineManager;
 	public bool duringLoad;
+
+    [HideInInspector]
+    public float loadProgress;
+
 
 	void Start()
 	{
-		outlineManager = GetComponentInChildren<ApplyOutline>();
 		sceneIndex = levels.ToList().FindIndex(name => name == SceneManager.GetActiveScene().name);
-
 		World.Instance.name += $" [{SceneManager.GetActiveScene().name}]";
-
-		//outlineManager.cam = Player.Instance.cam;
-		//outlineManager.root = World.Instance.transform;
-
-		SceneManager.sceneLoaded += instance.InitScene;
+        SceneManager.sceneLoaded += CreateSceneLoader;
 	}
 
-	/// <summary> Closes the Application </summary>
-	public static void QuitGame()
+    /// <summary> Closes the Application </summary>
+    public static void QuitGame()
 	{
 		// prompt
 		Application.Quit();
 	}
 
-	/// <summary> SceneManager.activeSceneChanged Delegate wrapper </summary>
-	void InitScene(Scene from, LoadSceneMode mode = LoadSceneMode.Single) => instance.Init();
-	//maybe call unload here
-
-	/// <summary> Will delegate sub Init calls </summary>
-	public void Init()
-	{
-		World.Instance.Init();
-        ++sceneIndex;
-        Debug.Log(sceneIndex);
-        World.Instance.name += $"[{levels[sceneIndex]}]";
-		Player.Instance.Init();
-
-        //outlineManager.cam = Player.Instance.cam;
-        //outlineManager.root = World.Instance.transform;
-    }
-
     /// <summary> Will delegate sub Reset calls </summary>
-    public void Reset()
+    public override void OnBeginTransition()
 	{
-        //SceneManager.activeSceneChanged -= instance.InitScene;
-        World.Instance.Reset();
-		Player.Instance.Reset();
+        GetIPersistents().ForEach(singleton => singleton.OnBeginTransition());
 	}
 
 	public void ChangeLevel(string scene) => Transition(scene); // temp, to be deleted
@@ -67,44 +45,61 @@ public class GameManager : Singleton<GameManager>, IResetable
 		instance.StartCoroutine(LoadScene(scene));
 	}
 
+    private List<IPersistent> GetIPersistents()
+    {
+        List<IPersistent> result = FindObjectsOfType<MonoBehaviour>().OfType<IPersistent>().Where(persistent => (object)persistent != this).ToList();
+        return result;
+    }
+
 	/// <summary> Loads scene asynchronously, will transition when ready </summary>
 	/// <param name="scene"> Name of scene to load  </param>
-	static IEnumerator LoadScene(string name, float time = 3)
+	static IEnumerator LoadScene(string name, float minDuration = 3)
 	{
-        Player.Instance.BeginSceneTransition();
+		instance.duringLoad = true;
+        instance.loadProgress = 0;
+        instance.OnBeginTransition();
+
+        List<IPersistent> persistents = instance.GetIPersistents();
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
-		instance.duringLoad = true;
 		asyncLoad.allowSceneActivation = false;
 
-		float start = Time.time;
+		float startTime = Time.time;
 		bool inProgress = true;
 
-		var transitionMat = Player.Instance.mask.transitionMat;
-		int _CutoffID = Shader.PropertyToID("_Cutoff");
+		Material transitionMat = Player.Instance.mask.transitionMat;
+        int _CutoffID = Shader.PropertyToID("_Cutoff");
 
 		while (inProgress)
 		{
-			float step = Time.time - start;
-			float minProgress = Mathf.Min(asyncLoad.progress / .9f, step / time);
-			transitionMat.SetFloat(_CutoffID, minProgress * 2); // add curve here
+			float currentTime = Time.time - startTime;
+            instance.loadProgress = Mathf.Min(asyncLoad.progress / .9f, currentTime / minDuration);
+			transitionMat.SetFloat(_CutoffID, instance.loadProgress * 2); // add curve here
 
-			if (asyncLoad.progress >= .9f && step > time)
+            persistents.ForEach(persistent => persistent.TransitonUpdate());
+
+			if (asyncLoad.progress >= .9f && currentTime > minDuration)
 			{
-				inProgress = false;
-
-				instance.Reset();
 				asyncLoad.allowSceneActivation = true;
-
 				Player.Instance.mask.transitionMat = null;
-				instance.duringLoad = false;
 
-				// instance.StartCoroutine(UnloadScene(name));
-				// Instance.Init();
+				inProgress = false;
+				instance.duringLoad = false;
 			}
 			yield return null;
 		}
-        Player.Instance.EndSceneTransition();
+    }
+
+    public void CreateSceneLoader(Scene from, LoadSceneMode mode = LoadSceneMode.Single)
+    {
+        Instantiate(new GameObject()).AddComponent<SceneLoader>();
+    }
+
+    public override void OnCompleteTransition()
+    {
+        ++sceneIndex;
+        World.Instance.name += $"[{levels[sceneIndex]}]";
+        GetIPersistents().ForEach(persistent => persistent.OnCompleteTransition());
     }
 
     /// <summary> Unloads scene asynchronously </summary>

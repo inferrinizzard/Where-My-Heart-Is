@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 /// <summary> Handles player movement and player interaction </summary>
 [System.Serializable]
-public class Player : Singleton<Player>, IResetable, IStateMachine
+public class Player : Singleton<Player>, IStateMachine
 {
 	/// <summary> Reference to the current state. </summary>
 	protected PlayerState State;
@@ -124,21 +124,20 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		Cursor.visible = false;
 		BeginFadeIn();
 
-		Init();
+        Initialize();
 	}
 
-	public void Init()
+	public override void Initialize()
 	{
-		interactPrompt = GameObject.FindWithTag("InteractPrompt");
+        interactPrompt = GameObject.FindWithTag("InteractPrompt");
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
-		if (lastSpawn)
+
+        if (lastSpawn)
 		{
 			transform.position = lastSpawn.position;
 			rotationX = lastSpawn.eulerAngles.x;
 			rotationY = lastSpawn.eulerAngles.y;
-			//transform.rotation = lastSpawn.rotation;
-			//cam.transform.eulerAngles = new Vector3(lastSpawn.eulerAngles.x, 0, 0);
 		}
 		playerCanMove = true;
 		holding = false;
@@ -148,16 +147,17 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		window.Invoke("CreateFoVMesh", 1);
 	}
 
-	public void BeginSceneTransition()
+	public override void OnBeginTransition()
 	{
-		sceneActive = false;
+        characterController.enabled = false;
+        sceneActive = false;
 		fadeInObject.SetActive(true);
 		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
 	}
 
-	public void EndSceneTransition()
+	public override void OnCompleteTransition()
 	{
-		DialoguePacket packet = FindObjectOfType<DialoguePacket>();
+        DialoguePacket packet = FindObjectOfType<DialoguePacket>();
 		if (packet != null)
 		{
 			DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
@@ -167,9 +167,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		else
 		{
 			EndSceneTransitionHelper();
-		}
-
-	}
+        }
+    }
 
 	private void EndSceneTransitionHelper(DialogueSystem dialogueSystem = null)
 	{
@@ -177,14 +176,16 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		{
 			dialogueSystem.TextComplete -= EndSceneTransitionHelper;
 		}
-		Player.Instance.sceneActive = true;
+        Initialize();
+        characterController.enabled = true;
+        Player.Instance.sceneActive = true;
 		BeginFadeIn();
 	}
 
 	private void BeginFadeIn()
 	{
+        sceneActive = true;
 		playFade = true;
-		playerCanRotate = false;
 		fadeInObject.SetActive(true);
 		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
 		CancelInvoke("EndFadeIn");
@@ -195,16 +196,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 	{
 		playFade = false;
 		fadeInObject.SetActive(false);
-		playerCanRotate = true;
 		if (Raycast() == null)
 			interactPrompt.SetActive(false);
-	}
-
-	///	<summary> reset pos, rendundant </summary>
-	public void Reset()
-	{
-		transform.position = Vector3.zero;
-		transform.eulerAngles = Vector3.zero;
 	}
 
 	public void OnEnable()
@@ -291,9 +284,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 		{
 			if (lastSpawn)
 			{
-				// Set the position to the spawnpoint
-				transform.position = lastSpawn ? lastSpawn.position : Vector3.zero;
-				Debug.Log(Vector3.zero);
+                // Set the position to the spawnpoint
+                transform.position = lastSpawn.position;
 				verticalVelocity = 0;
 
 				// Set the rotation to the spawnpoint
@@ -448,7 +440,8 @@ public class Player : Singleton<Player>, IResetable, IStateMachine
 						interactPrompt.GetComponent<Text>().text = "Press E to Enter Canvas";
 					else
 						interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
-					interactPrompt.SetActive(true);
+
+                    interactPrompt.SetActive(true);
 					if (hit != null && hit.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
 					{
 						interactPrompt.SetActive(false);

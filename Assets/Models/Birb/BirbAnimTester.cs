@@ -34,9 +34,7 @@ public class BirbAnimTester : MonoBehaviour
             curve.GetComponent<BGCcTrs>().Speed = 0;
             curve.DistanceRatio = 0;
         });
-        Debug.Log(currCurve);
         curves[currCurve].DistanceRatio = 0;
-        Debug.Log(currCurve);
 
         flapInstance = FMODUnity.RuntimeManager.CreateInstance(FlapEvent);
         flapInstance.setParameterByName("Flying", 0);
@@ -98,7 +96,6 @@ public class BirbAnimTester : MonoBehaviour
 
     private IEnumerator NextCurve()
     {
-        Debug.Log(currCurve);
         if (currCurve < curves.Length && currCurve != -1)
         {
             curves[currCurve].DistanceRatio = 0;
