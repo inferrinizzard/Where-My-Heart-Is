@@ -30,4 +30,10 @@ public static class Extensions
 				group.AddRange(child.GetComponentsInChildren<T>());
 		return group.ToArray();
 	}
+
+	public static dynamic Enable(this MonoBehaviour @this)
+	{
+		@this.enabled = true;
+		return @this;
+	}
 }
