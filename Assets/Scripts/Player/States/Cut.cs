@@ -13,7 +13,7 @@ public class Cut : PlayerState
 	{
 		player.window.ApplyCut();
 		player.audioController.PlaceWindow();
-		player.heartWindow.SetActive(false);
+		player.window.gameObject.SetActive(false);
 		player.VFX.ToggleMask(false);
 		player.EndState();
 	}

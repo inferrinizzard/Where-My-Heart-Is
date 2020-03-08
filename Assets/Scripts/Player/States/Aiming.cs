@@ -19,7 +19,7 @@ public class Aiming : PlayerState
 
 	public void DeferredStart()
 	{
-		player.heartWindow.SetActive(true);
+		player.window.gameObject.SetActive(true);
 		player.VFX.ToggleMask(true);
 		player.audioController.OpenWindow();
 	}
@@ -28,7 +28,7 @@ public class Aiming : PlayerState
 	{
 		player.hands.ToggleHands(false);
 		player.hands.RevertAim();
-		player.heartWindow.SetActive(false);
+		player.window.gameObject.SetActive(false);
 		player.VFX.ToggleMask(false);
 		player.audioController.CloseWindow();
 	}

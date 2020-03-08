@@ -44,18 +44,13 @@ public class Player : Singleton<Player>, IStateMachine
 	private Vector3 moveDirection;
 
 	// [Header("Game Object References")]
-	/// <summary> Reference to heart window. </summary>
-	[HideInInspector] public GameObject heartWindow;
 	/// <summary> Reference to death plane. </summary>
 	[HideInInspector] public Transform deathPlane;
 	/// <summary> Get Window script from GameObject. </summary>
+	[HideInInspector] public Prompt prompt;
 	[HideInInspector] public Window window;
 	[HideInInspector] public ApplyMask mask;
 	[HideInInspector] public PlayerAudio audioController;
-
-	[Header("UI")]
-	/// <summary> Reference for interactPrompt UI object. </summary>
-	[SerializeField] public GameObject interactPrompt;
 
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
@@ -93,7 +88,6 @@ public class Player : Singleton<Player>, IStateMachine
 		cam = GetComponentInChildren<Camera>();
 		VFX = cam.GetComponent<Effects>();
 		window = GetComponentInChildren<Window>();
-		heartWindow = window.gameObject;
 		mask = GetComponentInChildren<ApplyMask>();
 		audioController = GetComponent<PlayerAudio>();
 		hands = GetComponentInChildren<Hands>();
@@ -114,7 +108,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 	public override void Initialize()
 	{
-		interactPrompt = GameObject.FindWithTag("InteractPrompt");
+		prompt = GameObject.FindObjectOfType<Prompt>(); // expensive
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
 
@@ -181,7 +175,7 @@ public class Player : Singleton<Player>, IStateMachine
 		playFade = false;
 		fadeInObject.SetActive(false);
 		if (Raycast() == null)
-			interactPrompt.SetActive(false);
+			prompt.Disable();
 	}
 
 	public void OnEnable()
@@ -403,46 +397,44 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Interact prompt handling. </summary>
 	private void UpdateInteractPrompt()
 	{
-		if (!(State is Aiming) && interactPrompt)
+		if (!(State is Aiming))
 		{
 			// Raycast for what the player is looking at.
 			Transform hit = Raycast();
 
 			if (heldObject is Placeable && (heldObject as Placeable).PlaceConditionsMet())
 			{
-				interactPrompt.GetComponent<Text>().text = "Press E to Place Canvas";
-				interactPrompt.SetActive(true);
+				prompt.Enable().SetText("Press E to Place Canvas");
 			}
 			else if (hit != null && hit.GetComponent<InteractableObject>() || !pickedUpFirst)
 			{
 				if (!holding && playerCanMove)
 				{
 					if (hit != null && (bool)hit.GetComponent<BirbAnimTester>())
-						interactPrompt.GetComponent<Text>().text = "Press E to Interact with Bird";
+						prompt.SetText("Press E to Interact with Bird");
 					else if (hit != null && (bool)hit.GetComponent<CanvasObject>())
-						interactPrompt.GetComponent<Text>().text = "Press E to Enter Canvas";
+						prompt.SetText("Press E to Enter Canvas");
 					else
-						interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
+						prompt.SetText("Press E to Pick Up");
 
-					interactPrompt.SetActive(true);
+					prompt.Enable();
 					if (hit != null && hit.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
 					{
-						interactPrompt.SetActive(false);
+						prompt.Disable();
 						return;
 					}
 				}
 			}
 			else
 			{
-				interactPrompt.SetActive(false);
+				prompt.Disable();
 			}
 		}
 	}
 
 	public void GateInteractPrompt()
 	{
-		interactPrompt.SetActive(true);
-		interactPrompt.GetComponent<Text>().text = "Press E to Unlock";
+		prompt.Enable().SetText("Press E to Unlock");
 	}
 
 	Transform Raycast()
