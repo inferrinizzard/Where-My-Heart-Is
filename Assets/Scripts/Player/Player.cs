@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class Player : Singleton<Player>, IStateMachine
 {
 	/// <summary> Reference to the current state. </summary>
-	protected PlayerState State;
+	public PlayerState State;
 
 	/// <summary> Reference to the players last spawn. </summary>
 	[HideInInspector] public Transform lastSpawn;
@@ -38,8 +38,6 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public bool holding = false;
 	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
 	[HideInInspector] public bool looking = false;
-	/// <summary> Whether the player in aiming the window or not. </summary>
-	[HideInInspector] public bool aiming = false;
 	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
 	private bool stillCrouching = false;
 	public bool pickedUpFirst = false;
@@ -225,7 +223,7 @@ public class Player : Singleton<Player>, IStateMachine
 		InputManager.OnLeftClickDown -= Cut;
 	}
 
-	void EndState()
+	public void EndState()
 	{
 		State?.End();
 		State = null;
@@ -399,9 +397,9 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player aiming function. </summary>
 	private void Aiming()
 	{
-		aiming = true;
 		if (windowEnabled && !holding && sceneActive)
 		{
+			SetState(new Aiming(this));
 			StartCoroutine(hands.WaitAndAim());
 		}
 	}
@@ -409,13 +407,13 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (aiming && windowEnabled && !holding)SetState(new Cut(this));
+		if (State is Aiming && windowEnabled && !holding)SetState(new Cut(this));
 	}
 
 	/// <summary> Interact prompt handling. </summary>
 	private void UpdateInteractPrompt()
 	{
-		if (!aiming && interactPrompt)
+		if (!(State is Aiming) && interactPrompt)
 		{
 			// Raycast for what the player is looking at.
 			Transform hit = Raycast();

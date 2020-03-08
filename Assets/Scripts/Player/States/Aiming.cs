@@ -12,6 +12,13 @@ public class Aiming : PlayerState
 	public override void Start()
 	{
 		// Make the window visible.
+		// player.heartWindow.SetActive(true);
+		// player.VFX.ToggleMask(true);
+		// player.audioController.OpenWindow();
+	}
+
+	public void DeferredStart()
+	{
 		player.heartWindow.SetActive(true);
 		player.VFX.ToggleMask(true);
 		player.audioController.OpenWindow();
@@ -24,6 +31,5 @@ public class Aiming : PlayerState
 		player.heartWindow.SetActive(false);
 		player.VFX.ToggleMask(false);
 		player.audioController.CloseWindow();
-		player.aiming = false;
 	}
 }

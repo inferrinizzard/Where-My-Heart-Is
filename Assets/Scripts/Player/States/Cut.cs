@@ -15,6 +15,6 @@ public class Cut : PlayerState
 		player.audioController.PlaceWindow();
 		player.heartWindow.SetActive(false);
 		player.VFX.ToggleMask(false);
-		player.aiming = false;
+		player.EndState();
 	}
 }
