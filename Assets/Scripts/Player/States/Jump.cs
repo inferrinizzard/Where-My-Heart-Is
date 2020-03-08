@@ -13,19 +13,14 @@ public class Jump : PlayerState
 	{
 		player.verticalVelocity = player.jumpForce;
 		player.audioController.JumpLiftoff();
-		player.jumping = true;
 
 		// Landing sound.
-		if (player.jumping)
+		RaycastHit hit;
+		int mask = ~player.gameObject.layer;
+		Physics.Raycast(new Ray(player.transform.position, Vector3.down), out hit, 5f, mask);
+		if (player.verticalVelocity < 0 && hit.distance < player.audioController.landingDistanceThreshold)
 		{
-			RaycastHit hit;
-			int mask = ~player.gameObject.layer;
-			Physics.Raycast(new Ray(player.transform.position, Vector3.down), out hit, 5f, mask);
-			if (player.verticalVelocity < 0 && hit.distance < player.audioController.landingDistanceThreshold)
-			{
-				player.audioController.JumpLanding();
-				player.jumping = false;
-			}
+			player.audioController.JumpLanding();
 		}
 	}
 }

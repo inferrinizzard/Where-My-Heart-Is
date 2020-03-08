@@ -30,8 +30,6 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Whether the player can move or not. </summary>
 	[HideInInspector] public bool playerCanMove = true;
 	[HideInInspector] public bool playerCanRotate = true;
-	/// <summary> Whether the player is jumping or not. </summary>
-	[HideInInspector] public bool jumping = false;
 	/// <summary> Whether the player is crouching or not. </summary>
 	[HideInInspector] public bool crouching = false;
 	/// <summary> Whether the player is holding something or not. </summary>
