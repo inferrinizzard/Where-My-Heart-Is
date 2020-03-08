@@ -410,15 +410,15 @@ public class Player : Singleton<Player>, IStateMachine
 			{
 				if (!holding && playerCanMove)
 				{
-					if (hit != null && (bool)hit.GetComponent<BirbAnimTester>())
+					if (hit.GetComponent<BirbAnimTester>())
 						prompt.SetText("Press E to Interact with Bird");
-					else if (hit != null && (bool)hit.GetComponent<CanvasObject>())
+					else if (hit.GetComponent<CanvasObject>())
 						prompt.SetText("Press E to Enter Canvas");
 					else
 						prompt.SetText("Press E to Pick Up");
 
 					prompt.Enable();
-					if (hit != null && hit.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
+					if ((bool)hit.GetComponent<Placeable>()?.PlaceConditionsMet())
 					{
 						prompt.Disable();
 						return;
@@ -430,11 +430,6 @@ public class Player : Singleton<Player>, IStateMachine
 				prompt.Disable();
 			}
 		}
-	}
-
-	public void GateInteractPrompt()
-	{
-		prompt.Enable().SetText("Press E to Unlock");
 	}
 
 	Transform Raycast()

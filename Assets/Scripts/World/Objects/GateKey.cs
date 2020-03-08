@@ -18,13 +18,11 @@ public class GateKey : Pickupable
 		base.Interact();
 	}
 
-    private void Update()
-    {
-        if(GateCheck())
-        {
-            player.GateInteractPrompt();
-        }
-    }
+	private void Update()
+	{
+		if (GateCheck())
+			player.prompt.Enable().SetText("Press E to Unlock");
+	}
 
-    public bool GateCheck() => Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold;
+	public bool GateCheck() => Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold;
 }
