@@ -41,6 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4545574372278966952}
   - component: {fileID: 5881450491029370834}
+  - component: {fileID: 8457030447290940087}
   m_Layer: 0
   m_Name: Hands
   m_TagString: Untagged
@@ -76,7 +77,7 @@ Animator:
   m_GameObject: {fileID: 670550455639107771}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 15419586482ba9f49aae8e0bdf938bca, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 312bfa52918ddb54f8fcdeff14d8b9b1, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -85,6 +86,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8457030447290940087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670550455639107771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b405dd26306de38438f958c2a3353ce0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heartAnimSpeed: 5
 --- !u!1 &937605886549693269
 GameObject:
   m_ObjectHideFlags: 0

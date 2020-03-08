@@ -92,9 +92,8 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Stores the X rotation of the player. </summary>
 	[HideInInspector] public float rotationX = 0f;
 
-	[SerializeField] float heartAnimSpeed = 5;
-	float heartAnimDuration;
-	Vector3 heartStartPos, heartStartEulers;
+	public Hands hands;
+
 	int _ViewDirID = Shader.PropertyToID("_ViewDir");
 
 	void Start()
@@ -107,11 +106,7 @@ public class Player : Singleton<Player>, IStateMachine
 		heartWindow = window.gameObject;
 		mask = GetComponentInChildren<ApplyMask>();
 		audioController = GetComponent<PlayerAudio>();
-		anim = GetComponentInChildren<Animator>();
-		anim.SetFloat("Speed", heartAnimSpeed);
-		heartAnimDuration = anim.runtimeAnimatorController.animationClips[0].length / heartAnimSpeed;
-		heartStartPos = anim.transform.localPosition;
-		heartStartEulers = anim.transform.localEulerAngles;
+		hands = GetComponentInChildren<Hands>();
 
 		// Get reference to the player height using the CharacterController's height.
 		playerHeight = characterController.height;
@@ -124,16 +119,16 @@ public class Player : Singleton<Player>, IStateMachine
 		Cursor.visible = false;
 		BeginFadeIn();
 
-        Initialize();
+		Initialize();
 	}
 
 	public override void Initialize()
 	{
-        interactPrompt = GameObject.FindWithTag("InteractPrompt");
+		interactPrompt = GameObject.FindWithTag("InteractPrompt");
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
 
-        if (lastSpawn)
+		if (lastSpawn)
 		{
 			transform.position = lastSpawn.position;
 			rotationX = lastSpawn.eulerAngles.x;
@@ -149,15 +144,15 @@ public class Player : Singleton<Player>, IStateMachine
 
 	public override void OnBeginTransition()
 	{
-        characterController.enabled = false;
-        sceneActive = false;
+		characterController.enabled = false;
+		sceneActive = false;
 		fadeInObject.SetActive(true);
 		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
 	}
 
 	public override void OnCompleteTransition()
 	{
-        DialoguePacket packet = FindObjectOfType<DialoguePacket>();
+		DialoguePacket packet = FindObjectOfType<DialoguePacket>();
 		if (packet != null)
 		{
 			DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
@@ -167,8 +162,8 @@ public class Player : Singleton<Player>, IStateMachine
 		else
 		{
 			EndSceneTransitionHelper();
-        }
-    }
+		}
+	}
 
 	private void EndSceneTransitionHelper(DialogueSystem dialogueSystem = null)
 	{
@@ -176,15 +171,15 @@ public class Player : Singleton<Player>, IStateMachine
 		{
 			dialogueSystem.TextComplete -= EndSceneTransitionHelper;
 		}
-        Initialize();
-        characterController.enabled = true;
-        Player.Instance.sceneActive = true;
+		Initialize();
+		characterController.enabled = true;
+		Player.Instance.sceneActive = true;
 		BeginFadeIn();
 	}
 
 	private void BeginFadeIn()
 	{
-        sceneActive = true;
+		sceneActive = true;
 		playFade = true;
 		fadeInObject.SetActive(true);
 		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
@@ -284,8 +279,8 @@ public class Player : Singleton<Player>, IStateMachine
 		{
 			if (lastSpawn)
 			{
-                // Set the position to the spawnpoint
-                transform.position = lastSpawn.position;
+				// Set the position to the spawnpoint
+				transform.position = lastSpawn.position;
 				verticalVelocity = 0;
 
 				// Set the rotation to the spawnpoint
@@ -407,14 +402,14 @@ public class Player : Singleton<Player>, IStateMachine
 		aiming = true;
 		if (windowEnabled && !holding && sceneActive)
 		{
-			StartCoroutine(WaitAndAim(heartAnimDuration));
+			StartCoroutine(hands.WaitAndAim());
 		}
 	}
 
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (aiming && windowEnabled && !holding) SetState(new Cut(this));
+		if (aiming && windowEnabled && !holding)SetState(new Cut(this));
 	}
 
 	/// <summary> Interact prompt handling. </summary>
@@ -441,7 +436,7 @@ public class Player : Singleton<Player>, IStateMachine
 					else
 						interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
 
-                    interactPrompt.SetActive(true);
+					interactPrompt.SetActive(true);
 					if (hit != null && hit.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
 					{
 						interactPrompt.SetActive(false);
@@ -460,54 +455,6 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		interactPrompt.SetActive(true);
 		interactPrompt.GetComponent<Text>().text = "Press E to Unlock";
-	}
-
-	IEnumerator WaitAndAim(float time)
-	{
-		anim.SetBool("Aiming", true);
-
-		var heartTargetPos = new Vector3(.01f, -.5f, 1.19f); // VS GHETTO
-		var heartTargetEulers = new Vector3(0, 90, -21.5f); // VS GHETTO
-
-		float start = Time.time;
-		bool inProgress = true;
-		while (inProgress)
-		{
-			if (!aiming)
-			{
-				StartCoroutine(Repos(.5f));
-				yield break;
-			}
-			yield return null;
-			float step = Time.time - start;
-			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / time);
-			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTargetEulers, step / time);
-
-			if (step > time)
-				inProgress = false;
-		}
-		SetState(new Aiming(this));
-	}
-
-	public void RevertAim() => StartCoroutine(Repos(heartAnimDuration / 1.5f));
-
-	IEnumerator Repos(float time)
-	{
-		Vector3 startPos = anim.transform.localPosition;
-		Vector3 startEulers = anim.transform.localEulerAngles;
-
-		float start = Time.time;
-		bool inProgress = true;
-		while (inProgress)
-		{
-			yield return null;
-			float step = Time.time - start;
-			anim.transform.localPosition = Vector3.Lerp(heartStartPos, startPos, 1 - step / time);
-			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, startEulers, 1 - step / time);
-
-			if (step > time)
-				inProgress = false;
-		}
 	}
 
 	Transform Raycast()
