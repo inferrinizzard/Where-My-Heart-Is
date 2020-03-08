@@ -22,7 +22,6 @@ public class Hands : MonoBehaviour
 
 	public IEnumerator WaitAndAim()
 	{
-		print("start coro");
 		anim.SetBool("Aiming", true);
 
 		var heartTargetPos = new Vector3(.01f, -.5f, 1.19f); // VS GHETTO
@@ -32,7 +31,6 @@ public class Hands : MonoBehaviour
 		bool inProgress = true;
 		while (inProgress)
 		{
-			print("in coro");
 			if (!(player.State is Aiming))
 			{
 				StartCoroutine(Repos(.5f));

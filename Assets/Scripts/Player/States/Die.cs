@@ -26,8 +26,7 @@ public class Die : PlayerState
 				player.verticalVelocity = 0;
 
 				// Set the player rotation to the spawnpoint
-				player.rotationX = player.lastSpawn.rotation.x;
-				player.rotationY = player.lastSpawn.rotation.y;
+				player.rotation = player.lastSpawn.eulerAngles;
 			}
 			else
 				Debug.LogWarning("Missing spawn point!");

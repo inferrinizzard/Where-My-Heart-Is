@@ -51,7 +51,6 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Reference to death plane. </summary>
 	[HideInInspector] public Transform deathPlane;
 	/// <summary> Get Window script from GameObject. </summary>
-	[HideInInspector] public Animator anim;
 	[HideInInspector] public Window window;
 	[HideInInspector] public ApplyMask mask;
 	[HideInInspector] public PlayerAudio audioController;
@@ -81,15 +80,10 @@ public class Player : Singleton<Player>, IStateMachine
 	public bool playFade;
 
 	// [Header("Camera Variables")]
-	/// <summary> Minimum angle the player can look upward. </summary>
-	private float minX = -90f;
-	/// <summary> Minimum angle the player can look downward. </summary>
-	private float maxX = 90f;
-	/// <summary> Stores the Y rotation of the player. </summary>
-	[HideInInspector] public float rotationY = 0f;
-	/// <summary> Stores the X rotation of the player. </summary>
-	[HideInInspector] public float rotationX = 0f;
-
+	/// <summary> Bounds angle the player can look upward. </summary>
+	private(float, float)xRotationBounds = (-90f, 90f);
+	/// <summary> Stores the rotation of the player. </summary>
+	[HideInInspector] public Vector3 rotation = Vector3.zero;
 	public Hands hands;
 
 	int _ViewDirID = Shader.PropertyToID("_ViewDir");
@@ -129,8 +123,7 @@ public class Player : Singleton<Player>, IStateMachine
 		if (lastSpawn)
 		{
 			transform.position = lastSpawn.position;
-			rotationX = lastSpawn.eulerAngles.x;
-			rotationY = lastSpawn.eulerAngles.y;
+			rotation = lastSpawn.eulerAngles;
 		}
 		playerCanMove = true;
 		holding = false;
@@ -282,8 +275,7 @@ public class Player : Singleton<Player>, IStateMachine
 				verticalVelocity = 0;
 
 				// Set the rotation to the spawnpoint
-				rotationX = lastSpawn.rotation.x;
-				rotationY = lastSpawn.rotation.y;
+				rotation = lastSpawn.eulerAngles;
 			}
 			else
 				Debug.LogWarning("Missing spawn point!");
@@ -325,18 +317,18 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (playerCanRotate)
 		{ // Get the rotation from the Mouse X and Mouse Y Axes and scale them by mouseSensitivity.
-			rotationY += Input.GetAxis("Mouse X") * mouseSensitivity;
-			rotationX += Input.GetAxis("Mouse Y") * mouseSensitivity;
+			rotation.y += Input.GetAxis("Mouse X") * mouseSensitivity;
+			rotation.x += Input.GetAxis("Mouse Y") * mouseSensitivity;
 
 			// Limit the rotation along the x axis.
-			rotationX = Mathf.Clamp(rotationX, minX, maxX);
+			rotation.x = Mathf.Clamp(rotation.x, xRotationBounds.Item1, xRotationBounds.Item2);
 
 			// Rotate the player along the y axis.
-			transform.localEulerAngles = new Vector3(0, rotationY, 0);
+			transform.localEulerAngles = new Vector3(0, rotation.y, 0);
 
 			// Rotate the player camera along the x axis.
 			// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
-			cam.transform.localEulerAngles = new Vector3(-rotationX, 0, 0);
+			cam.transform.localEulerAngles = new Vector3(-rotation.x, 0, 0);
 
 			Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
 
