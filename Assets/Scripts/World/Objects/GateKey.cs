@@ -24,5 +24,7 @@ public class GateKey : Pickupable
 			player.prompt.Enable().SetText("Press E to Unlock");
 	}
 
-	public bool GateCheck() => Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold;
+	public override bool ObjectiveMet() => GateCheck();
+
+	bool GateCheck() => Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold;
 }

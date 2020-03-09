@@ -370,8 +370,8 @@ public class Player : Singleton<Player>, IStateMachine
 			else if (looking) { SetState(new Inspect(this)); } //unused for now
 			else if (holding)
 			{
-				if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
-					StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
+				if (heldObject.GetComponent<Pickupable>() && !heldObject.GetComponent<Pickupable>().ObjectiveMet())
+					StartCoroutine((heldObject as Pickupable).DissolveOnDrop(1));
 				else
 					SetState(new Drop(this));
 			}

@@ -41,8 +41,6 @@ public class Pickupable : InteractableObject
 		oldParent = transform.parent;
 		transform.parent = player.heldObjectLocation; // set the new parent to the hold object location object
 		transform.localPosition = Vector3.zero; // set the position to local zero to match the position of the hold object location target
-
-        
 	}
 
 	public void PutDown()
@@ -76,5 +74,36 @@ public class Pickupable : InteractableObject
 		{
 			PutDown();
 		}
+	}
+
+	public virtual bool ObjectiveMet() => false;
+
+	public IEnumerator DissolveOnDrop(float time = .25f)
+	{
+		transform.parent = oldParent;
+		Player.Instance.holding = false;
+		GetComponent<Collider>().enabled = false;
+		Material mat = GetComponent<MeshRenderer>().material;
+		mat.EnableKeyword("DISSOLVE_MANUAL");
+		int ManualDissolveID = Shader.PropertyToID("_ManualDissolve");
+
+		float start = Time.time;
+		bool inProgress = true;
+
+		while (inProgress)
+		{
+			yield return null;
+			float step = Time.time - start;
+			mat.SetFloat(ManualDissolveID, step / time);
+			if (step > time)
+				inProgress = false;
+		}
+		mat.DisableKeyword("DISSOLVE_MANUAL");
+		mat.SetFloat(ManualDissolveID, 1);
+
+		Player.Instance.holding = true;
+		Interact();
+		GetComponent<Collider>().enabled = true;
+		active = false;
 	}
 }

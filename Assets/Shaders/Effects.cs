@@ -56,33 +56,4 @@ public class Effects : MonoBehaviour
 		else
 			Shader.DisableKeyword(keyword);
 	}
-
-	public static IEnumerator DissolveOnDrop(GateKey obj, float time = .25f)
-	{
-		obj.transform.parent = obj.oldParent;
-		Player.Instance.holding = false;
-		obj.GetComponent<Collider>().enabled = false;
-		Material mat = obj.GetComponent<MeshRenderer>().material;
-		mat.EnableKeyword("DISSOLVE_MANUAL");
-		int ManualDissolveID = Shader.PropertyToID("_ManualDissolve");
-
-		float start = Time.time;
-		bool inProgress = true;
-
-		while (inProgress)
-		{
-			yield return null;
-			float step = Time.time - start;
-			mat.SetFloat(ManualDissolveID, step / time);
-			if (step > time)
-				inProgress = false;
-		}
-		mat.DisableKeyword("DISSOLVE_MANUAL");
-		mat.SetFloat(ManualDissolveID, 1);
-
-		Player.Instance.holding = true;
-		obj.Interact();
-		obj.GetComponent<Collider>().enabled = true;
-		obj.active = false;
-	}
 }

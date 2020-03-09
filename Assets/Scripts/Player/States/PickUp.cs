@@ -21,7 +21,7 @@ public class PickUp : PlayerState
 		if (Physics.Raycast(player.cam.transform.position, player.cam.transform.forward, out hit, player.playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
 		{
 			player.pickedUpFirst = true;
-			if (hit.GetComponent<Placeable>() && hit.GetComponent<Placeable>().PlaceConditionsMet())
+			if (hit.transform.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
 				return;
 			// Store the held object.
 			player.heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();
