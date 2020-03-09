@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 
 /// <summary> Handles the inputting of text from a json file and displaying of text onto the screen. </summary>
 public class DialogueSystem : MonoBehaviour
@@ -29,9 +29,9 @@ public class DialogueSystem : MonoBehaviour
 	/// <summary> An object reference to parse the JSON into. </summary>
 	private JsonParsable json;
 
-    public event Action<DialogueSystem> TextComplete;
+	public event Action<DialogueSystem> TextComplete;
 
-    private void Start()
+	private void Start()
 	{
 		//ParseText();
 	}
@@ -71,20 +71,20 @@ public class DialogueSystem : MonoBehaviour
 		}
 	}
 
-    public IEnumerator WriteDialogue(string text)
-    {
-        /*textQueue = new string[1];
-        textQueue[0] = text;*/
-        textQueue = text.Split('/');
-        activeLineCount = 0;
-        charCount = 0;
-        if (!typing && activeLineCount < textQueue.Length)
-        {
-            typing = true;
-            InvokeRepeating("AdvanceText", 0f, textSpeed);
-        }
-        yield return null;
-    }
+	public IEnumerator WriteDialogue(string text)
+	{
+		/*textQueue = new string[1];
+		textQueue[0] = text;*/
+		textQueue = text.Split('/');
+		activeLineCount = 0;
+		charCount = 0;
+		if (!typing && activeLineCount < textQueue.Length)
+		{
+			typing = true;
+			InvokeRepeating("AdvanceText", 0f, textSpeed);
+		}
+		yield return null;
+	}
 
 	/// <summary> Types out the current line character by character, then resets variables for recursive call to WriteDialogue. </summary>
 	public void AdvanceText()
@@ -100,8 +100,8 @@ public class DialogueSystem : MonoBehaviour
 			typing = false;
 			charCount = 0;
 			activeLineCount++;
-            float delay = (1f / 30f) * textQueue[activeLineCount - 1].Length;
-            delay = Mathf.Clamp(delay, 0.5f, 1f);
+			float delay = (1f / 30f) * textQueue[activeLineCount - 1].Length;
+			delay = Mathf.Clamp(delay, 0.5f, 1f);
 			StartCoroutine(WriteDialogue(delay));
 		}
 	}
@@ -109,7 +109,7 @@ public class DialogueSystem : MonoBehaviour
 	/// <summary> Sets the UI text to be empty. </summary>
 	public void EndText()
 	{
-        TextComplete?.Invoke(this);
-        uiText.text = "";
+		TextComplete?.Invoke(this);
+		uiText.text = "";
 	}
 }

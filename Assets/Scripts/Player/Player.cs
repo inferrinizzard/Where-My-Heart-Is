@@ -418,7 +418,7 @@ public class Player : Singleton<Player>, IStateMachine
 						prompt.SetText("Press E to Pick Up");
 
 					prompt.Enable();
-					if ((bool)hit.GetComponent<Placeable>()?.PlaceConditionsMet())
+					if (hit.GetComponent<Placeable>() && hit.GetComponent<Placeable>().PlaceConditionsMet())
 					{
 						prompt.Disable();
 						return;
