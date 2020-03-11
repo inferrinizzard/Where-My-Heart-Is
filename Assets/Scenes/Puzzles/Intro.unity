@@ -259,12 +259,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!224 &86806892 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 550076407586660575, guid: 7821d63c43cf5954590d7f2d89f29fcf,
-    type: 3}
-  m_PrefabInstance: {fileID: 2222679496232976199}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &87532652
 GameObject:
   m_ObjectHideFlags: 0
@@ -741,98 +735,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &449630907
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 449630911}
-  - component: {fileID: 449630910}
-  - component: {fileID: 449630909}
-  - component: {fileID: 449630908}
-  m_Layer: 5
-  m_Name: Dialogue
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &449630908
+--- !u!114 &449630908 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 2259701036113586226, guid: 7821d63c43cf5954590d7f2d89f29fcf,
+    type: 3}
+  m_PrefabInstance: {fileID: 2222679496232976199}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 449630907}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d2be2a2885b92d4c8c3e5f14d041b08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: test.json
-  uiText: {fileID: 449630909}
---- !u!114 &449630909
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 449630907}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.6650944, b: 0.9716181, a: 1}
-  m_RaycastTarget: 0
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 40
-    m_FontStyle: 2
-    m_BestFit: 0
-    m_MinSize: 0
-    m_MaxSize: 230
-    m_Alignment: 1
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: 
---- !u!222 &449630910
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 449630907}
-  m_CullTransparentMesh: 0
---- !u!224 &449630911
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 449630907}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 86806892}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 50}
-  m_SizeDelta: {x: 900, y: 200}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &494417475
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1250,37 +1164,37 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -17.638313
+      value: -17.421131
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.8425164
+      value: 1.026012
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.8548536
+      value: -11.101475
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.00057155587
+      value: 0.15339147
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.99917597
+      value: 0.020196907
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.037642397
+      value: -0.0031358064
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.015171323
+      value: 0.98795414
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
         type: 3}
@@ -1408,7 +1322,7 @@ MonoBehaviour:
   hasFlavorText: 1
   flavorText: Hey there, little guy, what's your name?/Shy huh? I'll just call you
     Jay
-  dialogue: {fileID: 0}
+  dialogue: {fileID: 449630908}
   InteractSoundEvent: 
 --- !u!1001 &630920390
 PrefabInstance:
@@ -2515,7 +2429,7 @@ MonoBehaviour:
     paid a lot of money to get you into this school\u2026/I just want you to make
     the most of it./\u2026/Anyway, I hope you're healthy and safe./Just give me or
     your Mom a call, if you need anything/Love you, baby girl"
-  dialogue: {fileID: 0}
+  dialogue: {fileID: 449630908}
   InteractSoundEvent: 
 --- !u!1001 &1362077804
 PrefabInstance:
@@ -3264,7 +3178,7 @@ MonoBehaviour:
   prompt: 
   hasFlavorText: 1
   flavorText: "\u2018American History and Institutions\u2019"
-  dialogue: {fileID: 0}
+  dialogue: {fileID: 449630908}
   InteractSoundEvent: 
 --- !u!1 &1671600425 stripped
 GameObject:
@@ -3290,7 +3204,7 @@ MonoBehaviour:
   prompt: 
   hasFlavorText: 1
   flavorText: "'Ordinary Differential Equations\u2019"
-  dialogue: {fileID: 0}
+  dialogue: {fileID: 449630908}
   InteractSoundEvent: 
 --- !u!1 &1671600427 stripped
 GameObject:
@@ -3317,7 +3231,7 @@ MonoBehaviour:
   hasFlavorText: 1
   flavorText: "\u2018Introduction to Drawing and Painting\u2019/I wanna take this
     soo bad..."
-  dialogue: {fileID: 0}
+  dialogue: {fileID: 449630908}
   InteractSoundEvent: 
 --- !u!1 &1671600429 stripped
 GameObject:
@@ -3343,7 +3257,7 @@ MonoBehaviour:
   prompt: 
   hasFlavorText: 1
   flavorText: "\u2018Geography of National Parks in California'"
-  dialogue: {fileID: 0}
+  dialogue: {fileID: 449630908}
   InteractSoundEvent: 
 --- !u!4 &1702593675 stripped
 Transform:
