@@ -7,7 +7,8 @@ public class GateKey : Pickupable
 {
 	[SerializeField] Gate gate = default;
 	[SerializeField] float distanceThreshold = .5f;
-	public new bool dissolves = true;
+
+	void Awake() => dissolves = true;
 
 	public override void Interact()
 	{

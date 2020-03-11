@@ -411,10 +411,12 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 0
   flavorText: 
   dialogue: {fileID: 0}
   oldParent: {fileID: 0}
+  dissolves: 0
 --- !u!1001 &278110702
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1351,8 +1353,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c3cec8e06daa664e8afc978aa4130fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleKey: 265
-  flyKey: 111
   curves:
   - {fileID: 501060391}
   - {fileID: 1954565016}
@@ -1404,6 +1404,7 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 1
   flavorText: Hey there, little guy, what's your name?/Shy huh? I'll just call you
     Jay
@@ -1614,10 +1615,12 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 0
   flavorText: 
   dialogue: {fileID: 0}
   oldParent: {fileID: 0}
+  dissolves: 0
 --- !u!1 &856027366 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -3869127443668809106, guid: f6a569579815545a6876354dbf8db5c5,
@@ -1639,6 +1642,7 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 0
   flavorText: 
   dialogue: {fileID: 0}
@@ -2222,10 +2226,12 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 0
   flavorText: 
   dialogue: {fileID: 0}
   oldParent: {fileID: 0}
+  dissolves: 0
 --- !u!1001 &1157239206
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2501,6 +2507,7 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: Press E to Interact
   hasFlavorText: 1
   flavorText: "[*BEEP*]/How is my baby girl doing?/Eating proper?/I know school can
     be stressful and take your cooking time away from you, but you still need some
@@ -3107,10 +3114,12 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 0
   flavorText: 
   dialogue: {fileID: 0}
   oldParent: {fileID: 0}
+  dissolves: 0
 --- !u!4 &1637879790 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 07ea413a10ffca146ac4bfec001160f9,
@@ -3129,21 +3138,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: sticky_notes_board
       objectReference: {fileID: 0}
-    - target: {fileID: -7144838925204993707, guid: cc5867b25ee1d4455839c2c697aa840b,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 1243ab5f225704df3ab1c911af5a0c4c, type: 2}
-    - target: {fileID: -6000615274465577681, guid: cc5867b25ee1d4455839c2c697aa840b,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: caac5d5ae61704fa7a5558badd864cd4, type: 2}
-    - target: {fileID: -4861924686910468554, guid: cc5867b25ee1d4455839c2c697aa840b,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 70a4f37e92d1c419ebc5d1b460a5f6d9, type: 2}
     - target: {fileID: -4216859302048453862, guid: cc5867b25ee1d4455839c2c697aa840b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3214,6 +3208,21 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 10.594146
       objectReference: {fileID: 0}
+    - target: {fileID: -7144838925204993707, guid: cc5867b25ee1d4455839c2c697aa840b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1243ab5f225704df3ab1c911af5a0c4c, type: 2}
+    - target: {fileID: -6000615274465577681, guid: cc5867b25ee1d4455839c2c697aa840b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: caac5d5ae61704fa7a5558badd864cd4, type: 2}
+    - target: {fileID: -4861924686910468554, guid: cc5867b25ee1d4455839c2c697aa840b,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 70a4f37e92d1c419ebc5d1b460a5f6d9, type: 2}
     - target: {fileID: 856365191234717131, guid: cc5867b25ee1d4455839c2c697aa840b,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -3252,6 +3261,7 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 1
   flavorText: "\u2018American History and Institutions\u2019"
   dialogue: {fileID: 0}
@@ -3277,6 +3287,7 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 1
   flavorText: "'Ordinary Differential Equations\u2019"
   dialogue: {fileID: 0}
@@ -3302,6 +3313,7 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 1
   flavorText: "\u2018Introduction to Drawing and Painting\u2019/I wanna take this
     soo bad..."
@@ -3328,6 +3340,7 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 1
   flavorText: "\u2018Geography of National Parks in California'"
   dialogue: {fileID: 0}
@@ -3350,16 +3363,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bed+pillow
       objectReference: {fileID: 0}
-    - target: {fileID: -5497630761920843445, guid: f6a569579815545a6876354dbf8db5c5,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 6abb3470343bc4c4c87bfb13ad5b9b33, type: 2}
-    - target: {fileID: -4861924686910468554, guid: f6a569579815545a6876354dbf8db5c5,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 6abb3470343bc4c4c87bfb13ad5b9b33, type: 2}
     - target: {fileID: -4216859302048453862, guid: f6a569579815545a6876354dbf8db5c5,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3430,6 +3433,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 17.160036
       objectReference: {fileID: 0}
+    - target: {fileID: -5497630761920843445, guid: f6a569579815545a6876354dbf8db5c5,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6abb3470343bc4c4c87bfb13ad5b9b33, type: 2}
+    - target: {fileID: -4861924686910468554, guid: f6a569579815545a6876354dbf8db5c5,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 6abb3470343bc4c4c87bfb13ad5b9b33, type: 2}
     - target: {fileID: -4143083129731981181, guid: f6a569579815545a6876354dbf8db5c5,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -3611,10 +3624,12 @@ MonoBehaviour:
   hitboxObject: {fileID: 0}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 1
   flavorText: test
   dialogue: {fileID: 0}
   oldParent: {fileID: 0}
+  dissolves: 0
 --- !u!114 &1862715060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4250,10 +4265,12 @@ MonoBehaviour:
   hitboxObject: {fileID: 1862715060}
   player: {fileID: 0}
   active: 0
+  prompt: 
   hasFlavorText: 0
   flavorText: 
   dialogue: {fileID: 0}
   oldParent: {fileID: 0}
+  dissolves: 0
   placeDistanceThreshold: 0.5
   placeTarget: {fileID: 87532652}
   birdAnim: {fileID: 612707667}
@@ -4281,6 +4298,11 @@ PrefabInstance:
     - target: {fileID: 0}
       propertyPath: m_RootOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 550076407586660571, guid: 7821d63c43cf5954590d7f2d89f29fcf,
+        type: 3}
+      propertyPath: m_Name
+      value: UI
       objectReference: {fileID: 0}
     - target: {fileID: 550076407586660575, guid: 7821d63c43cf5954590d7f2d89f29fcf,
         type: 3}
@@ -4387,11 +4409,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 550076407586660571, guid: 7821d63c43cf5954590d7f2d89f29fcf,
-        type: 3}
-      propertyPath: m_Name
-      value: UI
-      objectReference: {fileID: 0}
     - target: {fileID: 7112816843193056768, guid: 7821d63c43cf5954590d7f2d89f29fcf,
         type: 3}
       propertyPath: m_IsActive
@@ -4446,6 +4463,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2682051114935348212, guid: c1ad9c75fb5753e4886d56e6b2740636,
+        type: 3}
+      propertyPath: m_Name
+      value: Spawn Point
+      objectReference: {fileID: 0}
     - target: {fileID: 2682051114935348213, guid: c1ad9c75fb5753e4886d56e6b2740636,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4500,11 +4522,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2682051114935348212, guid: c1ad9c75fb5753e4886d56e6b2740636,
-        type: 3}
-      propertyPath: m_Name
-      value: Spawn Point
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1ad9c75fb5753e4886d56e6b2740636, type: 3}
@@ -4666,6 +4683,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4721,11 +4743,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840492, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_Center.y
@@ -4739,6 +4756,16 @@ PrefabInstance:
     - target: {fileID: 5407968008035840464, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: windowEnabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857401503889292443, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_Name
+      value: FadeIn
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857401503889292443, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6145140128540555669, guid: ce2e34029942daa4c845cd2ceec80c14,
@@ -4755,16 +4782,6 @@ PrefabInstance:
         type: 3}
       propertyPath: earToDraw
       value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6857401503889292443, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_Name
-      value: FadeIn
-      objectReference: {fileID: 0}
-    - target: {fileID: 6857401503889292443, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1970347788946779078, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
@@ -4820,6 +4837,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
+        type: 3}
+      propertyPath: m_Name
+      value: DeathPlane
+      objectReference: {fileID: 0}
     - target: {fileID: 4037872479478507742, guid: 584309737b83dd34496c239b4a574f67,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4874,11 +4896,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
-        type: 3}
-      propertyPath: m_Name
-      value: DeathPlane
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 584309737b83dd34496c239b4a574f67, type: 3}

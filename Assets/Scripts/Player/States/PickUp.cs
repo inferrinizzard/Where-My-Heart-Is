@@ -15,8 +15,8 @@ public class PickUp : PlayerState
 		if (player.heldObject.GetComponent<Placeable>() && player.heldObject.GetComponent<Placeable>().PlaceConditionsMet())
 			return;
 		// Store the held object.
-		player.heldObject.Interact();
 		player.heldObject.active = true;
+		player.heldObject.Interact();
 
 		//player.playerCanMove = false;
 	}

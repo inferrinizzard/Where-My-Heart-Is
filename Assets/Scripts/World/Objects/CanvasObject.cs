@@ -7,8 +7,9 @@ public class CanvasObject : CollectableObject
 {
 	public Texture2D preview;
 	[SerializeField] public string manualTarget = "";
-
 	public event Action OnInteract;
+
+	void Awake() => prompt = "Press E to Enter Canvas";
 
 	public override void Interact()
 	{

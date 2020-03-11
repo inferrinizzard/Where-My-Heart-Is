@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +10,8 @@ public class Pickupable : InteractableObject
 	protected Vector3 initialPosition;
 	protected Quaternion initialRotation;
 	public bool dissolves = false;
+
+	void Awake() => prompt = "Press E to Pick Up";
 
 	void Update()
 	{

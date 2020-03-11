@@ -22,7 +22,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Empty GameObject for where to put a Pickupable object. </summary>
 	[HideInInspector] public Transform heldObjectLocation;
 	/// <summary> Reference to a Pickupable object that has been picked up. </summary>
-	[HideInInspector] public InteractableObject heldObject;
+	[HideInInspector] public Pickupable heldObject;
 	/// <summary> Vector3 to store and calculate vertical velocity. </summary>
 	[HideInInspector] public float verticalVelocity;
 	/// <summary> Player's height. </summary>
@@ -170,7 +170,7 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		playFade = false;
 		fadeInObject.SetActive(false);
-		if (Raycast() == null)
+		if (!RaycastInteractable())
 			prompt.Disable();
 	}
 
@@ -181,7 +181,7 @@ public class Player : Singleton<Player>, IStateMachine
 		// InputManager.OnCrouchDown += Crouch;
 		// InputManager.OnCrouchUp += UnCrouch;
 		// InputManager.OnCrouchUp += EndState;
-		InputManager.OnPickUpDown += PickUp;
+		InputManager.OnInteractDown += Interact;
 		InputManager.OnRightClickDown += Aiming;
 		InputManager.OnRightClickUp += EndState;
 		InputManager.OnAltAimKeyDown += Aiming;
@@ -196,7 +196,7 @@ public class Player : Singleton<Player>, IStateMachine
 		// InputManager.OnCrouchDown -= Crouch;
 		// InputManager.OnCrouchUp -= UnCrouch;
 		// InputManager.OnCrouchUp -= EndState;
-		InputManager.OnPickUpDown -= PickUp;
+		InputManager.OnInteractDown -= Interact;
 		InputManager.OnRightClickDown -= Aiming;
 		InputManager.OnRightClickUp -= EndState;
 		InputManager.OnAltAimKeyDown -= Aiming;
@@ -212,7 +212,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 	public void SetState(PlayerState state)
 	{
-		EndState();
+		// EndState();
 		State = state;
 		State.Start();
 	}
@@ -245,7 +245,6 @@ public class Player : Singleton<Player>, IStateMachine
 	}
 
 	/// <summary> Player sudoku function. </summary>
-	// private void Die() => SetState(new Die(this));
 	private void Die()
 	{
 		if (!deathPlane)
@@ -295,14 +294,13 @@ public class Player : Singleton<Player>, IStateMachine
 			audioController.JumpLiftoff();
 
 			// Landing sound.
-			RaycastHit hit;
 			int mask = ~gameObject.layer;
-			Physics.Raycast(new Ray(transform.position, Vector3.down), out hit, 5f, mask);
+			Physics.Raycast(new Ray(transform.position, Vector3.down), out RaycastHit hit, 5f, mask);
 			if (verticalVelocity < 0 && hit.distance < audioController.landingDistanceThreshold)
 			{
 				audioController.JumpLanding();
+			}
 		}
-	}
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
@@ -363,24 +361,31 @@ public class Player : Singleton<Player>, IStateMachine
 	}
 
 	/// <summary> Handles player behavior when interacting with objects. </summary>
-	private void PickUp()
+	void Interact()
 	{
-		if (!GameManager.Instance.duringLoad)
+		var hit = RaycastInteractable();
+		if (holding || hit is Pickupable)
 		{
-			var hit = Raycast()?.GetComponent<Pickupable>();
-			if (!holding && !looking && hit)
-			{
-				heldObject = hit;
-				SetState(new PickUp(this));
-			}
-			else if (looking) { SetState(new Inspect(this)); } //unused for now
-			else if (holding)
-			{
-				if (heldObject is Pickupable && (heldObject as Pickupable).dissolves)
-					StartCoroutine((heldObject as Pickupable).DissolveOnDrop(1));
-				else
-					EndState();
-			}
+			heldObject = heldObject ?? hit as Pickupable;
+			PickUp(!holding);
+		}
+		else if (hit)
+			hit.Interact();
+	}
+
+	private void PickUp(bool pickingUp)
+	{
+		if (pickingUp)
+		{
+			SetState(new PickUp(this));
+		}
+		// else if (looking) { SetState(new Inspect(this)); } //unused for now
+		else
+		{
+			if (heldObject.dissolves)
+				StartCoroutine(heldObject.DissolveOnDrop(1));
+			else
+				EndState();
 		}
 	}
 
@@ -406,29 +411,24 @@ public class Player : Singleton<Player>, IStateMachine
 		if (!(State is Aiming))
 		{
 			// Raycast for what the player is looking at.
-			Transform hit = Raycast();
+			var hit = RaycastInteractable();
+			print(hit);
 
 			if (heldObject is Placeable && (heldObject as Placeable).PlaceConditionsMet())
 			{
 				prompt.Enable().SetText("Press E to Place Canvas");
 			}
-			else if (hit != null && hit.GetComponent<InteractableObject>() || !pickedUpFirst)
+			else if (hit && !holding && playerCanMove)
 			{
-				if (!holding && playerCanMove)
-				{
-					if (hit.GetComponent<BirbAnimTester>())
-						prompt.SetText("Press E to Interact with Bird");
-					else if (hit.GetComponent<CanvasObject>())
-						prompt.SetText("Press E to Enter Canvas");
-					else
-						prompt.SetText("Press E to Pick Up");
+				if (hit.GetComponent<BirbAnimTester>())
+					prompt.Enable().SetText("Press E to Interact with Bird");
+				else
+					prompt.Enable().SetText(hit.prompt);
 
-					prompt.Enable();
-					if (hit.GetComponent<Placeable>() && hit.GetComponent<Placeable>().PlaceConditionsMet())
-					{
-						prompt.Disable();
-						return;
-					}
+				if (hit.GetComponent<Placeable>() && hit.GetComponent<Placeable>().PlaceConditionsMet())
+				{
+					prompt.Disable();
+					return;
 				}
 			}
 			else
@@ -438,5 +438,5 @@ public class Player : Singleton<Player>, IStateMachine
 		}
 	}
 
-	Transform Raycast() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform : null;
+	InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }
