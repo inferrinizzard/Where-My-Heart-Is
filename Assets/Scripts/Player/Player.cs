@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -291,10 +291,18 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (characterController.isGrounded)
 		{
-			var tempState = State;
-			SetState(new Jump(this));
-			State = tempState;
+			verticalVelocity = jumpForce;
+			audioController.JumpLiftoff();
+
+			// Landing sound.
+			RaycastHit hit;
+			int mask = ~gameObject.layer;
+			Physics.Raycast(new Ray(transform.position, Vector3.down), out hit, 5f, mask);
+			if (verticalVelocity < 0 && hit.distance < audioController.landingDistanceThreshold)
+			{
+				audioController.JumpLanding();
 		}
+	}
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
