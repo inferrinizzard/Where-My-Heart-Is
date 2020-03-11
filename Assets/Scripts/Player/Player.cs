@@ -366,18 +366,17 @@ public class Player : Singleton<Player>, IStateMachine
 		var hit = RaycastInteractable();
 		if (holding || hit is Pickupable)
 		{
-			heldObject = heldObject ?? hit as Pickupable;
-			PickUp(!holding);
+			PickUp(!holding, hit as Pickupable);
 		}
 		else if (hit)
 			hit.Interact();
 	}
 
-	private void PickUp(bool pickingUp)
+	private void PickUp(bool pickingUp, Pickupable obj)
 	{
 		if (pickingUp)
 		{
-			SetState(new PickUp(this));
+			SetState(new PickUp(this, obj));
 		}
 		// else if (looking) { SetState(new Inspect(this)); } //unused for now
 		else
