@@ -17,8 +17,9 @@ public class GameManager : Singleton<GameManager>
 	public DialogueSystem dialogue;
 	public Prompt prompt;
 
-	void Awake()
+	public override void Awake()
 	{
+		base.Awake();
 		dialogue = GetComponentInChildren<DialogueSystem>();
 		prompt = GetComponentInChildren<Prompt>();
 	}
