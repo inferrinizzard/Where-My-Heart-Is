@@ -9,6 +9,7 @@ public class Pickupable : InteractableObject
 
 	protected Vector3 initialPosition;
 	protected Quaternion initialRotation;
+	public bool dissolves = false;
 
 	void Update()
 	{
@@ -75,8 +76,6 @@ public class Pickupable : InteractableObject
 			PutDown();
 		}
 	}
-
-	public virtual bool ObjectiveMet() => false;
 
 	public IEnumerator DissolveOnDrop(float time = .25f)
 	{

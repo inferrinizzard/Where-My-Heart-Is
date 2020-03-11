@@ -51,6 +51,7 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public Window window;
 	[HideInInspector] public ApplyMask mask;
 	[HideInInspector] public PlayerAudio audioController;
+	[HideInInspector] public Hands hands;
 
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
@@ -63,11 +64,8 @@ public class Player : Singleton<Player>, IStateMachine
 	[SerializeField] float mouseSensitivity = 2f;
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
-
 	public bool windowEnabled = true;
-
 	public bool sceneActive;
-
 	public GameObject fadeInObject;
 	public float fadeInLength;
 	public bool playFade;
@@ -77,8 +75,6 @@ public class Player : Singleton<Player>, IStateMachine
 	private(float, float)xRotationBounds = (-90f, 90f);
 	/// <summary> Stores the rotation of the player. </summary>
 	[HideInInspector] public Vector3 rotation = Vector3.zero;
-	public Hands hands;
-
 	int _ViewDirID = Shader.PropertyToID("_ViewDir");
 
 	void Start()
@@ -258,20 +254,17 @@ public class Player : Singleton<Player>, IStateMachine
 			return;
 		}
 
-		if (transform.position.y < deathPlane.position.y)
+		if (transform.position.y < deathPlane.position.y && lastSpawn)
 		{
-			if (lastSpawn)
-			{
-				// Set the position to the spawnpoint
-				transform.position = lastSpawn.position;
-				verticalVelocity = 0;
+			// Set the position to the spawnpoint
+			transform.position = lastSpawn.position;
+			verticalVelocity = 0;
 
-				// Set the rotation to the spawnpoint
-				rotation = lastSpawn.eulerAngles;
-			}
-			else
-				Debug.LogWarning("Missing spawn point!");
+			// Set the rotation to the spawnpoint
+			rotation = lastSpawn.eulerAngles;
 		}
+		else if (!lastSpawn)
+			Debug.LogWarning("Missing spawn point!");
 	}
 
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
@@ -366,14 +359,19 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (!GameManager.Instance.duringLoad)
 		{
-			if (!holding && !looking) { SetState(new PickUp(this)); }
+			var hit = Raycast()?.GetComponent<Pickupable>();
+			if (!holding && !looking && hit)
+			{
+				heldObject = hit;
+				SetState(new PickUp(this));
+			}
 			else if (looking) { SetState(new Inspect(this)); } //unused for now
 			else if (holding)
 			{
-				if (heldObject.GetComponent<Pickupable>() && !heldObject.GetComponent<Pickupable>().ObjectiveMet())
+				if (heldObject is Pickupable && (heldObject as Pickupable).dissolves)
 					StartCoroutine((heldObject as Pickupable).DissolveOnDrop(1));
 				else
-					SetState(new Drop(this));
+					EndState();
 			}
 		}
 	}
@@ -432,11 +430,5 @@ public class Player : Singleton<Player>, IStateMachine
 		}
 	}
 
-	Transform Raycast()
-	{
-		RaycastHit hit;
-		if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, 1 << 9))
-			return hit.transform;
-		return null;
-	}
+	Transform Raycast() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform : null;
 }

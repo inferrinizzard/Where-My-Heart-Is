@@ -11,24 +11,22 @@ public class PickUp : PlayerState
 
 	public override void Start()
 	{
-		// Raycast for what the player is looking at.
-		RaycastHit hit;
+		player.pickedUpFirst = true;
+		if (player.heldObject.GetComponent<Placeable>() && player.heldObject.GetComponent<Placeable>().PlaceConditionsMet())
+			return;
+		// Store the held object.
+		player.heldObject.Interact();
+		player.heldObject.active = true;
 
-		// Make sure it is in the right layer
-		int layerMask = 1 << 9;
+		//player.playerCanMove = false;
+	}
 
-		// Raycast to see what the object's tag is. If it is a Pickupable object...
-		if (Physics.Raycast(player.cam.transform.position, player.cam.transform.forward, out hit, player.playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
-		{
-			player.pickedUpFirst = true;
-			if (hit.transform.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
-				return;
-			// Store the held object.
-			player.heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();
-			player.heldObject.Interact();
-			player.heldObject.active = true;
+	public override void End()
+	{
+		// Drop the object.
+		player.heldObject.Interact();
 
-			//player.playerCanMove = false;
-		}
+		player.heldObject.active = false;
+		player.heldObject = null;
 	}
 }

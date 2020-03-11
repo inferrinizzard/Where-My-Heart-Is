@@ -7,6 +7,7 @@ public class GateKey : Pickupable
 {
 	[SerializeField] Gate gate = default;
 	[SerializeField] float distanceThreshold = .5f;
+	public new bool dissolves = true;
 
 	public override void Interact()
 	{
@@ -23,8 +24,6 @@ public class GateKey : Pickupable
 		if (GateCheck())
 			player.prompt.Enable().SetText("Press E to Unlock");
 	}
-
-	public override bool ObjectiveMet() => GateCheck();
 
 	bool GateCheck() => Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold;
 }
