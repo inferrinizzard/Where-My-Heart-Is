@@ -34,10 +34,18 @@ public class Pickupable : InteractableObject
 		transform.rotation = Quaternion.AngleAxis(rotY, player.heldObjectLocation.forward) * transform.rotation;
 	}
 
+	public override void Interact()
+	{
+		if (!player.heldObject)
+			PickUp();
+		else if (player.looking)
+			player.looking = false;
+		else
+			PutDown();
+	}
+
 	public void PickUp()
 	{
-		player.holding = true;
-
 		initialPosition = transform.position;
 		initialRotation = transform.rotation;
 
@@ -59,30 +67,12 @@ public class Pickupable : InteractableObject
 			}
 		}
 
-		player.holding = false;
 		transform.parent = oldParent;
-	}
-
-	public override void Interact()
-	{
-		if (!player.holding)
-		{
-			PickUp();
-		}
-		else if (player.looking)
-		{
-			player.looking = false;
-		}
-		else
-		{
-			PutDown();
-		}
 	}
 
 	public IEnumerator DissolveOnDrop(float time = .25f)
 	{
 		transform.parent = oldParent;
-		Player.Instance.holding = false;
 		GetComponent<Collider>().enabled = false;
 		Material mat = GetComponent<MeshRenderer>().material;
 		mat.EnableKeyword("DISSOLVE_MANUAL");
@@ -102,7 +92,6 @@ public class Pickupable : InteractableObject
 		mat.DisableKeyword("DISSOLVE_MANUAL");
 		mat.SetFloat(ManualDissolveID, 1);
 
-		Player.Instance.holding = true;
 		Interact();
 		GetComponent<Collider>().enabled = true;
 		active = false;

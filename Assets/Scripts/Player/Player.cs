@@ -33,8 +33,6 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Whether the player is crouching or not. </summary>
 	[HideInInspector] public bool crouching = false;
 	/// <summary> Whether the player is holding something or not. </summary>
-	[HideInInspector] public bool holding = false;
-	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
 	[HideInInspector] public bool looking = false;
 	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
 	private bool stillCrouching = false;
@@ -114,7 +112,6 @@ public class Player : Singleton<Player>, IStateMachine
 			rotation = lastSpawn.eulerAngles;
 		}
 		playerCanMove = true;
-		holding = false;
 		looking = false;
 		window.world = World.Instance;
 		VFX.ToggleMask(false);
@@ -364,9 +361,9 @@ public class Player : Singleton<Player>, IStateMachine
 	void Interact()
 	{
 		var hit = RaycastInteractable();
-		if (holding || hit is Pickupable)
+		if (heldObject || hit is Pickupable)
 		{
-			PickUp(!holding, hit as Pickupable);
+			PickUp(!heldObject, hit as Pickupable);
 		}
 		else if (hit)
 			hit.Interact();
@@ -391,7 +388,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player aiming function. </summary>
 	private void Aiming()
 	{
-		if (windowEnabled && !holding && sceneActive)
+		if (windowEnabled && !heldObject && sceneActive)
 		{
 			SetState(new Aiming(this));
 			StartCoroutine(hands.WaitAndAim());
@@ -401,7 +398,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (State is Aiming && windowEnabled && !holding)SetState(new Cut(this));
+		if (State is Aiming && windowEnabled && !heldObject)SetState(new Cut(this));
 	}
 
 	/// <summary> Interact prompt handling. </summary>
@@ -411,13 +408,12 @@ public class Player : Singleton<Player>, IStateMachine
 		{
 			// Raycast for what the player is looking at.
 			var hit = RaycastInteractable();
-			print(hit);
 
 			if (heldObject is Placeable && (heldObject as Placeable).PlaceConditionsMet())
 			{
 				prompt.Enable().SetText("Press E to Place Canvas");
 			}
-			else if (hit && !holding && playerCanMove)
+			else if (hit && !heldObject && playerCanMove)
 			{
 				if (hit.GetComponent<BirbAnimTester>())
 					prompt.Enable().SetText("Press E to Interact with Bird");

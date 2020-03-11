@@ -24,11 +24,9 @@ public class Key : Pickupable
 
 	public override void Interact()
 	{
-        Debug.Log("here");
-		if (!player.holding)
+		Debug.Log("here");
+		if (!player.heldObject)
 		{
-			player.holding = true;
-
 			// save the old parent to revert to later
 			oopsDropped = transform.position;
 			oopsDroppedRot = transform.rotation;
@@ -42,7 +40,6 @@ public class Key : Pickupable
 		}
 		else
 		{
-			player.holding = false;
 			transform.parent = oldParent;
 
 			if (Vector3.Distance(transform.position, _lock.transform.position) < 2 && _lock != null && _lock.gameObject.layer == 9 ||
