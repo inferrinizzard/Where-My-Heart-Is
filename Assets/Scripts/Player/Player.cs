@@ -85,6 +85,7 @@ public class Player : Singleton<Player>, IStateMachine
 		mask = GetComponentInChildren<ApplyMask>();
 		audioController = GetComponent<PlayerAudio>();
 		hands = GetComponentInChildren<Hands>();
+		prompt = GameManager.Instance.prompt;
 
 		// Get reference to the player height using the CharacterController's height.
 		playerHeight = characterController.height;
@@ -102,7 +103,6 @@ public class Player : Singleton<Player>, IStateMachine
 
 	public override void Initialize()
 	{
-		prompt = GameObject.FindObjectOfType<Prompt>(); // expensive
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
 

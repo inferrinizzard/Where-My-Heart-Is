@@ -22,7 +22,7 @@ public abstract class InteractableObject : MonoBehaviour
 
 	protected virtual void Start()
 	{
-		dialogue = FindObjectOfType<DialogueSystem>();
+		dialogue = GameManager.Instance.dialogue;
 		player = Player.Instance;
 		if (hitboxObject)hitboxObject.GetComponent<ClipableObject>().tiedInteractable = this;
 	}

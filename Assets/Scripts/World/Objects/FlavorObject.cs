@@ -8,8 +8,6 @@ public class FlavorObject : InteractableObject
 	[FMODUnity.EventRef]
 	public string InteractSoundEvent;
 
-	void Start() => prompt = "Press E to Interact";
-
 	public override void Interact()
 	{
 		base.Interact();
