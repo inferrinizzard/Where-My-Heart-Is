@@ -41,8 +41,8 @@ public class BirbAnimTester : MonoBehaviour
 		flapInstance = FMODUnity.RuntimeManager.CreateInstance(FlapEvent);
 		flapInstance.setParameterByName("Flying", 0);
 		chirpInstance = FMODUnity.RuntimeManager.CreateInstance(ChirpEvent);
-		FMODUnity.RuntimeManager.AttachInstanceToGameObject(flapInstance, GetComponent<Transform>(), GetComponent<Rigidbody>());
-		FMODUnity.RuntimeManager.AttachInstanceToGameObject(chirpInstance, GetComponent<Transform>(), GetComponent<Rigidbody>());
+		FMODUnity.RuntimeManager.AttachInstanceToGameObject(flapInstance, transform, GetComponent<Rigidbody>());
+		FMODUnity.RuntimeManager.AttachInstanceToGameObject(chirpInstance, transform, GetComponent<Rigidbody>());
 		flapInstance.start();
 		chirpInstance.start();
 		pathTriggers.ForEach(trigger => trigger.OnPlayerEnterID += StartNextCurveID);

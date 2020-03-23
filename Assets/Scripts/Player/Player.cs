@@ -29,7 +29,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player's height. </summary>
 	[HideInInspector] public float playerHeight;
 	/// <summary> Whether the player can move or not. </summary>
-	[HideInInspector] public bool playerCanMove = true;
+	[HideInInspector] public bool canMove = true;
 	[HideInInspector] public bool playerCanRotate = true;
 	/// <summary> Whether the player is crouching or not. </summary>
 	[HideInInspector] public bool crouching = false;
@@ -110,7 +110,7 @@ public class Player : Singleton<Player>, IStateMachine
 			transform.position = lastSpawn.position;
 			rotation = lastSpawn.eulerAngles;
 		}
-		playerCanMove = true;
+		canMove = true;
 		looking = false;
 		window.world = World.Instance;
 		VFX.ToggleMask(false);
@@ -197,7 +197,7 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (sceneActive)
 		{
-			if (playerCanMove)
+			if (canMove)
 			{
 				Move();
 				ApplyGravity();
@@ -205,7 +205,7 @@ public class Player : Singleton<Player>, IStateMachine
 				characterController.Move(moveDirection);
 			}
 
-			UpdateInteractPrompt();
+			prompt.UpdateText();
 			StuckCrouching();
 			Die();
 		}
@@ -369,38 +369,6 @@ public class Player : Singleton<Player>, IStateMachine
 	private void Cut()
 	{
 		if (State is Aiming && windowEnabled && !heldObject) SetState(new Cut(this));
-	}
-
-	/// <summary> Interact prompt handling. </summary>
-	private void UpdateInteractPrompt()
-	{
-		if (!(State is Aiming))
-		{
-			// Raycast for what the player is looking at.
-			var hit = RaycastInteractable();
-
-			if (heldObject is Placeable && (heldObject as Placeable).PlaceConditionsMet())
-			{
-				prompt.Enable().SetText("Press E to Place Canvas");
-			}
-			else if (hit && !heldObject && playerCanMove)
-			{
-				if (hit.GetComponent<BirbAnimTester>())
-					prompt.Enable().SetText("Press E to Interact with Bird");
-				else
-					prompt.Enable().SetText(hit.prompt);
-
-				if (hit.GetComponent<Placeable>() && hit.GetComponent<Placeable>().PlaceConditionsMet())
-				{
-					prompt.Disable();
-					return;
-				}
-			}
-			else
-			{
-				prompt.Disable();
-			}
-		}
 	}
 
 	InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;

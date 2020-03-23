@@ -22,7 +22,7 @@ public class PickUp : PlayerState
 		// Store the held object.
 		player.heldObject.active = true;
 
-		//player.playerCanMove = false;
+		//player.canMove = false;
 	}
 
 	public override void End()

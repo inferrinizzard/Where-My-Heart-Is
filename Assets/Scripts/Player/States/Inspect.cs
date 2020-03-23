@@ -15,6 +15,6 @@ public class Inspect : PlayerState
 		// Stop inspecting the object (??)
 		player.heldObject.Interact();
 
-		player.playerCanMove = true;
+		player.canMove = true;
 	}
 }
