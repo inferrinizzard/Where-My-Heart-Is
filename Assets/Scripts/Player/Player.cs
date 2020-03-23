@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -65,9 +65,7 @@ public class Player : Singleton<Player>, IStateMachine
 	public float playerReach = 4f;
 	public bool windowEnabled = true;
 	public bool sceneActive;
-	public GameObject fadeInObject;
-	public float fadeInLength;
-	public bool playFade;
+	public float fadeDuration;
 
 	// [Header("Camera Variables")]
 	/// <summary> Bounds angle the player can look upward. </summary>
@@ -97,7 +95,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
 		Cursor.visible = false;
-		BeginFadeIn();
+		VFX.StartFade(true, fadeDuration);
 
 		Initialize();
 	}
@@ -123,8 +121,6 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		characterController.enabled = false;
 		sceneActive = false;
-		fadeInObject.SetActive(true);
-		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
 	}
 
 	public override void OnCompleteTransition()
@@ -151,25 +147,7 @@ public class Player : Singleton<Player>, IStateMachine
 		Initialize();
 		characterController.enabled = true;
 		Player.Instance.sceneActive = true;
-		BeginFadeIn();
-	}
-
-	private void BeginFadeIn()
-	{
-		sceneActive = true;
-		playFade = true;
-		fadeInObject.SetActive(true);
-		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
-		CancelInvoke("EndFadeIn");
-		Invoke("EndFadeIn", fadeInLength);
-	}
-
-	private void EndFadeIn()
-	{
-		playFade = false;
-		fadeInObject.SetActive(false);
-		if (!RaycastInteractable())
-			prompt.Disable();
+		VFX.StartFade(true, fadeDuration);
 	}
 
 	public void OnEnable()
@@ -213,15 +191,6 @@ public class Player : Singleton<Player>, IStateMachine
 		// EndState();
 		State = state;
 		State.Start();
-	}
-
-	void Update()
-	{
-		if (playFade == true)
-		{
-			Color oldColor = fadeInObject.GetComponent<SpriteRenderer>().color;
-			fadeInObject.GetComponent<SpriteRenderer>().color = new Color(oldColor.r, oldColor.g, oldColor.b, oldColor.a - (Time.deltaTime / fadeInLength));
-		}
 	}
 
 	void FixedUpdate()
