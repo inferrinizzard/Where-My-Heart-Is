@@ -186,12 +186,12 @@ public class Player : Singleton<Player>, IStateMachine
 		State = null;
 	}
 
-	public void SetState(PlayerState state)
-	{
-		// EndState();
-		State = state;
-		State.Start();
-	}
+	public void SetState(PlayerState state) => (State = state).Start();
+	// {
+	// 	// EndState();
+	// 	State = state;
+	// 	State.Start();
+	// }
 
 	void FixedUpdate()
 	{
@@ -205,8 +205,8 @@ public class Player : Singleton<Player>, IStateMachine
 				characterController.Move(moveDirection);
 			}
 
-			prompt.UpdateText();
-			StuckCrouching();
+			prompt.UpdateText(); // non physics
+			// StuckCrouching();
 			Die();
 		}
 	}
@@ -246,9 +246,7 @@ public class Player : Singleton<Player>, IStateMachine
 	private void ApplyGravity()
 	{
 		if (!characterController.isGrounded)
-		{
 			verticalVelocity -= gravity * Time.deltaTime;
-		}
 		moveDirection.y = verticalVelocity * Time.deltaTime;
 	}
 
@@ -371,5 +369,5 @@ public class Player : Singleton<Player>, IStateMachine
 		if (State is Aiming && windowEnabled && !heldObject) SetState(new Cut(this));
 	}
 
-	InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
+	public InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }
