@@ -49,7 +49,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 	// [Header("Game Object References")]
 	/// <summary> Reference to heart window. </summary>
-	[HideInInspector] public GameObject heartWindow;
+	public GameObject heartWindow;
 	/// <summary> Reference to death plane. </summary>
 	[HideInInspector] public Transform deathPlane;
 	/// <summary> Get Window script from GameObject. </summary>
@@ -103,8 +103,7 @@ public class Player : Singleton<Player>, IStateMachine
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
 		VFX = cam.GetComponent<Effects>();
-		window = GetComponentInChildren<Window>();
-		heartWindow = window.gameObject;
+		window = GetComponent<Window>();
 		mask = GetComponentInChildren<ApplyMask>();
 		audioController = GetComponent<PlayerAudio>();
 		anim = GetComponentInChildren<Animator>();
@@ -157,6 +156,8 @@ public class Player : Singleton<Player>, IStateMachine
 
 	public override void OnCompleteTransition()
 	{
+        window.CreateFoVMesh();
+
         DialoguePacket packet = FindObjectOfType<DialoguePacket>();
 		if (packet != null)
 		{

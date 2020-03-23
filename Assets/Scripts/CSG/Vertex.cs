@@ -51,6 +51,8 @@ namespace CSG
 
 		public bool fromIntersection;
 
+        private int hashCode;
+
 		/// <summary>
 		/// Constructor
 		/// </summary>
@@ -67,6 +69,7 @@ namespace CSG
 			cut = null;
 			usedInLoop = false;
 			fromIntersection = false;
+            hashCode = -1;
         }
 
         public Vertex(int index, Vector3 value, Vector2 UV)
@@ -80,7 +83,24 @@ namespace CSG
             cut = null;
             usedInLoop = false;
             fromIntersection = false;
+            hashCode = -1;
         }
+
+        public void ClearCutMetadata()
+        {
+            loops.Clear();
+            usedInLoop = false;
+        }
+
+        public override int GetHashCode()
+        {
+            if(hashCode == -1)
+            {
+                hashCode = base.GetHashCode();
+            }
+            return hashCode;
+        }
+
         /// <summary>
         /// Determines whether this vertex and the given vertex both appear on the same triangle
         /// </summary>

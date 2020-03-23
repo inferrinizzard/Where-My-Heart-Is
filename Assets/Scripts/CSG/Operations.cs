@@ -9,16 +9,16 @@ namespace CSG
 	/// <summary>
 	/// Supplies methods for performing constructive solid geometry boolean operations
 	/// </summary>
-	public class Operations : MonoBehaviour
+	public static class Operations
 	{
 		[Tooltip("Breakpoint for equality comparisons between floats")]
-		public float error;
+        public static float error = 0.001f;
 
 		[Header("Debug Variables")]
-		public int faceIndex = -1;
-		public int edgeLoopIndex = -1;
+        public static int faceIndex = -1;
+        public static int edgeLoopIndex = -1;
 
-		public int earToDraw = -1;
+        public static int earToDraw = -1;
 
 		/// <summary>
 		/// Generates the intersection of two shapes
@@ -26,13 +26,13 @@ namespace CSG
 		/// <param name="shapeA">The first shape to intersect</param>
 		/// <param name="shapeB">The second shape to intersect</param>
 		/// <returns>The intersection of the two shapes</returns>
-		public Mesh Intersect(GameObject shapeA, GameObject shapeB)
+		public static Model Intersect(Model modelA, Model modelB)
 		{
-			Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
+			/*Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
 			modelA.ConvertToWorld(shapeA.transform);
 
 			Model modelB = new Model(shapeB.GetComponent<MeshFilter>().mesh);
-			modelB.ConvertToWorld(shapeB.transform);
+			modelB.ConvertToWorld(shapeB.transform);*/
 
 			modelA.IntersectWith(modelB); //generate all intersections
 
@@ -40,21 +40,21 @@ namespace CSG
 			Model clippedB = ClipModelAToModelB(modelB, modelA, true);
 
 			Model result = Model.Combine(clippedA, clippedB);
-			result.ConvertToLocal(shapeA.transform);
+			result.ConvertToLocal(modelA.worldToLocal);
 
-			return result.ToMesh();
+			return result;
 		}
 
-		/// <summary>
-		/// Subtracts shapeB from shapeA
-		/// </summary>
-		public Mesh Subtract(GameObject shapeA, GameObject shapeB)
+        /// <summary>
+        /// Subtracts shapeB from shapeA
+        /// </summary>
+        public static Mesh Subtract(Model modelA, Model modelB)
 		{
-			Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
+			/*Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
 			modelA.ConvertToWorld(shapeA.transform);
 
 			Model modelB = new Model(shapeB.GetComponent<MeshFilter>().mesh);
-			modelB.ConvertToWorld(shapeB.transform);
+			modelB.ConvertToWorld(shapeB.transform);*/
 
 			modelA.IntersectWith(modelB); //generate all intersections
 
@@ -62,92 +62,93 @@ namespace CSG
 			Model clippedB = ClipModelAToModelB(modelB, modelA, true, true);
 
 			Model result = Model.Combine(clippedA, clippedB);
-			result.ConvertToLocal(shapeA.transform);
+			result.ConvertToLocal(modelA.worldToLocal);
 
 			return result.ToMesh();
 		}
 
-		/// <summary>
-		/// Clips the geometry of shapeA to just the component of it bounded by shapeB
-		/// </summary>
-		/// <param name="shapeA"></param>
-		/// <param name="shapeB"></param>
-		/// <param name="clipInside">If true, shapeA will be clipped to only geometry contained by shapeB, if false, it will be clipped only to geometry NOT contained by shapeB</param>
-		/// <returns></returns>
-		public Mesh ClipAToB(GameObject shapeA, GameObject shapeB, bool clipInside = true)
+        /// <summary>
+        /// Clips the geometry of shapeA to just the component of it bounded by shapeB
+        /// </summary>
+        /// <param name="shapeA"></param>
+        /// <param name="shapeB"></param>
+        /// <param name="clipInside">If true, shapeA will be clipped to only geometry contained by shapeB, if false, it will be clipped only to geometry NOT contained by shapeB</param>
+        /// <returns></returns>
+        public static Mesh ClipAToB(Model modelA, Model modelB, bool clipInside = true)
 		{
-			Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
+			/*Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
 			modelA.ConvertToWorld(shapeA.transform);
 
 			Model modelB = new Model(shapeB.GetComponent<MeshFilter>().mesh);
-			modelB.ConvertToWorld(shapeB.transform);
+			modelB.ConvertToWorld(shapeB.transform);*/
 
 			modelA.IntersectWith(modelB); //generate all intersections
 
 			Model clippedA = ClipModelAToModelB(modelA, modelB, clipInside);
 
-			clippedA.ConvertToLocal(shapeA.transform);
+			clippedA.ConvertToLocal(modelA.worldToLocal);
 
 			return clippedA.ToMesh();
 		}
 
-		/// <summary>
-		/// Generates a mesh that matches the portion of the given "toClip" object's mesh contained by the 
-		/// bounding object "bounds"
-		/// </summary>
-		/// <param name="modelA">The GameObject containing the Mesh to clip</param>
-		/// <param name="modelB">The GameObject containing the Mesh to clip "toClip" to</param>
-		/// <param name="flipNormals">Whether the normals of the resulting mesh should be flipped</param>
-		/// <returns>The clipped Mesh</returns>
-		private Model ClipModelAToModelB(Model modelA, Model modelB, bool clipInside = true, bool flipNormals = false)
+        /// <summary>
+        /// Generates a mesh that matches the portion of the given "toClip" object's mesh contained by the 
+        /// bounding object "bounds"
+        /// </summary>
+        /// <param name="modelA">The GameObject containing the Mesh to clip</param>
+        /// <param name="modelB">The GameObject containing the Mesh to clip "toClip" to</param>
+        /// <param name="flipNormals">Whether the normals of the resulting mesh should be flipped</param>
+        /// <returns>The clipped Mesh</returns>
+        private static Model ClipModelAToModelB(Model modelA, Model modelB, bool clipInside = true, bool flipNormals = false)
 		{
 			// to create the triangles, we'll need a list of edge loops to triangulate
 			List<EdgeLoop> edgeLoops = new List<EdgeLoop>();
 
 			if (clipInside)
 			{
-				if (faceIndex > -1)
+				if (faceIndex <= -1)
 				{
-					edgeLoops = new List<EdgeLoop>();
-					if (faceIndex < modelA.triangles.Count)
-					{
-						//modelA.triangles[limitTo].Draw(Color.red);
-						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[faceIndex], modelB, PointContainedByBound));
-						edgeLoops.ForEach(loop => loop.Draw(Color.red, Color.green, Color.blue));
-					}
+                    foreach (Triangle triangle in modelA.triangles)
+                    {
+                        try
+                        {
+                            edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointContainedByBound));
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError("Failed to find edge loop for triangle #" + modelA.triangles.IndexOf(triangle) + ", ERROR: " + e.Message);
+                        }
+                    }
+                    
 				}
-				else
+				else// DEBUG
 				{
-					foreach (Triangle triangle in modelA.triangles)
-					{
-						try
-						{
-							edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointContainedByBound));
-						}
-						catch (Exception e)
-						{
-							Debug.LogError("Failed to find edge loop for triangle #" + modelA.triangles.IndexOf(triangle) + ", ERROR: " + e.Message);
-						}
-					}
-				}
+                    edgeLoops = new List<EdgeLoop>();
+                    if (faceIndex < modelA.triangles.Count)
+                    {
+                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[faceIndex], modelB, PointContainedByBound));
+                        edgeLoops.ForEach(loop => loop.Draw(Color.red, Color.green, Color.blue));
+                    }
+                }
 			}
 			else
 			{
-				if (faceIndex > -1)
+				if (faceIndex <= -1)
 				{
-					edgeLoops = new List<EdgeLoop>();
-					if (faceIndex < modelA.triangles.Count)
-					{
-						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[faceIndex], modelB, PointExcludedByBound));
-					}
+                    foreach (Triangle triangle in modelA.triangles)
+                    {
+                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointExcludedByBound));
+                    }
+                    
 				}
 				else
 				{
-					foreach (Triangle triangle in modelA.triangles)
-					{
-						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointExcludedByBound));
-					}
-				}
+                    edgeLoops = new List<EdgeLoop>();
+                    if (faceIndex < modelA.triangles.Count)
+                    {
+                        edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[faceIndex], modelB, PointExcludedByBound));
+                    }
+                }
 			}
 			Model finalModel = new Model();
 
@@ -181,14 +182,14 @@ namespace CSG
 			return finalModel;
 		}
 
-		/// <summary>
-		/// Clips a single Triangle to just its parts contained by the bound
-		/// </summary>
-		/// <param name="triangle">The triangle to clip</param>
-		/// <param name="boundsTriangles">A list of triangles defining the bounding object</param>
-		/// <param name="vertices">A list of the vertices of the object the triangle belongs to</param>
-		/// <returns>A list of edge loops which define the clipped version of the triangle</returns>
-		private List<EdgeLoop> IdentifyTriangleEdgeLoops(Triangle triangle, Model bound, Func<Vertex, Model, bool> ContainmentCheck)
+        /// <summary>
+        /// Clips a single Triangle to just its parts contained by the bound
+        /// </summary>
+        /// <param name="triangle">The triangle to clip</param>
+        /// <param name="boundsTriangles">A list of triangles defining the bounding object</param>
+        /// <param name="vertices">A list of the vertices of the object the triangle belongs to</param>
+        /// <returns>A list of edge loops which define the clipped version of the triangle</returns>
+        private static List<EdgeLoop> IdentifyTriangleEdgeLoops(Triangle triangle, Model bound, Func<Vertex, Model, bool> ContainmentCheck)
 		{
 
 			triangle.ClearMetadata();
@@ -299,31 +300,31 @@ namespace CSG
 			return loops;
 		}
 
-		/// <summary>
-		/// Finds the earliest appearing Vertex in a triangle's perimeter that hasn't had all it's loops identified.
-		/// Returns -1 if no unsatisfied vertices are left
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Each of the original vertices of a triangle always appear in exactly 1 loop each
-		/// </para>
-		/// <para>
-		/// Each Egress appears in one more loop than it has Cuts
-		/// </para>
-		/// </remarks>
-		/// <param name="perimeter">The perimeter to examine for incomplete vertices</param>
-		/// <returns>The index of the earliest unsatisfied vertex in the loop, or -1 if none are left.</returns>
-		private int FindEarliestUnsatisfied(List<Vertex> perimeter) =>
+        /// <summary>
+        /// Finds the earliest appearing Vertex in a triangle's perimeter that hasn't had all it's loops identified.
+        /// Returns -1 if no unsatisfied vertices are left
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Each of the original vertices of a triangle always appear in exactly 1 loop each
+        /// </para>
+        /// <para>
+        /// Each Egress appears in one more loop than it has Cuts
+        /// </para>
+        /// </remarks>
+        /// <param name="perimeter">The perimeter to examine for incomplete vertices</param>
+        /// <returns>The index of the earliest unsatisfied vertex in the loop, or -1 if none are left.</returns>
+        private static int FindEarliestUnsatisfied(List<Vertex> perimeter) =>
 			perimeter.FindIndex(vertex => vertex.fromIntersection ? vertex.loops.Count < 2 : vertex.loops.Count < 1);
 
-		/// <summary>
-		/// Finds the loop associated with the given intersection with a triangle and places it as a child of the correct containing edge loop
-		/// </summary>
-		/// <param name="initialIntersection">A vertex on the loop to find</param>
-		/// <param name="unusedIntersections">A list of vertices that could possibly be part of the loop</param>
-		/// <param name="loops">A list of all non-internal loops found for the current triangle</param>
-		/// <returns>An edge loop defining the loop associated with the given vertex</returns>
-		private EdgeLoop DiscoverInternalLoop(List<Intersection> unusedIntersections, List<EdgeLoop> loops)
+        /// <summary>
+        /// Finds the loop associated with the given intersection with a triangle and places it as a child of the correct containing edge loop
+        /// </summary>
+        /// <param name="initialIntersection">A vertex on the loop to find</param>
+        /// <param name="unusedIntersections">A list of vertices that could possibly be part of the loop</param>
+        /// <param name="loops">A list of all non-internal loops found for the current triangle</param>
+        /// <returns>An edge loop defining the loop associated with the given vertex</returns>
+        private static EdgeLoop DiscoverInternalLoop(List<Intersection> unusedIntersections, List<EdgeLoop> loops)
 		{
 			EdgeLoop createdLoop = new EdgeLoop();
 
@@ -387,12 +388,12 @@ namespace CSG
 			return createdLoop;
 		}
 
-		/// <summary>
-		/// Takes a list of Egresses and finds all Cuts that join them
-		/// </summary>
-		/// <param name="egresses">The list of Egresses to find cuts for</param>
-		/// <param name="intersections">The list of internal intersections that form the intermediate points in the created cuts</param>
-		private void CreateCuts(Triangle triangle, Model bounds)
+        /// <summary>
+        /// Takes a list of Egresses and finds all Cuts that join them
+        /// </summary>
+        /// <param name="egresses">The list of Egresses to find cuts for</param>
+        /// <param name="intersections">The list of internal intersections that form the intermediate points in the created cuts</param>
+        private static void CreateCuts(Triangle triangle, Model bounds)
 		{
 			for (int i = 0; i < 3; i++)
 			{
@@ -495,45 +496,45 @@ namespace CSG
 			}
 		}
 
-		/// <summary>
-		/// Converts a Vector 3 from the local coordinate system defined by "from" to a target coordinate system defined by "to"
-		/// </summary>
-		/// <param name="toTransform">The point to convert</param>
-		/// <param name="from">The GameObject defining the initial coordinate space</param>
-		/// <param name="to">The GameObject defining the target coordinate space</param>
-		/// <returns>The converted point</returns>
-		private Vector3 ConvertPointCoordinates(Vector3 toTransform, GameObject from, GameObject to)
+        /// <summary>
+        /// Converts a Vector 3 from the local coordinate system defined by "from" to a target coordinate system defined by "to"
+        /// </summary>
+        /// <param name="toTransform">The point to convert</param>
+        /// <param name="from">The GameObject defining the initial coordinate space</param>
+        /// <param name="to">The GameObject defining the target coordinate space</param>
+        /// <returns>The converted point</returns>
+        private static Vector3 ConvertPointCoordinates(Vector3 toTransform, GameObject from, GameObject to)
 		{
 			Vector3 point = from.transform.localToWorldMatrix.MultiplyPoint3x4(toTransform);
 			point = to.transform.worldToLocalMatrix.MultiplyPoint3x4(point);
 			return point;
 		}
 
-		/// <summary>
-		/// Converts all vertex locations of the given mesh from their local coordinate system defined by "from" to a
-		/// target coordinate system defined by "to"
-		/// </summary>
-		/// <param name="mesh">The Mesh whose coordinates will be converted</param>
-		/// <param name="from">The GameObject defining the initial coordinate space</param>
-		/// <param name="to">The GameObject defining the target coordinate space</param>
-		private void ConvertMeshCoordinates(Mesh mesh, GameObject from, GameObject to)
+        /// <summary>
+        /// Converts all vertex locations of the given mesh from their local coordinate system defined by "from" to a
+        /// target coordinate system defined by "to"
+        /// </summary>
+        /// <param name="mesh">The Mesh whose coordinates will be converted</param>
+        /// <param name="from">The GameObject defining the initial coordinate space</param>
+        /// <param name="to">The GameObject defining the target coordinate space</param>
+        private static void ConvertMeshCoordinates(Mesh mesh, GameObject from, GameObject to)
 		{
 			List<Vector3> newVertices = mesh.vertices.Select(vertex => ConvertPointCoordinates(vertex, from, to)).ToList();
 			mesh.SetVertices(newVertices);
 		}
 
-		/// <summary>
-		/// Determines whether the given point is contained by the given bound
-		/// </summary>
-		/// <param name="point">The point to check for containment</param>
-		/// <param name="boundsTriangles">A List of triangles representing the bounding shape</param>
-		/// <returns>True if the point is contained, false if it is not</returns>
-		private bool PointContainedByBound(Vertex point, Model bound)
+        /// <summary>
+        /// Determines whether the given point is contained by the given bound
+        /// </summary>
+        /// <param name="point">The point to check for containment</param>
+        /// <param name="boundsTriangles">A List of triangles representing the bounding shape</param>
+        /// <returns>True if the point is contained, false if it is not</returns>
+        private static bool PointContainedByBound(Vertex point, Model bound)
 		{
 			return point.ContainedBy(bound, error);
 		}
 
-		private bool PointExcludedByBound(Vertex point, Model bound)
+        private static bool PointExcludedByBound(Vertex point, Model bound)
 		{
 			return !PointContainedByBound(point, bound);
 		}

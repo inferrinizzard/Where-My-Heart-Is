@@ -14,6 +14,9 @@ namespace CSG
         public List<Triangle> triangles;
         public List<Edge> edges;
 
+        public Matrix4x4 worldToLocal;
+        public Matrix4x4 localToWorld;
+
         /// <summary>
         /// Initializes a new empty Model
         /// </summary>
@@ -22,6 +25,12 @@ namespace CSG
             vertices = new List<Vertex>();
             triangles = new List<Triangle>();
             edges = new List<Edge>();
+        }
+
+        public Model(Mesh mesh, Transform transform) : this(mesh)
+        {
+            worldToLocal = transform.worldToLocalMatrix;
+            localToWorld = transform.localToWorldMatrix;
         }
 
         /// <summary>
@@ -123,12 +132,20 @@ namespace CSG
         /// <param name="other">The model to find intersections with</param>
         public List<Vertex> IntersectWith(Model other)
         {
+            //ClearCutMetadata();
+            //other.ClearCutMetadata();
+
             List<Vertex> createdVertices = new List<Vertex>();
 
             createdVertices.AddRange(IntersectAWithB(this, other));
             createdVertices.AddRange(IntersectAWithB(other, this));
 
             return createdVertices;
+        }
+
+        private void ClearCutMetadata()
+        {
+            vertices.ForEach(vertex => vertex.ClearCutMetadata());
         }
 
         /// <summary>
@@ -172,10 +189,14 @@ namespace CSG
 
             List<Vector2> uvs = new List<Vector2>();
 
+            Dictionary<int, int> vertexIndices = new Dictionary<int, int>();
+
 			// reindex vertices and add them to the mesh
 			List<Vector3> createdVertices = vertices.Select((vertex, index) =>
 			{
-				vertex.index = index;
+                vertexIndices.Add(vertex.GetHashCode(), index);
+
+				//vertex.index = index;
                 if (vertex.UV != null)
                 {
                     uvs.Add(vertex.UV);
@@ -191,7 +212,7 @@ namespace CSG
             mesh.SetUVs(0, uvs);
 
 			// add triangles to mesh
-			int[] newTriangles = triangles.SelectMany(triangle => triangle.vertices.Select(vertex => vertex.index)).ToArray();
+			int[] newTriangles = triangles.SelectMany(triangle => triangle.vertices.Select(vertex => vertexIndices[vertex.GetHashCode()])).ToArray();
 
 			mesh.SetTriangles(newTriangles, 0);
             mesh.RecalculateNormals();
@@ -200,6 +221,8 @@ namespace CSG
 
 			return mesh;
 		}
+
+        
 
 		/// <summary>
 		/// Converts the location of each vertex of this Model to be expressed with respect with "to" instead of with respect to "from"
@@ -218,18 +241,33 @@ namespace CSG
         /// Converts the locations of the vertices of this model from the local space of the given transform to world space
         /// </summary>
         /// <param name="referenceFrame">The object to reference for coordinate space conversion</param>
-        public void ConvertToWorld(Transform referenceFrame)
+        public void ConvertToWorld(Matrix4x4 localToWorldMatrix)
         {
-            vertices.ForEach(vertex => vertex.value = referenceFrame.localToWorldMatrix.MultiplyPoint3x4(vertex.value));
+            vertices.ForEach(vertex => vertex.value = localToWorldMatrix.MultiplyPoint3x4(vertex.value));
+        }
+
+        public void ConvertToWorld()
+        {
+            ConvertToWorld(localToWorld);
         }
 
         /// <summary>
         /// Converts the locations of the vertices of this model from world space to the local space of the given transform
         /// </summary>
         /// <param name="referenceFrame">The object to reference for coordinate space conversion</param>
-        public void ConvertToLocal(Transform referenceFrame)
+        public void ConvertToLocal(Matrix4x4 worldToLocalMatrix)
         {
-            vertices.ForEach(vertex => vertex.value = referenceFrame.worldToLocalMatrix.MultiplyPoint3x4(vertex.value));
+            vertices.ForEach(vertex => vertex.value = worldToLocalMatrix.MultiplyPoint3x4(vertex.value));
+        }
+
+        public void ConvertToLocal()
+        {
+            ConvertToLocal(worldToLocal);
+        }
+
+        public Model DeepCopy()
+        {
+
         }
 
         /// <summary>

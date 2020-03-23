@@ -16,38 +16,108 @@ public class Window : MonoBehaviour
 	public GameObject fieldOfView;
 	public CSG.Model fieldOfViewModel;
 	public Material tempMaterial;
-
-	private CSG.Operations csgOperator;
+    public int framerateTarget;
 
 	void Start()
 	{
-		csgOperator = GetComponent<CSG.Operations>();
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
-		Invoke("CreateFoVMesh", 0.5f); //TODO: extreme hack
+		//Invoke("CreateFoVMesh", 0.5f); //TODO: extreme hack
 	}
 
-	public void ApplyCut()
+    public void ApplyCut()
 	{
 		world.ResetCut();
+        StartCoroutine(ApplyCutCoroutine(1f/ ((float)framerateTarget)));
+    }
 
-		world.GetRealObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable))clipable.UnionWith(fieldOfView, csgOperator); });
-		world.GetDreamObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable))clipable.Subtract(fieldOfView, csgOperator); });
+    private void ApplyCutSynchronous()
+    {
+        world.GetRealObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfView); });
+        world.GetDreamObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfView); });
 
-		foreach (EntangledClipable entangled in world.GetEntangledObjects())
-		{
-			// clip the immediate children of entangled
-			//if (IntersectsBounds(entangled.realVersion)) entangled.realVersion.UnionWith(fieldOfView, csgOperator);
-			//if (IntersectsBounds(entangled.dreamVersion)) entangled.dreamVersion.Subtract(fieldOfView, csgOperator);
+        foreach (EntangledClipable entangled in world.GetEntangledObjects())
+        {
+            // clip the immediate children of entangled
+            //if (IntersectsBounds(entangled.realVersion)) entangled.realVersion.UnionWith(fieldOfView, csgOperator);
+            //if (IntersectsBounds(entangled.dreamVersion)) entangled.dreamVersion.Subtract(fieldOfView, csgOperator);
 
-			// clip any children below them to the correct world
-			entangled.realObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
-				clipable => { if (IntersectsBounds(clipable))clipable.UnionWith(fieldOfView, csgOperator); });
-			entangled.dreamObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
-				clipable => { if (IntersectsBounds(clipable))clipable.Subtract(fieldOfView, csgOperator); });
-		}
-	}
+            // clip any children below them to the correct world
+            entangled.realObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
+                clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfView); });
+            entangled.dreamObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
+                clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfView); });
+        }
+    }
 
-	private bool IntersectsBounds(ClipableObject clipableObject)
+    private IEnumerator ApplyCutCoroutine(float frameLength)
+    {
+        float startTime = Time.realtimeSinceStartup;
+
+		foreach(ClipableObject clipable in world.GetRealObjects())
+        {
+            if (IntersectsBounds(clipable))
+            {
+                clipable.UnionWith(fieldOfView);
+            }
+
+            if(Time.realtimeSinceStartup - startTime > frameLength)
+            {
+                yield return null;
+                startTime = Time.realtimeSinceStartup;
+            }
+        }
+
+        foreach (ClipableObject clipable in world.GetDreamObjects())
+        {
+            if (IntersectsBounds(clipable))
+            {
+                clipable.Subtract(fieldOfView);
+            }
+
+            if (Time.realtimeSinceStartup - startTime > frameLength)
+            {
+                yield return null;
+                startTime = Time.realtimeSinceStartup;
+            }
+        }
+
+        foreach (EntangledClipable entangled in world.GetEntangledObjects())
+        {
+            // clip the immediate children of entangled
+            //if (IntersectsBounds(entangled.realVersion)) entangled.realVersion.UnionWith(fieldOfView, csgOperator);
+            //if (IntersectsBounds(entangled.dreamVersion)) entangled.dreamVersion.Subtract(fieldOfView, csgOperator);
+
+            // clip any children below them to the correct world
+            foreach (ClipableObject clipable in entangled.realObject.GetComponentsInChildren<ClipableObject>())
+            {
+                if (IntersectsBounds(clipable))
+                {
+                    clipable.UnionWith(fieldOfView);
+                }
+
+                if (Time.realtimeSinceStartup - startTime > frameLength)
+                {
+                    yield return null;
+                    startTime = Time.realtimeSinceStartup;
+                }
+            }
+            foreach (ClipableObject clipable in entangled.dreamObject.GetComponentsInChildren<ClipableObject>())
+            {
+                if (IntersectsBounds(clipable))
+                {
+                    clipable.Subtract(fieldOfView);
+                }
+
+                if (Time.realtimeSinceStartup - startTime > frameLength)
+                {
+                    yield return null;
+                    startTime = Time.realtimeSinceStartup;
+                }
+            }
+        }
+    }
+
+    private bool IntersectsBounds(ClipableObject clipableObject)
 	{
 		return true;
 		// less expensive, less accurate intersection check

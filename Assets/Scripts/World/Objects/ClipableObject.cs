@@ -10,12 +10,28 @@ public class ClipableObject : MonoBehaviour
 	[HideInInspector] public bool isClipped;
 	[HideInInspector] public GameObject uncutCopy;
 
+    public CSG.Model CachedModel
+    {
+        get
+        {
+            if(model == null || transform.position != previousCutPosition)
+            {
+                model = new CSG.Model(initialMesh, transform);
+                model.ConvertToWorld();
+            }
+
+            return model;
+        }
+    }
+
 	Material mat;
 	int _DissolveID = Shader.PropertyToID("_Dissolve");
 
 	private int oldLayer;
 	private Mesh initialMesh;
 	private MeshFilter meshFilter;
+    private CSG.Model model;
+    private Vector3 previousCutPosition;
 
 	void Awake()
 	{
@@ -42,7 +58,7 @@ public class ClipableObject : MonoBehaviour
 		return model.Intersects(bound, 0.001f);
 	}
 
-	public virtual void UnionWith(GameObject other, CSG.Operations operations)
+	public virtual void UnionWith(ClipableObject other)
 	{
 		isClipped = true;
 		mat.SetInt(_DissolveID, 0);
@@ -53,11 +69,11 @@ public class ClipableObject : MonoBehaviour
 
 		if (!volumeless)
 		{
-			meshFilter.mesh = operations.Intersect(gameObject, other);
+            meshFilter.mesh = CSG.Operations.Intersect(CachedModel, other.CachedModel).ToMesh();
 		}
 		else
 		{
-			meshFilter.mesh = operations.ClipAToB(gameObject, other);
+			meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other.CachedModel).ToMesh();
 		}
 
 		if (GetComponent<MeshCollider>())
@@ -88,7 +104,7 @@ public class ClipableObject : MonoBehaviour
 		}
 	}
 
-	public void Subtract(GameObject other, CSG.Operations operations)
+	public void Subtract(GameObject other)
 	{
 		isClipped = true;
 		mat.SetInt(_DissolveID, 0);
@@ -97,11 +113,11 @@ public class ClipableObject : MonoBehaviour
 
 		if (!volumeless)
 		{
-			meshFilter.mesh = operations.Subtract(gameObject, other);
+			meshFilter.mesh = CSG.Operations.Subtract(gameObject, other);
 		}
 		else
 		{
-			meshFilter.mesh = operations.ClipAToB(gameObject, other);
+			meshFilter.mesh = CSG.Operations.ClipAToB(gameObject, other);
 		}
 
 		UpdateInteractable();

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2182867183277312574}
   - component: {fileID: 2182867183277312575}
   - component: {fileID: 2182867183277312572}
-  - component: {fileID: 2182867183277312571}
   m_Layer: 10
   m_Name: Magic Window
   m_TagString: Untagged
@@ -95,38 +94,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2182867183277312571
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2182867183277312573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85ac6951cc8ffd7419d12667d5341cc8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  error: 0.0001
-  faceIndex: -1
-  edgeLoopIndex: -1
-  earToDraw: -1
---- !u!114 &2182867182776913284
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7884385906382927456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85ac6951cc8ffd7419d12667d5341cc8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  error: 0.01
-  faceIndex: 0
-  edgeLoopIndex: 0
-  earToDraw: 0
 --- !u!1001 &2182867182151774057
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -232,12 +199,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cb49a7df2c8a29c4281786600bc37481, type: 3}
---- !u!1 &7884385906382927456 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: cb49a7df2c8a29c4281786600bc37481,
-    type: 3}
-  m_PrefabInstance: {fileID: 2182867182151774057}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6571225666549318771 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: cb49a7df2c8a29c4281786600bc37481,
