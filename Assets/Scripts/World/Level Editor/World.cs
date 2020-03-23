@@ -1,39 +1,40 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class World : MonoBehaviour
 {
-    public static World Instance;
+	public static World Instance;
 
 	public Transform realWorldContainer;
 	public Transform dreamWorldContainer;
 	public Transform entangledWorldContainer;
 
-    public void Awake()
-    {
-        Instance = this;
-    }
-
-    public void Start()
+	public void Awake()
 	{
-        realWorldContainer = transform.Find("Real World");
-        dreamWorldContainer = transform.Find("Dream World");
-        entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform;
+		Instance = this;
+	}
 
-        ConfigureWorld("Real", realWorldContainer);
-        ConfigureWorld("Dream", dreamWorldContainer);
-    }
+	public void Start()
+	{
+		realWorldContainer = transform.Find("Real World");
+		dreamWorldContainer = transform.Find("Dream World");
+		entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform;
 
-    /*public void Initialize()
-    {
-        realWorldContainer = transform.Find("Real World");
-        dreamWorldContainer = transform.Find("Dream World");
-        entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform;
+		ConfigureWorld("Real", realWorldContainer);
+		ConfigureWorld("Dream", dreamWorldContainer);
+	}
 
-        ConfigureWorld("Real", realWorldContainer);
-        ConfigureWorld("Dream", dreamWorldContainer);
-    }*/
+	/*public void Initialize()
+	{
+	    realWorldContainer = transform.Find("Real World");
+	    dreamWorldContainer = transform.Find("Dream World");
+	    entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform;
+
+	    ConfigureWorld("Real", realWorldContainer);
+	    ConfigureWorld("Dream", dreamWorldContainer);
+	}*/
 
 	/*/// <summary> configures children and related clipables, interactables </summary>
 	public void OnBeginTransition()
@@ -78,7 +79,7 @@ public class World : MonoBehaviour
 		{
 			foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
 			{
-				if (obj.isClipped)obj.Revert();
+				if (obj.isClipped) obj.Revert();
 			}
 		}
 
@@ -86,7 +87,7 @@ public class World : MonoBehaviour
 		{
 			foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
 			{
-				if (obj.isClipped)obj.Revert();
+				if (obj.isClipped) obj.Revert();
 			}
 		}
 
@@ -94,7 +95,7 @@ public class World : MonoBehaviour
 		{
 			foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
 			{
-				if (obj.isClipped)obj.Revert();
+				if (obj.isClipped) obj.Revert();
 			}
 		}
 	}

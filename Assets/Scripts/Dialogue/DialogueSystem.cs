@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -58,7 +59,7 @@ public class DialogueSystem : MonoBehaviour
 	/// <param name="delay"> The time in seconds to wait before typing out the line. </param>
 	public IEnumerator WriteDialogue(float delay)
 	{
-		if (activeLineCount != 0)yield return new WaitForSeconds(delay);
+		if (activeLineCount != 0) yield return new WaitForSeconds(delay);
 
 		if (!typing && activeLineCount < textQueue.Length)
 		{

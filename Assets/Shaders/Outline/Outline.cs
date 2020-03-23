@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+
 using UnityEngine;
 
 [System.Serializable, ExecuteInEditMode]
@@ -66,7 +67,7 @@ public class Outline : MonoBehaviour
 			int half = size / 2;
 			for (int i = 0; i < size; i++)
 			{
-				ret[i] = (float)(1 / (Math.Sqrt(2 * Math.PI) * sigma) * Math.Exp(-(i - half) * (i - half) / (2 * sigma * sigma)));
+				ret[i] = (float) (1 / (Math.Sqrt(2 * Math.PI) * sigma) * Math.Exp(-(i - half) * (i - half) / (2 * sigma * sigma)));
 				sum += ret[i];
 			}
 			return ret;

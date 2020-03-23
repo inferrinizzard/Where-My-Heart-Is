@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public abstract class InteractableObject : MonoBehaviour
 {
@@ -24,6 +24,6 @@ public abstract class InteractableObject : MonoBehaviour
 	{
 		dialogue = GameManager.Instance.dialogue;
 		player = Player.Instance;
-		if (hitboxObject)hitboxObject.GetComponent<ClipableObject>().tiedInteractable = this;
+		if (hitboxObject) hitboxObject.GetComponent<ClipableObject>().tiedInteractable = this;
 	}
 }

@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class Key : Pickupable
@@ -18,7 +19,7 @@ public class Key : Pickupable
 			//if (player.holding) Holding();
 
 			// If the object is being inspected, run Looking.
-			if (player.looking)Looking();
+			if (player.looking) Looking();
 		}
 	}
 

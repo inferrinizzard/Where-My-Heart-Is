@@ -1,60 +1,60 @@
-﻿using System;
-using UnityEngine;
+using System;
+
 using BansheeGz.BGSpline.Curve;
+
 using UnityEditor;
+
+using UnityEngine;
 
 namespace BansheeGz.BGSpline.Editor
 {
-    public class BGCcChoseWindow : EditorWindow
-    {
-        private static readonly Vector2 WindowSize = new Vector2(400, 200);
+	public class BGCcChoseWindow : EditorWindow
+	{
+		private static readonly Vector2 WindowSize = new Vector2(400, 200);
 
-        private static Action<BGCc> action;
-        private static BGCcChoseWindow instance;
-        private static BGCc current;
-        private static Component[] availableList;
-        private static GUIStyle boxStyle;
+		private static Action<BGCc> action;
+		private static BGCcChoseWindow instance;
+		private static BGCc current;
+		private static Component[] availableList;
+		private static GUIStyle boxStyle;
 
+		private Vector2 scrollPos;
 
-        private Vector2 scrollPos;
+		internal static void Open(BGCc current, Component[] availableList, Action<BGCc> action)
+		{
+			BGCcChoseWindow.action = action;
+			BGCcChoseWindow.current = current;
+			BGCcChoseWindow.availableList = availableList;
 
+			instance = BGEditorUtility.ShowPopupWindow<BGCcChoseWindow>(WindowSize);
+		}
 
-        internal static void Open(BGCc current, Component[] availableList, Action<BGCc> action)
-        {
-            BGCcChoseWindow.action = action;
-            BGCcChoseWindow.current = current;
-            BGCcChoseWindow.availableList = availableList;
+		private void OnGUI()
+		{
+			scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
-            instance = BGEditorUtility.ShowPopupWindow<BGCcChoseWindow>(WindowSize);
-        }
+			ShowButtons();
 
-        private void OnGUI()
-        {
-            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+			EditorGUILayout.EndScrollView();
+		}
 
-            ShowButtons();
+		private static void ShowButtons()
+		{
+			BGEditorUtility.Vertical(BGEditorUtility.Assign(ref boxStyle, () => new GUIStyle("Box") { padding = new RectOffset(8, 8, 8, 8) }), () =>
+			{
+				for (var i = 0; i < availableList.Length; i++)
+				{
+					var cc = (BGCc) availableList[i];
 
-            EditorGUILayout.EndScrollView();
-        }
+					BGEditorUtility.DisableGui(() =>
+					{
+						if (!GUILayout.Button(cc.CcName)) return;
 
-        private static void ShowButtons()
-        {
-            BGEditorUtility.Vertical(BGEditorUtility.Assign(ref boxStyle, () => new GUIStyle("Box") {padding = new RectOffset(8, 8, 8, 8)}), () =>
-            {
-                for (var i = 0; i < availableList.Length; i++)
-                {
-                    var cc = (BGCc) availableList[i];
-
-                    BGEditorUtility.DisableGui(() =>
-                    {
-                        if (!GUILayout.Button(cc.CcName)) return;
-
-
-                        action(cc);
-                        instance.Close();
-                    }, cc == current);
-                }
-            });
-        }
-    }
+						action(cc);
+						instance.Close();
+					}, cc == current);
+				}
+			});
+		}
+	}
 }

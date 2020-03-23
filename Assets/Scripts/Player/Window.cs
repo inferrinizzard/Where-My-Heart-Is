@@ -1,6 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 
 /**
@@ -30,8 +31,8 @@ public class Window : MonoBehaviour
 	{
 		world.ResetCut();
 
-		world.GetRealObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable))clipable.UnionWith(fieldOfView, csgOperator); });
-		world.GetDreamObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable))clipable.Subtract(fieldOfView, csgOperator); });
+		world.GetRealObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfView, csgOperator); });
+		world.GetDreamObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfView, csgOperator); });
 
 		foreach (EntangledClipable entangled in world.GetEntangledObjects())
 		{
@@ -41,9 +42,9 @@ public class Window : MonoBehaviour
 
 			// clip any children below them to the correct world
 			entangled.realObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
-				clipable => { if (IntersectsBounds(clipable))clipable.UnionWith(fieldOfView, csgOperator); });
+				clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfView, csgOperator); });
 			entangled.dreamObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
-				clipable => { if (IntersectsBounds(clipable))clipable.Subtract(fieldOfView, csgOperator); });
+				clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfView, csgOperator); });
 		}
 	}
 
@@ -81,7 +82,6 @@ public class Window : MonoBehaviour
 				toIgnore.Add(vertex);
 			}
 		});
-       
 
 		model.ConvertToWorld(fieldOfView.transform);
 
@@ -121,6 +121,6 @@ public class Window : MonoBehaviour
 			bound.Encapsulate(clipables[i].GetComponent<MeshCollider>().bounds);
 		}
 
-        return bound;
+		return bound;
 	}
 }

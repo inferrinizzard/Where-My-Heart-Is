@@ -1,353 +1,338 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace BansheeGz.BGSpline.Curve
 {
-    /// <summary>
-    /// Abstract superclass for components. 
-    /// 
-    /// Current Requirements: 
-    ///     1) editor should be extended from BGCcEditor 
-    ///     2) Should have a descriptor.
-    ///     3) Only one RequireComponent of type BGCc (parent). Parent is another Cc component, this component is totally depends on and can not operate without it.
-    /// 
-    /// Cc stands for "Curve's component" 
-    /// </summary>
-    [RequireComponent(typeof(BGCurve))]
-    public abstract class BGCc : MonoBehaviour
-    {
-        /// <summary>if component's parameters changed </summary>
-        public event EventHandler ChangedParams;
+	/// <summary>
+	/// Abstract superclass for components. 
+	/// 
+	/// Current Requirements: 
+	///     1) editor should be extended from BGCcEditor 
+	///     2) Should have a descriptor.
+	///     3) Only one RequireComponent of type BGCc (parent). Parent is another Cc component, this component is totally depends on and can not operate without it.
+	/// 
+	/// Cc stands for "Curve's component" 
+	/// </summary>
+	[RequireComponent(typeof(BGCurve))]
+	public abstract class BGCc : MonoBehaviour
+	{
+		/// <summary>if component's parameters changed </summary>
+		public event EventHandler ChangedParams;
 
-        /// <summary>Any information Cc wants to provide (for editor)</summary>
-        public virtual string Info
-        {
-            get { return null; }
-        }
+		/// <summary>Any information Cc wants to provide (for editor)</summary>
+		public virtual string Info
+		{
+			get { return null; }
+		}
 
-        /// <summary>Warning (for editor)</summary>
-        public virtual string Warning
-        {
-            get { return null; }
-        }
+		/// <summary>Warning (for editor)</summary>
+		public virtual string Warning
+		{
+			get { return null; }
+		}
 
-        /// <summary>Error if something is wrong (for editor)</summary>
-        public virtual string Error
-        {
-            get { return null; }
-        }
-
+		/// <summary>Error if something is wrong (for editor)</summary>
+		public virtual string Error
+		{
+			get { return null; }
+		}
 
 #if UNITY_EDITOR
-        // ============================================== !!! This is editor only field
+		// ============================================== !!! This is editor only field
 #pragma warning disable 0414
-        //should CC's handles be shown in SceneView
-        [SerializeField] private bool showHandles = true;
+		//should CC's handles be shown in SceneView
+		[SerializeField] private bool showHandles = true;
 
-        [SerializeField] private bool hidden;
+		[SerializeField] private bool hidden;
 
-        public bool ShowHandles
-        {
-            get { return showHandles; }
-        }
+		public bool ShowHandles
+		{
+			get { return showHandles; }
+		}
 
-        public bool Hidden
-        {
-            get { return hidden; }
-            set { hidden = value; }
-        }
+		public bool Hidden
+		{
+			get { return hidden; }
+			set { hidden = value; }
+		}
 
 #pragma warning restore 0414
 #endif
 
-        /// <summary>Does this Cc supports handles in SceneView?</summary>
-        public virtual bool SupportHandles
-        {
-            get { return false; }
-        }
+		/// <summary>Does this Cc supports handles in SceneView?</summary>
+		public virtual bool SupportHandles
+		{
+			get { return false; }
+		}
 
-        /// <summary>Does this Cc supports some adjustable settings for handles in SceneView?</summary>
-        public virtual bool SupportHandlesSettings
-        {
-            get { return false; }
-        }
+		/// <summary>Does this Cc supports some adjustable settings for handles in SceneView?</summary>
+		public virtual bool SupportHandlesSettings
+		{
+			get { return false; }
+		}
 
-        public virtual bool HideHandlesInInspector
-        {
-            get { return false; }
-        }
+		public virtual bool HideHandlesInInspector
+		{
+			get { return false; }
+		}
 
-        //=============================================== Curve
-        private BGCurve curve;
+		//=============================================== Curve
+		private BGCurve curve;
 
-        public BGCurve Curve
-        {
-            get
-            {
-                //do not replace with ??
-                if (curve == null) curve = GetComponent<BGCurve>();
-                return curve;
-            }
-        }
+		public BGCurve Curve
+		{
+			get
+			{
+				//do not replace with ??
+				if (curve == null) curve = GetComponent<BGCurve>();
+				return curve;
+			}
+		}
 
+		//=============================================== Parent
+		//parent is another Cc component, this component is totally depends on and can not operate without it
+		[SerializeField] private BGCc parent;
 
-        //=============================================== Parent
-        //parent is another Cc component, this component is totally depends on and can not operate without it
-        [SerializeField] private BGCc parent;
+		public void SetParent(BGCc parent)
+		{
+			this.parent = parent;
+		}
 
-        public void SetParent(BGCc parent)
-        {
-            this.parent = parent;
-        }
+		public T GetParent<T>() where T : BGCc
+		{
+			return (T) GetParent(typeof(T));
+		}
 
-        public T GetParent<T>() where T : BGCc
-        {
-            return (T) GetParent(typeof(T));
-        }
+		public BGCc GetParent(Type type)
+		{
+			if (parent != null) return parent;
+			parent = (BGCc) GetComponent(type);
+			return parent;
+		}
 
-        public BGCc GetParent(Type type)
-        {
-            if (parent != null) return parent;
-            parent = (BGCc) GetComponent(type);
-            return parent;
-        }
+		//=============================================== Name
+		//you can name your Cc
+		[SerializeField] private string ccName;
 
+		public string CcName
+		{
+			get { return string.IsNullOrEmpty(ccName) ? "" + GetInstanceID() : ccName; }
+			set { ParamChanged(ref ccName, value); }
+		}
 
-        //=============================================== Name
-        //you can name your Cc
-        [SerializeField] private string ccName;
+		//=============================================== Transaction
+		//transaction is for events grouping only
+		private int transactionLevel;
 
-        public string CcName
-        {
-            get { return string.IsNullOrEmpty(ccName) ? "" + GetInstanceID() : ccName; }
-            set { ParamChanged(ref ccName, value); }
-        }
+		//=============================================== Descriptor
+		//descriptor is used to add icon, name and description to Cc
+		private CcDescriptor descriptor;
 
-        //=============================================== Transaction
-        //transaction is for events grouping only
-        private int transactionLevel;
+		public CcDescriptor Descriptor
+		{
+			get
+			{
+				//do not replace with ??
+				if (descriptor == null) descriptor = GetDescriptor(GetType());
+				return descriptor;
+			}
+		}
 
-        //=============================================== Descriptor
-        //descriptor is used to add icon, name and description to Cc
-        private CcDescriptor descriptor;
+		// www page, containing help info
+		public virtual string HelpURL
+		{
+			get
+			{
+				var helpUrl = GetHelpUrl(GetType());
+				return helpUrl == null ? null : helpUrl.URL;
+			}
+		}
 
+		//=================================================== Unity Methods
+		public virtual void Start() { }
 
-        public CcDescriptor Descriptor
-        {
-            get
-            {
-                //do not replace with ??
-                if (descriptor == null) descriptor = GetDescriptor(GetType());
-                return descriptor;
-            }
-        }
+		public virtual void OnDestroy() { }
 
-        // www page, containing help info
-        public virtual string HelpURL
-        {
-            get
-            {
-                var helpUrl = GetHelpUrl(GetType());
-                return helpUrl == null ? null : helpUrl.URL;
-            }
-        }
+		//=================================================== Methods
+		//in case any param changed
+		protected bool ParamChanged<T>(ref T oldValue, T newValue)
+		{
+			var oldValueNull = oldValue == null;
+			var newValueNull = newValue == null;
+			if (oldValueNull && newValueNull) return false;
 
+			if (oldValueNull == newValueNull && oldValue.Equals(newValue)) return false;
 
-        //=================================================== Unity Methods
-        public virtual void Start()
-        {
-        }
+			oldValue = newValue;
+			FireChangedParams();
+			return true;
+		}
 
-        public virtual void OnDestroy()
-        {
-        }
+		/// <summary> if component has an error</summary>
+		public bool HasError()
+		{
+			return !string.IsNullOrEmpty(Error);
+		}
 
-        //=================================================== Methods
-        //in case any param changed
-        protected bool ParamChanged<T>(ref T oldValue, T newValue)
-        {
-            var oldValueNull = oldValue == null;
-            var newValueNull = newValue == null;
-            if (oldValueNull && newValueNull) return false;
+		/// <summary> if component has a warning</summary>
+		public bool HasWarning()
+		{
+			return !string.IsNullOrEmpty(Warning);
+		}
 
-            if (oldValueNull == newValueNull && oldValue.Equals(newValue)) return false;
+		//utility method for chosing error message
+		protected string ChoseMessage(string baseError, Func<string> childError)
+		{
+			return !string.IsNullOrEmpty(baseError) ? baseError : childError();
+		}
 
-            oldValue = newValue;
-            FireChangedParams();
-            return true;
-        }
+		/// <summary> if any  parameter changed</summary>
+		public void FireChangedParams()
+		{
+			if (ChangedParams != null && transactionLevel == 0) ChangedParams(this, null);
+		}
 
+		/// <summary> component was added via editor menu</summary>
+		public virtual void AddedInEditor() { }
 
-        /// <summary> if component has an error</summary>
-        public bool HasError()
-        {
-            return !string.IsNullOrEmpty(Error);
-        }
+		/// <summary> get parent Cc class</summary>
+		public Type GetParentClass()
+		{
+			return GetParentClass(GetType());
+		}
 
-        /// <summary> if component has a warning</summary>
-        public bool HasWarning()
-        {
-            return !string.IsNullOrEmpty(Warning);
-        }
+		/// <summary> get parent Cc class</summary>
+		public static Type GetParentClass(Type ccType)
+		{
+			//gather required
+			var requiredList = BGReflectionAdapter.GetCustomAttributes(ccType, typeof(RequireComponent), true);
+			if (requiredList.Length == 0) return null;
 
-        //utility method for chosing error message
-        protected string ChoseMessage(string baseError, Func<string> childError)
-        {
-            return !string.IsNullOrEmpty(baseError) ? baseError : childError();
-        }
+			var result = new List<Type>();
+			foreach (var item in requiredList)
+			{
+				var requiredComponent = (RequireComponent) item;
+				CheckRequired(requiredComponent.m_Type0, result);
+				CheckRequired(requiredComponent.m_Type1, result);
+				CheckRequired(requiredComponent.m_Type2, result);
+			}
 
-        /// <summary> if any  parameter changed</summary>
-        public void FireChangedParams()
-        {
-            if (ChangedParams != null && transactionLevel == 0) ChangedParams(this, null);
-        }
+			if (result.Count == 0) return null;
+			if (result.Count > 1) throw new CcException(ccType + " has more than one parent (extended from BGCc class), calculated by RequireComponent attribute");
+			return result[0];
+		}
 
-        /// <summary> component was added via editor menu</summary>
-        public virtual void AddedInEditor()
-        {
-        }
+		//add class if it's not abstract and a child of BGCc
+		private static void CheckRequired(Type type, List<Type> result)
+		{
+			if (type == null || BGReflectionAdapter.IsAbstract(type) || !BGReflectionAdapter.IsClass(type) || !BGReflectionAdapter.IsSubclassOf(type, typeof(BGCc))) return;
 
-        /// <summary> get parent Cc class</summary>
-        public Type GetParentClass()
-        {
-            return GetParentClass(GetType());
-        }
+			result.Add(type);
+		}
 
-        /// <summary> get parent Cc class</summary>
-        public static Type GetParentClass(Type ccType)
-        {
-            //gather required
-            var requiredList = BGReflectionAdapter.GetCustomAttributes(ccType, typeof(RequireComponent), true);
-            if (requiredList.Length == 0) return null;
+		/// <summary> Check standard Unity's DisallowMultipleComponent attribute </summary>
+		public static bool IsSingle(Type ccType)
+		{
+			return BGReflectionAdapter.GetCustomAttributes(ccType, typeof(DisallowMultipleComponent), true).Length > 0;
+		}
 
-            var result = new List<Type>();
-            foreach (var item  in requiredList)
-            {
-                var requiredComponent = (RequireComponent) item;
-                CheckRequired(requiredComponent.m_Type0, result);
-                CheckRequired(requiredComponent.m_Type1, result);
-                CheckRequired(requiredComponent.m_Type2, result);
-            }
+		/// <summary> This is used to group events. Use it to change several params and fire one single event</summary>
+		public void Transaction(Action action)
+		{
+			transactionLevel++;
+			try
+			{
+				action();
+			}
+			finally
+			{
+				transactionLevel--;
+				if (transactionLevel == 0)
+				{
+					if (ChangedParams != null) ChangedParams(this, null);
+				}
+			}
+		}
 
-            if (result.Count == 0) return null;
-            if (result.Count > 1) throw new CcException(ccType + " has more than one parent (extended from BGCc class), calculated by RequireComponent attribute");
-            return result[0];
-        }
+		//======================== descriptor for Editor
+		/// <summary>this descriptor is used by editor</summary>
+		[AttributeUsage(AttributeTargets.Class)]
+		public class CcDescriptor : Attribute
+		{
+			/// <summary>Component's name</summary>
+			public string Name { get; set; }
 
-        //add class if it's not abstract and a child of BGCc
-        private static void CheckRequired(Type type, List<Type> result)
-        {
-            if (type == null || BGReflectionAdapter.IsAbstract(type) || !BGReflectionAdapter.IsClass(type) || !BGReflectionAdapter.IsSubclassOf(type, typeof(BGCc))) return;
+			/// <summary>Component's desciption</summary>
+			public string Description { get; set; }
 
-            result.Add(type);
-        }
+			/// <summary>Component's icon</summary>
+			public string Image { get; set; }
 
-        /// <summary> Check standard Unity's DisallowMultipleComponent attribute </summary>
-        public static bool IsSingle(Type ccType)
-        {
-            return BGReflectionAdapter.GetCustomAttributes(ccType, typeof(DisallowMultipleComponent), true).Length > 0;
-        }
+			/// <summary>icon, referencing BGEditorIcon from BGBinaryResources</summary>
+			public string Icon { get; set; }
+		}
 
-        /// <summary> This is used to group events. Use it to change several params and fire one single event</summary>
-        public void Transaction(Action action)
-        {
-            transactionLevel++;
-            try
-            {
-                action();
-            }
-            finally
-            {
-                transactionLevel--;
-                if (transactionLevel == 0)
-                {
-                    if (ChangedParams != null) ChangedParams(this, null);
-                }
-            }
-        }
+		/// <summary>Component will be excluded from Cc menu and Inspector menu</summary>
+		[AttributeUsage(AttributeTargets.Class)]
+		public class CcExcludeFromMenu : Attribute { }
 
-        //======================== descriptor for Editor
-        /// <summary>this descriptor is used by editor</summary>
-        [AttributeUsage(AttributeTargets.Class)]
-        public class CcDescriptor : Attribute
-        {
-            /// <summary>Component's name</summary>
-            public string Name { get; set; }
+		/// <summary>Retrieves the descriptor from "type"</summary>
+		public static CcDescriptor GetDescriptor(Type type)
+		{
+			var propertyInfos = BGReflectionAdapter.GetCustomAttributes(type, typeof(CcDescriptor), false);
+			if (propertyInfos.Length > 0) return (CcDescriptor) propertyInfos[0];
+			return null;
+		}
 
-            /// <summary>Component's desciption</summary>
-            public string Description { get; set; }
+		// get Unity's HelpURLAttribute attrubute
+		private static HelpURLAttribute GetHelpUrl(Type type)
+		{
+			var propertyInfos = BGReflectionAdapter.GetCustomAttributes(type, typeof(HelpURLAttribute), false);
+			if (propertyInfos.Length > 0) return (HelpURLAttribute) propertyInfos[0];
+			return null;
+		}
 
-            /// <summary>Component's icon</summary>
-            public string Image { get; set; }
-            
-            /// <summary>icon, referencing BGEditorIcon from BGBinaryResources</summary>
-            public string Icon { get; set; }
-        }
+		//======================== Exception
+		/// <summary>Exception if something is wrong with Cc related stuff</summary>
+		public class CcException : Exception
+		{
+			public CcException(string message) : base(message) { }
+		}
 
-        /// <summary>Component will be excluded from Cc menu and Inspector menu</summary>
-        [AttributeUsage(AttributeTargets.Class)]
-        public class CcExcludeFromMenu : Attribute
-        {
-        }
+		//======================== ContextMenu overrides
+		[ContextMenu("Reset", true)]
+		[ContextMenu("Copy Component", true)]
+		[ContextMenu("Paste Component Values", true)]
+		[ContextMenu("Remove Component", true)]
+		private bool ContextMenuItems()
+		{
+			return false;
+		}
 
-        /// <summary>Retrieves the descriptor from "type"</summary>
-        public static CcDescriptor GetDescriptor(Type type)
-        {
-            var propertyInfos = BGReflectionAdapter.GetCustomAttributes(type, typeof(CcDescriptor), false);
-            if (propertyInfos.Length > 0) return (CcDescriptor) propertyInfos[0];
-            return null;
-        }
+		[ContextMenu("Reset")]
+		[ContextMenu("Copy Component")]
+		[ContextMenu("Paste Component Values")]
+		[ContextMenu("Remove Component")]
+		private void ContextMenuValidate()
+		{
+			ShowError("BGCurve components do not support this function");
+		}
 
-        // get Unity's HelpURLAttribute attrubute
-        private static HelpURLAttribute GetHelpUrl(Type type)
-        {
-            var propertyInfos = BGReflectionAdapter.GetCustomAttributes(type, typeof(HelpURLAttribute), false);
-            if (propertyInfos.Length > 0) return (HelpURLAttribute) propertyInfos[0];
-            return null;
-        }
+		[ContextMenu("BGCurve: Why menu items are disabled?")]
+		private void WhyDisabled()
+		{
+			ShowError("BGCurve components do not support Resetting, Copy/Pasting and Removing components from standard Unity menu. Use colored tree view to remove components");
+		}
 
-        //======================== Exception
-        /// <summary>Exception if something is wrong with Cc related stuff</summary>
-        public class CcException : Exception
-        {
-            public CcException(string message) : base(message)
-            {
-            }
-        }
-        
-        //======================== ContextMenu overrides
-        [ContextMenu("Reset", true)]
-        [ContextMenu("Copy Component", true)]
-        [ContextMenu("Paste Component Values", true)]
-        [ContextMenu("Remove Component", true)]
-        private bool ContextMenuItems()
-        {
-            return false;
-        }
-
-        [ContextMenu("Reset")]
-        [ContextMenu("Copy Component")]
-        [ContextMenu("Paste Component Values")]
-        [ContextMenu("Remove Component")]
-        private void ContextMenuValidate()
-        {
-            ShowError("BGCurve components do not support this function");
-        }
-
-        [ContextMenu("BGCurve: Why menu items are disabled?")]
-        private void WhyDisabled()
-        {
-            ShowError("BGCurve components do not support Resetting, Copy/Pasting and Removing components from standard Unity menu. Use colored tree view to remove components");
-        }
-
-        private static void ShowError(string message)
-        {
+		private static void ShowError(string message)
+		{
 #if UNITY_EDITOR
-            UnityEditor.EditorUtility.DisplayDialog("Info", message, "Ok");
+			UnityEditor.EditorUtility.DisplayDialog("Info", message, "Ok");
 #else
-            Debug.Log(message);
+			Debug.Log(message);
 #endif
-        }
-    }
+		}
+	}
 }

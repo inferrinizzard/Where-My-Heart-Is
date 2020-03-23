@@ -1,4 +1,5 @@
 using UnityEditor;
+
 using UnityEngine;
 
 [CustomEditor(typeof(WorldObject))]
@@ -10,7 +11,7 @@ public class WorldObjectGUI : Editor
 
 	WorldObject obj = null;
 
-	void OnEnable() => obj = (WorldObject)target;
+	void OnEnable() => obj = (WorldObject) target;
 
 	string Is(bool status) => status ? yes : no;
 	public override void OnInspectorGUI()

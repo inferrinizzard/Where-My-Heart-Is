@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 [System.Serializable]
@@ -113,6 +114,6 @@ public class ApplyMask : MonoBehaviour
 		transitionMat = new Material(transition);
 		transitionMat.SetTexture("_BackgroundTex", preview);
 		transitionMat.SetTexture("_TransitionTex", dissolveTexture);
-        GameManager.Instance.ChangeLevel(scene);
+		GameManager.Instance.ChangeLevel(scene);
 	}
 }

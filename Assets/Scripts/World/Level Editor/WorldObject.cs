@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class WorldObject : MonoBehaviour
@@ -32,7 +33,7 @@ public class WorldObject : MonoBehaviour
 		SummonComponent<CollectableObject>(collectable);
 	}
 
-	Component SummonComponent<T>(bool flag)where T : Component
+	Component SummonComponent<T>(bool flag) where T : Component
 	{
 		if (flag)
 		{

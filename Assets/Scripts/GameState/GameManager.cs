@@ -1,6 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -55,7 +56,7 @@ public class GameManager : Singleton<GameManager>
 
 	private List<IPersistent> GetIPersistents()
 	{
-		List<IPersistent> result = FindObjectsOfType<MonoBehaviour>().OfType<IPersistent>().Where(persistent => (object)persistent != this).ToList();
+		List<IPersistent> result = FindObjectsOfType<MonoBehaviour>().OfType<IPersistent>().Where(persistent => (object) persistent != this).ToList();
 		return result;
 	}
 

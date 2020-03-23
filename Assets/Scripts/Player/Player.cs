@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -70,7 +71,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 	// [Header("Camera Variables")]
 	/// <summary> Bounds angle the player can look upward. </summary>
-	private(float, float)xRotationBounds = (-90f, 90f);
+	private(float, float) xRotationBounds = (-90f, 90f);
 	/// <summary> Stores the rotation of the player. </summary>
 	[HideInInspector] public Vector3 rotation = Vector3.zero;
 	int _ViewDirID = Shader.PropertyToID("_ViewDir");
@@ -398,7 +399,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (State is Aiming && windowEnabled && !heldObject)SetState(new Cut(this));
+		if (State is Aiming && windowEnabled && !heldObject) SetState(new Cut(this));
 	}
 
 	/// <summary> Interact prompt handling. </summary>

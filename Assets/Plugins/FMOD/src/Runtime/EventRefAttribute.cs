@@ -1,8 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace FMODUnity
 {
-    public class EventRefAttribute : PropertyAttribute
-    {
-    }
+	public class EventRefAttribute : PropertyAttribute { }
 }

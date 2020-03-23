@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class EntangledObjectManager : MonoBehaviour
@@ -14,5 +15,4 @@ public class EntangledObjectManager : MonoBehaviour
 		createdObject.layer = 9;
 	}
 
-    
 }

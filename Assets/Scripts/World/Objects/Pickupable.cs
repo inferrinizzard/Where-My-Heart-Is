@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 /// <summary> Handles the behavior of an object that can be picked up. </summary>
@@ -18,7 +19,7 @@ public class Pickupable : InteractableObject
 		if (active)
 		{
 			// If the object is being inspected, run Looking.
-			if (player.looking)Looking();
+			if (player.looking) Looking();
 		}
 	}
 

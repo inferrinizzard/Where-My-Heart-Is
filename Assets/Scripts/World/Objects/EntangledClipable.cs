@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class EntangledClipable : ClipableObject
@@ -11,28 +12,28 @@ public class EntangledClipable : ClipableObject
 
 	string entangledName = $"[|]"; // todo compound names
 
-    private void Start()
-    {
-        foreach (Transform child in realObject.transform)
-        {
-            child.gameObject.layer = realObject.layer;
-            if (child.GetComponent<MeshFilter>() != null)
-            {
-                if(!child.gameObject.GetComponent<ClipableObject>()) child.gameObject.AddComponent<ClipableObject>();
-            }
-        }
+	private void Start()
+	{
+		foreach (Transform child in realObject.transform)
+		{
+			child.gameObject.layer = realObject.layer;
+			if (child.GetComponent<MeshFilter>() != null)
+			{
+				if (!child.gameObject.GetComponent<ClipableObject>()) child.gameObject.AddComponent<ClipableObject>();
+			}
+		}
 
-        foreach (Transform child in dreamObject.transform)
-        {
-            child.gameObject.layer = dreamObject.layer;
-            if (child.GetComponent<MeshFilter>() != null)
-            {
-                if (!child.gameObject.GetComponent<ClipableObject>()) child.gameObject.AddComponent<ClipableObject>();
-            }
-        }
-    }
+		foreach (Transform child in dreamObject.transform)
+		{
+			child.gameObject.layer = dreamObject.layer;
+			if (child.GetComponent<MeshFilter>() != null)
+			{
+				if (!child.gameObject.GetComponent<ClipableObject>()) child.gameObject.AddComponent<ClipableObject>();
+			}
+		}
+	}
 
-    public bool Visable
+	public bool Visable
 	{
 		get => dreamVersion.gameObject.GetComponent<MeshRenderer>().enabled;
 
@@ -104,10 +105,10 @@ public class EntangledClipable : ClipableObject
 		createdObject.layer = LayerMask.NameToLayer(layer);
 		if (createdObject.GetComponent<MeshFilter>() != null)
 		{
-            if(createdObject.GetComponent<Collider>() == null) createdObject.AddComponent<MeshCollider>();
-            if(createdObject.GetComponent<ClipableObject>() == null) createdObject.AddComponent<ClipableObject>();
+			if (createdObject.GetComponent<Collider>() == null) createdObject.AddComponent<MeshCollider>();
+			if (createdObject.GetComponent<ClipableObject>() == null) createdObject.AddComponent<ClipableObject>();
 
-            return createdObject.GetComponent<ClipableObject>();
+			return createdObject.GetComponent<ClipableObject>();
 		}
 
 		return null;

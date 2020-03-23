@@ -1,273 +1,271 @@
-﻿using System;
-using UnityEngine;
+using System;
 using System.Collections.Generic;
+
 using BansheeGz.BGSpline.Curve;
+
+using UnityEngine;
 
 namespace BansheeGz.BGSpline.Editor
 {
-    public class BGTreeView<T> where T : BGTreeNode<T>
-    {
-        public readonly List<T> Roots = new List<T>();
+	public class BGTreeView<T> where T : BGTreeNode<T>
+	{
+		public readonly List<T> Roots = new List<T>();
 
-        public Config Configuration { get; private set; }
+		public Config Configuration { get; private set; }
 
-        private Texture2D linkTexture;
+		private Texture2D linkTexture;
 
-        public Texture2D ExpandedIconTexture
-        {
-            get { return BGBinaryResources.BGExpanded123; }
-        }
+		public Texture2D ExpandedIconTexture
+		{
+			get { return BGBinaryResources.BGExpanded123; }
+		}
 
-        public Texture2D CollapsedIconTexture
-        {
-            get { return BGBinaryResources.BGCollapsed123; }
-        }
+		public Texture2D CollapsedIconTexture
+		{
+			get { return BGBinaryResources.BGCollapsed123; }
+		}
 
-        public BGTreeView(Config config)
-        {
-            Configuration = config;
-        }
+		public BGTreeView(Config config)
+		{
+			Configuration = config;
+		}
 
-        public virtual void OnInspectorGui()
-        {
-            IterateRoots((i, root) =>
-            {
-                if (i != 0) GUILayout.Space(Configuration.VerticalSpace*2);
-                root.OnInspectorGui();
-            });
-        }
+		public virtual void OnInspectorGui()
+		{
+			IterateRoots((i, root) =>
+			{
+				if (i != 0) GUILayout.Space(Configuration.VerticalSpace * 2);
+				root.OnInspectorGui();
+			});
+		}
 
-        public void ExpandCollapseAll(bool collapsed)
-        {
-            IterateRoots((i, root) => root.ExpandCollapsed(collapsed, true));
-        }
+		public void ExpandCollapseAll(bool collapsed)
+		{
+			IterateRoots((i, root) => root.ExpandCollapsed(collapsed, true));
+		}
 
-        protected void IterateRoots(Action<int, T> action)
-        {
-            for (var i = 0; i < Roots.Count; i++) action(i, Roots[i]);
-        }
+		protected void IterateRoots(Action<int, T> action)
+		{
+			for (var i = 0; i < Roots.Count; i++) action(i, Roots[i]);
+		}
 
-        public virtual Texture2D GetLinkTexture(int level)
-        {
-            BGEditorUtility.Assign(ref linkTexture, () => BGEditorUtility.Texture1X1(Color.black));
-            return linkTexture;
-        }
+		public virtual Texture2D GetLinkTexture(int level)
+		{
+			BGEditorUtility.Assign(ref linkTexture, () => BGEditorUtility.Texture1X1(Color.black));
+			return linkTexture;
+		}
 
-        //=========================================================  Config
-        public class Config
-        {
-            public int VerticalSpace { get; private set; }
-            public int HorizontalLinkOffset { get; private set; }
-            public int HorizontalSpace { get; private set; }
-            public int LinkLineSize { get; private set; }
+		//=========================================================  Config
+		public class Config
+		{
+			public int VerticalSpace { get; private set; }
+			public int HorizontalLinkOffset { get; private set; }
+			public int HorizontalSpace { get; private set; }
+			public int LinkLineSize { get; private set; }
 
-            public int ExpandCollapseIconSize { get; private set; }
+			public int ExpandCollapseIconSize { get; private set; }
 
-            public Config(int verticalSpace, int horizontalSpace, int horizontalLinkOffset, int linkLineSize, int expandCollapseIconSize)
-            {
-                VerticalSpace = verticalSpace;
-                HorizontalLinkOffset = horizontalLinkOffset;
-                HorizontalSpace = horizontalSpace;
-                LinkLineSize = linkLineSize;
-                ExpandCollapseIconSize = expandCollapseIconSize;
-            }
-        }
-    }
+			public Config(int verticalSpace, int horizontalSpace, int horizontalLinkOffset, int linkLineSize, int expandCollapseIconSize)
+			{
+				VerticalSpace = verticalSpace;
+				HorizontalLinkOffset = horizontalLinkOffset;
+				HorizontalSpace = horizontalSpace;
+				LinkLineSize = linkLineSize;
+				ExpandCollapseIconSize = expandCollapseIconSize;
+			}
+		}
+	}
 
+	//=========================================================  Node
+	//curiously recurring template pattern (something wrong here)
+	public abstract class BGTreeNode<T> where T : BGTreeNode<T>
+	{
+		private readonly BGTreeView<T> tree;
+		private T parent;
+		private List<T> children;
 
-    //=========================================================  Node
-    //curiously recurring template pattern (something wrong here)
-    public abstract class BGTreeNode<T> where T : BGTreeNode<T>
-    {
-        private readonly BGTreeView<T> tree;
-        private T parent;
-        private List<T> children;
+		private GUIStyle buttonStyle;
 
-        private GUIStyle buttonStyle;
+		public virtual bool Collapsed { get; set; }
 
-        public virtual bool Collapsed { get; set; }
+		public Rect Rect { get; set; }
 
-        public Rect Rect { get; set; }
+		public bool HasChildren
+		{
+			get { return !BGEditorUtility.Empty(children); }
+		}
 
-        public bool HasChildren
-        {
-            get { return !BGEditorUtility.Empty(children); }
-        }
+		private List<Action> postActions;
 
-        private List<Action> postActions;
+		public T Parent
+		{
+			get { return parent; }
+			set
+			{
+				if (parent == value) return;
 
-        public T Parent
-        {
-            get { return parent; }
-            set
-            {
-                if (parent == value) return;
+				//remove from old parent
+				if (parent != null && parent.children != null) parent.children.Remove((T) this);
 
-                //remove from old parent
-                if (parent != null && parent.children != null) parent.children.Remove((T) this);
+				parent = value;
+				if (parent == null) return;
 
-                parent = value;
-                if (parent == null) return;
+				//recursion check
+				var currentParent = parent;
+				var nestingLevel = 0;
+				while (currentParent != null)
+				{
+					if (currentParent == this) throw new BGCc.CcException("Recursion check fail!");
+					if (nestingLevel > 10) throw new BGCc.CcException("Recursion check fail! Unacceptable Nesting Level " + nestingLevel);
 
-                //recursion check
-                var currentParent = parent;
-                var nestingLevel = 0;
-                while (currentParent != null)
-                {
-                    if (currentParent == this) throw new BGCc.CcException("Recursion check fail!");
-                    if (nestingLevel > 10) throw new BGCc.CcException("Recursion check fail! Unacceptable Nesting Level " + nestingLevel);
+					currentParent = currentParent.Parent;
+					nestingLevel++;
+				}
 
-                    currentParent = currentParent.Parent;
-                    nestingLevel++;
-                }
+				//add to parent
+				parent.children = parent.children ?? new List<T>();
+				if (!parent.children.Contains((T) this)) parent.children.Add((T) this);
+			}
+		}
 
-                //add to parent
-                parent.children = parent.children ?? new List<T>();
-                if (!parent.children.Contains((T) this)) parent.children.Add((T) this);
-            }
-        }
+		public int Level
+		{
+			get
+			{
+				if (Parent == null) return 0;
 
-        public int Level
-        {
-            get
-            {
-                if (Parent == null) return 0;
+				var parentLevel = Parent.Level;
+				//just in case (recursion check)
+				if (parentLevel > 10) throw new BGCc.CcException("Recursion check fail! Unacceptable Nesting Level " + parentLevel);
+				return parentLevel + 1;
+			}
+		}
 
-                var parentLevel = Parent.Level;
-                //just in case (recursion check)
-                if (parentLevel > 10) throw new BGCc.CcException("Recursion check fail! Unacceptable Nesting Level " + parentLevel);
-                return parentLevel + 1;
-            }
-        }
+		public BGTreeView<T> Tree
+		{
+			get { return tree; }
+		}
 
-        public BGTreeView<T> Tree
-        {
-            get { return tree; }
-        }
+		protected BGTreeNode(BGTreeView<T> tree)
+		{
+			if (tree == null) throw new BGCc.CcException("tree can not be null!");
+			this.tree = tree;
+		}
 
+		public void ExpandCollapsed(bool collapsed, bool recursive)
+		{
+			Collapsed = collapsed;
+			if (recursive) IterateChildren(child => child.ExpandCollapsed(collapsed, true));
+		}
 
-        protected BGTreeNode(BGTreeView<T> tree)
-        {
-            if (tree == null) throw new BGCc.CcException("tree can not be null!");
-            this.tree = tree;
-        }
+		protected void IterateChildren(Action<T> action)
+		{
+			if (BGEditorUtility.Empty(children)) return;
 
-        public void ExpandCollapsed(bool collapsed, bool recursive)
-        {
-            Collapsed = collapsed;
-            if (recursive) IterateChildren(child => child.ExpandCollapsed(collapsed, true));
-        }
+			foreach (var child in children) action(child);
+		}
 
-        protected void IterateChildren(Action<T> action)
-        {
-            if (BGEditorUtility.Empty(children)) return;
+		public virtual Rect OnInspectorGui()
+		{
+			var level = Level;
 
-            foreach (var child in children) action(child);
-        }
+			var myRect = new Rect();
+			BGEditorUtility.Vertical(() =>
+			{
+				BGEditorUtility.Horizontal(() =>
+				{
+					if (level > 0 && tree.Configuration.HorizontalSpace > 0) GUILayout.Space(tree.Configuration.HorizontalSpace * level);
 
+					BGEditorUtility.Vertical(() => { OnInspectorGuiInternal(level); });
 
-        public virtual Rect OnInspectorGui()
-        {
-            var level = Level;
+					myRect = GUILayoutUtility.GetLastRect();
+				});
+			});
 
-            var myRect = new Rect();
-            BGEditorUtility.Vertical(() =>
-            {
-                BGEditorUtility.Horizontal(() =>
-                {
-                    if (level > 0 && tree.Configuration.HorizontalSpace > 0) GUILayout.Space(tree.Configuration.HorizontalSpace*level);
+			if (Event.current.type == EventType.Repaint) Rect = myRect;
 
-                    BGEditorUtility.Vertical(() => { OnInspectorGuiInternal(level); });
+			if (children == null || children.Count == 0 || Collapsed) return myRect;
 
-                    myRect = GUILayoutUtility.GetLastRect();
-                });
-            });
+			//Children
+			var texture = tree.GetLinkTexture(level);
 
-            if (Event.current.type == EventType.Repaint) Rect = myRect;
+			var linkStartX = myRect.x + tree.Configuration.HorizontalLinkOffset;
 
-            if (children == null || children.Count == 0 || Collapsed) return myRect;
+			var childRect = new Rect();
 
+			var linkSize = tree.Configuration.LinkLineSize;
 
-            //Children
-            var texture = tree.GetLinkTexture(level);
+			if (postActions != null) postActions.Clear();
+			foreach (var child in children)
+			{
+				if (tree.Configuration.VerticalSpace > 0) GUILayout.Space(tree.Configuration.VerticalSpace);
 
-            var linkStartX = myRect.x + tree.Configuration.HorizontalLinkOffset;
+				childRect = child.OnInspectorGui();
 
-            var childRect = new Rect();
+				//horizontal link
+				var linkWidth = childRect.x - linkStartX;
 
-            var linkSize = tree.Configuration.LinkLineSize;
+				if (!(linkWidth > 0)) continue;
 
-            if (postActions != null) postActions.Clear();
-            foreach (var child in children)
-            {
-                if (tree.Configuration.VerticalSpace > 0) GUILayout.Space(tree.Configuration.VerticalSpace);
+				//child Y Center
+				var childCenterY = childRect.y + childRect.size.y * .5f;
 
-                childRect = child.OnInspectorGui();
+				//link
+				var horizontalLink = new Rect(
+					linkStartX,
+					childCenterY - linkSize * .5f,
+					linkWidth,
+					linkSize);
 
-                //horizontal link
-                var linkWidth = childRect.x - linkStartX;
+				GUI.DrawTexture(horizontalLink, texture, ScaleMode.StretchToFill);
 
-                if (!(linkWidth > 0)) continue;
+				//icon
+				var iconSize = tree.Configuration.ExpandCollapseIconSize;
+				if (iconSize > 0 && child.HasChildren)
+				{
+					BGEditorUtility.Assign(ref buttonStyle, () => new GUIStyle("Button")
+					{
+						margin = new RectOffset(),
+							padding = new RectOffset(),
+							border = new RectOffset()
+					});
 
-                //child Y Center
-                var childCenterY = childRect.y + childRect.size.y*.5f;
+					postActions = postActions ?? new List<Action>();
+					var childRef = child;
+					postActions.Add(() =>
+					{
+						var iconSizeHalf = iconSize * .5f;
+						if (GUI.Button(new Rect(
+									linkStartX - iconSizeHalf + linkSize * .5f,
+									childCenterY - iconSizeHalf + linkSize * .5f,
+									iconSize,
+									iconSize),
+								childRef.Collapsed ? tree.CollapsedIconTexture : tree.ExpandedIconTexture, buttonStyle))
+						{
+							childRef.Collapsed = !childRef.Collapsed;
+						}
+					});
+				}
+			}
 
-                //link
-                var horizontalLink = new Rect(
-                    linkStartX,
-                    childCenterY - linkSize*.5f,
-                    linkWidth,
-                    linkSize);
+			if (linkStartX < childRect.x)
+			{
+				//vertical link
+				GUI.DrawTexture(new Rect(
+					linkStartX,
+					myRect.yMax,
+					linkSize,
+					childRect.center.y - myRect.yMax
+				), texture, ScaleMode.StretchToFill);
+			}
 
-                GUI.DrawTexture(horizontalLink, texture, ScaleMode.StretchToFill);
+			if (postActions != null && postActions.Count > 0)
+				foreach (var postAction in postActions) postAction();
 
-                //icon
-                var iconSize = tree.Configuration.ExpandCollapseIconSize;
-                if (iconSize > 0 && child.HasChildren)
-                {
-                    BGEditorUtility.Assign(ref buttonStyle, () => new GUIStyle("Button")
-                    {
-                        margin = new RectOffset(),
-                        padding = new RectOffset(),
-                        border = new RectOffset()
-                    });
+			return myRect;
+		}
 
-                    postActions = postActions ?? new List<Action>();
-                    var childRef = child;
-                    postActions.Add(() =>
-                    {
-                        var iconSizeHalf = iconSize*.5f;
-                        if (GUI.Button(new Rect(
-                            linkStartX - iconSizeHalf + linkSize*.5f,
-                            childCenterY - iconSizeHalf + linkSize*.5f,
-                            iconSize,
-                            iconSize),
-                            childRef.Collapsed ? tree.CollapsedIconTexture : tree.ExpandedIconTexture, buttonStyle))
-                        {
-                            childRef.Collapsed = !childRef.Collapsed;
-                        }
-                    });
-                }
-            }
-
-            if (linkStartX < childRect.x)
-            {
-                //vertical link
-                GUI.DrawTexture(new Rect(
-                    linkStartX,
-                    myRect.yMax,
-                    linkSize,
-                    childRect.center.y - myRect.yMax
-                    ), texture, ScaleMode.StretchToFill);
-            }
-
-
-            if (postActions != null && postActions.Count > 0) foreach (var postAction in postActions) postAction();
-
-            return myRect;
-        }
-
-        public abstract void OnInspectorGuiInternal(int level);
-        public abstract void ProcessStructure();
-    }
+		public abstract void OnInspectorGuiInternal(int level);
+		public abstract void ProcessStructure();
+	}
 }

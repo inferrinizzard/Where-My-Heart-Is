@@ -1,88 +1,90 @@
-﻿using System.Linq;
+using System.Linq;
+
 using BansheeGz.BGSpline.Curve;
+
 using UnityEditor;
+
 using UnityEngine;
 
 namespace BansheeGz.BGSpline.Editor
 {
-    [CustomEditor(typeof(BGCurveReferenceToPoint))]
-    public class BGCurveReferenceToPointEditor : BGCurvePointGOEditor
-    {
-        private BGCurveReferenceToPoint pointReference;
+	[CustomEditor(typeof(BGCurveReferenceToPoint))]
+	public class BGCurveReferenceToPointEditor : BGCurvePointGOEditor
+	{
+		private BGCurveReferenceToPoint pointReference;
 
-        private BGTransformMonitor transformMonitor;
+		private BGTransformMonitor transformMonitor;
 
-        protected override BGCurvePointI Point
-        {
-            get { return pointReference.Point; }
-        }
+		protected override BGCurvePointI Point
+		{
+			get { return pointReference.Point; }
+		}
 
-        protected override void OnEnable()
-        {
-            pointReference = (BGCurveReferenceToPoint) target;
+		protected override void OnEnable()
+		{
+			pointReference = (BGCurveReferenceToPoint) target;
 
-            var point = pointReference.Point;
-            if (!IsValid(point))
-            {
-                //no need for it anymore
-                DestroyImmediate(pointReference);
-                return;
-            }
+			var point = pointReference.Point;
+			if (!IsValid(point))
+			{
+				//no need for it anymore
+				DestroyImmediate(pointReference);
+				return;
+			}
 
-            var allComponents = pointReference.GetComponents<BGCurveReferenceToPoint>();
-            if (allComponents.Any(component => component != pointReference && component.Point == pointReference.Point))
-            {
-                DestroyImmediate(pointReference);
-                return;
-            }
+			var allComponents = pointReference.GetComponents<BGCurveReferenceToPoint>();
+			if (allComponents.Any(component => component != pointReference && component.Point == pointReference.Point))
+			{
+				DestroyImmediate(pointReference);
+				return;
+			}
 
-            transformMonitor = BGTransformMonitor.GetMonitor(pointReference.transform, transform => point.Curve.FireChange(null));
+			transformMonitor = BGTransformMonitor.GetMonitor(pointReference.transform, transform => point.Curve.FireChange(null));
 
-            base.OnEnable();
-        }
+			base.OnEnable();
+		}
 
-        public void OnDestroy()
-        {
-            if (transformMonitor != null) transformMonitor.Release();
-            transformMonitor = null;
-            pointReference = null;
-        }
+		public void OnDestroy()
+		{
+			if (transformMonitor != null) transformMonitor.Release();
+			transformMonitor = null;
+			pointReference = null;
+		}
 
+		private static bool IsValid(BGCurvePointI point)
+		{
+			return point != null && point.Curve != null && point.Curve.IndexOf(point) >= 0;
+		}
 
-        private static bool IsValid(BGCurvePointI point)
-        {
-            return point != null && point.Curve != null && point.Curve.IndexOf(point) >= 0;
-        }
+		public override void OnInspectorGUI()
+		{
+			transformMonitor.CheckForChange();
 
-        public override void OnInspectorGUI()
-        {
-            transformMonitor.CheckForChange();
+			var point = pointReference.Point;
 
-            var point = pointReference.Point;
+			if (!IsValid(point)) return;
 
-            if (!IsValid(point)) return;
+			BGEditorUtility.DisableGui(() => EditorGUILayout.TextField("BGCurve", point.Curve.gameObject.name));
 
-            BGEditorUtility.DisableGui(() => EditorGUILayout.TextField("BGCurve", point.Curve.gameObject.name));
+			base.OnInspectorGUI();
+		}
 
-            base.OnInspectorGUI();
-        }
+		public override void OnSceneGUI()
+		{
+			var point = pointReference.Point;
 
-        public override void OnSceneGUI()
-        {
-            var point = pointReference.Point;
+			if (!IsValid(point)) return;
 
-            if (!IsValid(point)) return;
+			transformMonitor.CheckForChange();
 
-            transformMonitor.CheckForChange();
+			base.OnSceneGUI();
 
-            base.OnSceneGUI();
-           
-        }
+		}
 
-        [DrawGizmo(GizmoType.Selected)]
-        public static void DrawGizmos(BGCurveReferenceToPoint point, GizmoType gizmoType)
-        {
-            BGCurveEditor.DrawGizmos(point.Point.Curve, gizmoType);
-        }
-    }
+		[DrawGizmo(GizmoType.Selected)]
+		public static void DrawGizmos(BGCurveReferenceToPoint point, GizmoType gizmoType)
+		{
+			BGCurveEditor.DrawGizmos(point.Point.Curve, gizmoType);
+		}
+	}
 }

@@ -1,229 +1,226 @@
-﻿using System;
-using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEditor;
+
+using UnityEngine;
 
 namespace BansheeGz.BGSpline.Editor
 {
-    //popup menu in SceneView
-    public class BGPopupMenu
-    {
-        private const int HeaderHeight = 16;
+	//popup menu in SceneView
+	public class BGPopupMenu
+	{
+		private const int HeaderHeight = 16;
 
+		private readonly Texture2D backTexture;
+		private readonly Texture2D selectedTexture;
+		private readonly Texture2D currentTexture;
 
-        private readonly Texture2D backTexture;
-        private readonly Texture2D selectedTexture;
-        private readonly Texture2D currentTexture;
+		private readonly string title;
 
-        private readonly string title;
+		public Vector2 Point2DPosition;
+		public Vector3 Point3DPosition;
+		public bool Active;
+		public MenuItem ActiveItem;
 
+		private float height;
+		private float width;
+		private Rect targetRect;
+		private BGTransition.SimpleTransition onTransition;
 
-        public Vector2 Point2DPosition;
-        public Vector3 Point3DPosition;
-        public bool Active;
-        public MenuItem ActiveItem;
+		private readonly List<MenuItem> items = new List<MenuItem>();
 
-        private float height;
-        private float width;
-        private Rect targetRect;
-        private BGTransition.SimpleTransition onTransition;
+		private GUIStyle TitleStyle
+		{
+			get
+			{
+				return new GUIStyle("Label")
+				{
+					fontStyle = FontStyle.Bold,
+						alignment = TextAnchor.MiddleCenter,
+						normal = {
+							textColor = Color.white,
+							background = BGBinaryResources.BGBoxWithBorder123
+						},
+				};
+			}
+		}
 
-        private readonly List<MenuItem> items = new List<MenuItem>();
+		public BGPopupMenu(string title)
+		{
+			this.title = title;
+			backTexture = BGEditorUtility.Texture1X1(new Color32(46, 144, 168, 80));
+			selectedTexture = BGEditorUtility.Texture1X1(new Color32(0, 255, 0, 100));
+			currentTexture = BGEditorUtility.Texture1X1(new Color32(200, 200, 200, 200));
+		}
 
-        private GUIStyle TitleStyle
-        {
-            get
-            {
-                return new GUIStyle("Label")
-                {
-                    fontStyle = FontStyle.Bold,
-                    alignment = TextAnchor.MiddleCenter,
-                    normal =
-                    {
-                        textColor = Color.white,
-                        background = BGBinaryResources.BGBoxWithBorder123
-                    },
-                };
-            }
-        }
+		public void Add(MenuItem item)
+		{
+			items.Add(item);
+		}
 
-        public BGPopupMenu(string title)
-        {
-            this.title = title;
-            backTexture = BGEditorUtility.Texture1X1(new Color32(46, 144, 168, 80));
-            selectedTexture = BGEditorUtility.Texture1X1(new Color32(0, 255, 0, 100));
-            currentTexture = BGEditorUtility.Texture1X1(new Color32(200, 200, 200, 200));
-        }
+		public MenuItem Get(int index)
+		{
+			return items[index];
+		}
 
-        public void Add(MenuItem item)
-        {
-            items.Add(item);
-        }
+		public virtual void On(Vector3 position)
+		{
+			if (Active) return;
 
-        public MenuItem Get(int index)
-        {
-            return items[index];
-        }
+			Active = true;
 
-        public virtual void On(Vector3 position)
-        {
-            if (Active) return;
+			onTransition = new BGTransition.SimpleTransition(.2, false);
+			Point3DPosition = position;
+			Point2DPosition = BGEditorUtility.GetSceneViewPosition(Point3DPosition);
 
-            Active = true;
+			//target size (go first)
+			height = width = 0;
+			foreach (var size in items.Where(item => !item.Disabled).Select(item => item.Size))
+			{
+				if (height < size.y * 2) height = size.y * 2;
+				width += size.x;
+			}
 
-            onTransition = new BGTransition.SimpleTransition(.2, false);
-            Point3DPosition = position;
-            Point2DPosition = BGEditorUtility.GetSceneViewPosition(Point3DPosition);
+			targetRect.size = new Vector2(width, height + HeaderHeight);
 
-            //target size (go first)
-            height = width = 0;
-            foreach (var size in items.Where(item => !item.Disabled).Select(item => item.Size))
-            {
-                if (height < size.y * 2) height = size.y * 2;
-                width += size.x;
-            }
+			//target position (go second)
+			targetRect.x = Point2DPosition.x - targetRect.size.x * .5f;
+			targetRect.y = Point2DPosition.y - targetRect.size.y * .75f;
+		}
 
-            targetRect.size = new Vector2(width, height + HeaderHeight);
+		public void OnGui(Event currentEvent)
+		{
+			if (!Active) return;
 
+			var mousePosition = currentEvent.mousePosition;
 
-            //target position (go second)
-            targetRect.x = Point2DPosition.x - targetRect.size.x * .5f;
-            targetRect.y = Point2DPosition.y - targetRect.size.y * .75f;
-        }
+			if (onTransition == null && !targetRect.Contains(mousePosition))
+			{
+				Active = false;
+				SceneView.RepaintAll();
+				return;
+			}
 
-        public void OnGui(Event currentEvent)
-        {
-            if (!Active) return;
+			BGEditorUtility.HandlesGui(() =>
+			{
+				if (onTransition != null && !onTransition.Tick())
+				{
+					//animating transition
+					GUI.DrawTexture(new Rect(Vector2.Lerp(Point2DPosition, targetRect.position, onTransition.Ratio), targetRect.size * onTransition.Ratio), backTexture, ScaleMode.StretchToFill);
+				}
+				else
+				{
+					//ready
+					onTransition = null;
 
-            var mousePosition = currentEvent.mousePosition;
+					GUI.DrawTexture(targetRect, backTexture, ScaleMode.StretchToFill);
+					GUI.Label(new Rect(targetRect) { height = HeaderHeight }, title, TitleStyle);
 
-            if (onTransition == null && !targetRect.Contains(mousePosition))
-            {
-                Active = false;
-                SceneView.RepaintAll();
-                return;
-            }
+					ActiveItem = null;
+					var cursor = targetRect.x;
 
-            BGEditorUtility.HandlesGui(() =>
-            {
-                if (onTransition != null && !onTransition.Tick())
-                {
-                    //animating transition
-                    GUI.DrawTexture(new Rect(Vector2.Lerp(Point2DPosition, targetRect.position, onTransition.Ratio), targetRect.size * onTransition.Ratio), backTexture, ScaleMode.StretchToFill);
-                }
-                else
-                {
-                    //ready
-                    onTransition = null;
+					foreach (var item in items.Where(item => !item.Disabled))
+					{
+						var itemRect = new Rect(cursor, targetRect.y + HeaderHeight, item.Size.x, item.Size.y);
+						var selected = itemRect.Contains(mousePosition);
 
-                    GUI.DrawTexture(targetRect, backTexture, ScaleMode.StretchToFill);
-                    GUI.Label(new Rect(targetRect) {height = HeaderHeight}, title, TitleStyle);
+						//if not separator
+						if (selected && item.Description != null)
+						{
+							ActiveItem = item;
 
-                    ActiveItem = null;
-                    var cursor = targetRect.x;
+							if (!currentEvent.control && item is MenuItemButton) ((MenuItemButton) item).Action();
+						}
 
-                    foreach (var item in items.Where(item => !item.Disabled))
-                    {
-                        var itemRect = new Rect(cursor, targetRect.y + HeaderHeight, item.Size.x, item.Size.y);
-                        var selected = itemRect.Contains(mousePosition);
+						//icon
+						if (item.Icon != null)
+						{
+							GUI.DrawTexture(itemRect, BGBinaryResources.BGMenuItemBackground123, ScaleMode.StretchToFill);
 
-                        //if not separator
-                        if (selected && item.Description != null)
-                        {
-                            ActiveItem = item;
+							if (selected) GUI.DrawTexture(itemRect, selectedTexture, ScaleMode.StretchToFill);
 
-                            if (!currentEvent.control && item is MenuItemButton) ((MenuItemButton) item).Action();
-                        }
+							GUI.DrawTexture(itemRect, item.Icon, ScaleMode.StretchToFill);
+						}
 
-                        //icon
-                        if (item.Icon != null)
-                        {
-                            GUI.DrawTexture(itemRect, BGBinaryResources.BGMenuItemBackground123, ScaleMode.StretchToFill);
+						if (item.Current)
+						{
+							GUI.DrawTexture(itemRect, currentTexture, ScaleMode.StretchToFill);
+						}
 
-                            if (selected) GUI.DrawTexture(itemRect, selectedTexture, ScaleMode.StretchToFill);
+						cursor += itemRect.width;
+					}
+				}
+			});
 
-                            GUI.DrawTexture(itemRect, item.Icon, ScaleMode.StretchToFill);
-                        }
+			if (!currentEvent.control) Active = false;
+		}
 
-                        if (item.Current)
-                        {
-                            GUI.DrawTexture(itemRect, currentTexture, ScaleMode.StretchToFill);
-                        }
+		//===================================================================================  menu items
+		//---------------------- abstract
+		public abstract class MenuItem
+		{
+			public abstract string Description { get; }
+			public abstract Texture2D Icon { get; }
+			public abstract Vector2 Size { get; }
 
-                        cursor += itemRect.width;
-                    }
-                }
-            });
+			public bool Disabled;
 
-            if (!currentEvent.control) Active = false;
-        }
+			public bool Current;
+		}
 
-        //===================================================================================  menu items
-        //---------------------- abstract
-        public abstract class MenuItem
-        {
-            public abstract string Description { get; }
-            public abstract Texture2D Icon { get; }
-            public abstract Vector2 Size { get; }
+		//---------------------- separator
+		public class MenuSeparator : MenuItem
+		{
+			private readonly Vector2 size = new Vector2(16, 32);
 
-            public bool Disabled;
+			public override string Description
+			{
+				get { return null; }
+			}
 
-            public bool Current;
-        }
+			public override Texture2D Icon
+			{
+				get { return null; }
+			}
 
-        //---------------------- separator
-        public class MenuSeparator : MenuItem
-        {
-            private readonly Vector2 size = new Vector2(16, 32);
+			public override Vector2 Size
+			{
+				get { return size; }
+			}
+		}
 
-            public override string Description
-            {
-                get { return null; }
-            }
+		//---------------------- menu item
+		public class MenuItemButton : MenuItem
+		{
+			public readonly Action Action;
 
-            public override Texture2D Icon
-            {
-                get { return null; }
-            }
+			private readonly Func<Texture2D> iconTexture;
+			private readonly string description;
+			private readonly Vector2 size = new Vector2(32, 32);
 
-            public override Vector2 Size
-            {
-                get { return size; }
-            }
-        }
+			public override string Description
+			{
+				get { return description; }
+			}
 
-        //---------------------- menu item
-        public class MenuItemButton : MenuItem
-        {
-            public readonly Action Action;
+			public override Texture2D Icon
+			{
+				get { return iconTexture(); }
+			}
 
-            private readonly Func<Texture2D> iconTexture;
-            private readonly string description;
-            private readonly Vector2 size = new Vector2(32, 32);
+			public override Vector2 Size
+			{
+				get { return size; }
+			}
 
-
-            public override string Description
-            {
-                get { return description; }
-            }
-
-            public override Texture2D Icon
-            {
-                get { return iconTexture(); }
-            }
-
-            public override Vector2 Size
-            {
-                get { return size; }
-            }
-
-            public MenuItemButton(Func<Texture2D> iconTexture, string description, Action action)
-            {
-                this.iconTexture = iconTexture;
-                this.description = description;
-                Action = action;
-            }
-        }
-    }
+			public MenuItemButton(Func<Texture2D> iconTexture, string description, Action action)
+			{
+				this.iconTexture = iconTexture;
+				this.description = description;
+				Action = action;
+			}
+		}
+	}
 }
