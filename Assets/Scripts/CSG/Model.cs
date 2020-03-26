@@ -132,8 +132,8 @@ namespace CSG
         /// <param name="other">The model to find intersections with</param>
         public List<Vertex> IntersectWith(Model other)
         {
-            //ClearCutMetadata();
-            //other.ClearCutMetadata();
+            ClearCutMetadata();
+            other.ClearCutMetadata();
 
             List<Vertex> createdVertices = new List<Vertex>();
 
@@ -146,6 +146,8 @@ namespace CSG
         private void ClearCutMetadata()
         {
             vertices.ForEach(vertex => vertex.ClearCutMetadata());
+            edges.ForEach(edge => edge.ClearCutMetadata());
+            triangles.ForEach(triangle => triangle.ClearCutMetadata());
         }
 
         /// <summary>
@@ -174,18 +176,18 @@ namespace CSG
             //createdVertices.ForEach(vertex => vertex.Draw(0.02f, Vector3.back, color));
             return createdVertices;
         }
-        
 
-		/// <summary>
-		/// Creates a unity Mesh from a list of CSG.Vertex and a list of CSG.Triangle
-		/// </summary>
-		/// <param name="vertices">The vertices of the mesh</param>
-		/// <param name="triangles">The triangles of the mesh</param>
-		/// <returns>The parsed Mesh</returns>
-		public Mesh ToMesh()
+
+        /// <summary>
+        /// Creates a unity Mesh from a list of CSG.Vertex and a list of CSG.Triangle
+        /// </summary>
+        /// <param name="vertices">The vertices of the mesh</param>
+        /// <param name="triangles">The triangles of the mesh</param>
+        /// <returns>The parsed Mesh</returns>
+        public Mesh ToMesh(Matrix4x4 worldToLocalMatrix)
 		{
             //TODO: each face may need to have its vertices inputed as separate things
-			Mesh mesh = new Mesh();
+            Mesh mesh = new Mesh();
 
             List<Vector2> uvs = new List<Vector2>();
 
@@ -205,7 +207,7 @@ namespace CSG
                 {
                     uvs.Add(new Vector2(0, 0));
                 }
-				return vertex.value;
+				return worldToLocalMatrix.MultiplyPoint(vertex.value);
 			}).ToList();
 
 			mesh.SetVertices(createdVertices);
@@ -263,11 +265,6 @@ namespace CSG
         public void ConvertToLocal()
         {
             ConvertToLocal(worldToLocal);
-        }
-
-        public Model DeepCopy()
-        {
-
         }
 
         /// <summary>

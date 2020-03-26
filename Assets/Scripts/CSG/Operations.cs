@@ -26,7 +26,7 @@ namespace CSG
 		/// <param name="shapeA">The first shape to intersect</param>
 		/// <param name="shapeB">The second shape to intersect</param>
 		/// <returns>The intersection of the two shapes</returns>
-		public static Model Intersect(Model modelA, Model modelB)
+		public static Mesh Intersect(Model modelA, Model modelB)
 		{
 			/*Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
 			modelA.ConvertToWorld(shapeA.transform);
@@ -40,9 +40,8 @@ namespace CSG
 			Model clippedB = ClipModelAToModelB(modelB, modelA, true);
 
 			Model result = Model.Combine(clippedA, clippedB);
-			result.ConvertToLocal(modelA.worldToLocal);
 
-			return result;
+			return result.ToMesh(modelA.worldToLocal);
 		}
 
         /// <summary>
@@ -62,9 +61,9 @@ namespace CSG
 			Model clippedB = ClipModelAToModelB(modelB, modelA, true, true);
 
 			Model result = Model.Combine(clippedA, clippedB);
-			result.ConvertToLocal(modelA.worldToLocal);
+			//result.ConvertToLocal(modelA.worldToLocal);
 
-			return result.ToMesh();
+			return result.ToMesh(modelA.worldToLocal);
 		}
 
         /// <summary>
@@ -86,9 +85,9 @@ namespace CSG
 
 			Model clippedA = ClipModelAToModelB(modelA, modelB, clipInside);
 
-			clippedA.ConvertToLocal(modelA.worldToLocal);
+			//clippedA.ConvertToLocal(modelA.worldToLocal);
 
-			return clippedA.ToMesh();
+			return clippedA.ToMesh(modelA.worldToLocal);
 		}
 
         /// <summary>
@@ -191,8 +190,7 @@ namespace CSG
         /// <returns>A list of edge loops which define the clipped version of the triangle</returns>
         private static List<EdgeLoop> IdentifyTriangleEdgeLoops(Triangle triangle, Model bound, Func<Vertex, Model, bool> ContainmentCheck)
 		{
-
-			triangle.ClearMetadata();
+			triangle.ClearLocalMetadata();
 			// organize the intersections into cuts
 			CreateCuts(triangle, bound);
 
