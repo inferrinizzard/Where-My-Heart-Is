@@ -201,7 +201,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3626422470985271568}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 162a7fe1a33786a4ebc31132733adefe, type: 3}
   m_Name: 
@@ -211,6 +211,7 @@ MonoBehaviour:
   fieldOfViewSource: {fileID: 3626422470985271568}
   fieldOfView: {fileID: 4715912093843633485}
   tempMaterial: {fileID: 2100000, guid: d21b446672a1155439bbb2b46465b2d0, type: 2}
+  framerateTarget: 0
 --- !u!1 &4052723104553257895
 GameObject:
   m_ObjectHideFlags: 0
@@ -430,6 +431,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3177498603613522796}
     m_Modifications:
+    - target: {fileID: 670550455639107771, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
+        type: 3}
+      propertyPath: m_Name
+      value: Hands
+      objectReference: {fileID: 0}
     - target: {fileID: 4545574372278966952, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -484,11 +490,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 80.96
-      objectReference: {fileID: 0}
-    - target: {fileID: 670550455639107771, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
-        type: 3}
-      propertyPath: m_Name
-      value: Hands
       objectReference: {fileID: 0}
     - target: {fileID: 5881450491029370834, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
         type: 3}

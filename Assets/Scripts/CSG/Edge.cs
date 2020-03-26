@@ -37,6 +37,11 @@ namespace CSG
             return base.ToString() + ": " + vertices[0] + " :: " + vertices[1];
         }
 
+        public void ClearCutMetadata()
+        {
+            intersections.Clear();
+        }
+
         public void Draw(Color color)
         {
             Debug.DrawLine(vertices[0].value, vertices[1].value, color, 60f);

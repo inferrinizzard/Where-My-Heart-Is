@@ -43,7 +43,7 @@ public class EntangledClipable : ClipableObject
 		}
 	}
 
-	public override void UnionWith(ClipableObject other)
+	public override void UnionWith(CSG.Model other)
 	{
 		//realVersion.UnionWith(other, operations);
 		//dreamVersion.Subtract(other, operations);

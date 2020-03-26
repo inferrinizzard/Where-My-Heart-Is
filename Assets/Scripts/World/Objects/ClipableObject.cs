@@ -18,6 +18,7 @@ public class ClipableObject : MonoBehaviour
             {
                 model = new CSG.Model(initialMesh, transform);
                 model.ConvertToWorld();
+                previousCutPosition = transform.position;
             }
 
             return model;
@@ -58,7 +59,7 @@ public class ClipableObject : MonoBehaviour
 		return model.Intersects(bound, 0.001f);
 	}
 
-	public virtual void UnionWith(ClipableObject other)
+	public virtual void UnionWith(CSG.Model other)
 	{
 		isClipped = true;
 		mat.SetInt(_DissolveID, 0);
@@ -69,11 +70,11 @@ public class ClipableObject : MonoBehaviour
 
 		if (!volumeless)
 		{
-            meshFilter.mesh = CSG.Operations.Intersect(CachedModel, other.CachedModel).ToMesh();
+            meshFilter.mesh = CSG.Operations.Intersect(CachedModel, other);
 		}
 		else
 		{
-			meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other.CachedModel).ToMesh();
+			meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other);
 		}
 
 		if (GetComponent<MeshCollider>())
@@ -104,7 +105,7 @@ public class ClipableObject : MonoBehaviour
 		}
 	}
 
-	public void Subtract(GameObject other)
+	public void Subtract(CSG.Model other)
 	{
 		isClipped = true;
 		mat.SetInt(_DissolveID, 0);
@@ -113,11 +114,11 @@ public class ClipableObject : MonoBehaviour
 
 		if (!volumeless)
 		{
-			meshFilter.mesh = CSG.Operations.Subtract(gameObject, other);
+			meshFilter.mesh = CSG.Operations.Subtract(CachedModel, other);
 		}
 		else
 		{
-			meshFilter.mesh = CSG.Operations.ClipAToB(gameObject, other);
+			meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other);
 		}
 
 		UpdateInteractable();

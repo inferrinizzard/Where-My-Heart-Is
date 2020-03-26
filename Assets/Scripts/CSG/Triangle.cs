@@ -88,7 +88,7 @@ namespace CSG
         /// <summary>
         /// Clears cut metadata for all edges of this triangle
         /// </summary>
-        public void ClearMetadata()
+        public void ClearLocalMetadata()
         {
             vertices.ForEach(vertex => vertex.loops = new List<EdgeLoop>());
 
@@ -100,6 +100,11 @@ namespace CSG
                     intersection.vertex.loops = new List<EdgeLoop>();
                 });
             }
+        }
+
+        public void ClearCutMetadata()
+        {
+            internalIntersections.Clear();
         }
 
 		public override string ToString() => $"{base.ToString()}::{string.Join("::", vertices.Select(v=>v.value.ToString("F4")))}";
@@ -118,7 +123,7 @@ namespace CSG
         public void DrawNormal(Color color)
         {
             Vector3 center = (vertices[0].value + vertices[1].value + vertices[2].value) / 3;
-            Debug.DrawLine(center, center + (0.5f * CalculateNormal()), color);
+            Debug.DrawLine(center, center + (0.5f * CalculateNormal()), color, 60f);
         }
 	}
 

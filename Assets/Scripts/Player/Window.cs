@@ -27,13 +27,16 @@ public class Window : MonoBehaviour
     public void ApplyCut()
 	{
 		world.ResetCut();
+        fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh, fieldOfView.transform);
+        fieldOfViewModel.ConvertToWorld();
+        fieldOfViewModel.Draw(Color.red);
         StartCoroutine(ApplyCutCoroutine(1f/ ((float)framerateTarget)));
     }
 
     private void ApplyCutSynchronous()
     {
-        world.GetRealObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfView); });
-        world.GetDreamObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfView); });
+        world.GetRealObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfViewModel); });
+        world.GetDreamObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfViewModel); });
 
         foreach (EntangledClipable entangled in world.GetEntangledObjects())
         {
@@ -43,9 +46,9 @@ public class Window : MonoBehaviour
 
             // clip any children below them to the correct world
             entangled.realObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
-                clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfView); });
+                clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfViewModel); });
             entangled.dreamObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
-                clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfView); });
+                clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfViewModel); });
         }
     }
 
@@ -57,7 +60,7 @@ public class Window : MonoBehaviour
         {
             if (IntersectsBounds(clipable))
             {
-                clipable.UnionWith(fieldOfView);
+                clipable.UnionWith(fieldOfViewModel);
             }
 
             if(Time.realtimeSinceStartup - startTime > frameLength)
@@ -71,7 +74,7 @@ public class Window : MonoBehaviour
         {
             if (IntersectsBounds(clipable))
             {
-                clipable.Subtract(fieldOfView);
+                clipable.Subtract(fieldOfViewModel);
             }
 
             if (Time.realtimeSinceStartup - startTime > frameLength)
@@ -92,7 +95,7 @@ public class Window : MonoBehaviour
             {
                 if (IntersectsBounds(clipable))
                 {
-                    clipable.UnionWith(fieldOfView);
+                    clipable.UnionWith(fieldOfViewModel);
                 }
 
                 if (Time.realtimeSinceStartup - startTime > frameLength)
@@ -105,7 +108,7 @@ public class Window : MonoBehaviour
             {
                 if (IntersectsBounds(clipable))
                 {
-                    clipable.Subtract(fieldOfView);
+                    clipable.Subtract(fieldOfViewModel);
                 }
 
                 if (Time.realtimeSinceStartup - startTime > frameLength)
@@ -153,7 +156,7 @@ public class Window : MonoBehaviour
 		});
        
 
-		model.ConvertToWorld(fieldOfView.transform);
+		model.ConvertToWorld(fieldOfView.transform.localToWorldMatrix);
 
 		// project out the points of the original surface
 		model.vertices.ForEach(vertex =>
@@ -174,8 +177,7 @@ public class Window : MonoBehaviour
 		});
 		model.edges.ForEach(edge => edge.Draw(Color.red));
 		// convert to local space of the camera
-		model.ConvertToLocal(fieldOfView.transform);
-		fieldOfView.GetComponent<MeshFilter>().mesh = model.ToMesh();
+		fieldOfView.GetComponent<MeshFilter>().mesh = model.ToMesh(fieldOfView.transform.worldToLocalMatrix);
 		fieldOfView.GetComponent<MeshCollider>().sharedMesh = fieldOfView.GetComponent<MeshFilter>().mesh;
 		fieldOfView.GetComponent<MeshFilter>().mesh.RecalculateNormals();
 	}
