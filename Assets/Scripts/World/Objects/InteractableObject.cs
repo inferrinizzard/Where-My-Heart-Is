@@ -2,7 +2,7 @@ using UnityEngine;
 
 public abstract class InteractableObject : MonoBehaviour
 {
-	public ClipableObject hitboxObject;
+	public ClippableObject hitboxObject;
 	/// <summary> Reference to the player. </summary>
 	[HideInInspector] public Player player;
 	/// <summary> Whether or not this is the active item </summary>
@@ -24,6 +24,6 @@ public abstract class InteractableObject : MonoBehaviour
 	{
 		dialogue = GameManager.Instance.dialogue;
 		player = Player.Instance;
-		if (hitboxObject) hitboxObject.GetComponent<ClipableObject>().tiedInteractable = this;
+		if (hitboxObject) hitboxObject.GetComponent<ClippableObject>().tiedInteractable = this;
 	}
 }

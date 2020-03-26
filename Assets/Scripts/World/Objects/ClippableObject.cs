@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-public class ClipableObject : MonoBehaviour
+public class ClippableObject : MonoBehaviour
 {
 	public bool volumeless;
 

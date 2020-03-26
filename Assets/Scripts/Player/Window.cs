@@ -6,7 +6,7 @@ using UnityEngine;
 
 /**
  * <summary>
- * Class that uses CSG.Operations on ClipableObjects to create the cut
+ * Class that uses CSG.Operations on clippableObjects to create the cut
  * </summary>
  * */
 public class Window : MonoBehaviour
@@ -31,32 +31,32 @@ public class Window : MonoBehaviour
 	{
 		world.ResetCut();
 
-		world.GetRealObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfView, csgOperator); });
-		world.GetDreamObjects().ToList().ForEach(clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfView, csgOperator); });
+		world.GetRealObjects().ToList().ForEach(clippable => { if (IntersectsBounds(clippable)) clippable.UnionWith(fieldOfView, csgOperator); });
+		world.GetDreamObjects().ToList().ForEach(clippable => { if (IntersectsBounds(clippable)) clippable.Subtract(fieldOfView, csgOperator); });
 
-		foreach (EntangledClipable entangled in world.GetEntangledObjects())
+		foreach (EntangledClippable entangled in world.GetEntangledObjects())
 		{
 			// clip the immediate children of entangled
 			//if (IntersectsBounds(entangled.realVersion)) entangled.realVersion.UnionWith(fieldOfView, csgOperator);
 			//if (IntersectsBounds(entangled.dreamVersion)) entangled.dreamVersion.Subtract(fieldOfView, csgOperator);
 
 			// clip any children below them to the correct world
-			entangled.realObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
-				clipable => { if (IntersectsBounds(clipable)) clipable.UnionWith(fieldOfView, csgOperator); });
-			entangled.dreamObject.GetComponentsInChildren<ClipableObject>().ToList().ForEach(
-				clipable => { if (IntersectsBounds(clipable)) clipable.Subtract(fieldOfView, csgOperator); });
+			entangled.realObject.GetComponentsInChildren<ClippableObject>().ToList().ForEach(
+				clippable => { if (IntersectsBounds(clippable)) clippable.UnionWith(fieldOfView, csgOperator); });
+			entangled.dreamObject.GetComponentsInChildren<ClippableObject>().ToList().ForEach(
+				clippable => { if (IntersectsBounds(clippable)) clippable.Subtract(fieldOfView, csgOperator); });
 		}
 	}
 
-	private bool IntersectsBounds(ClipableObject clipableObject)
+	private bool IntersectsBounds(ClippableObject clippableObject)
 	{
 		return true;
 		// less expensive, less accurate intersection check
 		//TODO: checking the bound intersections doesn't consider world space, just model space, so it's basically trash
-		if (true || fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clipableObject.GetComponent<MeshFilter>().mesh.bounds))
+		if (true || fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clippableObject.GetComponent<MeshFilter>().mesh.bounds))
 		{
 			// more expensive, more accurate intersection check
-			if (clipableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
+			if (clippableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
 			{
 				return true;
 			}
@@ -112,13 +112,13 @@ public class Window : MonoBehaviour
 
 	private Bounds GetSceneBounds()
 	{
-		ClipableObject[] clipables = FindObjectsOfType<ClipableObject>();
+		ClippableObject[] clippables = FindObjectsOfType<ClippableObject>();
 
-		Bounds bound = clipables[0].GetComponent<MeshCollider>().bounds;
+		Bounds bound = clippables[0].GetComponent<MeshCollider>().bounds;
 
-		for (int i = 1; i < clipables.Length; i++)
+		for (int i = 1; i < clippables.Length; i++)
 		{
-			bound.Encapsulate(clipables[i].GetComponent<MeshCollider>().bounds);
+			bound.Encapsulate(clippables[i].GetComponent<MeshCollider>().bounds);
 		}
 
 		return bound;

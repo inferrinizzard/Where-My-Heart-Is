@@ -57,11 +57,11 @@ public class Pickupable : InteractableObject
 
 	public void PutDown()
 	{
-		ClipableObject clipable = GetComponent<ClipableObject>();
+		ClippableObject clippable = GetComponent<ClippableObject>();
 
-		if (clipable != null && !clipable.IntersectsBound(player.window.fieldOfView.transform, player.window.fieldOfViewModel))
+		if (clippable != null && !clippable.IntersectsBound(player.window.fieldOfView.transform, player.window.fieldOfViewModel))
 		{
-			if (clipable.uncutCopy != null)
+			if (clippable.uncutCopy != null)
 			{
 				transform.position = initialPosition;
 				transform.rotation = initialRotation;

@@ -5,16 +5,16 @@ using UnityEditor;
 
 using UnityEngine;
 
-[CustomEditor(typeof(EntangledClipable))]
-public class EntangledClipableGUI : Editor
+[CustomEditor(typeof(EntangledClippable))]
+public class EntangledClippableGUI : Editor
 {
 	Object realPrefab;
 	Object dreamPrefab;
-	EntangledClipable entangledObject;
+	EntangledClippable entangledObject;
 
 	private void OnEnable()
 	{
-		entangledObject = (EntangledClipable) target;
+		entangledObject = (EntangledClippable) target;
 		realPrefab = entangledObject.realObject;
 		dreamPrefab = entangledObject.dreamObject;
 	}
@@ -53,7 +53,7 @@ public class EntangledClipableGUI : Editor
 	        {	
 	            createdObject = Instantiate(dreamPrefab, transform);	
 	        }	
-	        dreamVersion = createdObject.AddComponent<ClipableObject>();	
+	        dreamVersion = createdObject.AddComponent<ClippableObject>();	
 	        previousDreamPrefab = dreamPrefab;	
 	    }	
 	    if (realPrefab != null && realPrefab != previousRealPrefab)	
@@ -68,7 +68,7 @@ public class EntangledClipableGUI : Editor
 	        {	
 	            createdObject = Instantiate(realPrefab, transform);	
 	        }	
-	        realVersion = createdObject.AddComponent<ClipableObject>();	
+	        realVersion = createdObject.AddComponent<ClippableObject>();	
 	        previousRealPrefab = realPrefab;	
 	    }	
 	}*/

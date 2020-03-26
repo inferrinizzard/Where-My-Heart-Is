@@ -36,7 +36,7 @@ public class World : MonoBehaviour
 	    ConfigureWorld("Dream", dreamWorldContainer);
 	}*/
 
-	/*/// <summary> configures children and related clipables, interactables </summary>
+	/*/// <summary> configures children and related clippables, interactables </summary>
 	public void OnBeginTransition()
 	{
         Initialize();
@@ -60,9 +60,9 @@ public class World : MonoBehaviour
 			if (child.GetComponent<MeshFilter>())
 			{
 				child.gameObject.layer = LayerMask.NameToLayer(layer);
-				if (!child.GetComponent<ClipableObject>())
+				if (!child.GetComponent<ClippableObject>())
 				{
-					child.gameObject.AddComponent<ClipableObject>();
+					child.gameObject.AddComponent<ClippableObject>();
 				}
 
 				if (layer == "Real")
@@ -77,7 +77,7 @@ public class World : MonoBehaviour
 	{
 		foreach (Transform child in realWorldContainer)
 		{
-			foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
+			foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
 			{
 				if (obj.isClipped) obj.Revert();
 			}
@@ -85,7 +85,7 @@ public class World : MonoBehaviour
 
 		foreach (Transform child in dreamWorldContainer)
 		{
-			foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
+			foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
 			{
 				if (obj.isClipped) obj.Revert();
 			}
@@ -93,25 +93,25 @@ public class World : MonoBehaviour
 
 		foreach (Transform child in entangledWorldContainer)
 		{
-			foreach (ClipableObject obj in child.GetComponentsInChildren<ClipableObject>())
+			foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
 			{
 				if (obj.isClipped) obj.Revert();
 			}
 		}
 	}
 
-	public ClipableObject[] GetRealObjects()
+	public ClippableObject[] GetRealObjects()
 	{
-		return realWorldContainer.GetComponentsInChildren<ClipableObject>();
+		return realWorldContainer.GetComponentsInChildren<ClippableObject>();
 	}
 
-	public ClipableObject[] GetDreamObjects()
+	public ClippableObject[] GetDreamObjects()
 	{
-		return dreamWorldContainer.GetComponentsInChildren<ClipableObject>();
+		return dreamWorldContainer.GetComponentsInChildren<ClippableObject>();
 	}
 
-	public ClipableObject[] GetEntangledObjects()
+	public ClippableObject[] GetEntangledObjects()
 	{
-		return entangledWorldContainer.GetComponentsInChildren<EntangledClipable>();
+		return entangledWorldContainer.GetComponentsInChildren<EntangledClippable>();
 	}
 }

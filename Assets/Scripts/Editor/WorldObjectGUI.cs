@@ -18,7 +18,7 @@ public class WorldObjectGUI : Editor
 	{
 		GUILayout.BeginHorizontal();
 		// SummonButton("Interactable", obj.interactable, obj.ToggleInteractable);
-		SummonButton("Clipable", obj.clipable, obj.ToggleClipable);
+		SummonButton("Clippable", obj.clippable, obj.ToggleClippable);
 		SummonButton("Pickupable", obj.pickupable, obj.TogglePickupable);
 		SummonButton("Collectable", obj.collectable, obj.ToggleCollectable);
 		GUILayout.EndHorizontal();

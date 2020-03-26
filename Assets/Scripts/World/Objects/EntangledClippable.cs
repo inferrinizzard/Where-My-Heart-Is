@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-public class EntangledClipable : ClipableObject
+public class EntangledClippable : ClippableObject
 {
-	public ClipableObject realVersion;
-	public ClipableObject dreamVersion;
+	public ClippableObject realVersion;
+	public ClippableObject dreamVersion;
 	public GameObject realObject;
 	public GameObject dreamObject;
 
@@ -19,7 +19,7 @@ public class EntangledClipable : ClipableObject
 			child.gameObject.layer = realObject.layer;
 			if (child.GetComponent<MeshFilter>() != null)
 			{
-				if (!child.gameObject.GetComponent<ClipableObject>()) child.gameObject.AddComponent<ClipableObject>();
+				if (!child.gameObject.GetComponent<ClippableObject>()) child.gameObject.AddComponent<ClippableObject>();
 			}
 		}
 
@@ -28,7 +28,7 @@ public class EntangledClipable : ClipableObject
 			child.gameObject.layer = dreamObject.layer;
 			if (child.GetComponent<MeshFilter>() != null)
 			{
-				if (!child.gameObject.GetComponent<ClipableObject>()) child.gameObject.AddComponent<ClipableObject>();
+				if (!child.gameObject.GetComponent<ClippableObject>()) child.gameObject.AddComponent<ClippableObject>();
 			}
 		}
 	}
@@ -91,24 +91,24 @@ public class EntangledClipable : ClipableObject
 
 	}
 
-	private ClipableObject ConfigureObject(string layer, GameObject createdObject)
+	private ClippableObject ConfigureObject(string layer, GameObject createdObject)
 	{
 		foreach (MeshFilter filter in createdObject.GetComponentsInChildren<MeshFilter>())
 		{
 			filter.gameObject.layer = LayerMask.NameToLayer(layer);
 			if (filter.gameObject.GetComponent<MeshFilter>() != null && filter.gameObject.GetComponent<Collider>() == null)
 				filter.gameObject.AddComponent<MeshCollider>();
-			if (filter.gameObject.GetComponent<ClipableObject>() == null)
-				filter.gameObject.AddComponent<ClipableObject>();
+			if (filter.gameObject.GetComponent<ClippableObject>() == null)
+				filter.gameObject.AddComponent<ClippableObject>();
 		}
 
 		createdObject.layer = LayerMask.NameToLayer(layer);
 		if (createdObject.GetComponent<MeshFilter>() != null)
 		{
 			if (createdObject.GetComponent<Collider>() == null) createdObject.AddComponent<MeshCollider>();
-			if (createdObject.GetComponent<ClipableObject>() == null) createdObject.AddComponent<ClipableObject>();
+			if (createdObject.GetComponent<ClippableObject>() == null) createdObject.AddComponent<ClippableObject>();
 
-			return createdObject.GetComponent<ClipableObject>();
+			return createdObject.GetComponent<ClippableObject>();
 		}
 
 		return null;

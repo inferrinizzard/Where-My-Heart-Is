@@ -6,7 +6,7 @@ using UnityEngine;
 public class WorldObject : MonoBehaviour
 {
 	// public bool interactable = false;
-	public bool clipable = false;
+	public bool clippable = false;
 	public bool pickupable = false; // set interactable
 	public bool collectable = false; // set interactable
 
@@ -15,10 +15,10 @@ public class WorldObject : MonoBehaviour
 	// 	interactable = !interactable;
 	// 	SummonComponent<InteractableObject>(interactable);
 	// }
-	public void ToggleClipable()
+	public void ToggleClippable()
 	{
-		clipable = !clipable;
-		SummonComponent<ClipableObject>(clipable);
+		clippable = !clippable;
+		SummonComponent<ClippableObject>(clippable);
 	}
 	public void TogglePickupable()
 	{
