@@ -366,7 +366,15 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (State is Aiming && windowEnabled && !heldObject) SetState(new Cut(this));
+		if (State is Aiming && windowEnabled && !heldObject)
+		{
+			// SetState(new Cut(this));
+			window.ApplyCut();
+			audioController.PlaceWindow();
+			window.gameObject.SetActive(false);
+			VFX.ToggleMask(false);
+			EndState();
+		}
 	}
 
 	public InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
