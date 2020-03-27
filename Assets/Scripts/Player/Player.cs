@@ -155,7 +155,7 @@ public class Player : Singleton<Player>, IStateMachine
 		// Subscribe input events to player behaviors
 		InputManager.OnJumpDown += Jump;
 		// InputManager.OnCrouchDown += Crouch;
-		// InputManager.OnCrouchUp += UnCrouch;
+		// InputManager.OnCrouchUp += EndState;
 		// InputManager.OnCrouchUp += EndState;
 		InputManager.OnInteractDown += Interact;
 		InputManager.OnRightClickDown += Aiming;
@@ -170,7 +170,7 @@ public class Player : Singleton<Player>, IStateMachine
 		// Unsubscribe input events to player behaviors
 		InputManager.OnJumpDown -= Jump;
 		// InputManager.OnCrouchDown -= Crouch;
-		// InputManager.OnCrouchUp -= UnCrouch;
+		// InputManager.OnCrouchUp -= EndState;
 		// InputManager.OnCrouchUp -= EndState;
 		InputManager.OnInteractDown -= Interact;
 		InputManager.OnRightClickDown -= Aiming;
@@ -306,7 +306,7 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		// Ray looking straight up from the player's position.
 		Ray crouchRay = new Ray(transform.position, Vector3.up);
-		if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4) && crouching) { SetState(new UnCrouch(this)); }
+		if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4) && crouching) { EndState(); }
 		else { stillCrouching = true; } // The player did not uncrouch
 	}
 
@@ -319,7 +319,7 @@ public class Player : Singleton<Player>, IStateMachine
 			Ray crouchRay = new Ray(transform.position, Vector3.up);
 			if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4))
 			{
-				SetState(new UnCrouch(this));
+				EndState();
 				stillCrouching = false;
 			}
 		}
