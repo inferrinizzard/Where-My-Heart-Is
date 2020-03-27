@@ -41,7 +41,7 @@ public class Outline : MonoBehaviour
 		outlineCam.CopyFrom(Camera.current);
 		outlineCam.backgroundColor = Color.black;
 		outlineCam.clearFlags = CameraClearFlags.Color;
-		outlineCam.cullingMask = 1 << LayerMask.NameToLayer("Dream");
+		outlineCam.cullingMask = 1 << LayerMask.NameToLayer("Real");
 
 		var outlineBuffer = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.R8);
 		outlineCam.targetTexture = outlineBuffer;

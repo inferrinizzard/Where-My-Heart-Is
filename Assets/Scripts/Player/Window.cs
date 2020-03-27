@@ -31,19 +31,19 @@ public class Window : MonoBehaviour
 	{
 		world.ResetCut();
 
-		world.GetRealObjects().ToList().ForEach(clippable => { if (IntersectsBounds(clippable)) clippable.UnionWith(fieldOfView, csgOperator); });
-		world.GetDreamObjects().ToList().ForEach(clippable => { if (IntersectsBounds(clippable)) clippable.Subtract(fieldOfView, csgOperator); });
+		world.GetHeartObjects().ToList().ForEach(clippable => { if (IntersectsBounds(clippable)) clippable.UnionWith(fieldOfView, csgOperator); });
+		world.GetRealObjects().ToList().ForEach(clippable => { if (IntersectsBounds(clippable)) clippable.Subtract(fieldOfView, csgOperator); });
 
 		foreach (EntangledClippable entangled in world.GetEntangledObjects())
 		{
 			// clip the immediate children of entangled
-			//if (IntersectsBounds(entangled.realVersion)) entangled.realVersion.UnionWith(fieldOfView, csgOperator);
-			//if (IntersectsBounds(entangled.dreamVersion)) entangled.dreamVersion.Subtract(fieldOfView, csgOperator);
+			//if (IntersectsBounds(entangled.heartVersion)) entangled.heartVersion.UnionWith(fieldOfView, csgOperator);
+			//if (IntersectsBounds(entangled.realVersion)) entangled.realVersion.Subtract(fieldOfView, csgOperator);
 
 			// clip any children below them to the correct world
-			entangled.realObject.GetComponentsInChildren<ClippableObject>().ToList().ForEach(
+			entangled.heartObject.GetComponentsInChildren<ClippableObject>().ToList().ForEach(
 				clippable => { if (IntersectsBounds(clippable)) clippable.UnionWith(fieldOfView, csgOperator); });
-			entangled.dreamObject.GetComponentsInChildren<ClippableObject>().ToList().ForEach(
+			entangled.realObject.GetComponentsInChildren<ClippableObject>().ToList().ForEach(
 				clippable => { if (IntersectsBounds(clippable)) clippable.Subtract(fieldOfView, csgOperator); });
 		}
 	}

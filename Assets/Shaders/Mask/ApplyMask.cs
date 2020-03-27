@@ -6,16 +6,16 @@ using UnityEngine;
 [System.Serializable]
 public class ApplyMask : MonoBehaviour
 {
-	///<summary> Reference to Real World Cam, temp Mask Cam </summary>
-	Camera realCam, maskCam, mainCam;
+	///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
+	Camera heartCam, maskCam, mainCam;
 	///<summary> Shader that combines views </summary>
 	[SerializeField] Shader merge = default;
 	[SerializeField] Shader transition = default;
 	///<summary> Generated material for screen shader </summary>
 	Material screenMat;
 	[HideInInspector] public Material transitionMat;
-	///<summary> Generated RenderTexture for Real World </summary>
-	RenderTexture real;
+	///<summary> Generated RenderTexture for Heart World </summary>
+	RenderTexture heart;
 	///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
 	public RenderTexture mask;
 	public Texture2D m2d;
@@ -28,12 +28,12 @@ public class ApplyMask : MonoBehaviour
 	{
 		screenMat = new Material(merge);
 
-		// get ref to real world cam and assign generated RenderTexture
+		// get ref to heart world cam and assign generated RenderTexture
 		mainCam = GetComponent<Camera>();
-		realCam = this.GetComponentOnlyInChildren<Camera>();
-		real = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
-		real.name = "Real World";
-		realCam.targetTexture = real;
+		heartCam = this.GetComponentOnlyInChildren<Camera>();
+		heart = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
+		heart.name = "Heart World";
+		heartCam.targetTexture = heart;
 
 		// same as above, does not work
 		// mask = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.R8);
@@ -84,10 +84,10 @@ public class ApplyMask : MonoBehaviour
 	{
 		if (transitionMat == null)
 		{ // pass both cameras to screen per render
-			screenMat.SetTexture("_Dream", source);
-			screenMat.SetTexture("_Real", real);
+			screenMat.SetTexture("_Real", source);
+			screenMat.SetTexture("_Heart", heart);
 			Graphics.Blit(source, dest, screenMat);
-			ClearRT(real, realCam);
+			ClearRT(heart, heartCam);
 			ClearRT(source, mainCam);
 		}
 		else

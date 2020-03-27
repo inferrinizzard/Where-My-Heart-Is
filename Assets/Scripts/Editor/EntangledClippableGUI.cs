@@ -8,20 +8,27 @@ using UnityEngine;
 [CustomEditor(typeof(EntangledClippable))]
 public class EntangledClippableGUI : Editor
 {
+	Object heartPrefab;
 	Object realPrefab;
-	Object dreamPrefab;
 	EntangledClippable entangledObject;
 
 	private void OnEnable()
 	{
 		entangledObject = (EntangledClippable) target;
+		heartPrefab = entangledObject.heartObject;
 		realPrefab = entangledObject.realObject;
-		dreamPrefab = entangledObject.dreamObject;
 	}
 
 	public override void OnInspectorGUI()
 	{
 		base.OnInspectorGUI();
+		EditorGUI.BeginChangeCheck();
+		heartPrefab = EditorGUILayout.ObjectField("Heart Prefab", heartPrefab, typeof(GameObject), true);
+		if (EditorGUI.EndChangeCheck())
+		{
+			entangledObject.OnRealChange((GameObject) heartPrefab);
+		}
+
 		EditorGUI.BeginChangeCheck();
 		realPrefab = EditorGUILayout.ObjectField("Real Prefab", realPrefab, typeof(GameObject), true);
 		if (EditorGUI.EndChangeCheck())
@@ -29,33 +36,11 @@ public class EntangledClippableGUI : Editor
 			entangledObject.OnRealChange((GameObject) realPrefab);
 		}
 
-		EditorGUI.BeginChangeCheck();
-		dreamPrefab = EditorGUILayout.ObjectField("Dream Prefab", dreamPrefab, typeof(GameObject), true);
-		if (EditorGUI.EndChangeCheck())
-		{
-			entangledObject.OnDreamChange((GameObject) dreamPrefab);
-		}
-
 	}
 
 	/*	
 	public void OnValidate()	
 	{	
-	    if (dreamPrefab != null && dreamPrefab != previousDreamPrefab)	
-	    {	
-	        GameObject createdObject;	
-	        if (dreamVersion != null)	
-	        {	
-	            createdObject = Instantiate(dreamPrefab, dreamVersion.transform.position, dreamVersion.transform.rotation, transform);	
-	            UnityEditor.EditorApplication.delayCall += () => DestroyImmediate(dreamVersion.gameObject);	
-	        }	
-	        else	
-	        {	
-	            createdObject = Instantiate(dreamPrefab, transform);	
-	        }	
-	        dreamVersion = createdObject.AddComponent<ClippableObject>();	
-	        previousDreamPrefab = dreamPrefab;	
-	    }	
 	    if (realPrefab != null && realPrefab != previousRealPrefab)	
 	    {	
 	        GameObject createdObject;	
@@ -70,6 +55,21 @@ public class EntangledClippableGUI : Editor
 	        }	
 	        realVersion = createdObject.AddComponent<ClippableObject>();	
 	        previousRealPrefab = realPrefab;	
+	    }	
+	    if (heartPrefab != null && heartPrefab != previousRealPrefab)	
+	    {	
+	        GameObject createdObject;	
+	        if (heartVersion != null)	
+	        {	
+	            createdObject = Instantiate(heartPrefab, heartVersion.transform.position, heartVersion.transform.rotation, transform);	
+	            UnityEditor.EditorApplication.delayCall += () => DestroyImmediate(heartVersion.gameObject);	
+	        }	
+	        else	
+	        {	
+	            createdObject = Instantiate(heartPrefab, transform);	
+	        }	
+	        heartVersion = createdObject.AddComponent<ClippableObject>();	
+	        previousRealPrefab = heartPrefab;	
 	    }	
 	}*/
 }

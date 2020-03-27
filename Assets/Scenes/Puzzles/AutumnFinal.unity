@@ -6647,9 +6647,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2143680331711232873}
-  - component: {fileID: 5875451999185357623}
   m_Layer: 8
-  m_Name: Real World
+  m_Name: Heart World
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6884,7 +6883,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5408720031726097422}
   - component: {fileID: 413274042318722256}
-  - component: {fileID: 5703117619735191410}
   m_Layer: 0
   m_Name: Entangled
   m_TagString: Untagged
@@ -6975,30 +6973,6 @@ Transform:
   m_Father: {fileID: 8895524942632921725}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5703117619735191410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3674846540889986700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1cdca0e60e3cc544983d1030a7494b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &5875451999185357623
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 86771472101715640}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1cdca0e60e3cc544983d1030a7494b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6228492042836010379
 GameObject:
   m_ObjectHideFlags: 0
@@ -7008,9 +6982,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3400630750541304778}
-  - component: {fileID: 8346004644449052141}
   m_Layer: 9
-  m_Name: Dream World
+  m_Name: Real World
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7117,18 +7090,6 @@ MonoBehaviour:
   realWorldContainer: {fileID: 2143680331711232873}
   dreamWorldContainer: {fileID: 3400630750541304778}
   entangledWorldContainer: {fileID: 5408720031726097422}
---- !u!114 &8346004644449052141
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6228492042836010379}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1cdca0e60e3cc544983d1030a7494b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &8895524942632921725
 Transform:
   m_ObjectHideFlags: 0

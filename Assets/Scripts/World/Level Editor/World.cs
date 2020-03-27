@@ -7,8 +7,8 @@ public class World : MonoBehaviour
 {
 	public static World Instance;
 
+	public Transform heartWorldContainer;
 	public Transform realWorldContainer;
-	public Transform dreamWorldContainer;
 	public Transform entangledWorldContainer;
 
 	public void Awake()
@@ -18,22 +18,22 @@ public class World : MonoBehaviour
 
 	public void Start()
 	{
+		heartWorldContainer = transform.Find("Heart World");
 		realWorldContainer = transform.Find("Real World");
-		dreamWorldContainer = transform.Find("Dream World");
 		entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform;
 
+		ConfigureWorld("Heart", heartWorldContainer);
 		ConfigureWorld("Real", realWorldContainer);
-		ConfigureWorld("Dream", dreamWorldContainer);
 	}
 
 	/*public void Initialize()
 	{
+	    heartWorldContainer = transform.Find("Heart World");
 	    realWorldContainer = transform.Find("Real World");
-	    dreamWorldContainer = transform.Find("Dream World");
 	    entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform;
 
+	    ConfigureWorld("Heart", heartWorldContainer);
 	    ConfigureWorld("Real", realWorldContainer);
-	    ConfigureWorld("Dream", dreamWorldContainer);
 	}*/
 
 	/*/// <summary> configures children and related clippables, interactables </summary>
@@ -45,8 +45,8 @@ public class World : MonoBehaviour
 	/*/// <summary> removes refs and deletes current to pass singleton to next world </summary>
 	public void OnCompleteTransition()
 	{
+		heartWorldContainer = null;
 		realWorldContainer = null;
-		dreamWorldContainer = null;
 		entangledWorldContainer = null;
 		instance = null;
 		Destroy(gameObject);
@@ -65,7 +65,7 @@ public class World : MonoBehaviour
 					child.gameObject.AddComponent<ClippableObject>();
 				}
 
-				if (layer == "Real")
+				if (layer == "Heart")
 					child.GetComponent<MeshRenderer>().material.SetInt("_Dissolve", 1);
 			}
 
@@ -75,7 +75,7 @@ public class World : MonoBehaviour
 
 	public void ResetCut()
 	{
-		foreach (Transform child in realWorldContainer)
+		foreach (Transform child in heartWorldContainer)
 		{
 			foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
 			{
@@ -83,7 +83,7 @@ public class World : MonoBehaviour
 			}
 		}
 
-		foreach (Transform child in dreamWorldContainer)
+		foreach (Transform child in realWorldContainer)
 		{
 			foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
 			{
@@ -100,14 +100,14 @@ public class World : MonoBehaviour
 		}
 	}
 
+	public ClippableObject[] GetHeartObjects()
+	{
+		return heartWorldContainer.GetComponentsInChildren<ClippableObject>();
+	}
+
 	public ClippableObject[] GetRealObjects()
 	{
 		return realWorldContainer.GetComponentsInChildren<ClippableObject>();
-	}
-
-	public ClippableObject[] GetDreamObjects()
-	{
-		return dreamWorldContainer.GetComponentsInChildren<ClippableObject>();
 	}
 
 	public ClippableObject[] GetEntangledObjects()

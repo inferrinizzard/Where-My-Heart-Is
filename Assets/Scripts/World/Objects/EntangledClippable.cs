@@ -5,27 +5,27 @@ using UnityEngine;
 
 public class EntangledClippable : ClippableObject
 {
+	public ClippableObject heartVersion;
 	public ClippableObject realVersion;
-	public ClippableObject dreamVersion;
+	public GameObject heartObject;
 	public GameObject realObject;
-	public GameObject dreamObject;
 
 	string entangledName = $"[|]"; // todo compound names
 
 	private void Start()
 	{
-		foreach (Transform child in realObject.transform)
+		foreach (Transform child in heartObject.transform)
 		{
-			child.gameObject.layer = realObject.layer;
+			child.gameObject.layer = heartObject.layer;
 			if (child.GetComponent<MeshFilter>() != null)
 			{
 				if (!child.gameObject.GetComponent<ClippableObject>()) child.gameObject.AddComponent<ClippableObject>();
 			}
 		}
 
-		foreach (Transform child in dreamObject.transform)
+		foreach (Transform child in realObject.transform)
 		{
-			child.gameObject.layer = dreamObject.layer;
+			child.gameObject.layer = realObject.layer;
 			if (child.GetComponent<MeshFilter>() != null)
 			{
 				if (!child.gameObject.GetComponent<ClippableObject>()) child.gameObject.AddComponent<ClippableObject>();
@@ -35,42 +35,25 @@ public class EntangledClippable : ClippableObject
 
 	public bool Visable
 	{
-		get => dreamVersion.gameObject.GetComponent<MeshRenderer>().enabled;
+		get => realVersion.gameObject.GetComponent<MeshRenderer>().enabled;
 
 		set
 		{
-			//realVersion.gameObject.GetComponent<MeshRenderer>().enabled = value;
-			dreamVersion.gameObject.GetComponent<MeshRenderer>().enabled = value;
+			//heartVersion.gameObject.GetComponent<MeshRenderer>().enabled = value;
+			realVersion.gameObject.GetComponent<MeshRenderer>().enabled = value;
 		}
 	}
 
 	public override void UnionWith(GameObject other, CSG.Operations operations)
 	{
-		//realVersion.UnionWith(other, operations);
-		//dreamVersion.Subtract(other, operations);
+		//heartVersion.UnionWith(other, operations);
+		//realVersion.Subtract(other, operations);
 	}
 
 	public override void Revert()
 	{
+		//heartVersion.Revert();
 		//realVersion.Revert();
-		//dreamVersion.Revert();
-	}
-
-	public void OnDreamChange(GameObject dreamPrefab)
-	{
-		GameObject createdObject;
-		if (dreamObject != null)
-		{
-			createdObject = Instantiate(dreamPrefab, dreamObject.transform.position, dreamObject.transform.rotation, transform);
-			DestroyImmediate(dreamObject);
-		}
-		else
-		{
-			createdObject = Instantiate(dreamPrefab, transform);
-		}
-		createdObject.name += " [Dream]";
-		dreamObject = createdObject;
-		dreamVersion = ConfigureObject("Dream", createdObject);
 	}
 
 	public void OnRealChange(GameObject realPrefab)
@@ -88,6 +71,23 @@ public class EntangledClippable : ClippableObject
 		createdObject.name += " [Real]";
 		realObject = createdObject;
 		realVersion = ConfigureObject("Real", createdObject);
+	}
+
+	public void OnHeartChange(GameObject heartPrefab)
+	{
+		GameObject createdObject;
+		if (heartObject != null)
+		{
+			createdObject = Instantiate(heartPrefab, heartObject.transform.position, heartObject.transform.rotation, transform);
+			DestroyImmediate(heartObject);
+		}
+		else
+		{
+			createdObject = Instantiate(heartPrefab, transform);
+		}
+		createdObject.name += " [Heart]";
+		heartObject = createdObject;
+		heartVersion = ConfigureObject("Heart", createdObject);
 
 	}
 
