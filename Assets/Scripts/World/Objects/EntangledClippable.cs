@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class EntangledClippable : ClippableObject
 {
-	public ClippableObject heartVersion;
-	public ClippableObject realVersion;
 	public GameObject heartObject;
 	public GameObject realObject;
+
+	private ClippableObject heartVersion;
+	private ClippableObject realVersion;
 
 	string entangledName = $"[|]"; // todo compound names
 
@@ -88,7 +89,6 @@ public class EntangledClippable : ClippableObject
 		createdObject.name += " [Heart]";
 		heartObject = createdObject;
 		heartVersion = ConfigureObject("Heart", createdObject);
-
 	}
 
 	private ClippableObject ConfigureObject(string layer, GameObject createdObject)

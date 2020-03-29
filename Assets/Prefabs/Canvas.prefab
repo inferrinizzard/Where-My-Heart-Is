@@ -821,7 +821,7 @@ Transform:
   - {fileID: 203059686293534427}
   - {fileID: 203059686410404397}
   m_Father: {fileID: 203059686410720105}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -71.09901, z: 0}
 --- !u!1 &203059685102272797
 GameObject:
@@ -1104,6 +1104,10 @@ MonoBehaviour:
   hitboxObject: {fileID: 203059686380578862}
   player: {fileID: 0}
   active: 0
+  prompt: Press E to Interact
+  hasFlavorText: 0
+  flavorText: 
+  dialogue: {fileID: 0}
   preview: {fileID: 0}
   manualTarget: 
 --- !u!1 &203059685307545870
@@ -1582,7 +1586,7 @@ Transform:
   - {fileID: 203059685729840963}
   - {fileID: 203059685182156960}
   m_Father: {fileID: 203059686410720105}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: -71.09901, z: 0}
 --- !u!1 &203059686293534428
 GameObject:
@@ -1990,6 +1994,10 @@ MonoBehaviour:
   hitboxObject: {fileID: 203059684820443479}
   player: {fileID: 0}
   active: 0
+  prompt: Press E to Interact
+  hasFlavorText: 0
+  flavorText: 
+  dialogue: {fileID: 0}
   preview: {fileID: 0}
   manualTarget: 
 --- !u!1 &203059686410720106
@@ -2020,8 +2028,8 @@ Transform:
   m_LocalPosition: {x: 39.51, y: -3.62, z: -3.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 203059685967278431}
   - {fileID: 203059685066391313}
+  - {fileID: 203059685967278431}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2041,7 +2049,5 @@ MonoBehaviour:
   tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
-  realVersion: {fileID: 0}
-  dreamVersion: {fileID: 0}
-  realObject: {fileID: 203059685967278416}
-  dreamObject: {fileID: 203059685066391314}
+  heartObject: {fileID: 203059685967278416}
+  realObject: {fileID: 203059685066391314}

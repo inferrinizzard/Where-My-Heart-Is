@@ -14026,10 +14026,8 @@ MonoBehaviour:
   tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
-  realVersion: {fileID: 0}
-  dreamVersion: {fileID: 0}
+  heartObject: {fileID: 0}
   realObject: {fileID: 414165360}
-  dreamObject: {fileID: 620606307}
 --- !u!1 &1560908052 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 47bf270df5c5f5d498628118f388b4eb,
@@ -19530,7 +19528,7 @@ GameObject:
   - component: {fileID: 3308286405069852636}
   - component: {fileID: 3558621214116174350}
   m_Layer: 8
-  m_Name: Real World
+  m_Name: Heart World
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19661,8 +19659,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b9a29aedf0d36e4e9eb463a6402aec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  heartWorldContainer: {fileID: 0}
   realWorldContainer: {fileID: 3308286405069852636}
-  dreamWorldContainer: {fileID: 2263044192762210175}
   entangledWorldContainer: {fileID: 8888178375873536187}
 --- !u!1 &7360721897606385982
 GameObject:
@@ -19675,7 +19673,7 @@ GameObject:
   - component: {fileID: 2263044192762210175}
   - component: {fileID: 7360721897606385983}
   m_Layer: 9
-  m_Name: Dream World
+  m_Name: Real World
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
