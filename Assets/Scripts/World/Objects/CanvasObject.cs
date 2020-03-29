@@ -1,22 +1,24 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class CanvasObject : CollectableObject
 {
 	public Texture2D preview;
 	[SerializeField] public string manualTarget = "";
+	public event Action OnInteract;
 
-    public event Action OnInteract;
+	void Awake() => prompt = "Press E to Enter Canvas";
 
-    public override void Interact()
+	public override void Interact()
 	{
-        OnInteract?.Invoke();
+		OnInteract?.Invoke();
 		//prevent move/rotate here
 		StartCoroutine(Collect(
 			player.transform.position + player.cam.transform.forward,
-			new Vector3(player.rotationX - 25f, player.rotationY, 0)));
+			new Vector3(player.rotation.x - 25f, player.rotation.y, 0)));
 	}
 
 	protected override void CollectEndAction()

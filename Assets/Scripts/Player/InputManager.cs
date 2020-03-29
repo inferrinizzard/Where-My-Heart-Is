@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class InputManager : MonoBehaviour
@@ -11,7 +12,7 @@ public class InputManager : MonoBehaviour
 	/// <summary> KeyCode for player crouch. </summary>
 	[SerializeField] private KeyCode crouchKey = KeyCode.LeftShift;
 	/// <summary> KeyCode for inspecting and picking up objects. </summary>
-	[SerializeField] private KeyCode pickUpKey = KeyCode.E;
+	[SerializeField] private KeyCode interactKey = KeyCode.E;
 	/// <summary> KeyCode for inspecting and picking up objects. </summary>
 	[SerializeField] private KeyCode altAimKey = KeyCode.LeftControl;
 
@@ -33,11 +34,11 @@ public class InputManager : MonoBehaviour
 
 	// Pick Up Key Actions
 	/// <summary> Pick Up key is initially pressed down. </summary>
-	public static event Action OnPickUpDown;
+	public static event Action OnInteractDown;
 	/// <summary> Pick Up key is held down. </summary>
-	public static event Action OnPickUpHeld;
+	public static event Action OnInteractHeld;
 	/// <summary> Pick Up key is let go. </summary>
-	public static event Action OnPickUpUp;
+	public static event Action OnInteractUp;
 
 	// Left Click Actions
 	/// <summary> Left Click is initially pressed down. </summary>
@@ -67,7 +68,7 @@ public class InputManager : MonoBehaviour
 	{
 		UpdateCrouch();
 		UpdateJump();
-		UpdatePickUp();
+		UpdateInteract();
 		UpdateLeftClick();
 		UpdateRightClick();
 		UpdateAltAimKey();
@@ -108,19 +109,19 @@ public class InputManager : MonoBehaviour
 	}
 
 	/// <summary> Update the actions for the Pick Up Key. </summary>
-	private void UpdatePickUp()
+	private void UpdateInteract()
 	{
-		if (Input.GetKeyDown(pickUpKey))
+		if (Input.GetKeyDown(interactKey))
 		{
-			OnPickUpDown?.Invoke();
+			OnInteractDown?.Invoke();
 		}
-		if (Input.GetKey(pickUpKey))
+		if (Input.GetKey(interactKey))
 		{
-			OnPickUpHeld?.Invoke();
+			OnInteractHeld?.Invoke();
 		}
-		if (Input.GetKeyUp(pickUpKey))
+		if (Input.GetKeyUp(interactKey))
 		{
-			OnPickUpUp?.Invoke();
+			OnInteractUp?.Invoke();
 		}
 	}
 

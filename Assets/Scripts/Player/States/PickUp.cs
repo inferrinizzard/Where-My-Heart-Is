@@ -1,36 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 /// <summary> Pick up item state. </summary>
 public class PickUp : PlayerState
 {
+	Pickupable target;
+
 	/// <summary> Constructor. </summary>
 	/// <param name="_player"> Reference to player. </param>
-	public PickUp(Player _player) : base(_player) { }
+	public PickUp(Player _player, Pickupable obj) : base(_player) { target = obj; }
 
 	public override void Start()
 	{
-		// Raycast for what the player is looking at.
-		RaycastHit hit;
+		player.pickedUpFirst = true;
+		if (target.GetComponent<Placeable>() && target.GetComponent<Placeable>().PlaceConditionsMet())
+			return;
+		target.Interact();
+		player.heldObject = target;
+		// Store the held object.
+		player.heldObject.active = true;
 
-		// Make sure it is in the right layer
-		int layerMask = 1 << 9;
+		//player.canMove = false;
+	}
 
-		// Raycast to see what the object's tag is. If it is a Pickupable object...
-		if (Physics.Raycast(player.cam.transform.position, player.cam.transform.forward, out hit, player.playerReach, layerMask) && hit.transform.GetComponent<InteractableObject>())
-		{
-            player.pickedUpFirst = true;
-            if (hit.transform.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
-            {
-                return;
-            }
-			// Store the held object.
-			player.heldObject = hit.collider.gameObject.GetComponent<InteractableObject>();
-			player.heldObject.Interact();
-			player.heldObject.active = true;
+	public override void End()
+	{
+		// Drop the object.
+		player.heldObject.Interact();
 
-			//player.playerCanMove = false;
-		}
+		player.heldObject.active = false;
+		player.heldObject = null;
 	}
 }

@@ -1,10 +1,12 @@
-﻿// #define DEBUG
+// #define DEBUG
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class Effects : MonoBehaviour
 {
+	Fade fadeController;
 	bool glowOn = false;
 	bool edgeOn = true;
 	bool bloomOn = true;
@@ -12,6 +14,8 @@ public class Effects : MonoBehaviour
 
 	void Start()
 	{
+		fadeController = GetComponent<Fade>();
+
 		ToggleMask(false);
 		ToggleGlowOutline(glowOn);
 		ToggleEdgeOutline(edgeOn);
@@ -49,40 +53,13 @@ public class Effects : MonoBehaviour
 
 	public void ToggleDissolve(bool on) => ToggleEffect(on, "DISSOLVE");
 
+	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
+
 	void ToggleEffect(bool on, string keyword)
 	{
 		if (on)
 			Shader.EnableKeyword(keyword);
 		else
 			Shader.DisableKeyword(keyword);
-	}
-
-	public static IEnumerator DissolveOnDrop(GateKey obj, float time = .25f)
-	{
-		obj.transform.parent = obj.oldParent;
-		Player.Instance.holding = false;
-		obj.GetComponent<Collider>().enabled = false;
-		Material mat = obj.GetComponent<MeshRenderer>().material;
-		mat.EnableKeyword("DISSOLVE_MANUAL");
-		int ManualDissolveID = Shader.PropertyToID("_ManualDissolve");
-
-		float start = Time.time;
-		bool inProgress = true;
-
-		while (inProgress)
-		{
-			yield return null;
-			float step = Time.time - start;
-			mat.SetFloat(ManualDissolveID, step / time);
-			if (step > time)
-				inProgress = false;
-		}
-		mat.DisableKeyword("DISSOLVE_MANUAL");
-		mat.SetFloat(ManualDissolveID, 1);
-
-		Player.Instance.holding = true;
-		obj.Interact();
-		obj.GetComponent<Collider>().enabled = true;
-		obj.active = false;
 	}
 }

@@ -1,11 +1,12 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class WorldObject : MonoBehaviour
 {
 	// public bool interactable = false;
-	public bool clipable = false;
+	public bool clippable = false;
 	public bool pickupable = false; // set interactable
 	public bool collectable = false; // set interactable
 
@@ -14,10 +15,10 @@ public class WorldObject : MonoBehaviour
 	// 	interactable = !interactable;
 	// 	SummonComponent<InteractableObject>(interactable);
 	// }
-	public void ToggleClipable()
+	public void ToggleClippable()
 	{
-		clipable = !clipable;
-		SummonComponent<ClipableObject>(clipable);
+		clippable = !clippable;
+		SummonComponent<ClippableObject>(clippable);
 	}
 	public void TogglePickupable()
 	{
@@ -32,7 +33,7 @@ public class WorldObject : MonoBehaviour
 		SummonComponent<CollectableObject>(collectable);
 	}
 
-	Component SummonComponent<T>(bool flag)where T : Component
+	Component SummonComponent<T>(bool flag) where T : Component
 	{
 		if (flag)
 		{

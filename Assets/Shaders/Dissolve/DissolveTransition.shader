@@ -8,13 +8,11 @@ Shader "Dissolve/Transition"
 		_Cutoff("Cutoff", Range(0, 2)) = 0
 	}
 
-	SubShader
-	{
+	SubShader {
 		// No culling or depth
 		Cull Off ZWrite Off ZTest Always
 
-		Pass
-		{
+		Pass {
 			CGPROGRAM
 			#pragma vertex vert_img
 			#pragma fragment frag
@@ -26,8 +24,7 @@ Shader "Dissolve/Transition"
 			sampler2D _BackgroundTex;
 			float _Cutoff;
 
-			fixed4 frag(v2f_img i) : SV_Target
-			{
+			fixed4 frag(v2f_img i) : SV_Target {
 				fixed4 transit = tex2D(_TransitionTex, i.uv);
 				fixed2 direction = float2(0, 0);
 				fixed4 col = tex2D(_MainTex, i.uv + _Cutoff * direction);

@@ -2,8 +2,8 @@ Shader "Mask/Merge"
 {
 	Properties
 	{
-		_Dream("Dream", 2D) = "white" {}
 		_Real("Real", 2D) = "white" {}
+		_Heart("Heart", 2D) = "white" {}
 
 		_Radius("Width", float) = 10
 		_Intensity("Intensity", float) = 2
@@ -32,8 +32,8 @@ Shader "Mask/Merge"
 			#include "../GaussianBlur.cginc"
 
 			sampler2D _Mask;
-			sampler2D _Dream;
 			sampler2D _Real;
+			sampler2D _Heart;
 
 			sampler2D _GlowMap;
 			float4 _GlowMap_TexelSize;
@@ -71,9 +71,9 @@ Shader "Mask/Merge"
 				float4 output;
 				#if MASK
 					float mask = tex2D(_Mask, i.uv).r;
-					output = mask > .5 ? tex2D(_Real, i.uv) : tex2D(_Dream, i.uv);
+					output = mask > .5 ? tex2D(_Heart, i.uv) : tex2D(_Real, i.uv);
 				#else
-					output = tex2D(_Dream, i.uv);
+					output = tex2D(_Real, i.uv);
 				#endif
 
 				#if OUTLINE_GLOW || OUTLINE_EDGE

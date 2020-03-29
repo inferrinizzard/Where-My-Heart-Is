@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 
 namespace CSG
@@ -164,7 +165,7 @@ namespace CSG
 					EdgeLoop nestedLoop = loop.nestedLoop;
 					while (nestedLoop != null)
 					{
-						if (fillNested)finalModel.AddTriangles(nestedLoop.TriangulateStrip());
+						if (fillNested) finalModel.AddTriangles(nestedLoop.TriangulateStrip());
 						fillNested = !fillNested;
 						nestedLoop = nestedLoop.nestedLoop;
 					}
@@ -176,7 +177,7 @@ namespace CSG
 				}
 			});
 
-			if (flipNormals)finalModel.FlipNormals();
+			if (flipNormals) finalModel.FlipNormals();
 
 			return finalModel;
 		}
@@ -268,7 +269,7 @@ namespace CSG
 						perimeter[currentVertexIndex].loops.Add(loop);
 					}
 					overflow++;
-					if (overflow > 100)throw new Exception("Too many iterations when defining loops");
+					if (overflow > 100) throw new Exception("Too many iterations when defining loops");
 					// once the current vertex loops around to the start, we're done
 					currentVertexIndex = (currentVertexIndex + 1) % perimeter.Count;
 				} while (perimeter[currentVertexIndex] != initialVertex);
@@ -276,7 +277,7 @@ namespace CSG
 				loops.Add(loop);
 
 				overflow++;
-				if (overflow > 100)throw new Exception("Too many iterations when defining loops");
+				if (overflow > 100) throw new Exception("Too many iterations when defining loops");
 
 				currentVertexIndex = FindEarliestUnsatisfied(perimeter);
 			}
@@ -292,7 +293,7 @@ namespace CSG
 				DiscoverInternalLoop(unusedInternalIntersections, loops);
 
 				overflow++;
-				if (overflow > 100)throw new Exception("Too many iterations when defining loops");
+				if (overflow > 100) throw new Exception("Too many iterations when defining loops");
 			}
 
 			return loops;
@@ -361,7 +362,7 @@ namespace CSG
 				}
 
 				overflow++;
-				if (overflow > 100)throw new Exception("Too many iterations in internal loop discovery");
+				if (overflow > 100) throw new Exception("Too many iterations in internal loop discovery");
 			} while (nextIntersection != null);
 
 			// if we haven't gotten back to the start, we don't have a valid loop
@@ -488,7 +489,7 @@ namespace CSG
 						}
 
 						overflow++;
-						if (overflow > 100)throw new Exception("Maxiumum iterations exceeded");
+						if (overflow > 100) throw new Exception("Maxiumum iterations exceeded");
 					}
 				}
 			}

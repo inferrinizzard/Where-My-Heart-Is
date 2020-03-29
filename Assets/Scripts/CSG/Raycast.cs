@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace CSG
@@ -153,7 +154,7 @@ namespace CSG
 		/// <returns></returns>
 		private static int SignedVolume(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
 		{
-			return (int)Mathf.Sign(Vector3.Dot(Vector3.Cross(b - a, c - a), d - a));
+			return (int) Mathf.Sign(Vector3.Dot(Vector3.Cross(b - a, c - a), d - a));
 		}
 
 		/// <summary>

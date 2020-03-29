@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -23,7 +24,7 @@ public class SubWorld : MonoBehaviour
 
 	void OnTransformChildrenChanged()
 	{
-		if (Application.isPlaying)return;
+		if (Application.isPlaying) return;
 		foreach (Transform child in transform)
 			AddMeshCollider(child);
 	}
