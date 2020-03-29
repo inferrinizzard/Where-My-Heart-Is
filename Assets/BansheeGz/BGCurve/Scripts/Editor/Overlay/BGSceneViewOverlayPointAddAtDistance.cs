@@ -1,6 +1,8 @@
-﻿using BansheeGz.BGSpline.Curve;
-using UnityEngine;
+using BansheeGz.BGSpline.Curve;
+
 using UnityEditor;
+
+using UnityEngine;
 
 namespace BansheeGz.BGSpline.Editor
 {
@@ -9,15 +11,12 @@ namespace BansheeGz.BGSpline.Editor
 		private static readonly Color32 PointersColor = Color.white;
 		private Vector3 lastPosition;
 
-		public BGSceneViewOverlayPointAddAtDistance(BGSceneViewOverlay overlay) : base(overlay)
-		{
-		}
+		public BGSceneViewOverlayPointAddAtDistance(BGSceneViewOverlay overlay) : base(overlay) { }
 
 		public override string Name
 		{
 			get { return "Add point at Distance"; }
 		}
-
 
 		protected override bool Comply(Event currentEvent)
 		{

@@ -1,4 +1,5 @@
 using UnityEditor;
+
 using UnityEngine;
 
 [CustomEditor(typeof(WorldObject))]
@@ -10,14 +11,14 @@ public class WorldObjectGUI : Editor
 
 	WorldObject obj = null;
 
-	void OnEnable() => obj = (WorldObject)target;
+	void OnEnable() => obj = (WorldObject) target;
 
 	string Is(bool status) => status ? yes : no;
 	public override void OnInspectorGUI()
 	{
 		GUILayout.BeginHorizontal();
 		// SummonButton("Interactable", obj.interactable, obj.ToggleInteractable);
-		SummonButton("Clipable", obj.clipable, obj.ToggleClipable);
+		SummonButton("Clippable", obj.clippable, obj.ToggleClippable);
 		SummonButton("Pickupable", obj.pickupable, obj.TogglePickupable);
 		SummonButton("Collectable", obj.collectable, obj.ToggleCollectable);
 		GUILayout.EndHorizontal();

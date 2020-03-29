@@ -1,8 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace FMODUnity
 {
-    public class ParamRefAttribute : PropertyAttribute
-    {
-    }
+	public class ParamRefAttribute : PropertyAttribute { }
 }

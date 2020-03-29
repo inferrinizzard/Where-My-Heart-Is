@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 /// <summary> Generic Singleton implementation </summary>
@@ -38,8 +39,8 @@ public class Singleton<T> : MonoBehaviour, IPersistent where T : Component
 			Destroy(gameObject);
 	}
 
-    public virtual void Initialize() { }
-    public virtual void OnBeginTransition() { }
-    public virtual void TransitonUpdate() { }
-    public virtual void OnCompleteTransition() { }
+	public virtual void Initialize() { }
+	public virtual void OnBeginTransition() { }
+	public virtual void TransitonUpdate() { }
+	public virtual void OnCompleteTransition() { }
 }

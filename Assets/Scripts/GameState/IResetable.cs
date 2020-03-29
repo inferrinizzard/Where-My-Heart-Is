@@ -1,4 +1,4 @@
-﻿interface IResetable
+interface IResetable
 {
 	/// <summary> called when next level loaded </summary>
 	void Init();

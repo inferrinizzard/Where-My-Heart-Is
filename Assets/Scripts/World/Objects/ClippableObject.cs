@@ -1,8 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
-public class ClipableObject : MonoBehaviour
+public class ClippableObject : MonoBehaviour
 {
 	public bool volumeless;
 
@@ -44,7 +45,7 @@ public class ClipableObject : MonoBehaviour
 		{
 			gameObject.AddComponent<MeshCollider>();
 		}
-		if (meshFilter)initialMesh = meshFilter.mesh;
+		if (meshFilter) initialMesh = meshFilter.mesh;
 		oldLayer = gameObject.layer;
 	}
 

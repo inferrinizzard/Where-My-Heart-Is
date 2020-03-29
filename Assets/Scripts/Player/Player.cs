@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +10,7 @@ using UnityEngine.UI;
 public class Player : Singleton<Player>, IStateMachine
 {
 	/// <summary> Reference to the current state. </summary>
-	protected PlayerState State;
+	public PlayerState State;
 
 	/// <summary> Reference to the players last spawn. </summary>
 	[HideInInspector] public Transform lastSpawn;
@@ -22,24 +23,18 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Empty GameObject for where to put a Pickupable object. </summary>
 	[HideInInspector] public Transform heldObjectLocation;
 	/// <summary> Reference to a Pickupable object that has been picked up. </summary>
-	[HideInInspector] public InteractableObject heldObject;
+	[HideInInspector] public Pickupable heldObject;
 	/// <summary> Vector3 to store and calculate vertical velocity. </summary>
 	[HideInInspector] public float verticalVelocity;
 	/// <summary> Player's height. </summary>
 	[HideInInspector] public float playerHeight;
 	/// <summary> Whether the player can move or not. </summary>
-	[HideInInspector] public bool playerCanMove = true;
+	[HideInInspector] public bool canMove = true;
 	[HideInInspector] public bool playerCanRotate = true;
-	/// <summary> Whether the player is jumping or not. </summary>
-	[HideInInspector] public bool jumping = false;
 	/// <summary> Whether the player is crouching or not. </summary>
 	[HideInInspector] public bool crouching = false;
 	/// <summary> Whether the player is holding something or not. </summary>
-	[HideInInspector] public bool holding = false;
-	/// <summary> Whether the player is inspecting a Pickupable object or not. </summary>
 	[HideInInspector] public bool looking = false;
-	/// <summary> Whether the player in aiming the window or not. </summary>
-	[HideInInspector] public bool aiming = false;
 	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
 	private bool stillCrouching = false;
 	public bool pickedUpFirst = false;
@@ -53,14 +48,11 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Reference to death plane. </summary>
 	[HideInInspector] public Transform deathPlane;
 	/// <summary> Get Window script from GameObject. </summary>
-	[HideInInspector] public Animator anim;
+	[HideInInspector] public Prompt prompt;
 	[HideInInspector] public Window window;
 	[HideInInspector] public ApplyMask mask;
 	[HideInInspector] public PlayerAudio audioController;
-
-	[Header("UI")]
-	/// <summary> Reference for interactPrompt UI object. </summary>
-	[SerializeField] public GameObject interactPrompt;
+	[HideInInspector] public Hands hands;
 
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
@@ -73,28 +65,15 @@ public class Player : Singleton<Player>, IStateMachine
 	[SerializeField] float mouseSensitivity = 2f;
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
-
 	public bool windowEnabled = true;
-
 	public bool sceneActive;
-
-	public GameObject fadeInObject;
-	public float fadeInLength;
-	public bool playFade;
+	public float fadeDuration;
 
 	// [Header("Camera Variables")]
-	/// <summary> Minimum angle the player can look upward. </summary>
-	private float minX = -90f;
-	/// <summary> Minimum angle the player can look downward. </summary>
-	private float maxX = 90f;
-	/// <summary> Stores the Y rotation of the player. </summary>
-	[HideInInspector] public float rotationY = 0f;
-	/// <summary> Stores the X rotation of the player. </summary>
-	[HideInInspector] public float rotationX = 0f;
-
-	[SerializeField] float heartAnimSpeed = 5;
-	float heartAnimDuration;
-	Vector3 heartStartPos, heartStartEulers;
+	/// <summary> Bounds angle the player can look upward. </summary>
+	private(float, float) xRotationBounds = (-90f, 90f);
+	/// <summary> Stores the rotation of the player. </summary>
+	[HideInInspector] public Vector3 rotation = Vector3.zero;
 	int _ViewDirID = Shader.PropertyToID("_ViewDir");
 
 	void Start()
@@ -106,11 +85,8 @@ public class Player : Singleton<Player>, IStateMachine
 		window = GetComponent<Window>();
 		mask = GetComponentInChildren<ApplyMask>();
 		audioController = GetComponent<PlayerAudio>();
-		anim = GetComponentInChildren<Animator>();
-		anim.SetFloat("Speed", heartAnimSpeed);
-		heartAnimDuration = anim.runtimeAnimatorController.animationClips[0].length / heartAnimSpeed;
-		heartStartPos = anim.transform.localPosition;
-		heartStartEulers = anim.transform.localEulerAngles;
+		hands = GetComponentInChildren<Hands>();
+		prompt = GameManager.Instance.prompt;
 
 		// Get reference to the player height using the CharacterController's height.
 		playerHeight = characterController.height;
@@ -121,25 +97,22 @@ public class Player : Singleton<Player>, IStateMachine
 
 		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
 		Cursor.visible = false;
-		BeginFadeIn();
+		VFX.StartFade(true, fadeDuration);
 
-        Initialize();
+		Initialize();
 	}
 
 	public override void Initialize()
 	{
-        interactPrompt = GameObject.FindWithTag("InteractPrompt");
 		deathPlane = GameObject.FindWithTag("Finish")?.transform;
 		lastSpawn = GameObject.FindWithTag("Respawn")?.transform;
 
-        if (lastSpawn)
+		if (lastSpawn)
 		{
 			transform.position = lastSpawn.position;
-			rotationX = lastSpawn.eulerAngles.x;
-			rotationY = lastSpawn.eulerAngles.y;
+			rotation = lastSpawn.eulerAngles;
 		}
-		playerCanMove = true;
-		holding = false;
+		canMove = true;
 		looking = false;
 		window.world = World.Instance;
 		VFX.ToggleMask(false);
@@ -148,17 +121,15 @@ public class Player : Singleton<Player>, IStateMachine
 
 	public override void OnBeginTransition()
 	{
-        characterController.enabled = false;
-        sceneActive = false;
-		fadeInObject.SetActive(true);
-		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+		characterController.enabled = false;
+		sceneActive = false;
 	}
 
 	public override void OnCompleteTransition()
 	{
-        window.CreateFoVMesh();
+		window.CreateFoVMesh();
 
-        DialoguePacket packet = FindObjectOfType<DialoguePacket>();
+		DialoguePacket packet = FindObjectOfType<DialoguePacket>();
 		if (packet != null)
 		{
 			DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
@@ -168,8 +139,8 @@ public class Player : Singleton<Player>, IStateMachine
 		else
 		{
 			EndSceneTransitionHelper();
-        }
-    }
+		}
+	}
 
 	private void EndSceneTransitionHelper(DialogueSystem dialogueSystem = null)
 	{
@@ -177,28 +148,10 @@ public class Player : Singleton<Player>, IStateMachine
 		{
 			dialogueSystem.TextComplete -= EndSceneTransitionHelper;
 		}
-        Initialize();
-        characterController.enabled = true;
-        Player.Instance.sceneActive = true;
-		BeginFadeIn();
-	}
-
-	private void BeginFadeIn()
-	{
-        sceneActive = true;
-		playFade = true;
-		fadeInObject.SetActive(true);
-		fadeInObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
-		CancelInvoke("EndFadeIn");
-		Invoke("EndFadeIn", fadeInLength);
-	}
-
-	private void EndFadeIn()
-	{
-		playFade = false;
-		fadeInObject.SetActive(false);
-		if (Raycast() == null)
-			interactPrompt.SetActive(false);
+		Initialize();
+		characterController.enabled = true;
+		Player.Instance.sceneActive = true;
+		VFX.StartFade(true, fadeDuration);
 	}
 
 	public void OnEnable()
@@ -206,9 +159,9 @@ public class Player : Singleton<Player>, IStateMachine
 		// Subscribe input events to player behaviors
 		InputManager.OnJumpDown += Jump;
 		// InputManager.OnCrouchDown += Crouch;
-		// InputManager.OnCrouchUp += UnCrouch;
 		// InputManager.OnCrouchUp += EndState;
-		InputManager.OnPickUpDown += PickUp;
+		// InputManager.OnCrouchUp += EndState;
+		InputManager.OnInteractDown += Interact;
 		InputManager.OnRightClickDown += Aiming;
 		InputManager.OnRightClickUp += EndState;
 		InputManager.OnAltAimKeyDown += Aiming;
@@ -221,9 +174,9 @@ public class Player : Singleton<Player>, IStateMachine
 		// Unsubscribe input events to player behaviors
 		InputManager.OnJumpDown -= Jump;
 		// InputManager.OnCrouchDown -= Crouch;
-		// InputManager.OnCrouchUp -= UnCrouch;
 		// InputManager.OnCrouchUp -= EndState;
-		InputManager.OnPickUpDown -= PickUp;
+		// InputManager.OnCrouchUp -= EndState;
+		InputManager.OnInteractDown -= Interact;
 		InputManager.OnRightClickDown -= Aiming;
 		InputManager.OnRightClickUp -= EndState;
 		InputManager.OnAltAimKeyDown -= Aiming;
@@ -231,33 +184,24 @@ public class Player : Singleton<Player>, IStateMachine
 		InputManager.OnLeftClickDown -= Cut;
 	}
 
-	void EndState()
+	public void EndState()
 	{
 		State?.End();
 		State = null;
 	}
 
-	public void SetState(PlayerState state)
-	{
-		EndState();
-		State = state;
-		State.Start();
-	}
-
-	void Update()
-	{
-		if (playFade == true)
-		{
-			Color oldColor = fadeInObject.GetComponent<SpriteRenderer>().color;
-			fadeInObject.GetComponent<SpriteRenderer>().color = new Color(oldColor.r, oldColor.g, oldColor.b, oldColor.a - (Time.deltaTime / fadeInLength));
-		}
-	}
+	public void SetState(PlayerState state) => (State = state).Start();
+	// {
+	// 	// EndState();
+	// 	State = state;
+	// 	State.Start();
+	// }
 
 	void FixedUpdate()
 	{
 		if (sceneActive)
 		{
-			if (playerCanMove)
+			if (canMove)
 			{
 				Move();
 				ApplyGravity();
@@ -265,14 +209,13 @@ public class Player : Singleton<Player>, IStateMachine
 				characterController.Move(moveDirection);
 			}
 
-			UpdateInteractPrompt();
-			StuckCrouching();
+			prompt.UpdateText(); // non physics
+			// StuckCrouching();
 			Die();
 		}
 	}
 
 	/// <summary> Player sudoku function. </summary>
-	// private void Die() => SetState(new Die(this));
 	private void Die()
 	{
 		if (!deathPlane)
@@ -281,21 +224,17 @@ public class Player : Singleton<Player>, IStateMachine
 			return;
 		}
 
-		if (transform.position.y < deathPlane.position.y)
+		if (transform.position.y < deathPlane.position.y && lastSpawn)
 		{
-			if (lastSpawn)
-			{
-                // Set the position to the spawnpoint
-                transform.position = lastSpawn.position;
-				verticalVelocity = 0;
+			// Set the position to the spawnpoint
+			transform.position = lastSpawn.position;
+			verticalVelocity = 0;
 
-				// Set the rotation to the spawnpoint
-				rotationX = lastSpawn.rotation.x;
-				rotationY = lastSpawn.rotation.y;
-			}
-			else
-				Debug.LogWarning("Missing spawn point!");
+			// Set the rotation to the spawnpoint
+			rotation = lastSpawn.eulerAngles;
 		}
+		else if (!lastSpawn)
+			Debug.LogWarning("Missing spawn point!");
 	}
 
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
@@ -311,9 +250,7 @@ public class Player : Singleton<Player>, IStateMachine
 	private void ApplyGravity()
 	{
 		if (!characterController.isGrounded)
-		{
 			verticalVelocity -= gravity * Time.deltaTime;
-		}
 		moveDirection.y = verticalVelocity * Time.deltaTime;
 	}
 
@@ -322,9 +259,16 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (characterController.isGrounded)
 		{
-			var tempState = State;
-			SetState(new Jump(this));
-			State = tempState;
+			verticalVelocity = jumpForce;
+			audioController.JumpLiftoff();
+
+			// Landing sound.
+			int mask = ~gameObject.layer;
+			Physics.Raycast(new Ray(transform.position, Vector3.down), out RaycastHit hit, 5f, mask);
+			if (verticalVelocity < 0 && hit.distance < audioController.landingDistanceThreshold)
+			{
+				audioController.JumpLanding();
+			}
 		}
 	}
 
@@ -333,18 +277,18 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (playerCanRotate)
 		{ // Get the rotation from the Mouse X and Mouse Y Axes and scale them by mouseSensitivity.
-			rotationY += Input.GetAxis("Mouse X") * mouseSensitivity;
-			rotationX += Input.GetAxis("Mouse Y") * mouseSensitivity;
+			rotation.y += Input.GetAxis("Mouse X") * mouseSensitivity;
+			rotation.x += Input.GetAxis("Mouse Y") * mouseSensitivity;
 
 			// Limit the rotation along the x axis.
-			rotationX = Mathf.Clamp(rotationX, minX, maxX);
+			rotation.x = Mathf.Clamp(rotation.x, xRotationBounds.Item1, xRotationBounds.Item2);
 
 			// Rotate the player along the y axis.
-			transform.localEulerAngles = new Vector3(0, rotationY, 0);
+			transform.localEulerAngles = new Vector3(0, rotation.y, 0);
 
 			// Rotate the player camera along the x axis.
 			// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
-			cam.transform.localEulerAngles = new Vector3(-rotationX, 0, 0);
+			cam.transform.localEulerAngles = new Vector3(-rotation.x, 0, 0);
 
 			Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
 
@@ -366,7 +310,7 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		// Ray looking straight up from the player's position.
 		Ray crouchRay = new Ray(transform.position, Vector3.up);
-		if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4) && crouching) { SetState(new UnCrouch(this)); }
+		if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4) && crouching) { EndState(); }
 		else { stillCrouching = true; } // The player did not uncrouch
 	}
 
@@ -379,143 +323,63 @@ public class Player : Singleton<Player>, IStateMachine
 			Ray crouchRay = new Ray(transform.position, Vector3.up);
 			if (!Physics.Raycast(crouchRay, out RaycastHit hit, playerHeight * 3 / 4))
 			{
-				SetState(new UnCrouch(this));
+				EndState();
 				stillCrouching = false;
 			}
 		}
 	}
 
 	/// <summary> Handles player behavior when interacting with objects. </summary>
-	private void PickUp()
+	void Interact()
 	{
-		if (!GameManager.Instance.duringLoad)
+		var hit = RaycastInteractable();
+		if (heldObject || hit is Pickupable)
 		{
-			if (!holding && !looking) { SetState(new PickUp(this)); }
-			else if (looking) { SetState(new Inspect(this)); } //unused for now
-			else if (holding)
-			{
-				if (heldObject.GetComponent<GateKey>() && !heldObject.GetComponent<GateKey>().GateCheck())
-					StartCoroutine(Effects.DissolveOnDrop(heldObject as GateKey, 1));
-				else
-					SetState(new Drop(this));
-			}
+			PickUp(!heldObject, hit as Pickupable);
+		}
+		else if (hit)
+			hit.Interact();
+	}
+
+	private void PickUp(bool pickingUp, Pickupable obj)
+	{
+		if (pickingUp)
+		{
+			SetState(new PickUp(this, obj));
+		}
+		// else if (looking) { SetState(new Inspect(this)); } //unused for now
+		else
+		{
+			if (heldObject.dissolves)
+				StartCoroutine(heldObject.DissolveOnDrop(1));
+			else
+				EndState();
 		}
 	}
 
 	/// <summary> Player aiming function. </summary>
 	private void Aiming()
 	{
-		aiming = true;
-		if (windowEnabled && !holding && sceneActive)
+		if (windowEnabled && !heldObject && sceneActive)
 		{
-			StartCoroutine(WaitAndAim(heartAnimDuration));
+			SetState(new Aiming(this));
+			StartCoroutine(hands.WaitAndAim());
 		}
 	}
 
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (aiming && windowEnabled && !holding) SetState(new Cut(this));
-	}
-
-	/// <summary> Interact prompt handling. </summary>
-	private void UpdateInteractPrompt()
-	{
-		if (!aiming && interactPrompt)
+		if (State is Aiming && windowEnabled && !heldObject)
 		{
-			// Raycast for what the player is looking at.
-			Transform hit = Raycast();
-
-			if (heldObject is Placeable && (heldObject as Placeable).PlaceConditionsMet())
-			{
-				interactPrompt.GetComponent<Text>().text = "Press E to Place Canvas";
-				interactPrompt.SetActive(true);
-			}
-			else if (hit != null && hit.GetComponent<InteractableObject>() || !pickedUpFirst)
-			{
-				if (!holding && playerCanMove)
-				{
-					if (hit != null && (bool)hit.GetComponent<BirbAnimTester>())
-						interactPrompt.GetComponent<Text>().text = "Press E to Interact with Bird";
-					else if (hit != null && (bool)hit.GetComponent<CanvasObject>())
-						interactPrompt.GetComponent<Text>().text = "Press E to Enter Canvas";
-					else
-						interactPrompt.GetComponent<Text>().text = "Press E to Pick Up";
-
-                    interactPrompt.SetActive(true);
-					if (hit != null && hit.GetComponent<Placeable>() && hit.transform.GetComponent<Placeable>().PlaceConditionsMet())
-					{
-						interactPrompt.SetActive(false);
-						return;
-					}
-				}
-			}
-			else
-			{
-				interactPrompt.SetActive(false);
-			}
+			// SetState(new Cut(this));
+			window.ApplyCut();
+			audioController.PlaceWindow();
+			heartWindow.SetActive(false);
+			VFX.ToggleMask(false);
+			EndState();
 		}
 	}
 
-	public void GateInteractPrompt()
-	{
-		interactPrompt.SetActive(true);
-		interactPrompt.GetComponent<Text>().text = "Press E to Unlock";
-	}
-
-	IEnumerator WaitAndAim(float time)
-	{
-		anim.SetBool("Aiming", true);
-
-		var heartTargetPos = new Vector3(.01f, -.5f, 1.19f); // VS GHETTO
-		var heartTargetEulers = new Vector3(0, 90, -21.5f); // VS GHETTO
-
-		float start = Time.time;
-		bool inProgress = true;
-		while (inProgress)
-		{
-			if (!aiming)
-			{
-				StartCoroutine(Repos(.5f));
-				yield break;
-			}
-			yield return null;
-			float step = Time.time - start;
-			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / time);
-			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTargetEulers, step / time);
-
-			if (step > time)
-				inProgress = false;
-		}
-		SetState(new Aiming(this));
-	}
-
-	public void RevertAim() => StartCoroutine(Repos(heartAnimDuration / 1.5f));
-
-	IEnumerator Repos(float time)
-	{
-		Vector3 startPos = anim.transform.localPosition;
-		Vector3 startEulers = anim.transform.localEulerAngles;
-
-		float start = Time.time;
-		bool inProgress = true;
-		while (inProgress)
-		{
-			yield return null;
-			float step = Time.time - start;
-			anim.transform.localPosition = Vector3.Lerp(heartStartPos, startPos, 1 - step / time);
-			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, startEulers, 1 - step / time);
-
-			if (step > time)
-				inProgress = false;
-		}
-	}
-
-	Transform Raycast()
-	{
-		RaycastHit hit;
-		if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, playerReach, 1 << 9))
-			return hit.transform;
-		return null;
-	}
+	public InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }

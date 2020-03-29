@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 /// <summary> Inspect object state. </summary>
@@ -14,6 +15,6 @@ public class Inspect : PlayerState
 		// Stop inspecting the object (??)
 		player.heldObject.Interact();
 
-		player.playerCanMove = true;
+		player.canMove = true;
 	}
 }

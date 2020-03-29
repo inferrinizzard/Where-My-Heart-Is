@@ -1,12 +1,13 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class TestCamera : MonoBehaviour
 {
 
 	float rotationX, rotationY;
-	[SerializeField] float mouseSensitivity;
+	[SerializeField] float mouseSensitivity = default;
 	// Start is called before the first frame update
 	void Start()
 	{

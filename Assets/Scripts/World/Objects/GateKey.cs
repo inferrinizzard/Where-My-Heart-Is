@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,6 +8,8 @@ public class GateKey : Pickupable
 {
 	[SerializeField] Gate gate = default;
 	[SerializeField] float distanceThreshold = .5f;
+
+	void Awake() => dissolves = true;
 
 	public override void Interact()
 	{
@@ -18,13 +21,11 @@ public class GateKey : Pickupable
 		base.Interact();
 	}
 
-    private void Update()
-    {
-        if(GateCheck())
-        {
-            player.GateInteractPrompt();
-        }
-    }
+	private void Update()
+	{
+		if (GateCheck())
+			player.prompt.SetText("Press E to Unlock");
+	}
 
-    public bool GateCheck() => Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold;
+	bool GateCheck() => Vector3.Distance(transform.position, gate.keyHole.transform.position) < distanceThreshold && gate.keyHole.layer == 9;
 }

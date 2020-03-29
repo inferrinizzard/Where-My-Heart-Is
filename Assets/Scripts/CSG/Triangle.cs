@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 
 namespace CSG
@@ -15,9 +16,9 @@ namespace CSG
 		/// </summary>
 		public List<Vertex> vertices;
 
-        public List<Edge> edges;// always 3 of these// to be found externally
+		public List<Edge> edges; // always 3 of these// to be found externally
 
-        public List<Intersection> internalIntersections;
+		public List<Intersection> internalIntersections;
 
 		/// <summary>
 		/// Creates a Triangle with the three given vertices
@@ -29,33 +30,33 @@ namespace CSG
 		{
 			vertices = new List<Vertex> { a, b, c };
 			vertices.ForEach(v => v.triangles.Add(this));
-            edges = new List<Edge>();
-            internalIntersections = new List<Intersection>();
+			edges = new List<Edge>();
+			internalIntersections = new List<Intersection>();
 		}
 
-        public List<Vertex> GetPerimeter()
-        {
-            List<Vertex> perimeter = new List<Vertex>();
+		public List<Vertex> GetPerimeter()
+		{
+			List<Vertex> perimeter = new List<Vertex>();
 
-            for(int i = 0; i < 3; i++)
-            {
-                perimeter.Add(vertices[i]);
-                List<Vertex> edgeIntersections = edges[i].intersections.Select(intersection => intersection.vertex).ToList();
+			for (int i = 0; i < 3; i++)
+			{
+				perimeter.Add(vertices[i]);
+				List<Vertex> edgeIntersections = edges[i].intersections.Select(intersection => intersection.vertex).ToList();
 
-                edgeIntersections.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, vertices[i].value) - Vector3.Distance(b.value, vertices[i].value)));
+				edgeIntersections.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, vertices[i].value) - Vector3.Distance(b.value, vertices[i].value)));
 
-                perimeter.AddRange(edgeIntersections);
-            }
+				perimeter.AddRange(edgeIntersections);
+			}
 
-            return perimeter;
-        }
+			return perimeter;
+		}
 
-        public void UpdateEdges()
-        {
-            edges.Add(new Edge(vertices[0], vertices[1]));
-            edges.Add(new Edge(vertices[1], vertices[2]));
-            edges.Add(new Edge(vertices[2], vertices[0]));
-        }
+		public void UpdateEdges()
+		{
+			edges.Add(new Edge(vertices[0], vertices[1]));
+			edges.Add(new Edge(vertices[1], vertices[2]));
+			edges.Add(new Edge(vertices[2], vertices[0]));
+		}
 
 		/// <summary>
 		/// Determines whether the given Vertex is one of this Triangle's vertices
@@ -85,46 +86,46 @@ namespace CSG
 			vertices.Reverse();
 		}
 
-        /// <summary>
-        /// Clears cut metadata for all edges of this triangle
-        /// </summary>
-        public void ClearLocalMetadata()
-        {
-            vertices.ForEach(vertex => vertex.loops = new List<EdgeLoop>());
+		/// <summary>
+		/// Clears cut metadata for all edges of this triangle
+		/// </summary>
+		public void ClearLocalMetadata()
+		{
+			vertices.ForEach(vertex => vertex.loops = new List<EdgeLoop>());
 
-            foreach (Edge edge in edges)
-            {
-                edge.intersections.ForEach(intersection =>
-                {
-                    intersection.vertex.cut = null;
-                    intersection.vertex.loops = new List<EdgeLoop>();
-                });
-            }
-        }
+			foreach (Edge edge in edges)
+			{
+				edge.intersections.ForEach(intersection =>
+				{
+					intersection.vertex.cut = null;
+					intersection.vertex.loops = new List<EdgeLoop>();
+				});
+			}
+		}
 
-        public void ClearCutMetadata()
-        {
-            internalIntersections.Clear();
-        }
+		public void ClearCutMetadata()
+		{
+			internalIntersections.Clear();
+		}
 
 		public override string ToString() => $"{base.ToString()}::{string.Join("::", vertices.Select(v=>v.value.ToString("F4")))}";
 
-        public void Draw(Color color)
-        {
-            if(edges.Count == 0)
-            {
-                edges.Add(new Edge(vertices[0], vertices[1]));
-                edges.Add(new Edge(vertices[1], vertices[2]));
-                edges.Add(new Edge(vertices[2], vertices[0]));
-            }
-            edges.ForEach(edge => edge.Draw(color));
-        }
+		public void Draw(Color color)
+		{
+			if (edges.Count == 0)
+			{
+				edges.Add(new Edge(vertices[0], vertices[1]));
+				edges.Add(new Edge(vertices[1], vertices[2]));
+				edges.Add(new Edge(vertices[2], vertices[0]));
+			}
+			edges.ForEach(edge => edge.Draw(color));
+		}
 
-        public void DrawNormal(Color color)
-        {
-            Vector3 center = (vertices[0].value + vertices[1].value + vertices[2].value) / 3;
-            Debug.DrawLine(center, center + (0.5f * CalculateNormal()), color, 60f);
-        }
+		public void DrawNormal(Color color)
+		{
+			Vector3 center = (vertices[0].value + vertices[1].value + vertices[2].value) / 3;
+			Debug.DrawLine(center, center + (0.5f * CalculateNormal()), color, 60f);
+		}
 	}
 
 }

@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+
 using UnityEngine;
 
 [System.Serializable, ExecuteInEditMode]
@@ -40,7 +41,7 @@ public class Outline : MonoBehaviour
 		outlineCam.CopyFrom(Camera.current);
 		outlineCam.backgroundColor = Color.black;
 		outlineCam.clearFlags = CameraClearFlags.Color;
-		outlineCam.cullingMask = 1 << LayerMask.NameToLayer("Dream");
+		outlineCam.cullingMask = 1 << LayerMask.NameToLayer("Real");
 
 		var outlineBuffer = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.R8);
 		outlineCam.targetTexture = outlineBuffer;
@@ -66,7 +67,7 @@ public class Outline : MonoBehaviour
 			int half = size / 2;
 			for (int i = 0; i < size; i++)
 			{
-				ret[i] = (float)(1 / (Math.Sqrt(2 * Math.PI) * sigma) * Math.Exp(-(i - half) * (i - half) / (2 * sigma * sigma)));
+				ret[i] = (float) (1 / (Math.Sqrt(2 * Math.PI) * sigma) * Math.Exp(-(i - half) * (i - half) / (2 * sigma * sigma)));
 				sum += ret[i];
 			}
 			return ret;
