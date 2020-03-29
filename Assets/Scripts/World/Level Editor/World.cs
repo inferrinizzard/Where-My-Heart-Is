@@ -54,55 +54,56 @@ public class World : MonoBehaviour
 
 	private void ConfigureWorld(string layer, Transform worldContainer)
 	{
-		foreach (Transform child in worldContainer.transform)
+		foreach (MeshFilter mf in worldContainer.GetComponentsInChildren<MeshFilter>())
 		{
-			// Debug.Log(child);
-			if (child.GetComponent<MeshFilter>())
-			{
-				child.gameObject.layer = LayerMask.NameToLayer(layer);
-				if (!child.GetComponent<ClippableObject>())
-				{
-					child.gameObject.AddComponent<ClippableObject>();
-				}
+			mf.gameObject.layer = LayerMask.NameToLayer(layer);
+			if (!mf.TryComponent(out MeshRenderer mr)) mr = mf.gameObject.AddComponent<MeshRenderer>();
+			if (!mf.TryComponent<MeshCollider>()) mf.gameObject.AddComponent<MeshCollider>();
+			if (!mf.TryComponent<ClippableObject>()) mf.gameObject.AddComponent<ClippableObject>();
 
-				if (layer == "Heart")
-					child.GetComponent<MeshRenderer>().material.SetInt("_Dissolve", 1);
-			}
-
-			ConfigureWorld(layer, child); // do this recursively to hit everything in the given world
+			if (layer == "Heart")
+				mr.material.SetInt("_Dissolve", 1);
 		}
+
+		// foreach (Transform child in worldContainer.transform)
+		// {
+		// 	// Debug.Log(child);
+		// 	if (child.TryComponent<MeshFilter>())
+		// 	{
+		// 		child.gameObject.layer = LayerMask.NameToLayer(layer);
+		// 		if (!child.TryComponent(out MeshRenderer mr)) mr = child.gameObject.AddComponent<MeshRenderer>();
+		// 		if (!child.TryComponent<MeshCollider>()) child.gameObject.AddComponent<MeshCollider>();
+		// 		if (!child.TryComponent<ClippableObject>()) child.gameObject.AddComponent<ClippableObject>();
+
+		// 		if (layer == "Heart")
+		// 			mr.material.SetInt("_Dissolve", 1);
+		// 	}
+
+		// 	ConfigureWorld(layer, child); // do this recursively to hit everything in the given world
+		// }
 	}
 
 	public void ResetCut()
 	{
-		foreach (Transform child in heartWorldContainer)
-		{
-			foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
-			{
-				if (obj.isClipped) obj.Revert();
-			}
-		}
+		foreach (ClippableObject obj in GetComponentsInChildren<ClippableObject>())
+			if (obj.isClipped) obj.Revert();
 
-		foreach (Transform child in realWorldContainer)
-		{
-			foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
-			{
-				if (obj.isClipped) obj.Revert();
-			}
-		}
+		// foreach (Transform child in heartWorldContainer)
+		// 	foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
+		// 		if (obj.isClipped) obj.Revert();
 
-		foreach (Transform child in entangledWorldContainer)
-		{
-			foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
-			{
-				if (obj.isClipped) obj.Revert();
-			}
-		}
+		// foreach (Transform child in realWorldContainer)
+		// 	foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
+		// 		if (obj.isClipped) obj.Revert();
+
+		// foreach (Transform child in entangledWorldContainer)
+		// 	foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
+		// 		if (obj.isClipped) obj.Revert();
 	}
 
 	public ClippableObject[] GetHeartObjects()
 	{
-		return heartWorldContainer.GetComponentsInChildren<ClippableObject>();
+		return heartWorldContainer.GetComponentsInChildren<ClippableObject>(); // TODO: do these ever change?
 	}
 
 	public ClippableObject[] GetRealObjects()

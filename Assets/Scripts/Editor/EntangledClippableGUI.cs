@@ -47,7 +47,7 @@ public class EntangledClippableGUI : Editor
 	        if (realVersion != null)	
 	        {	
 	            createdObject = Instantiate(realPrefab, realVersion.transform.position, realVersion.transform.rotation, transform);	
-	            UnityEditor.EditorApplication.delayCall += () => DestroyImmediate(realVersion.gameObject);	
+	            UnityEditor.EditorApplication.delayCall +=  => DestroyImmediate(realVersion.gameObject);	
 	        }	
 	        else	
 	        {	
@@ -62,7 +62,7 @@ public class EntangledClippableGUI : Editor
 	        if (heartVersion != null)	
 	        {	
 	            createdObject = Instantiate(heartPrefab, heartVersion.transform.position, heartVersion.transform.rotation, transform);	
-	            UnityEditor.EditorApplication.delayCall += () => DestroyImmediate(heartVersion.gameObject);	
+	            UnityEditor.EditorApplication.delayCall +=  => DestroyImmediate(heartVersion.gameObject);	
 	        }	
 	        else	
 	        {	

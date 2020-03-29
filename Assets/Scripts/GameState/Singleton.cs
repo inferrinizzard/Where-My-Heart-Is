@@ -41,6 +41,6 @@ public class Singleton<T> : MonoBehaviour, IPersistent where T : Component
 
 	public virtual void Initialize() { }
 	public virtual void OnBeginTransition() { }
-	public virtual void TransitonUpdate() { }
+	public virtual void TransitionUpdate() { }
 	public virtual void OnCompleteTransition() { }
 }

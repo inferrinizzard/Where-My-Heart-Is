@@ -40,7 +40,6 @@ namespace CSG
 		/// <param name="mesh">The Mesh to parse</param>
 		public Model(Mesh mesh)
 		{
-			vertices = new List<Vertex>();
 			if (mesh.vertices.Length == mesh.uv.Length)
 			{
 				vertices = mesh.vertices.Select((vertex, index) => new Vertex(index, vertex, mesh.uv[index])).ToList();
@@ -53,7 +52,7 @@ namespace CSG
 			List<Vertex> uniqueVertices = new List<Vertex>();
 			foreach (Vertex vertex in vertices)
 			{
-				Vertex existingVertex = uniqueVertices.Find(testVertex => testVertex.value == vertex.value);
+				Vertex existingVertex = uniqueVertices.Find(testVertex => testVertex.value == vertex.value); // TODO: slow
 				if (existingVertex == null)
 				{
 					uniqueVertices.Add(vertex);
