@@ -37,4 +37,6 @@ public static class Extensions
 		@this.enabled = true;
 		return @this;
 	}
+
+	public static void Print(this MonoBehaviour @this, params object[] args) => UnityEngine.Debug.Log(string.Join(" ", args));
 }
