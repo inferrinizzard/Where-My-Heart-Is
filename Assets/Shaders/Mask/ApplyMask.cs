@@ -19,12 +19,12 @@ public class ApplyMask : MonoBehaviour
 	public RenderTexture mask;
 	[SerializeField] Texture2D dissolveTexture = default;
 	Texture2D curSave;
-	int _RealID, _HeartID;
+	int _HeartID;
 
 	void Start()
 	{
 		screenMat = new Material(merge);
-		(_RealID, _HeartID) = (Shader.PropertyToID("_Real"), Shader.PropertyToID("_Heart"));
+		_HeartID = Shader.PropertyToID("_Heart");
 
 		// get ref to heart world cam and assign generated RenderTexture
 		mainCam = GetComponent<Camera>();
@@ -78,7 +78,6 @@ public class ApplyMask : MonoBehaviour
 	{
 		if (transitionMat == null)
 		{ // pass both cameras to screen per render
-			screenMat.SetTexture(_RealID, source);
 			screenMat.SetTexture(_HeartID, heart);
 			Graphics.Blit(source, dest, screenMat);
 			// source.DiscardContents();
