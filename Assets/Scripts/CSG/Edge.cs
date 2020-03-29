@@ -43,11 +43,6 @@ namespace CSG
             intersections.Clear();
         }
 
-        public void ClearCutMetadata()
-        {
-            intersections.Clear();
-        }
-
         public void Draw(Color color)
         {
             Debug.DrawLine(vertices[0].value, vertices[1].value, color, 60f);

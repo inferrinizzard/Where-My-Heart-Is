@@ -108,10 +108,6 @@ namespace CSG
 			internalIntersections.Clear();
 		}
 
-		public void ClearCutMetadata()
-		{
-			internalIntersections.Clear();
-		}
 
 		public override string ToString() => $"{base.ToString()}::{string.Join("::", vertices.Select(v=>v.value.ToString("F4")))}";
 
