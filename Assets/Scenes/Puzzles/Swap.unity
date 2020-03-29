@@ -6260,10 +6260,8 @@ MonoBehaviour:
   tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
-  realVersion: {fileID: 0}
-  dreamVersion: {fileID: 0}
+  heartObject: {fileID: 0}
   realObject: {fileID: 623060886}
-  dreamObject: {fileID: 633934962}
 --- !u!1 &1159262033 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 671739ed98bfd8e4db6fb0b9f801723b,
@@ -10880,11 +10878,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
-        type: 3}
-      propertyPath: m_Name
-      value: DeathPlane
-      objectReference: {fileID: 0}
     - target: {fileID: 4037872479478507742, guid: 584309737b83dd34496c239b4a574f67,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10939,6 +10932,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
+        type: 3}
+      propertyPath: m_Name
+      value: DeathPlane
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 584309737b83dd34496c239b4a574f67, type: 3}
@@ -13132,11 +13130,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13191,6 +13184,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_Name
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 6145140127035620908, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
@@ -17438,8 +17436,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b9a29aedf0d36e4e9eb463a6402aec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  realWorldContainer: {fileID: 5298280036701443773}
-  dreamWorldContainer: {fileID: 8865850292525694494}
+  heartWorldContainer: {fileID: 5298280036701443773}
+  realWorldContainer: {fileID: 8865850292525694494}
   entangledWorldContainer: {fileID: 2249273471157893594}
 --- !u!1 &3851108789116505407
 GameObject:
@@ -22982,11 +22980,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2682051114935348212, guid: c1ad9c75fb5753e4886d56e6b2740636,
-        type: 3}
-      propertyPath: m_Name
-      value: Spawn Point
-      objectReference: {fileID: 0}
     - target: {fileID: 2682051114935348213, guid: c1ad9c75fb5753e4886d56e6b2740636,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -23041,6 +23034,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2682051114935348212, guid: c1ad9c75fb5753e4886d56e6b2740636,
+        type: 3}
+      propertyPath: m_Name
+      value: Spawn Point
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1ad9c75fb5753e4886d56e6b2740636, type: 3}
