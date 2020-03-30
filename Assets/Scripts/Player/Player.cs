@@ -293,11 +293,11 @@ public class Player : Singleton<Player>, IStateMachine
 			Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
 
 			// Allow the player to get out of the mouse lock.
-			if (Input.GetKey(KeyCode.Escape))
+			/*if (Input.GetKey(KeyCode.Escape))
 			{
 				Cursor.lockState = CursorLockMode.None;
 				Cursor.visible = true;
-			}
+			}*/
 		}
 	}
 
