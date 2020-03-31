@@ -77,12 +77,13 @@ Shader "Mask/Merge"
 
 				#if OUTLINE_GLOW || OUTLINE_EDGE
 					float4 glow = tex2D(_GlowMap, i.uv);
+					return glow;
 				#endif
 
 				#if OUTLINE_GLOW
 					// if(mask > .5)
 					// {
-						if(glow.r == 0 && glow.g == 0 && glow.b == 0)
+						if(glow.a == 0)
 						{
 							float resX = _GlowMap_TexelSize.z;
 							float resY = _GlowMap_TexelSize.w;
@@ -105,7 +106,7 @@ Shader "Mask/Merge"
 				#endif
 
 				#if OUTLINE_EDGE
-					if(glow.r == 0)
+					if(glow.a == 0)
 					{
 						int NumberOfIterations = 9;
 						
@@ -127,7 +128,6 @@ Shader "Mask/Merge"
 						// return ColorIntensityInRadius;
 					}
 				#endif
-
 
 				return output;
 			}

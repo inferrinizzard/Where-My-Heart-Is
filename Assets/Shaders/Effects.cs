@@ -1,4 +1,4 @@
-// #define DEBUG
+#define DEBUG
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,9 +7,9 @@ using UnityEngine;
 public class Effects : MonoBehaviour
 {
 	Fade fadeController;
-	bool glowOn = false;
-	bool edgeOn = true;
-	bool bloomOn = true;
+	bool glowOn = true;
+	bool edgeOn = false;
+	bool bloomOn = false;
 	bool dissolveOn = false;
 
 	void Start()
@@ -22,19 +22,31 @@ public class Effects : MonoBehaviour
 		ToggleDissolve(dissolveOn);
 	}
 
-#if DEBUG
 	void Update()
-	{ // debug toggles
+	{
+#if DEBUG // debug toggles
 		if (Input.GetKeyDown(KeyCode.Alpha1))
+		{
 			ToggleGlowOutline(glowOn = !glowOn);
+			print($"glow: {glowOn}");
+		}
 		if (Input.GetKeyDown(KeyCode.Alpha2))
+		{
 			ToggleEdgeOutline(edgeOn = !edgeOn);
+			print($"edge: {edgeOn}");
+		}
 		if (Input.GetKeyDown(KeyCode.Alpha3))
+		{
 			ToggleBloom(bloomOn = !bloomOn);
+			print($"bloom: {bloomOn}");
+		}
 		if (Input.GetKeyDown(KeyCode.Alpha4))
+		{
 			ToggleDissolve(dissolveOn = !dissolveOn);
-	}
+			print($"dissolve: {dissolveOn}");
+		}
 #endif
+	}
 
 	/// <summary> toggles mask on and off </summary>
 	/// <param name="on"> Is mask on? </summary>
