@@ -9,6 +9,7 @@ public class BirbAnimTester : MonoBehaviour
 	Animator anim;
 
     public float GlidePercent = 0.4f;
+    public float PreenPercent = 0.4f;
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -30,11 +31,19 @@ public class BirbAnimTester : MonoBehaviour
         }
 	}
 
-    public void _UpdateGlide()
+    public void _UpdateFlyState()
     {
         if (Random.Range(0f, 1f) < GlidePercent)
-            anim.SetBool("IsGliding", true);
+            anim.SetInteger("FlyingState", 1);
         else
-            anim.SetBool("IsGliding", false);
+            anim.SetInteger("FlyingState", 0);
+    }
+
+    public void _UpdateIdleState()
+    {
+        if (Random.Range(0f, 1f) < PreenPercent)
+            anim.SetInteger("IdleState", 1);
+        else
+            anim.SetInteger("IdleState", 0);
     }
 }
