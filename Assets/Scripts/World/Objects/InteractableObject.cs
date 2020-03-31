@@ -11,6 +11,7 @@ public abstract class InteractableObject : MonoBehaviour
 	public bool hasFlavorText;
 	public string flavorText;
 	public DialogueSystem dialogue;
+	System.Action owroFunc = null;
 
 	public virtual void Interact()
 	{
@@ -26,4 +27,16 @@ public abstract class InteractableObject : MonoBehaviour
 		player = Player.Instance;
 		if (hitboxObject) hitboxObject.GetComponent<ClippableObject>().tiedInteractable = this;
 	}
+
+	void OnMouseOver()
+	{
+		// if(!TryComponent<OutlineObject>())
+		if (!GetComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
+			owroFunc = Func.Lambda(() => Effects.RenderGlowMap(GetComponentsInChildren<Renderer>()));
+		else
+			owroFunc = null;
+	}
+	void OnMouseExit() => owroFunc = null;
+
+	void OnWillRenderObject() => owroFunc?.Invoke();
 }

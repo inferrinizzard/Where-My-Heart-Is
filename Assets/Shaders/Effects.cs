@@ -11,9 +11,12 @@ public class Effects : MonoBehaviour
 	bool edgeOn = false;
 	bool bloomOn = false;
 	bool dissolveOn = false;
+	public Material temp;
+	static Material defaultGlowMat = default;
 
 	void Start()
 	{
+		defaultGlowMat = temp;
 		fadeController = GetComponent<Fade>();
 
 		ToggleMask(false);
@@ -73,5 +76,13 @@ public class Effects : MonoBehaviour
 			Shader.EnableKeyword(keyword);
 		else
 			Shader.DisableKeyword(keyword);
+	}
+
+	public static void RenderGlowMap(Renderer[] renderers, Material mat = null)
+	{
+		if (mat == null)
+			mat = Effects.defaultGlowMat;
+		foreach (Renderer r in renderers)
+			ApplyOutline.glowBuffer.DrawRenderer(r, mat);
 	}
 }

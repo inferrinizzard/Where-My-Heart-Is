@@ -28,10 +28,6 @@ public class OutlineObject : MonoBehaviour
 		outlineMat.name = $"[{name}] Outline";
 	}
 
-	void OnWillRenderObject()
-	{
-		foreach (Renderer r in renderers)
-			ApplyOutline.glowBuffer.DrawRenderer(r, outlineMat);
-	}
+	void OnWillRenderObject() => Effects.RenderGlowMap(renderers, outlineMat);
 
 }
