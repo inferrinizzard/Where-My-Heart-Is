@@ -11,7 +11,7 @@ public abstract class InteractableObject : MonoBehaviour
 	public bool hasFlavorText;
 	public string flavorText;
 	public DialogueSystem dialogue;
-	System.Action owroFunc = null;
+	System.Action glowFunction = null;
 
 	public virtual void Interact()
 	{
@@ -32,11 +32,12 @@ public abstract class InteractableObject : MonoBehaviour
 	{
 		// if(!TryComponent<OutlineObject>())
 		if (!GetComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
-			owroFunc = Func.Lambda(() => Effects.RenderGlowMap(GetComponentsInChildren<Renderer>()));
+			glowFunction = Func.Lambda(() => GameManager.Instance.VFX.RenderGlowMap(GetComponentsInChildren<Renderer>()));
 		else
-			owroFunc = null;
+			glowFunction = null;
 	}
-	void OnMouseExit() => owroFunc = null;
 
-	void OnWillRenderObject() => owroFunc?.Invoke();
+	void OnMouseExit() => glowFunction = null;
+
+	void OnWillRenderObject() => glowFunction?.Invoke();
 }

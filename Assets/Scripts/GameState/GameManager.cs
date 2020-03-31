@@ -12,15 +12,15 @@ public class GameManager : Singleton<GameManager>
 	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "OneCut", "ComplexGate", "HalfCut 1", "AutumnFinal" };
 	public int sceneIndex = -1;
 	public bool duringLoad;
-
 	[HideInInspector] public float loadProgress;
-
 	public DialogueSystem dialogue;
 	public Prompt prompt;
+	public Effects VFX;
 
 	public override void Awake()
 	{
 		base.Awake();
+		VFX = Player.Instance.GetComponentInChildren<Effects>();
 		dialogue = GetComponentInChildren<DialogueSystem>();
 		prompt = GetComponentInChildren<Prompt>();
 	}
