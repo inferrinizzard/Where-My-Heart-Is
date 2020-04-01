@@ -65,7 +65,7 @@ public class Pickupable : InteractableObject
 	public void PutDown()
 	{
 		if (this.TryComponent(out ClippableObject clippable) &&
-			!clippable.IntersectsBound(player.window.fieldOfView.transform, player.window.fieldOfViewModel) &&
+			!clippable.IntersectsBound(player.window.fieldOfViewModel) &&
 			clippable.uncutCopy)
 		{
 			transform.position = initialPosition;
