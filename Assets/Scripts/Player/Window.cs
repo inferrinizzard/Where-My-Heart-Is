@@ -19,6 +19,8 @@ public class Window : MonoBehaviour
 	public Material tempMaterial;
 	public int framerateTarget;
 
+    private float initialTime;
+
 	void Start()
 	{
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
@@ -27,14 +29,15 @@ public class Window : MonoBehaviour
 
 	public void ApplyCut()
 	{
-		world.ResetCut();
+        initialTime = Time.realtimeSinceStartup;
+        world.ResetCut();
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh, fieldOfView.transform);
 		fieldOfViewModel.ConvertToWorld();
 		fieldOfViewModel.Draw(Color.red);
-		StartCoroutine(ApplyCutCoroutine(1f / ((float) framerateTarget)));
+		StartCoroutine(ApplyCutCoroutine(1f / ((float) framerateTarget), new Bounds(fieldOfView.GetComponent<MeshCollider>().bounds.center, fieldOfView.GetComponent<MeshCollider>().bounds.size)));
 	}
 
-	private void ApplyCutSynchronous()
+	/*private void ApplyCutSynchronous()
 	{
 		world.GetHeartObjects().ToList().ForEach(clippable => { if (IntersectsBounds(clippable)) clippable.UnionWith(fieldOfViewModel); });
 		world.GetRealObjects().ToList().ForEach(clippable => { if (IntersectsBounds(clippable)) clippable.Subtract(fieldOfViewModel); });
@@ -51,15 +54,15 @@ public class Window : MonoBehaviour
 			entangled.realObject.GetComponentsInChildren<ClippableObject>().ToList().ForEach(
 				clippable => { if (IntersectsBounds(clippable)) clippable.Subtract(fieldOfViewModel); });
 		}
-	}
+	}*/
 
-	private IEnumerator ApplyCutCoroutine(float frameLength)
+	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds)
 	{
-		float startTime = Time.realtimeSinceStartup;
+        float startTime = Time.realtimeSinceStartup;
 
 		foreach (ClippableObject clippable in world.GetHeartObjects())
 		{
-			if (IntersectsBounds(clippable))
+			if (IntersectsBounds(clippable, bounds))
 			{
 				clippable.UnionWith(fieldOfViewModel);
 			}
@@ -73,7 +76,7 @@ public class Window : MonoBehaviour
 
 		foreach (ClippableObject clippable in world.GetRealObjects())
 		{
-			if (IntersectsBounds(clippable))
+			if (IntersectsBounds(clippable, bounds))
 			{
 				clippable.Subtract(fieldOfViewModel);
 			}
@@ -94,7 +97,7 @@ public class Window : MonoBehaviour
 			// clip any children below them to the correct world
 			foreach (ClippableObject clippable in entangled.heartObject.GetComponentsInChildren<ClippableObject>())
 			{
-				if (IntersectsBounds(clippable))
+				if (IntersectsBounds(clippable, bounds))
 				{
 					clippable.UnionWith(fieldOfViewModel);
 				}
@@ -107,7 +110,7 @@ public class Window : MonoBehaviour
 			}
 			foreach (ClippableObject clippable in entangled.realObject.GetComponentsInChildren<ClippableObject>())
 			{
-				if (IntersectsBounds(clippable))
+				if (IntersectsBounds(clippable, bounds))
 				{
 					clippable.Subtract(fieldOfViewModel);
 				}
@@ -119,17 +122,23 @@ public class Window : MonoBehaviour
 				}
 			}
 		}
+
+        Debug.Log(Time.realtimeSinceStartup - initialTime);
 	}
 
-	private bool IntersectsBounds(ClippableObject clippableObject)
+	private bool IntersectsBounds(ClippableObject clippableObject, Bounds bounds)
 	{
-		return true;
-		// less expensive, less accurate intersection check
-		//TODO: checking the bound intersections doesn't consider world space, just model space, so it's basically trash
-		if (true || fieldOfView.GetComponent<MeshCollider>().bounds.Intersects(clippableObject.GetComponent<MeshFilter>().mesh.bounds))
-		{
-			// more expensive, more accurate intersection check
-			if (clippableObject.IntersectsBound(fieldOfView.transform, fieldOfViewModel))
+        //return true;
+        // less expensive, less accurate intersection check
+        //TODO: checking the bound intersections doesn't consider world space, just model space, so it's basically trash
+        //Debug.Log(clippableObject.GetComponent<MeshFilter>().mesh.bounds.extents);
+        //Debug.Log(bounds.min + " :: " + bounds.max);
+        //Debug.Log(clippableObject.GetComponent<MeshCollider>().bounds.min + " :: " + clippableObject.GetComponent<MeshCollider>().bounds.max);
+        if (bounds.Intersects(clippableObject.GetComponent<MeshCollider>().bounds))//true || 
+        {
+            //Debug.Log(clippableObject.IntersectsBound(fieldOfViewModel));
+            // more expensive, more accurate intersection check
+            if (clippableObject.IntersectsBound(fieldOfViewModel))
 			{
 				return true;
 			}
@@ -176,7 +185,7 @@ public class Window : MonoBehaviour
 			}
 		});
 		model.edges.ForEach(edge => edge.Draw(Color.red));
-		// convert to local space of the camera
+        // convert to local space of the camera
 		fieldOfView.GetComponent<MeshFilter>().mesh = model.ToMesh(fieldOfView.transform.worldToLocalMatrix);
 		fieldOfView.GetComponent<MeshCollider>().sharedMesh = fieldOfView.GetComponent<MeshFilter>().mesh;
 		fieldOfView.GetComponent<MeshFilter>().mesh.RecalculateNormals();
