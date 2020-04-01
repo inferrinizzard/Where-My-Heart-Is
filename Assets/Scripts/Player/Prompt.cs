@@ -24,12 +24,12 @@ public class Prompt : MonoBehaviour
 				SetText("Press E to Place Canvas");
 			else if (hit && !player.heldObject && player.canMove)
 			{
-				if (hit.GetComponent<BirbAnimTester>())
+				if (hit.TryComponent<BirbAnimTester>())
 					SetText("Press E to Interact with Bird");
 				else
 					SetText(hit.prompt);
 
-				if (hit.GetComponent<Placeable>() && hit.GetComponent<Placeable>().PlaceConditionsMet())
+				if (hit.TryComponent(out Placeable obj) && obj.PlaceConditionsMet())
 				{
 					Disable();
 					return;

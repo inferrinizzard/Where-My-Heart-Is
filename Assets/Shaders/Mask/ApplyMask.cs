@@ -9,24 +9,22 @@ public class ApplyMask : MonoBehaviour
 	///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
 	Camera heartCam, maskCam, mainCam;
 	///<summary> Shader that combines views </summary>
-	[SerializeField] Shader merge = default;
-	[SerializeField] Shader transition = default;
+	[SerializeField] Shader merge = default, transition = default;
 	///<summary> Generated material for screen shader </summary>
 	Material screenMat;
 	[HideInInspector] public Material transitionMat;
 	///<summary> Generated RenderTexture for Heart World </summary>
-	RenderTexture heart;
+	public RenderTexture heart;
 	///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
 	public RenderTexture mask;
-	public Texture2D m2d;
 	[SerializeField] Texture2D dissolveTexture = default;
 	Texture2D curSave;
-
-	//shader prop ids with rename
+	int _HeartID;
 
 	void Start()
 	{
 		screenMat = new Material(merge);
+		_HeartID = Shader.PropertyToID("_Heart");
 
 		// get ref to heart world cam and assign generated RenderTexture
 		mainCam = GetComponent<Camera>();
@@ -35,30 +33,27 @@ public class ApplyMask : MonoBehaviour
 		heart.name = "Heart World";
 		heartCam.targetTexture = heart;
 
+		CreateMask();
+	}
+
+	public void CreateMask()
+	{
 		// same as above, does not work
 		// mask = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.R8);
 		// mask = RenderTexture.GetTemporary(Screen.width, Screen.height, 16, RenderTextureFormat.R8);
 		// mask.Create();
 		// mask.name = "Internal Mask";
 
-		CreateMask();
-		// RenderTexture.ReleaseTemporary(mask);
-	}
-
-	public void CreateMask()
-	{
 		// spawn temp mask cam and configure transform
 		maskCam = new GameObject("Mask Cam").AddComponent<Camera>();
-		maskCam.transform.position = Vector3.zero;
-		maskCam.transform.eulerAngles = Vector3.zero;
+		(maskCam.transform.position, maskCam.transform.eulerAngles) = (Vector3.zero, Vector3.zero);
 		maskCam.transform.parent = transform;
-		maskCam.transform.localEulerAngles = Vector3.zero;
-		maskCam.transform.localPosition = Vector3.zero;
+		(maskCam.transform.localPosition, maskCam.transform.localEulerAngles) = (Vector3.zero, Vector3.zero);
 
 		// configure mask Camera
 		maskCam.cullingMask = 1 << LayerMask.NameToLayer("Mask");
 		maskCam.clearFlags = CameraClearFlags.SolidColor;
-		maskCam.backgroundColor = new Color(0, 0, 0, 0);
+		maskCam.backgroundColor = Color.clear;
 		maskCam.targetTexture = mask;
 
 		maskCam.Render();
@@ -70,8 +65,7 @@ public class ApplyMask : MonoBehaviour
 		var mask2D = new Texture2D(mask.width, mask.height);
 		mask2D.ReadPixels(new Rect(0, 0, mask.width, mask.height), 0, 0);
 		mask2D.Apply();
-		m2d = mask2D; //VS GHETTO
-		Shader.SetGlobalTexture("_Mask", mask2D);
+		Shader.SetGlobalTexture("_Mask", Instantiate(mask2D));
 
 		RenderTexture.active = screen;
 
@@ -84,16 +78,25 @@ public class ApplyMask : MonoBehaviour
 	{
 		if (transitionMat == null)
 		{ // pass both cameras to screen per render
-			screenMat.SetTexture("_Real", source);
-			screenMat.SetTexture("_Heart", heart);
+			screenMat.SetTexture(_HeartID, heart);
 			Graphics.Blit(source, dest, screenMat);
-			ClearRT(heart, heartCam);
-			ClearRT(source, mainCam);
+			// source.DiscardContents();
+			// heart.DiscardContents();
+			source.Release();
+			heart.Release();
+			// ClearRT(heart, heartCam);
+			// ClearRT(source, mainCam);
 		}
 		else
 		{
 			Graphics.Blit(curSave, dest, transitionMat);
 		}
+	}
+
+	void OnPreRender()
+	{
+		// GL.ClearWithSkybox(true, heartCam);
+		// GL.ClearWithSkybox(true, mainCam);
 	}
 
 	void ClearRT(RenderTexture r, Camera cam)

@@ -39,6 +39,7 @@ public class Hands : MonoBehaviour
 			}
 			yield return null;
 			float step = Time.time - start;
+			// TODO: ease these
 			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / heartAnimDuration);
 			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTargetEulers, step / heartAnimDuration);
 
@@ -61,6 +62,7 @@ public class Hands : MonoBehaviour
 		{
 			yield return null;
 			float step = Time.time - start;
+			// TODO: ease these
 			anim.transform.localPosition = Vector3.Lerp(heartStartPos, startPos, 1 - step / time);
 			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, startEulers, 1 - step / time);
 
