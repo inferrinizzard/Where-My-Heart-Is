@@ -5,13 +5,8 @@ using UnityEngine;
 
 public class EntangledClippable : ClippableObject
 {
-	public GameObject heartObject;
-	public GameObject realObject;
-
-	private ClippableObject heartVersion;
-	private ClippableObject realVersion;
-
-	string entangledName = $"[|]"; // todo compound names
+	public GameObject heartObject, realObject;
+	ClippableObject heartVersion, realVersion;
 
 	private void Start()
 	{
