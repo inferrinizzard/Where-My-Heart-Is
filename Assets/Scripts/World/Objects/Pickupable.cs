@@ -11,8 +11,15 @@ public class Pickupable : InteractableObject
 	protected Vector3 initialPosition;
 	protected Quaternion initialRotation;
 	public bool dissolves = false;
+	Collider col;
 
 	void Awake() => prompt = "Press E to Pick Up";
+
+	protected override void Start()
+	{
+		base.Start();
+		col = GetComponent<Collider>();
+	}
 
 	void Update()
 	{
@@ -57,15 +64,12 @@ public class Pickupable : InteractableObject
 
 	public void PutDown()
 	{
-		ClippableObject clippable = GetComponent<ClippableObject>();
-
-		if (clippable != null && !clippable.IntersectsBound(player.window.fieldOfView.transform, player.window.fieldOfViewModel))
+		if (this.TryComponent(out ClippableObject clippable) &&
+			!clippable.IntersectsBound(player.window.fieldOfViewModel) &&
+			clippable.uncutCopy)
 		{
-			if (clippable.uncutCopy != null)
-			{
-				transform.position = initialPosition;
-				transform.rotation = initialRotation;
-			}
+			transform.position = initialPosition;
+			transform.rotation = initialRotation;
 		}
 
 		transform.parent = oldParent;
@@ -74,7 +78,7 @@ public class Pickupable : InteractableObject
 	public IEnumerator DissolveOnDrop(float time = .25f)
 	{
 		transform.parent = oldParent;
-		GetComponent<Collider>().enabled = false;
+		col.enabled = false;
 		Material mat = GetComponent<MeshRenderer>().material;
 		mat.EnableKeyword("DISSOLVE_MANUAL");
 		int ManualDissolveID = Shader.PropertyToID("_ManualDissolve");
@@ -94,7 +98,7 @@ public class Pickupable : InteractableObject
 		mat.SetFloat(ManualDissolveID, 1);
 
 		Interact();
-		GetComponent<Collider>().enabled = true;
+		col.enabled = true;
 		active = false;
 	}
 }

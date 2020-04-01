@@ -12,7 +12,9 @@ public class GameManager : Singleton<GameManager>
 	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "OneCut", "ComplexGate", "HalfCut 1", "AutumnFinal" };
 	public int sceneIndex = -1;
 	public bool duringLoad;
-	[HideInInspector] public float loadProgress;
+
+	// [HideInInspector] public float loadProgress;
+
 	public DialogueSystem dialogue;
 	public Prompt prompt;
 	public Effects VFX;
@@ -56,6 +58,7 @@ public class GameManager : Singleton<GameManager>
 
 	private List<IPersistent> GetIPersistents()
 	{
+		// TODO: fix this
 		List<IPersistent> result = FindObjectsOfType<MonoBehaviour>().OfType<IPersistent>().Where(persistent => (object) persistent != this).ToList();
 		return result;
 	}
@@ -65,7 +68,7 @@ public class GameManager : Singleton<GameManager>
 	static IEnumerator LoadScene(string name, float minDuration = 3)
 	{
 		instance.duringLoad = true;
-		instance.loadProgress = 0;
+		// instance.loadProgress = 0;
 		instance.OnBeginTransition();
 
 		List<IPersistent> persistents = instance.GetIPersistents();
@@ -81,22 +84,19 @@ public class GameManager : Singleton<GameManager>
 
 		while (inProgress)
 		{
+			yield return null;
 			float currentTime = Time.time - startTime;
-			instance.loadProgress = Mathf.Min(asyncLoad.progress / .9f, currentTime / minDuration);
-			transitionMat.SetFloat(_CutoffID, instance.loadProgress * 2); // add curve here
+			float loadProgress = Mathf.Min(asyncLoad.progress / .9f, currentTime / minDuration);
+			transitionMat.SetFloat(_CutoffID, loadProgress * 2); // add curve here
 
-			persistents.ForEach(persistent => persistent.TransitonUpdate());
+			persistents.ForEach(persistent => persistent.TransitionUpdate());
 
 			if (asyncLoad.progress >= .9f && currentTime > minDuration)
-			{
-				asyncLoad.allowSceneActivation = true;
-				Player.Instance.mask.transitionMat = null;
-
 				inProgress = false;
-				instance.duringLoad = false;
-			}
-			yield return null;
 		}
+		asyncLoad.allowSceneActivation = true;
+		Player.Instance.mask.transitionMat = null;
+		instance.duringLoad = false;
 	}
 
 	public void CreateSceneLoader(Scene from, LoadSceneMode mode = LoadSceneMode.Single)
@@ -106,8 +106,7 @@ public class GameManager : Singleton<GameManager>
 
 	public override void OnCompleteTransition()
 	{
-		++sceneIndex;
-		World.Instance.name += $"[{levels[sceneIndex]}]";
+		World.Instance.name += $"[{levels[++sceneIndex]}]";
 		GetIPersistents().ForEach(persistent => persistent.OnCompleteTransition());
 	}
 

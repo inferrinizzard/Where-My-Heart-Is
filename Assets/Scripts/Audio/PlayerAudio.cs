@@ -50,17 +50,15 @@ public class PlayerAudio : MonoBehaviour
 	{
 		if (jumping)
 		{
-			if (GetComponent<CharacterController>().isGrounded)
+			if (Player.Instance.characterController.isGrounded)
 			{
 				jumping = false;
 				JumpLanding();
 			}
 		}
-		RaycastHit hit;
-		if (Physics.Raycast(transform.position, Vector3.down, out hit, Mathf.Infinity, 1 << 9))
+		if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, Mathf.Infinity, 1 << 9))
 		{
-			WalkingSurface surface = hit.transform.gameObject.GetComponent<WalkingSurface>();
-			if (surface != null)
+			if (hit.transform.TryComponent(out WalkingSurface surface))
 			{
 				currentSurface = surface.surface;
 				walkInstance.setParameterByName("Surface", (float) surface.surface);

@@ -1,6 +1,6 @@
 interface IPersistent
 {
 	void OnBeginTransition();
-	void TransitonUpdate();
+	void TransitionUpdate();
 	void OnCompleteTransition();
 }
