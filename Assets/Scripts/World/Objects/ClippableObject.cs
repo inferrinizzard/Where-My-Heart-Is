@@ -5,26 +5,25 @@ using UnityEngine;
 
 public class ClippableObject : MonoBehaviour
 {
-	public bool volumeless;
-
+	[SerializeField] bool volumeless = default;
 	[HideInInspector] public InteractableObject tiedInteractable;
 	[HideInInspector] public bool isClipped;
 	[HideInInspector] public GameObject uncutCopy;
 
-    public CSG.Model CachedModel
-    {
-        get
-        {
-            if(model == null || transform.position != previousCutPosition)
-            {
-                model = new CSG.Model(initialMesh, transform);
-                model.ConvertToWorld();
-                previousCutPosition = transform.position;
-            }
+	public CSG.Model CachedModel
+	{
+		get
+		{
+			if (model == null || transform.position != previousCutPosition)
+			{
+				model = new CSG.Model(initialMesh, transform);
+				model.ConvertToWorld();
+				previousCutPosition = transform.position;
+			}
 
-            return model;
-        }
-    }
+			return model;
+		}
+	}
 
 	Material mat;
 	int _DissolveID = Shader.PropertyToID("_Dissolve");
@@ -32,20 +31,19 @@ public class ClippableObject : MonoBehaviour
 	private int oldLayer;
 	private Mesh initialMesh;
 	private MeshFilter meshFilter;
-    private CSG.Model model;
-    private Vector3 previousCutPosition;
+	private CSG.Model model;
+	private Vector3 previousCutPosition;
 
 	void Awake()
 	{
 		mat = GetComponentInChildren<MeshRenderer>().material;
 		isClipped = false;
 
-		meshFilter = GetComponent<MeshFilter>() ?? gameObject.AddComponent<MeshFilter>();
-		if (GetComponent<MeshCollider>() == null)
-		{
+		if (!this.TryComponent(out meshFilter))
+			meshFilter = gameObject.AddComponent<MeshFilter>();
+		if (!this.TryComponent<MeshCollider>())
 			gameObject.AddComponent<MeshCollider>();
-		}
-		if (meshFilter) initialMesh = meshFilter.mesh;
+		initialMesh = meshFilter.mesh;
 		oldLayer = gameObject.layer;
 	}
 
@@ -58,24 +56,18 @@ public class ClippableObject : MonoBehaviour
 	{
 		isClipped = true;
 		mat.SetInt(_DissolveID, 0);
-		uncutCopy = GameObject.Instantiate(gameObject, transform.position, transform.rotation, transform);
+		uncutCopy = Instantiate(gameObject, transform.position, transform.rotation, transform);
 		uncutCopy.transform.localScale = Vector3.one;
 		oldLayer = gameObject.layer;
 		gameObject.layer = 9;
 
 		if (!volumeless)
-		{
-            meshFilter.mesh = CSG.Operations.Intersect(CachedModel, other);
-		}
+			meshFilter.mesh = CSG.Operations.Intersect(CachedModel, other);
 		else
-		{
 			meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other);
-		}
 
-		if (GetComponent<MeshCollider>())
-		{
-			GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
-		}
+		if (this.TryComponent(out MeshCollider col))
+			col.sharedMesh = meshFilter.mesh;
 
 		UpdateInteractable();
 	}
@@ -94,10 +86,8 @@ public class ClippableObject : MonoBehaviour
 
 		UpdateInteractable();
 
-		if (GetComponent<MeshCollider>())
-		{
-			GetComponent<MeshCollider>().sharedMesh = initialMesh;
-		}
+		if (this.TryComponent(out MeshCollider col))
+			col.sharedMesh = meshFilter.mesh;
 	}
 
 	public void Subtract(CSG.Model other)
@@ -108,27 +98,19 @@ public class ClippableObject : MonoBehaviour
 		oldLayer = gameObject.layer;
 
 		if (!volumeless)
-		{
 			meshFilter.mesh = CSG.Operations.Subtract(CachedModel, other);
-		}
 		else
-		{
 			meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other);
-		}
 
 		UpdateInteractable();
 
-		if (GetComponent<MeshCollider>())
-		{
-			GetComponent<MeshCollider>().sharedMesh = meshFilter.mesh;
-		}
+		if (this.TryComponent(out MeshCollider col))
+			col.sharedMesh = meshFilter.mesh;
 	}
 
 	private void UpdateInteractable()
 	{
-		if (tiedInteractable != null)
-		{
+		if (tiedInteractable)
 			tiedInteractable.gameObject.layer = gameObject.layer;
-		}
 	}
 }

@@ -374,6 +374,7 @@ public class Player : Singleton<Player>, IStateMachine
 		{
 			// SetState(new Cut(this));
 			window.ApplyCut();
+			hands.RevertAim();
 			audioController.PlaceWindow();
 			heartWindow.SetActive(false);
 			VFX.ToggleMask(false);
