@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary> Handles player movement and player interaction </summary>
+/// <summary> Handles player behaviors. </summary>
 [System.Serializable]
 public class Player : Singleton<Player>, IStateMachine
 {
