@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary> Controls the behavior of the pause menu UI elements. </summary>
 public class PauseMenu : MonoBehaviour
