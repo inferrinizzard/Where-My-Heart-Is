@@ -23,8 +23,7 @@ Shader "Mask/Merge"
 			#pragma fragment frag
 
 			#pragma multi_compile __ MASK
-			#pragma multi_compile __ OUTLINE_GLOW
-			#pragma multi_compile __ OUTLINE_EDGE
+			#pragma multi_compile __ OUTLINE
 			#pragma multi_compile __ BLOOM
 
 			#include "UnityCG.cginc"
@@ -75,37 +74,9 @@ Shader "Mask/Merge"
 					output = tex2D(_MainTex, i.uv);
 				#endif
 
-				#if OUTLINE_GLOW || OUTLINE_EDGE
+				#if OUTLINE
 					float4 glow = tex2D(_GlowMap, i.uv);
-					return glow;
-				#endif
-
-				#if OUTLINE_GLOW
-					// if(mask > .5)
-					// {
-						if(glow.a == 0)
-						{
-							float resX = _GlowMap_TexelSize.z;
-							float resY = _GlowMap_TexelSize.w;
-							float4 blurX = gaussianBlur(_GlowMap, float2(1,0), _Radius, i.uv, resX); //9 lookups
-							float4 blurY = gaussianBlur(_GlowMap, float2(0,1), _Radius, i.uv, resY); //9 lookups
-
-							float4 outline = (blurX + blurY) * _Intensity;
-
-							#if BLOOM
-								float4 c = float4(Prefilter(SampleBox(i.uv, 1)), 1);
-								c.rgb += _Intensity * SampleBox(i.uv, 0.5);
-								outline += c;
-							#endif
-
-							output += outline;
-							// return outline;
-						}
-						// return outline;
-					// }
-				#endif
-
-				#if OUTLINE_EDGE
+					// return glow;
 					if(glow.a == 0)
 					{
 						int NumberOfIterations = 9;
