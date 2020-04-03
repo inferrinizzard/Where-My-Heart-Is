@@ -7,17 +7,17 @@ using UnityEngine;
 /// <summary> Handles gameplay keys. </summary>
 public class InputManager : MonoBehaviour
 {
-	[Header("Keybinds")]
+	//[Header("Keybinds")]
 	/// <summary> KeyCode for player jump. </summary>
-	[SerializeField] private KeyCode jumpKey = KeyCode.Space;
+	public static KeyCode jumpKey = KeyCode.Space;
 	/// <summary> KeyCode for player crouch. </summary>
-	[SerializeField] private KeyCode crouchKey = KeyCode.LeftShift;
+	public static KeyCode crouchKey = KeyCode.LeftShift;
 	/// <summary> KeyCode for inspecting and picking up objects. </summary>
-	[SerializeField] private KeyCode interactKey = KeyCode.E;
+	public static KeyCode interactKey = KeyCode.E;
 	/// <summary> KeyCode for inspecting and picking up objects. </summary>
-	[SerializeField] private KeyCode altAimKey = KeyCode.LeftControl;
+	public static KeyCode altAimKey = KeyCode.LeftControl;
 	/// <summary> KeyCode for pausing the game. </summary>
-	[SerializeField] private KeyCode pauseKey = KeyCode.Escape;
+	public static KeyCode pauseKey = KeyCode.Escape;
 
 	// Crouch Key Actions
 	/// <summary> Crouch key is initially pressed down. </summary>
@@ -205,4 +205,5 @@ public class InputManager : MonoBehaviour
 			OnPauseKeyUp?.Invoke();
 		}
 	}
+
 }
