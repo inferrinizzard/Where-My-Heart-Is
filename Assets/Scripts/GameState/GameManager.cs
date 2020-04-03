@@ -16,6 +16,7 @@ public class GameManager : Singleton<GameManager>
 	public DialogueSystem dialogue;
 	public Prompt prompt;
 	public Effects VFX;
+	public PauseMenu pause;
 
 	public override void Awake()
 	{
@@ -23,6 +24,7 @@ public class GameManager : Singleton<GameManager>
 		VFX = Player.Instance.GetComponentInChildren<Effects>();
 		dialogue = GetComponentInChildren<DialogueSystem>();
 		prompt = GetComponentInChildren<Prompt>();
+		pause = GetComponentInChildren<PauseMenu>();
 	}
 
 	void Start()
@@ -118,5 +120,10 @@ public class GameManager : Singleton<GameManager>
 		AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(name);
 		while (!asyncUnload.isDone)
 			yield return null;
+	}
+
+	public static void ReloadScene()
+	{
+		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 }
