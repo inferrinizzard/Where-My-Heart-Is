@@ -24,10 +24,10 @@ Shader "Mask/Merge"
 
 			#pragma multi_compile __ MASK
 			#pragma multi_compile __ OUTLINE
-			#pragma multi_compile __ BLOOM
+			// #pragma multi_compile __ BLOOM
 
 			#include "UnityCG.cginc"
-			#include "../GaussianBlur.cginc"
+			// #include "../GaussianBlur.cginc"
 
 			sampler2D _Mask;
 			sampler2D _MainTex; // _Real
@@ -35,35 +35,35 @@ Shader "Mask/Merge"
 
 			sampler2D _GlowMap;
 			float4 _GlowMap_TexelSize;
-			sampler2D _CameraDepthTexture;
-			float _Radius;
+			// sampler2D _CameraDepthTexture;
+			// float _Radius;
 			float _Intensity;
-			float4 _Filter;
+			// float4 _Filter;
 
-			sampler2D _CameraDepthNormalsTexture;
-			float4 _CameraDepthNormalsTexture_TexelSize;
-			float _NormalMult;
-			float _NormalBias;
-			float _DepthMult;
-			float _DepthBias;
+			// sampler2D _CameraDepthNormalsTexture;
+			// float4 _CameraDepthNormalsTexture_TexelSize;
+			// float _NormalMult;
+			// float _NormalBias;
+			// float _DepthMult;
+			// float _DepthBias;
 
-			half3 Sample (float2 uv) { return tex2D(_GlowMap, uv).rgb; }
+			// half3 Sample (float2 uv) { return tex2D(_GlowMap, uv).rgb; }
 
-			half3 SampleBox (float2 uv, float delta) {
-				float4 o = _GlowMap_TexelSize.xyxy * float2(-delta, delta).xxyy;
-				half3 s = Sample(uv + o.xy) + Sample(uv + o.zy) +
-				Sample(uv + o.xw) + Sample(uv + o.zw);
-				return s * 0.25;
-			}
+			// half3 SampleBox (float2 uv, float delta) {
+				// 	float4 o = _GlowMap_TexelSize.xyxy * float2(-delta, delta).xxyy;
+				// 	half3 s = Sample(uv + o.xy) + Sample(uv + o.zy) +
+				// 	Sample(uv + o.xw) + Sample(uv + o.zw);
+				// 	return s * 0.25;
+			// }
 
-			half3 Prefilter (half3 c) {
-				half brightness = max(c.r, max(c.g, c.b));
-				half soft = brightness - _Filter.y;
-				soft = clamp(soft, 0, _Filter.z);
-				soft *= soft * _Filter.w;
-				half contribution = max(soft, brightness - _Filter.x) / max(brightness, 0.00001);
-				return c * contribution;
-			}
+			// half3 Prefilter (half3 c) {
+				// 	half brightness = max(c.r, max(c.g, c.b));
+				// half soft = brightness - _Filter.y;
+				// soft = clamp(soft, 0, _Filter.z);
+				// soft *= soft * _Filter.w;
+				// half contribution = max(soft, brightness - _Filter.x) / max(brightness, 0.00001);
+				// 	return c * contribution;
+			// }
 
 			fixed4 frag (v2f_img i) : SV_Target {
 				float4 output;
@@ -86,7 +86,7 @@ Shader "Mask/Merge"
 						float TX_y = _GlowMap_TexelSize.y;
 						
 						//and a final intensity that increments based on surrounding intensities.
-						float4 ColorIntensityInRadius = float4(0, 0, 0, 1);
+						float4 ColorIntensityInRadius = float4(0, 0, 0, 0);
 						
 						for(int k = 0; k < NumberOfIterations; k++) {
 							for(int j = 0; j < NumberOfIterations; j++) {
@@ -95,8 +95,12 @@ Shader "Mask/Merge"
 								float2((k - NumberOfIterations / 2) * TX_x, (j - NumberOfIterations / 2) * TX_y));
 							}
 						}
+
+						#if MASK
+							if(mask > .5 && ColorIntensityInRadius.a > 0) return ColorIntensityInRadius * _Intensity; 
+						#endif
+
 						output += ColorIntensityInRadius * _Intensity;
-						// return ColorIntensityInRadius;
 					}
 				#endif
 
