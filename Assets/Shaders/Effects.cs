@@ -7,8 +7,7 @@ using UnityEngine;
 public class Effects : MonoBehaviour
 {
 	Fade fadeController;
-	bool glowOn = true;
-	bool edgeOn = false;
+	bool outlineOn = true;
 	bool bloomOn = false;
 	bool dissolveOn = false;
 	[SerializeField] Material defaultGlowMat = default;
@@ -18,23 +17,17 @@ public class Effects : MonoBehaviour
 		fadeController = GetComponent<Fade>();
 
 		ToggleMask(false);
-		ToggleGlowOutline(glowOn);
-		ToggleEdgeOutline(edgeOn);
+		ToggleEdgeOutline(outlineOn);
 		ToggleDissolve(dissolveOn);
 	}
 
 	void Update()
 	{
 #if DEBUG // debug toggles
-		if (Input.GetKeyDown(KeyCode.Alpha1))
-		{
-			ToggleGlowOutline(glowOn = !glowOn);
-			print($"glow: {glowOn}");
-		}
 		if (Input.GetKeyDown(KeyCode.Alpha2))
 		{
-			ToggleEdgeOutline(edgeOn = !edgeOn);
-			print($"edge: {edgeOn}");
+			ToggleEdgeOutline(outlineOn = !outlineOn);
+			print($"edge: {outlineOn}");
 		}
 		if (Input.GetKeyDown(KeyCode.Alpha3))
 		{
@@ -54,13 +47,9 @@ public class Effects : MonoBehaviour
 	// public void ToggleMask(bool on) => mask.enabled = on;
 	public void ToggleMask(bool on) => ToggleEffect(on, "MASK");
 
-	/// <summary> toggles glow outline on and off </summary>
-	/// <param name="on"> Is glow outline on? </summary>
-	public void ToggleGlowOutline(bool on) => ToggleEffect(on, "OUTLINE_GLOW");
-
 	/// <summary> toggles edge outline on and off </summary>
 	/// <param name="on"> Is edge outline on? </summary>
-	public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE_EDGE");
+	public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE");
 
 	public void ToggleBloom(bool on) => ToggleEffect(on, "BLOOM");
 

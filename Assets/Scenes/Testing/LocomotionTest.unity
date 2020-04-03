@@ -277,9 +277,6 @@ MonoBehaviour:
   player: {fileID: 0}
   active: 0
   prompt: Press E to Interact
-  hasFlavorText: 0
-  flavorText: 
-  dialogue: {fileID: 0}
 --- !u!114 &130496658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -514,9 +511,6 @@ MonoBehaviour:
   player: {fileID: 0}
   active: 0
   prompt: Press E to Interact
-  hasFlavorText: 0
-  flavorText: 
-  dialogue: {fileID: 0}
   preview: {fileID: 0}
   manualTarget: Bridge
 --- !u!65 &282662329
@@ -1053,9 +1047,6 @@ MonoBehaviour:
   player: {fileID: 0}
   active: 0
   prompt: Press E to Interact
-  hasFlavorText: 0
-  flavorText: 
-  dialogue: {fileID: 0}
   oldParent: {fileID: 0}
   dissolves: 0
 --- !u!65 &895784199
@@ -1516,9 +1507,6 @@ MonoBehaviour:
   player: {fileID: 0}
   active: 0
   prompt: Press E to Interact
-  hasFlavorText: 0
-  flavorText: 
-  dialogue: {fileID: 0}
 --- !u!114 &1268306258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2360,6 +2348,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2415,11 +2408,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840464, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: lastSpawn
@@ -2435,19 +2423,14 @@ PrefabInstance:
       propertyPath: interactPrompt
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 5407968007786445905, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: temp
-      value: 
-      objectReference: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
-    - target: {fileID: 2766900624218593456, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5407968009125951094, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_Depth
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2766900624218593456, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3575456338061806251, guid: ce2e34029942daa4c845cd2ceec80c14,
@@ -2485,6 +2468,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 180
       objectReference: {fileID: 0}
+    - target: {fileID: 5407968007786445905, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: temp
+      value: 
+      objectReference: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce2e34029942daa4c845cd2ceec80c14, type: 3}
 --- !u!1001 &4037872477850594677
@@ -2494,6 +2482,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 268747697}
     m_Modifications:
+    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
+        type: 3}
+      propertyPath: m_Name
+      value: DeathPlane
+      objectReference: {fileID: 0}
     - target: {fileID: 4037872479478507742, guid: 584309737b83dd34496c239b4a574f67,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2548,11 +2541,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
-        type: 3}
-      propertyPath: m_Name
-      value: DeathPlane
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 584309737b83dd34496c239b4a574f67, type: 3}
