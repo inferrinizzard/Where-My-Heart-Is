@@ -10,9 +10,6 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
-# Never ignore Asset meta data
-!/[Aa]ssets/**/*.meta
-
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*
 
@@ -21,6 +18,7 @@
 
 # Visual Studio cache directory
 .vs/
+.vscode/
 
 # Gradle cache directory
 .gradle/
@@ -58,3 +56,19 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# FMOD files
+Assets/Audio/FMOD/WMHI/**/.*/
+Assets/Plugins/FMOD/Resources/FMODStudioCache.asset
+Assets/StreamingAssets/*.bank
+fmod_editor.log
+
+# FMOD Meta override
+!Assets/Audio/FMOD/**/*.xml.meta
+Assets/Audio/FMOD/WMHI/Metadata/**/*.meta
+Assets/StreamingAssets/**/*.meta
+Assets/Plugins/FMOD/**/*.meta
+
+# Never ignore Asset meta data
+!/[Aa]ssets/**/*.meta
+Assets/StreamingAssets/Master.strings.bank.meta
+Assets/StreamingAssets/Master.bank.meta
