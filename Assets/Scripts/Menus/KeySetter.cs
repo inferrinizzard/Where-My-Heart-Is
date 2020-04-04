@@ -10,18 +10,19 @@ public class KeySetter : MonoBehaviour
     int changingControl;
 
     public GameObject jumpButton;
+    public GameObject interactButton;
 
     enum Controls
     {
         Jump = 0,
-        Crouch = 1,
-        Interact = 2
+        Interact = 1
     }
 
     private void Start()
     {
         //set all the keys for control ui
         jumpButton.GetComponent<Text>().text = InputManager.jumpKey.ToString();
+        interactButton.GetComponent<Text>().text = InputManager.interactKey.ToString();
     }
 
     private void Update()
@@ -42,7 +43,6 @@ public class KeySetter : MonoBehaviour
     {
         if(Event.current.isKey && Event.current.type == EventType.KeyDown && lookingForKey)
         {
-            Debug.Log(Event.current.keyCode);
             inputKey = Event.current.keyCode;
 
             switch (changingControl)
@@ -50,6 +50,10 @@ public class KeySetter : MonoBehaviour
                 case (int)Controls.Jump:
                     InputManager.jumpKey = inputKey;
                     jumpButton.GetComponent<Text>().text = inputKey.ToString();
+                    break;
+                case (int)Controls.Interact:
+                    InputManager.interactKey = inputKey;
+                    interactButton.GetComponent<Text>().text = inputKey.ToString();
                     break;
                 default:
                     Debug.Log("error assigning key");
@@ -66,13 +70,9 @@ public class KeySetter : MonoBehaviour
         changingControl = (int)Controls.Jump;
     }
 
-    public void SetCrouchKey(KeyCode key)
+    public void SetInteractKey()
     {
-        InputManager.crouchKey = key;
-    }
-
-    public void SetInteractKey(KeyCode key)
-    {
-        InputManager.interactKey = key;
+        lookingForKey = true;
+        changingControl = (int)Controls.Interact;
     }
 }
