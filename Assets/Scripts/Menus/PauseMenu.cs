@@ -15,7 +15,7 @@ public class PauseMenu : MonoBehaviour
     /// <summary> Local instance of options menu canvas objects. </summary>
     public GameObject optionsMenuUI;
     /// <summary> Local instance of crosshair object. </summary>
-    public GameObject crosshair;
+    public GameObject gameplayUI;
 
     void Start()
     {
@@ -34,7 +34,7 @@ public class PauseMenu : MonoBehaviour
     {
         pauseMenuUI.SetActive(false);
         optionsMenuUI.SetActive(false);
-        crosshair.SetActive(true);
+        gameplayUI.SetActive(true);
         Time.timeScale = 1f;
         GameIsPaused = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -45,7 +45,7 @@ public class PauseMenu : MonoBehaviour
     void Pause()
     {
         pauseMenuUI.SetActive(true);
-        crosshair.SetActive(false);
+        gameplayUI.SetActive(false);
         Time.timeScale = 0f;
         GameIsPaused = true;
         Cursor.lockState = CursorLockMode.None;
@@ -56,7 +56,7 @@ public class PauseMenu : MonoBehaviour
     public void ResetGame()
     {
         pauseMenuUI.SetActive(false);
-        crosshair.SetActive(true);
+        gameplayUI.SetActive(true);
         Time.timeScale = 1f;
         GameIsPaused = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -68,7 +68,7 @@ public class PauseMenu : MonoBehaviour
     public void ResetLevel()
     {
         pauseMenuUI.SetActive(false);
-        crosshair.SetActive(true);
+        gameplayUI.SetActive(true);
         Time.timeScale = 1f;
         GameIsPaused = false;
         Cursor.lockState = CursorLockMode.Locked;
