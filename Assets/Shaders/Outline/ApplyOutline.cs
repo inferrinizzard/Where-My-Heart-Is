@@ -36,9 +36,5 @@ public class ApplyOutline : MonoBehaviour
 
 	void LateUpdate() => glowBuffer.ClearRenderTarget(true, true, Color.clear);
 
-	void OnPreCull()
-	{
-		glowBuffer.SetGlobalTexture("_GlowMap", glowTemp);
-	}
-
+	void OnPreCull() => glowBuffer.SetGlobalTexture("_GlowMap", glowTemp);
 }

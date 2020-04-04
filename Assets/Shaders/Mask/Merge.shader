@@ -77,8 +77,7 @@ Shader "Mask/Merge"
 				#if OUTLINE
 					float4 glow = tex2D(_GlowMap, i.uv);
 					// return glow;
-					if(glow.a == 0)
-					{
+					if(glow.a == 0) {
 						int NumberOfIterations = 9;
 						
 						//split texel size into smaller words
