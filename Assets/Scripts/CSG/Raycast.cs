@@ -116,7 +116,14 @@ namespace CSG
 			}
 		}
 
-
+        /// <summary>
+        /// Casts a ray to the given plane and returns the point of intersection
+        /// </summary>
+        /// <param name="origin">The origin of the ray</param>
+        /// <param name="direction">The direction of the ray</param>
+        /// <param name="planePoint">An arbirtrary point lying on the plane</param>
+        /// <param name="planeNormal">The normal vector of the plane</param>
+        /// <returns>The point of intersection between the ray and the plane</returns>
         public static Vector3 RayToPlane(Vector3 origin, Vector3 direction, Vector3 planePoint, Vector3 planeNormal)
         {
             // get ray intersection with plane,
