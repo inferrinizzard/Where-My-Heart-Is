@@ -1,21 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class Mirror : MonoBehaviour
 {
-    /*private Transform cam;
-    private Transform player;*/
-    public GameObject reflectionPlane;
-    public Camera mainCamera;
-    public Material mirrorMaterial;
-
-    private Camera reflectionCamera;
-
-    private RenderTexture renderTarget;
-
-    private Matrix4x4 initialProjection;
-
+	/*private Transform cam;
+	private Transform player;*/
+	public GameObject reflectionPlane;
+	public Camera mainCamera;
+	public Material mirrorMaterial;
 
     // Start is called before the first frame update
     void Start()
