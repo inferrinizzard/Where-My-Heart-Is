@@ -108,18 +108,23 @@ namespace CSG
 				Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
 				Vector3 planePoint = triangle.vertices[0].value;
 
-				// get ray intersection with plane,
-				float numerator = normal.x * (planePoint.x - origin.x) + normal.y * (planePoint.y - origin.y) + normal.z * (planePoint.z - origin.z);
-				float denominator = normal.x * direction.x + normal.y * direction.y + normal.z * direction.z;
-				Vector3 intersectionPoint = ((numerator / denominator) * direction) + origin;
-
-				return new Vertex(0, intersectionPoint);
+				return new Vertex(0, RayToPlane(origin, direction, planePoint, normal));
 			}
 			else
 			{
 				return null;
 			}
 		}
+
+
+        public static Vector3 RayToPlane(Vector3 origin, Vector3 direction, Vector3 planePoint, Vector3 planeNormal)
+        {
+            // get ray intersection with plane,
+            float numerator = planeNormal.x * (planePoint.x - origin.x) + planeNormal.y * (planePoint.y - origin.y) + planeNormal.z * (planePoint.z - origin.z);
+            float denominator = planeNormal.x * direction.x + planeNormal.y * direction.y + planeNormal.z * direction.z;
+
+            return ((numerator / denominator) * direction) + origin;
+        }
 
 		/// <summary>
 		/// Determines whether the given point lies on the given triangle
