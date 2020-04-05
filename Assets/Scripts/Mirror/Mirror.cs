@@ -22,35 +22,8 @@ public class Mirror : MonoBehaviour
     {
         reflectionCamera = new GameObject("ReflectionCamera").AddComponent<Camera>();
         reflectionCamera.enabled = false;
-        //mainCamera = Camera.main;
 
         renderTarget = new RenderTexture(Screen.width, Screen.height, 24);
-
-        Vector3 normal = reflectionPlane.transform.up;
-        reflectionCamera.projectionMatrix = reflectionCamera.CalculateObliqueMatrix(new Vector4(normal.x, normal.y, normal.z, reflectionPlane.transform.position.y));
-
-        /*for(int i = 0; i < 100; i++)
-        {
-            normal = reflectionPlane.transform.up;
-            reflectionCamera.projectionMatrix = reflectionCamera.CalculateObliqueMatrix(new Vector4(normal.x, normal.y, normal.z, reflectionPlane.transform.position.y));
-        }*/
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        //RenderReflection();
-
-        /*Vector3 directionToPlayer = (player.position - transform.position).normalized;
-        Quaternion lookAtPlayer = Quaternion.LookRotation(directionToPlayer);
-
-        lookAtPlayer.eulerAngles = transform.eulerAngles - lookAtPlayer.eulerAngles + new Vector3(0, 180, -90);
-
-        cam.rotation = lookAtPlayer;
-
-
-        Matrix4x4 mirrorPosition = transform.localToWorldMatrix * Matrix4x4.Scale(new Vector3(1, 1, -1)) * transform.worldToLocalMatrix;
-        cam.position = mirrorPosition.MultiplyPoint(player.position);*/
     }
 
     void OnPreRender()
@@ -73,67 +46,20 @@ public class Mirror : MonoBehaviour
 
         reflectionCamera.targetTexture = renderTarget;
 
-        // set custom frustum
-        //Vector3 normal = reflectionPlane.transform.up;
-        Vector3 intersection = CSG.Raycast.RayToPlane(reflectionCamera.transform.position, reflectionCamera.transform.forward, reflectionPlane.transform.position, reflectionPlane.transform.up);
-        float distance = Vector3.Distance(reflectionPlane.transform.position, intersection);
-        //intersection = reflectionPlane.transform.worldToLocalMatrix.MultiplyPoint(intersection);
-        //Matrix4x4 customProjection = reflectionCamera.projectionMatrix;
+        // Calculate clip plane for portal (for culling of objects in-between destination camera and portal)
+        Vector3 normal = reflectionPlane.transform.up;
+        Vector4 clipPlaneWorldSpace =
+            new Vector4(
+                normal.x,
+                normal.y,
+                normal.z,
+                Vector3.Dot(reflectionPlane.transform.position, -normal));
 
-        //Vector4 clipPlane = new Vector4(normal.x, normal.y, normal.z, Vector3.Distance(intersection, reflectionPlane.transform.worldToLocalMatrix.MultiplyPoint(reflectionCamera.transform.position)));
-
-        /*CalculateObliqueMatrixOrtho(ref customProjection, clipPlane);
-        reflectionCamera.projectionMatrix = customProjection;*/
-        Debug.Log(distance);
-        Vector3 normal = reflectionCamera.transform.worldToLocalMatrix.MultiplyVector(reflectionPlane.transform.up);
-        reflectionCamera.projectionMatrix = reflectionCamera.CalculateObliqueMatrix(new Vector4(normal.x, normal.y, normal.z, distance));
-        //reflectionPlane.transform.position.y
-
+        Vector4 clipPlaneCameraSpace =
+            Matrix4x4.Transpose(Matrix4x4.Inverse(reflectionCamera.worldToCameraMatrix)) * clipPlaneWorldSpace;
+        reflectionCamera.projectionMatrix = reflectionCamera.CalculateObliqueMatrix(clipPlaneCameraSpace);
 
         reflectionCamera.Render();
         mirrorMaterial.SetTexture("_ReflectionTex", renderTarget);
-        //DrawQuad();
-    }
-
-    private void DrawQuad()
-    {
-        GL.PushMatrix();
-
-        mirrorMaterial.SetPass(0);
-        mirrorMaterial.SetTexture("_ReflectionTex", renderTarget);
-
-        // Draw the quad itself
-        GL.LoadOrtho();
-        GL.Begin(GL.QUADS);
-        GL.TexCoord2(1.0f, 0.0f);
-        GL.Vertex3(0.0f, 0.0f, 0.0f);
-        GL.TexCoord2(1.0f, 1.0f);
-        GL.Vertex3(0.0f, 1.0f, 0.0f);
-        GL.TexCoord2(0.0f, 1.0f);
-        GL.Vertex3(1.0f, 1.0f, 0.0f);
-        GL.TexCoord2(0.0f, 0.0f);
-        GL.Vertex3(1.0f, 0.0f, 0.0f);
-        GL.End();
-
-        GL.PopMatrix();
-    }
-
-    // modifies projection matrix in place
-    // clipPlane is in camera space
-    // solution from http://aras-p.info/texts/obliqueortho.html
-    private void CalculateObliqueMatrixOrtho(ref Matrix4x4 projection, Vector4 clipPlane)
-    {
-        Vector4 q = projection.inverse * new Vector4(
-            Mathf.Sign(clipPlane.x),
-            Mathf.Sign(clipPlane.y),
-            -1.0f,
-            1.0f
-        );
-        Vector4 c = clipPlane * (2.0F / (Vector4.Dot(clipPlane, q)));
-        // third row = clip plane - fourth row
-        projection[2] = c.x - projection[3];
-        projection[6] = c.y - projection[7];
-        projection[10] = c.z - projection[11];
-        projection[14] = c.w - projection[15];
     }
 }
