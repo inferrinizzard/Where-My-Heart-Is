@@ -8,61 +8,62 @@ using UnityEngine;
 /// </summary>
 public class Mirror : MonoBehaviour
 {
-    public Material mirrorMaterial;// this 
+	public Material mirrorMaterial; // this 
 
 	private Camera mainCamera;
-    private Camera reflectionCamera;
-    private RenderTexture renderTarget;
+	private Camera mirrorCamera;
+	private RenderTexture reflection;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        mainCamera = Player.Instance.cam;
+	// Start is called before the first frame update
+	void Start()
+	{
+		mainCamera = Player.Instance.cam;
 
-        reflectionCamera = new GameObject("ReflectionCamera").AddComponent<Camera>();
-        reflectionCamera.enabled = false;
+		mirrorCamera = new GameObject("Reflection Camera").AddComponent<Camera>();
+		mirrorCamera.transform.parent = transform;
+		mirrorCamera.enabled = false;
 
-        renderTarget = new RenderTexture(Screen.width, Screen.height, 24);
-        reflectionCamera.targetTexture = renderTarget;
-    }
+		reflection = new RenderTexture(Screen.width, Screen.height, 24);
+		mirrorCamera.targetTexture = reflection;
+		mirrorCamera.CopyFrom(mainCamera);
+	}
 
-    void OnWillRenderObject()
-    {
-        if(Vector3.Dot(mainCamera.transform.forward, gameObject.transform.up) < 0)
-        {
-            RenderReflection();
-        }
-    }
+	void OnWillRenderObject()
+	{
+		if (Vector3.Dot(mainCamera.transform.forward, transform.up) < 0)
+		{
+			RenderReflection();
+		}
+	}
 
-    /// <summary>
-    /// Renders the scene again from the perspective of a mirrored copy of the main camera and stores it in a render texture
-    /// </summary>
-    private void RenderReflection()
-    {
-        reflectionCamera.CopyFrom(mainCamera);
-        Transform mainTransform = mainCamera.transform;
+	/// <summary>
+	/// Renders the scene again from the perspective of a mirrored copy of the main camera and stores it in a render texture
+	/// </summary>
+	private void RenderReflection()
+	{
+		Transform mainTransform = mainCamera.transform;
 
-        //TODO: base this on normal vector instead of assumption that normal is in positive local y
-        Matrix4x4 mirrorMatrix = gameObject.transform.localToWorldMatrix * Matrix4x4.Scale(new Vector3(1, -1, 1)) * gameObject.transform.worldToLocalMatrix;
+		//TODO: base this on normal vector instead of assumption that normal is in positive local y
+		Matrix4x4 mirrorMatrix = transform.localToWorldMatrix * Matrix4x4.Scale(new Vector3(1, -1, 1)) * transform.worldToLocalMatrix;
 
-        reflectionCamera.transform.position = mirrorMatrix.MultiplyPoint(mainTransform.position);
-        reflectionCamera.transform.LookAt(reflectionCamera.transform.position + mirrorMatrix.MultiplyVector(mainTransform.forward), mirrorMatrix.MultiplyVector(mainTransform.up));
+		mirrorCamera.transform.position = mirrorMatrix.MultiplyPoint(mainTransform.position);
+		mirrorCamera.transform.LookAt(mirrorCamera.transform.position + mirrorMatrix.MultiplyVector(mainTransform.forward), mirrorMatrix.MultiplyVector(mainTransform.up));
 
-        Vector3 normal = gameObject.transform.up;
-        Vector4 clipPlaneWorldSpace =
-            new Vector4(
-                normal.x,
-                normal.y,
-                normal.z,
-                Vector3.Dot(gameObject.transform.position, -normal));
+		Vector3 normal = transform.up;
+		Vector4 clipPlaneWorldSpace =
+			new Vector4(
+				normal.x,
+				normal.y,
+				normal.z,
+				Vector3.Dot(transform.position, -normal));
 
-        Vector4 clipPlaneCameraSpace =
-            Matrix4x4.Transpose(Matrix4x4.Inverse(reflectionCamera.worldToCameraMatrix)) * clipPlaneWorldSpace;
-        reflectionCamera.projectionMatrix = reflectionCamera.CalculateObliqueMatrix(clipPlaneCameraSpace);
+		Vector4 clipPlaneCameraSpace =
+			Matrix4x4.Transpose(Matrix4x4.Inverse(mirrorCamera.worldToCameraMatrix)) * clipPlaneWorldSpace;
+		mirrorCamera.projectionMatrix = mirrorCamera.CalculateObliqueMatrix(clipPlaneCameraSpace);
 
-        reflectionCamera.targetTexture = renderTarget;
+		mirrorCamera.targetTexture = reflection;
 
-        reflectionCamera.Render();
-        mirrorMaterial.SetTexture("_ReflectionTex", renderTarget);
-    }
+		mirrorCamera.Render(); // TODO: can render with shader for stencil first
+		mirrorMaterial.SetTexture("_ReflectionTex", reflection);
+	}
 }
