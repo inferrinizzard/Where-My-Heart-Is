@@ -18,7 +18,7 @@ public class CanvasObject : CollectableObject
 		//prevent move/rotate here
 		StartCoroutine(Collect(
 			player.transform.position + player.cam.transform.forward,
-			new Vector3(player.rotation.x - 25f, player.rotation.y, 0)));
+			new Vector3(player.rotation.x, player.rotation.y + 180f, 0)));
 	}
 
 	protected override void CollectEndAction()
