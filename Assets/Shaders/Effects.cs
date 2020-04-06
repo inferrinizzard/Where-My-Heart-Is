@@ -12,7 +12,7 @@ public class Effects : MonoBehaviour
 	bool bloomOn = true;
 	bool dissolveOn = false;
 
-	void Start()
+	void Awake()
 	{
 		fadeController = GetComponent<Fade>();
 
