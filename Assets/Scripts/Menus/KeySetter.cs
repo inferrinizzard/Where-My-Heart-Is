@@ -11,6 +11,8 @@ public class KeySetter : MonoBehaviour
 
     public GameObject jumpButton;
     public GameObject interactButton;
+    public Slider sensitivitySlider;
+    public InputField sensitivityInputField;
 
     enum Controls
     {
@@ -29,11 +31,21 @@ public class KeySetter : MonoBehaviour
     {
         if(isActiveAndEnabled)
         {
-            foreach (KeyCode _key in System.Enum.GetValues(typeof(KeyCode)))
+            if(lookingForKey)
             {
-                if (Input.GetKey(_key))
+                switch (changingControl)
                 {
-                    //inputKey = _key;
+                    case (int)Controls.Jump:
+                        InputManager.jumpKey = inputKey;
+                        jumpButton.GetComponent<Text>().text = "press any key";
+                        break;
+                    case (int)Controls.Interact:
+                        InputManager.interactKey = inputKey;
+                        interactButton.GetComponent<Text>().text = "press any key";
+                        break;
+                    default:
+                        Debug.Log("error assigning key");
+                        break;
                 }
             }
         }
@@ -66,13 +78,33 @@ public class KeySetter : MonoBehaviour
 
     public void SetJumpKey()
     {
-        lookingForKey = true;
-        changingControl = (int)Controls.Jump;
+        if (!lookingForKey)
+        {
+            lookingForKey = true;
+            changingControl = (int)Controls.Jump;
+        }
     }
 
     public void SetInteractKey()
     {
-        lookingForKey = true;
-        changingControl = (int)Controls.Interact;
+        if(!lookingForKey)
+        {
+            lookingForKey = true;
+            changingControl = (int)Controls.Interact;
+        }
+    }
+
+    public void SetSensitivitySlider()
+    {
+        sensitivityInputField.text = sensitivitySlider.value.ToString();
+        Player.mouseSensitivity = sensitivitySlider.value;
+    }
+
+    public void SetSensitivityInputField()
+    {
+        float input = float.Parse(sensitivityInputField.text);
+        input = Mathf.Clamp(input, sensitivitySlider.minValue, sensitivitySlider.maxValue);
+        sensitivitySlider.value = input;
+        SetSensitivitySlider();
     }
 }
