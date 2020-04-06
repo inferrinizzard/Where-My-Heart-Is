@@ -61,6 +61,7 @@ public class Window : MonoBehaviour
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds)
 	{
 		float startTime = Time.realtimeSinceStartup;
+		float sqrMagCurrent = 0;
 		foreach (var(clippable, type) in world.clippables)
 		{
 			if (IntersectsBounds(clippable, bounds))
@@ -69,6 +70,13 @@ public class Window : MonoBehaviour
 					clippable.UnionWith(fieldOfViewModel);
 				else
 					clippable.Subtract(fieldOfViewModel);
+
+				float sqrDist = (clippable.transform.position - Player.Instance.transform.position).sqrMagnitude;
+				if (sqrDist > sqrMagCurrent)
+				{
+					sqrMagCurrent = sqrDist;
+					Player.Instance.VFX.SetWave(Mathf.Sqrt(sqrDist));
+				}
 			}
 
 			if (Time.realtimeSinceStartup - startTime > frameLength)
