@@ -51,7 +51,7 @@
 			fixed4 frag(v2f i) : SV_Target
 			{
 				float2 coords = i.screenPos.xy / i.screenPos.w;
-				coords.x = 1 - coords.x;
+				coords.x = 1-coords.x;
 
 				// sample the texture
 				fixed4 col = tex2D(_ReflectionTex, coords);
