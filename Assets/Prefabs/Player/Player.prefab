@@ -117,7 +117,7 @@ MonoBehaviour:
   crouching: 0
   looking: 0
   pickedUpFirst: 0
-  heartWindow: {fileID: 6145140127035620908}
+  heartWindow: {fileID: 0}
   deathPlane: {fileID: 0}
   prompt: {fileID: 0}
   window: {fileID: 0}
@@ -192,10 +192,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   world: {fileID: 0}
-  camera: {fileID: 5407968007786445907}
+  cam: {fileID: 0}
   fieldOfViewSource: {fileID: 6145140127035620908}
   fieldOfView: {fileID: 2766900623958999665}
-  tempMaterial: {fileID: 0}
   framerateTarget: 80
 --- !u!1001 &7427641284244191036
 PrefabInstance:
@@ -269,12 +268,6 @@ PrefabInstance:
 --- !u!4 &5407968007786445904 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
-    type: 3}
-  m_PrefabInstance: {fileID: 7427641284244191036}
-  m_PrefabAsset: {fileID: 0}
---- !u!20 &5407968007786445907 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 3177498603613522799, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
     type: 3}
   m_PrefabInstance: {fileID: 7427641284244191036}
   m_PrefabAsset: {fileID: 0}
