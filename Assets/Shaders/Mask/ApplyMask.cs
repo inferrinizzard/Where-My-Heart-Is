@@ -6,8 +6,11 @@ using UnityEngine;
 [System.Serializable]
 public class ApplyMask : MonoBehaviour
 {
-	///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
-	Camera heartCam, maskCam, mainCam;
+    ///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
+    public static RenderTexture mask;
+
+    ///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
+    [HideInInspector] public Camera heartCam, maskCam, mainCam;
 	///<summary> Shader that combines views </summary>
 	[SerializeField] Shader merge = default, transition = default;
 	///<summary> Generated material for screen shader </summary>
@@ -15,8 +18,6 @@ public class ApplyMask : MonoBehaviour
 	[HideInInspector] public Material transitionMat;
 	///<summary> Generated RenderTexture for Heart World </summary>
 	public RenderTexture heart;
-	///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
-	public RenderTexture mask;
 	[SerializeField] Texture2D dissolveTexture = default;
 	Texture2D curSave;
 	int _HeartID;
@@ -36,6 +37,15 @@ public class ApplyMask : MonoBehaviour
 		CreateMask();
 	}
 
+    public void CopyInto(ApplyMask target)
+    {
+        target.merge = this.merge;
+        target.transition = this.transition;
+        target.screenMat = this.screenMat;
+        target.transitionMat = this.transitionMat;
+        target.dissolveTexture = this.dissolveTexture;
+    }
+
 	public void CreateMask()
 	{
 		// same as above, does not work
@@ -43,6 +53,7 @@ public class ApplyMask : MonoBehaviour
 		// mask = RenderTexture.GetTemporary(Screen.width, Screen.height, 16, RenderTextureFormat.R8);
 		// mask.Create();
 		// mask.name = "Internal Mask";
+        mask = new RenderTexture(Screen.width, Screen.height, 16);
 
 		// spawn temp mask cam and configure transform
 		maskCam = new GameObject("Mask Cam").AddComponent<Camera>();
@@ -54,9 +65,9 @@ public class ApplyMask : MonoBehaviour
 		maskCam.cullingMask = 1 << LayerMask.NameToLayer("Mask");
 		maskCam.clearFlags = CameraClearFlags.SolidColor;
 		maskCam.backgroundColor = Color.clear;
-		maskCam.targetTexture = mask;
+        maskCam.targetTexture = mask;
 
-		maskCam.Render();
+        maskCam.Render();
 
 		var screen = RenderTexture.active;
 		RenderTexture.active = mask;

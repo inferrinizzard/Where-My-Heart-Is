@@ -100,7 +100,7 @@ public class ClippableObject : MonoBehaviour
 		if (!volumeless)
 			meshFilter.mesh = CSG.Operations.Subtract(CachedModel, other);
 		else
-			meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other);
+			meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other, false);
 
 		UpdateInteractable();
 

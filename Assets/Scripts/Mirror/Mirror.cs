@@ -8,17 +8,17 @@ using UnityEngine;
 /// </summary>
 public class Mirror : MonoBehaviour
 {
-    public Material mirrorMaterial;// this 
+    public Shader maskShader;
+	public Camera mainCamera;
 
-	private Camera mainCamera;
+    private Material mirrorMaterial;
     private Camera reflectionCamera;
     private RenderTexture renderTarget;
 
     // Start is called before the first frame update
     void Start()
     {
-        mainCamera = Player.Instance.cam;
-
+        mirrorMaterial = GetComponent<MeshRenderer>().material;
         reflectionCamera = new GameObject("ReflectionCamera").AddComponent<Camera>();
         reflectionCamera.enabled = false;
 
@@ -48,6 +48,7 @@ public class Mirror : MonoBehaviour
         reflectionCamera.transform.position = mirrorMatrix.MultiplyPoint(mainTransform.position);
         reflectionCamera.transform.LookAt(reflectionCamera.transform.position + mirrorMatrix.MultiplyVector(mainTransform.forward), mirrorMatrix.MultiplyVector(mainTransform.up));
 
+
         Vector3 normal = gameObject.transform.up;
         Vector4 clipPlaneWorldSpace =
             new Vector4(
@@ -63,6 +64,7 @@ public class Mirror : MonoBehaviour
         reflectionCamera.targetTexture = renderTarget;
 
         reflectionCamera.Render();
+
         mirrorMaterial.SetTexture("_ReflectionTex", renderTarget);
     }
 }
