@@ -50,4 +50,20 @@ public static class Extensions
 	public static bool TryComponent<T>(this Component @this) where T : Component => @this.TryGetComponent(out T c);
 	public static bool TryComponent<T>(this Transform @this, out T c) where T : Component => @this.TryGetComponent(out c);
 	public static bool TryComponent<T>(this Transform @this) where T : Component => @this.TryGetComponent(out T c);
+
+	public static void DrawCube(this MonoBehaviour @this, Vector3 pos, float size = 1, Quaternion rot = default(Quaternion), Color colour = default(Color), float duration = 0, bool depthCheck = false)
+	{
+		Debug.DrawLine(pos + rot * new Vector3(size / 2, size / 2, size / 2), pos + rot * new Vector3(-size / 2, size / 2, size / 2), colour, duration, depthCheck);
+		Debug.DrawLine(pos + rot * new Vector3(size / 2, size / 2, size / 2), pos + rot * new Vector3(size / 2, -size / 2, size / 2), colour, duration, depthCheck);
+		Debug.DrawLine(pos + rot * new Vector3(size / 2, size / 2, size / 2), pos + rot * new Vector3(size / 2, size / 2, -size / 2), colour, duration, depthCheck);
+		Debug.DrawLine(pos + rot * new Vector3(-size / 2, size / 2, size / 2), pos + rot * new Vector3(-size / 2, -size / 2, size / 2), colour, duration, depthCheck);
+		Debug.DrawLine(pos + rot * new Vector3(size / 2, -size / 2, size / 2), pos + rot * new Vector3(size / 2, -size / 2, -size / 2), colour, duration, depthCheck);
+		Debug.DrawLine(pos + rot * new Vector3(size / 2, size / 2, -size / 2), pos + rot * new Vector3(-size / 2, size / 2, -size / 2), colour, duration, depthCheck);
+		Debug.DrawLine(pos + rot * new Vector3(-size / 2, size / 2, size / 2), pos + rot * new Vector3(-size / 2, size / 2, -size / 2), colour, duration, depthCheck);
+		Debug.DrawLine(pos + rot * new Vector3(size / 2, -size / 2, size / 2), pos + rot * new Vector3(-size / 2, -size / 2, size / 2), colour, duration, depthCheck);
+		Debug.DrawLine(pos + rot * new Vector3(size / 2, size / 2, -size / 2), pos + rot * new Vector3(size / 2, -size / 2, -size / 2), colour, duration, depthCheck);
+		Debug.DrawLine(pos + rot * new Vector3(-size / 2, -size / 2, size / 2), pos + rot * new Vector3(-size / 2, -size / 2, -size / 2), colour, duration, depthCheck);
+		Debug.DrawLine(pos + rot * new Vector3(size / 2, -size / 2, -size / 2), pos + rot * new Vector3(-size / 2, -size / 2, -size / 2), colour, duration, depthCheck);
+		Debug.DrawLine(pos + rot * new Vector3(-size / 2, size / 2, -size / 2), pos + rot * new Vector3(-size / 2, -size / 2, -size / 2), colour, duration, depthCheck);
+	}
 }
