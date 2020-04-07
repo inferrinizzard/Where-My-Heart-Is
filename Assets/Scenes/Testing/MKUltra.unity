@@ -543,13 +543,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1041667204}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9bdcbecc1d3d0114698e060270606ee3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reflectionPlane: {fileID: 1041667204}
-  mainCamera: {fileID: 1266917797}
   mirrorMaterial: {fileID: 2100000, guid: b53be0b98d061d34caa33f9410a42a9c, type: 2}
 --- !u!4 &1041667208 stripped
 Transform:
@@ -899,12 +897,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1266917795}
   m_PrefabAsset: {fileID: 0}
---- !u!20 &1266917797 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 5407968007786445907, guid: ce2e34029942daa4c845cd2ceec80c14,
-    type: 3}
-  m_PrefabInstance: {fileID: 1266917795}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1266917798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -917,8 +909,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bdcbecc1d3d0114698e060270606ee3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reflectionPlane: {fileID: 1041667204}
-  mainCamera: {fileID: 1266917797}
   mirrorMaterial: {fileID: 2100000, guid: b53be0b98d061d34caa33f9410a42a9c, type: 2}
 --- !u!114 &1266917799
 MonoBehaviour:
@@ -927,7 +917,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1266917796}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f68c3545e8212af448749511931218dd, type: 3}
   m_Name: 
@@ -947,7 +937,7 @@ MonoBehaviour:
     e20: 0
     e21: 0
     e22: 1
-    e23: 0.04
+    e23: 2000.14
     e30: 0
     e31: 0
     e32: -1
