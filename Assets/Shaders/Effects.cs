@@ -8,9 +8,8 @@ public class Effects : MonoBehaviour
 {
 	Fade fadeController;
 	Wave waveController;
-	bool glowOn = false;
-	bool edgeOn = true;
-	bool bloomOn = true;
+	bool outlineOn = true;
+	bool bloomOn = false;
 	bool dissolveOn = false;
 	[SerializeField] Material defaultGlowMat = default;
 

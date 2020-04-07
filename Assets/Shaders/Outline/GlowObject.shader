@@ -39,6 +39,7 @@ Shader "Outline/GlowObject"
 			}
 
 			float4 frag(v2f i) : COLOR {
+				return _Colour;
 				if(_Occlude == 0) { return _Colour; }
 				// decode depth texture info
 				float2 uv = i.screenPos.xy / i.screenPos.w; // normalized screen-space pos
