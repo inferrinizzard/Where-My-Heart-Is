@@ -1,4 +1,4 @@
-// #define DEBUG
+#define DEBUG
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,11 +7,10 @@ using UnityEngine;
 public class Effects : MonoBehaviour
 {
 	Fade fadeController;
-	Wave waveController;
-	bool glowOn = false;
-	bool edgeOn = true;
-	bool bloomOn = true;
+	bool outlineOn = true;
+	bool bloomOn = false;
 	bool dissolveOn = false;
+	[SerializeField] Material defaultGlowMat = default;
 
 	void Awake()
 	{
@@ -19,37 +18,39 @@ public class Effects : MonoBehaviour
 		waveController = GetComponent<Wave>();
 
 		ToggleMask(false);
-		ToggleGlowOutline(glowOn);
-		ToggleEdgeOutline(edgeOn);
+		ToggleEdgeOutline(outlineOn);
 		ToggleDissolve(dissolveOn);
 	}
 
-#if DEBUG
 	void Update()
-	{ // debug toggles
-		if (Input.GetKeyDown(KeyCode.Alpha1))
-			ToggleGlowOutline(glowOn = !glowOn);
+	{
+#if DEBUG // debug toggles
 		if (Input.GetKeyDown(KeyCode.Alpha2))
-			ToggleEdgeOutline(edgeOn = !edgeOn);
+		{
+			ToggleEdgeOutline(outlineOn = !outlineOn);
+			print($"edge: {outlineOn}");
+		}
 		if (Input.GetKeyDown(KeyCode.Alpha3))
+		{
 			ToggleBloom(bloomOn = !bloomOn);
+			print($"bloom: {bloomOn}");
+		}
 		if (Input.GetKeyDown(KeyCode.Alpha4))
+		{
 			ToggleDissolve(dissolveOn = !dissolveOn);
-	}
+			print($"dissolve: {dissolveOn}");
+		}
 #endif
+	}
 
 	/// <summary> toggles mask on and off </summary>
 	/// <param name="on"> Is mask on? </summary>
 	// public void ToggleMask(bool on) => mask.enabled = on;
 	public void ToggleMask(bool on) => ToggleEffect(on, "MASK");
 
-	/// <summary> toggles glow outline on and off </summary>
-	/// <param name="on"> Is glow outline on? </summary>
-	public void ToggleGlowOutline(bool on) => ToggleEffect(on, "OUTLINE_GLOW");
-
 	/// <summary> toggles edge outline on and off </summary>
 	/// <param name="on"> Is edge outline on? </summary>
-	public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE_EDGE");
+	public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE");
 
 	public void ToggleBloom(bool on) => ToggleEffect(on, "BLOOM");
 
@@ -65,5 +66,13 @@ public class Effects : MonoBehaviour
 			Shader.EnableKeyword(keyword);
 		else
 			Shader.DisableKeyword(keyword);
+	}
+
+	public void RenderGlowMap(Renderer[] renderers, Material mat = null)
+	{
+		mat = mat ?? defaultGlowMat;
+		// mat.SetColor("_Colour", col);
+		foreach (Renderer r in renderers)
+			ApplyOutline.glowBuffer.DrawRenderer(r, mat);
 	}
 }

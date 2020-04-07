@@ -17,10 +17,12 @@ public class GameManager : Singleton<GameManager>
 
 	public DialogueSystem dialogue;
 	public Prompt prompt;
+	public Effects VFX;
 
 	public override void Awake()
 	{
 		base.Awake();
+		VFX = Player.Instance.GetComponentInChildren<Effects>();
 		dialogue = GetComponentInChildren<DialogueSystem>();
 		prompt = GetComponentInChildren<Prompt>();
 	}

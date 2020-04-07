@@ -1833,7 +1833,6 @@ GameObject:
   - component: {fileID: 2104452537}
   - component: {fileID: 2104452536}
   - component: {fileID: 2104452535}
-  - component: {fileID: 2104452538}
   - component: {fileID: 2104452539}
   - component: {fileID: 2104452540}
   m_Layer: 0
@@ -1909,34 +1908,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2104452538
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2104452534}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2821cd9d7ccfc754c92f2ca1a9fa4f45, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  drawSolid: {fileID: 4800000, guid: 582d627b16d10ac499f39698f42e7d8d, type: 3}
-  outline: {fileID: 4800000, guid: 9a98591158e3916499b8558193817d2b, type: 3}
 --- !u!114 &2104452539
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2104452534}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c085a0d869b6bc741806961e62f42325, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  outlineMat: {fileID: 2100000, guid: 6abbd9c41a583574fb0833007c877c88, type: 2}
---- !u!114 &2104452540
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1945,13 +1917,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2104452534}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5f860fa0d5f69d4a9596cca24bc1e54, type: 3}
+  m_Script: {fileID: 11500000, guid: c2c687717f027994d995cc41a20c9797, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveShader: {fileID: 4800000, guid: bff4a2ec768bd8247a22e0ffad695941, type: 3}
-  waveColour: {r: 0, g: 0, b: 0, a: 0}
-  waveDistance: 6.666667
-  waveMat: {fileID: 0}
+  depthShader: {fileID: 4800000, guid: 94714af39165dca4b8c9bda04db860b3, type: 3}
+  depthMat: {fileID: 2100000, guid: c37d1b0b8c59de043bc38fb86fc2c789, type: 2}
 --- !u!1 &2145135481
 GameObject:
   m_ObjectHideFlags: 0
