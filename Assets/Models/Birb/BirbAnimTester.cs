@@ -12,17 +12,11 @@ public class BirbAnimTester : MonoBehaviour
 	[SerializeField] private BGCcCursor[] curves = default;
 	public List<PlayerTrigger> pathTriggers;
 	public float flySpeed;
-
-	[FMODUnity.EventRef]
-	public string FlapEvent;
-	[FMODUnity.EventRef]
-	public string ChirpEvent;
-
+	[FMODUnity.EventRef] public string FlapEvent;
+	[FMODUnity.EventRef] public string ChirpEvent;
 	private FMOD.Studio.EventInstance flapInstance;
 	private FMOD.Studio.EventInstance chirpInstance;
-
 	private Animator anim;
-
 	private int currCurve;
 
 	void Start()
@@ -48,6 +42,8 @@ public class BirbAnimTester : MonoBehaviour
 		pathTriggers.ForEach(trigger => trigger.OnPlayerEnterID += StartNextCurveID);
 
 		currCurve = -1;
+
+		StartNextCurve();
 	}
 
 	void Update()
