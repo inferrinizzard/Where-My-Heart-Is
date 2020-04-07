@@ -472,6 +472,21 @@ TrailRenderer:
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
   m_Emitting: 1
+--- !u!114 &862253767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 862253761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bddbda3483be07409d3cbbbe64d2f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mat: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
+  count: 3
+  length: 20
 --- !u!1 &887053056
 GameObject:
   m_ObjectHideFlags: 0
@@ -827,7 +842,7 @@ Transform:
   m_GameObject: {fileID: 922636842}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.6247357, y: 0.013090079, z: -0.63808244}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.0000001, y: 1, z: 1.0000001}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -844,6 +859,7 @@ GameObject:
   - component: {fileID: 1236297721}
   - component: {fileID: 1236297720}
   - component: {fileID: 1236297723}
+  - component: {fileID: 1236297724}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -891,7 +907,7 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingPath: -1
+  m_RenderingPath: 3
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
@@ -923,12 +939,26 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1236297719}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d83dda0259d13143900a76583f8e8bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shader: {fileID: 4800000, guid: 1f9c0f8d75f288d4a93340bffd08cbb8, type: 3}
   mouseSensitivity: 3
+--- !u!114 &1236297724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1236297719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 304ef6b5992505b42a4a639d031357e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultGlowMat: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
 --- !u!1 &1468732773
 GameObject:
   m_ObjectHideFlags: 0

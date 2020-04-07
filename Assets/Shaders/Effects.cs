@@ -7,6 +7,7 @@ using UnityEngine;
 public class Effects : MonoBehaviour
 {
 	Fade fadeController;
+	Wave waveController;
 	bool outlineOn = true;
 	bool bloomOn = false;
 	bool dissolveOn = false;
