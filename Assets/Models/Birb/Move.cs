@@ -17,7 +17,7 @@ public class Move : MonoBehaviour
 
 	void Update()
 	{
-		transform.position = new Vector3(5 * Mathf.Cos(Time.time), 0, 5 * Mathf.Sin(Time.time));
+		transform.position = new Vector3(5 * Mathf.Cos(Time.time), Mathf.Sin(Time.time / 10) / 2 + 1, 5 * Mathf.Sin(Time.time));
 		transform.LookAt(Vector3.Cross(new Vector3(5 * Mathf.Cos(Time.time), 0, 5 * Mathf.Sin(Time.time)), Vector3.up));
 	}
 }
