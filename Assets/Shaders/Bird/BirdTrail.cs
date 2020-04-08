@@ -7,18 +7,28 @@ using UnityEngine.Rendering;
 // [ExecuteInEditMode]
 public class BirdTrail : MonoBehaviour
 {
-	public Material mat;
+	[SerializeField] Shader drawShader;
+	Material drawMat;
 	[SerializeField] int count = 3;
 	[SerializeField] int length = 20;
-	List<Trans> copies = new List<Trans>();
+	List<Ghost> copies = new List<Ghost>();
 	int step = 0;
 
 	Camera cam;
 	CommandBuffer birdBuffer;
 	int birdTemp = Shader.PropertyToID("_BirdTemp");
 
+	Vector3 deltaPos;
+	Quaternion deltaRot;
+
+	SkinnedMeshRenderer[] smrs;
+
 	void Start()
 	{
+		smrs = GetComponentsInChildren<SkinnedMeshRenderer>();
+		drawMat = new Material(drawShader);
+		drawMat.SetColor("_Colour", new Color(0, 1, 1, 1));
+
 		cam = Camera.main;
 		birdBuffer = new CommandBuffer();
 		birdBuffer.GetTemporaryRT(birdTemp, -1, -1, 24, FilterMode.Bilinear);
@@ -40,25 +50,46 @@ public class BirdTrail : MonoBehaviour
 
 	public void OnEnable() => Cleanup();
 
-	struct Trans
+	// class Ghost : IEnumerable
+	class Ghost
 	{
 		public Vector3 position;
+		public List<Vector3> rendererPositions;
 		public Quaternion rotation;
+		public List<Quaternion> rendererRotations;
 		public Vector3 eulerAngles => rotation.eulerAngles;
 		public Vector3 scale;
 		public Matrix4x4 TRS { get => Matrix4x4.TRS(position, rotation, scale); }
+		public List<Mesh> meshes;
 
-		public Trans(Transform t)
+		public Ghost(Transform t, SkinnedMeshRenderer[] renderers)
 		{
 			position = t.position;
 			rotation = t.rotation;
 			scale = t.localScale;
+			meshes = new List<Mesh>();
+			rendererPositions = new List<Vector3>();
+			rendererRotations = new List<Quaternion>();
+			foreach (SkinnedMeshRenderer r in renderers)
+			{
+				Mesh temp = new Mesh();
+				r.BakeMesh(temp);
+				meshes.Add(temp);
+				rendererPositions.Add(r.transform.position);
+				rendererRotations.Add(r.transform.rotation);
+			}
+		}
+		// public(Mesh, Vector3, Quaternion) this [int i] => (meshes[i], rendererPositions[i], rendererRotations[i]);
+		public IEnumerable < (Mesh, Vector3, Quaternion) > Data()
+		{
+			for (int i = 0; i < meshes.Count; i++)
+				yield return (meshes[i], rendererPositions[i], rendererRotations[i]);
 		}
 	}
 
 	void Update()
 	{
-		foreach (Trans t in copies)
+		foreach (Ghost t in copies)
 			this.DrawCube(t.position, 1, t.rotation, Color.red, depthCheck : true);
 	}
 
@@ -66,22 +97,26 @@ public class BirdTrail : MonoBehaviour
 	{
 		step = ++step % length;
 		if (step == 0)
-			copies.Add(new Trans(transform));
+			copies.Add(new Ghost(transform, smrs));
 		if (copies.Count > count)
 			copies.RemoveAt(0);
+
+		if (copies.Count > 0)
+		{
+			deltaPos = copies[copies.Count - 1].position - transform.position;
+			deltaRot = copies[copies.Count - 1].rotation * Quaternion.Inverse(transform.rotation);
+		}
 	}
 
 	void LateUpdate() => birdBuffer.ClearRenderTarget(true, true, Color.clear);
 	void OnWillRenderObject()
 	{
-		foreach (SkinnedMeshRenderer r in GetComponentsInChildren<SkinnedMeshRenderer>())
-			// birdBuffer.DrawMesh(r.sharedMesh, r.transform.TRS(), mat, 0, 0);
-			for (int i = 0; i < copies.Count; i++)
-				birdBuffer.DrawMesh(r.sharedMesh,
-					Matrix4x4.TRS(r.transform.position + (copies[i].position - transform.position),
-						// r.transform.rotation * (copies[i].rotation * Quaternion.Inverse(transform.rotation)),
-						Quaternion.Euler(r.transform.rotation.eulerAngles + (copies[i].eulerAngles - transform.eulerAngles)),
-						r.transform.localScale * (i + 1) / count), mat, 0, 0);
+		for (int i = 0; i < copies.Count; i++)
+		{
+			// drawMat.SetColor("_Colour", new Color(0, 1f / (copies.Count - i), 1, 1f / (copies.Count - i)));
+			foreach (var(mesh, pos, rot) in copies[i].Data())
+				birdBuffer.DrawMesh(mesh, Matrix4x4.TRS(pos, rot, transform.localScale / (copies.Count - i)), drawMat);
+		}
 	}
 	void OnPreCull() => birdBuffer.SetGlobalTexture("_BirdTrail", birdTemp);
 }
