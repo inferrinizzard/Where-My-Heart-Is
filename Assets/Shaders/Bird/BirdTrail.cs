@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 // [ExecuteInEditMode]
 public class BirdTrail : MonoBehaviour
 {
-	[SerializeField] Shader drawShader;
+	[SerializeField] Shader drawShader = default;
 	Material drawMat;
 	[SerializeField] int count = 3;
 	[SerializeField] int length = 20;
@@ -17,10 +17,6 @@ public class BirdTrail : MonoBehaviour
 	Camera cam;
 	CommandBuffer birdBuffer;
 	int birdTemp = Shader.PropertyToID("_BirdTemp");
-
-	Vector3 deltaPos;
-	Quaternion deltaRot;
-
 	SkinnedMeshRenderer[] smrs;
 
 	void Start()
@@ -34,7 +30,7 @@ public class BirdTrail : MonoBehaviour
 		birdBuffer.GetTemporaryRT(birdTemp, -1, -1, 24, FilterMode.Bilinear);
 		birdBuffer.SetRenderTarget(birdTemp);
 		birdBuffer.ClearRenderTarget(true, true, Color.clear);
-		birdBuffer.SetGlobalTexture("_BirdTrail", birdTemp);
+		birdBuffer.SetGlobalTexture("_BirdMask", birdTemp);
 		birdBuffer.name = "Bird Trail Buffer";
 
 		cam.AddCommandBuffer(CameraEvent.BeforeSkybox, birdBuffer);
@@ -101,22 +97,24 @@ public class BirdTrail : MonoBehaviour
 		if (copies.Count > count)
 			copies.RemoveAt(0);
 
-		if (copies.Count > 0)
-		{
-			deltaPos = copies[copies.Count - 1].position - transform.position;
-			deltaRot = copies[copies.Count - 1].rotation * Quaternion.Inverse(transform.rotation);
-		}
+		// if (copies.Count > 0)
+		// {
+		// 	deltaPos = copies[copies.Count - 1].position - transform.position;
+		// 	deltaRot = copies[copies.Count - 1].rotation * Quaternion.Inverse(transform.rotation);
+		// }
 	}
 
 	void LateUpdate() => birdBuffer.ClearRenderTarget(true, true, Color.clear);
 	void OnWillRenderObject()
 	{
+		var properties = new MaterialPropertyBlock();
 		for (int i = 0; i < copies.Count; i++)
 		{
-			// drawMat.SetColor("_Colour", new Color(0, 1f / (copies.Count - i), 1, 1f / (copies.Count - i)));
+			float step = 1f / (copies.Count - i);
+			properties.SetColor("_Colour", new Color(0, 1, step, 1));
 			foreach (var(mesh, pos, rot) in copies[i].Data())
-				birdBuffer.DrawMesh(mesh, Matrix4x4.TRS(pos, rot, transform.localScale / (copies.Count - i)), drawMat);
+				birdBuffer.DrawMesh(mesh, Matrix4x4.TRS(pos, rot, transform.localScale * step), drawMat, 0, 0, properties);
 		}
 	}
-	void OnPreCull() => birdBuffer.SetGlobalTexture("_BirdTrail", birdTemp);
+	void OnPreCull() => birdBuffer.SetGlobalTexture("_BirdMask", birdTemp);
 }

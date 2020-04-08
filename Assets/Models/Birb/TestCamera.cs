@@ -6,6 +6,7 @@ using UnityEngine;
 public class TestCamera : MonoBehaviour
 {
 	public Shader shader;
+	[SerializeField] Texture2D birdBackground;
 	Material mat;
 
 	float rotationX, rotationY;
@@ -15,6 +16,7 @@ public class TestCamera : MonoBehaviour
 	{
 		transform.LookAt(FindObjectOfType<BirdTrail>().transform.position);
 		mat = new Material(shader);
+		mat.SetTexture("_Background", birdBackground);
 	}
 
 	// Update is called once per frame

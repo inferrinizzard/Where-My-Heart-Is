@@ -1,8 +1,8 @@
 ﻿Shader "Bird/Mask"
 {
-	Properties
-	{
+	Properties {
 		_MainTex ("Texture", 2D) = "white" {}
+		_Background ("Texture", 2D) = "white" {}
 	}
 	SubShader {
 		// No culling or depth
@@ -10,39 +10,23 @@
 
 		Pass {
 			CGPROGRAM
-			#pragma vertex vert
+			#pragma vertex vert_img
 			#pragma fragment frag
 
 			#include "UnityCG.cginc"
 
-			struct appdata
-			{
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
-			};
-
-			struct v2f
-			{
-				float2 uv : TEXCOORD0;
-				float4 vertex : SV_POSITION;
-			};
-
-			v2f vert (appdata v)
-			{
-				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv;
-				return o;
-			}
-
+			sampler2D _BirdMask;
+			sampler2D _Background;
 			sampler2D _MainTex;
 
-			fixed4 frag (v2f i) : SV_Target
-			{
-				fixed4 col = tex2D(_MainTex, i.uv);
-				// just invert the colors
-				col.rgb = 1 - col.rgb;
-				return col;
+			fixed4 frag (v2f_img i) : SV_Target {
+				float4 mask =  tex2D(_BirdMask, i.uv);
+				if(mask.r > 0 || mask.g > 0 || mask.b > 0) {
+					// float alpha = 1 - saturate(pow(1 - mask.b, 3));
+					// return float4(tex2D(_Background, i.uv + float2(_Time.x, _Time.x)).rgb, alpha) + float4(tex2D(_MainTex, i.uv).rgb, 1 - alpha);
+					return float4(tex2D(_Background, i.uv + float2(_Time.x, _Time.x)).rgb, mask.b);
+				}
+				return tex2D(_MainTex, i.uv);
 			}
 			ENDCG
 		}
