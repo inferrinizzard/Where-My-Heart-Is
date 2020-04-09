@@ -220,6 +220,7 @@ public class Window : MonoBehaviour
 	private Bounds GetSceneBounds()
 	{
 		var clippables = world.GetComponentsInChildren<ClippableObject>();
+		if (clippables.Length == 0) return GetComponentInChildren<MeshRenderer>().bounds;
 		return clippables.Aggregate(clippables[0].GetComponent<MeshCollider>().bounds, (bound, cur) => { bound.Encapsulate(cur.GetComponent<MeshCollider>().bounds); return bound; });
 	}
 }
