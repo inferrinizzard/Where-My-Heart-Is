@@ -16,9 +16,21 @@ public class CanvasObject : CollectableObject
 	{
 		OnInteract?.Invoke();
 		//prevent move/rotate here
-		StartCoroutine(Collect(
-			player.transform.position + player.cam.transform.forward,
-			new Vector3(player.rotation.x, player.rotation.y + 180f, 0)));
+		float targetAngle = (player.rotation.y % 360f) - transform.rotation.y;
+		Debug.Log(targetAngle);
+
+		if(targetAngle > 180)
+		{
+			StartCoroutine(Collect(
+				player.transform.position + player.cam.transform.forward,
+				new Vector3(player.rotation.x, targetAngle - 180f, 0)));
+		}
+		else
+		{
+			StartCoroutine(Collect(
+				player.transform.position + player.cam.transform.forward,
+				new Vector3(player.rotation.x, targetAngle + 180f, 0)));
+		}
 	}
 
 	protected override void CollectEndAction()
