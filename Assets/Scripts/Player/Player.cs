@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using FMOD;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 /// <summary> Handles player behaviors. </summary>
 [System.Serializable]
@@ -15,7 +17,11 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Reference to the players last spawn. </summary>
 	[HideInInspector] public Transform lastSpawn;
 	/// <summary> Reference to player CharacterController. </summary>
-	[HideInInspector] public CharacterController characterController;
+	//[HideInInspector] public CharacterController characterController;
+
+	[HideInInspector] public Rigidbody body;
+	public GameObject playerCollider;
+
 	/// <summary> Reference to player Camera. </summary>
 	[HideInInspector] public Camera cam;
 	/// <summary> Reference to FX Controller. </summary>
@@ -79,7 +85,8 @@ public class Player : Singleton<Player>, IStateMachine
 	void Start()
 	{
 		sceneActive = true;
-		characterController = GetComponent<CharacterController>();
+		//characterController = GetComponent<CharacterController>();
+		body = GetComponent<Rigidbody>();
 		cam = GetComponentInChildren<Camera>();
 		VFX = cam.GetComponent<Effects>();
 		window = GetComponent<Window>();
@@ -89,7 +96,7 @@ public class Player : Singleton<Player>, IStateMachine
 		prompt = GameManager.Instance.prompt;
 
 		// Get reference to the player height using the CharacterController's height.
-		playerHeight = characterController.height;
+		// playerHeight = characterController.height;
 		// Creates an empty game object at the position where a held object should be.
 		heldObjectLocation = new GameObject("HeldObjectLocation").transform;
 		heldObjectLocation.position = cam.transform.position + cam.transform.forward;
@@ -121,7 +128,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 	public override void OnBeginTransition()
 	{
-		characterController.enabled = false;
+		//characterController.enabled = false;
 		sceneActive = false;
 	}
 
@@ -149,7 +156,7 @@ public class Player : Singleton<Player>, IStateMachine
 			dialogueSystem.TextComplete -= EndSceneTransitionHelper;
 		}
 		Initialize();
-		characterController.enabled = true;
+		//characterController.enabled = true;
 		Player.Instance.sceneActive = true;
 		VFX.StartFade(true, fadeDuration);
 	}
@@ -206,7 +213,7 @@ public class Player : Singleton<Player>, IStateMachine
 				Move();
 				ApplyGravity();
 				Rotate();
-				characterController.Move(moveDirection);
+				//characterController.Move(moveDirection);
 			}
 
 			prompt.UpdateText(); // non physics
@@ -240,24 +247,40 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
 	private void Move()
 	{
-		moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-		Vector3 horizontal = characterController.velocity - characterController.velocity.y * Vector3.up;
-		audioController.SetWalkingVelocity(Mathf.RoundToInt(horizontal.magnitude) / speed);
-		moveDirection *= speed * Time.deltaTime;
+		//moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
+		//Vector3 horizontal = characterController.velocity - characterController.velocity.y * Vector3.up;
+		//audioController.SetWalkingVelocity(Mathf.RoundToInt(horizontal.magnitude) / speed);
+		//moveDirection *= speed * Time.deltaTime;
+
+		Vector3 targetVelocity = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+		targetVelocity = transform.TransformDirection(targetVelocity);
+		targetVelocity *= speed;
+
+		Vector3 velocity = body.velocity;
+		Vector3 velocityChange = (targetVelocity - velocity);
+		velocityChange.x = Mathf.Clamp(velocityChange.x, -10f, 10f);
+		velocityChange.z = Mathf.Clamp(velocityChange.z, -10f, 10f);
+		velocityChange.y = 0;
+		body.AddForce(velocityChange, ForceMode.VelocityChange);
 	}
 
 	/// <summary> Applies gravity to the player and includes jump. </summary>
 	private void ApplyGravity()
 	{
-		if (!characterController.isGrounded)
+		/*if (!characterController.isGrounded)
 			verticalVelocity -= gravity * Time.deltaTime;
-		moveDirection.y = verticalVelocity * Time.deltaTime;
+		moveDirection.y = verticalVelocity * Time.deltaTime;*/
 	}
 
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-		if (characterController.isGrounded)
+		if (IsGrounded())
+		{
+            Debug.Log("jump");
+            body.AddForce(Vector3.up * 200);
+		}
+		/*if (characterController.isGrounded)
 		{
 			verticalVelocity = jumpForce;
 			audioController.JumpLiftoff();
@@ -269,7 +292,7 @@ public class Player : Singleton<Player>, IStateMachine
 			{
 				audioController.JumpLanding();
 			}
-		}
+		}*/
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
@@ -381,6 +404,8 @@ public class Player : Singleton<Player>, IStateMachine
 			EndState();
 		}
 	}
+
+	public bool IsGrounded() { return Physics.Raycast(playerCollider.transform.position, -Vector3.up, playerCollider.GetComponent<Collider>().bounds.extents.y + 0.1f); }
 
 	public InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }
