@@ -3,17 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary> Handles setting of controls and ui associated. </summary>
 public class KeySetter : MonoBehaviour
 {
+    /// <summary> Input key. </summary>
     KeyCode inputKey;
+    /// <summary> Whether the script is looking for a key to assign. </summary>
     bool lookingForKey;
+    /// <summary> Which control is currently being changed. </summary>
     int changingControl;
 
+    /// <summary> Text to display current jump key. </summary>
     public GameObject jumpButton;
+    /// <summary> Text to display current interact key. </summary>
     public GameObject interactButton;
+    /// <summary> Slider for the mouse sensitivity. </summary>
     public Slider sensitivitySlider;
+    /// <summary> Input Field for the mouse sensitivity. </summary>
     public InputField sensitivityInputField;
 
+    /// <summary> Enum which holds different controls to be set. </summary>
     enum Controls
     {
         Jump = 0,
@@ -22,7 +31,7 @@ public class KeySetter : MonoBehaviour
 
     private void Start()
     {
-        //set all the keys for control ui
+        //set all the keys for ui
         jumpButton.GetComponent<Text>().text = InputManager.jumpKey.ToString();
         interactButton.GetComponent<Text>().text = InputManager.interactKey.ToString();
     }
@@ -51,6 +60,7 @@ public class KeySetter : MonoBehaviour
         }
     }
 
+    // Checks for keyboard presses and assigns accordingly.
     public void OnGUI()
     {
         if(Event.current.isKey && Event.current.type == EventType.KeyDown && lookingForKey)
@@ -76,6 +86,7 @@ public class KeySetter : MonoBehaviour
         }
     }
 
+    /// <summary> Configures script to look for the jump key. </summary>
     public void SetJumpKey()
     {
         if (!lookingForKey)
@@ -85,6 +96,7 @@ public class KeySetter : MonoBehaviour
         }
     }
 
+    /// <summary> Configures script to look for the interact key. </summary>
     public void SetInteractKey()
     {
         if(!lookingForKey)
@@ -94,12 +106,15 @@ public class KeySetter : MonoBehaviour
         }
     }
 
+    /// <summary> Sets the sensitivity based on the slider's value. </summary>
     public void SetSensitivitySlider()
     {
         sensitivityInputField.text = sensitivitySlider.value.ToString();
         Player.mouseSensitivity = sensitivitySlider.value;
     }
 
+    /// <summary> Gets the input from the Input Field and sets it to the sensitivity slider. </summary>
+    /// <remarks> This parses the input and constrains it to the slider values, then uses the slider function to set it. </remarks>
     public void SetSensitivityInputField()
     {
         float input = float.Parse(sensitivityInputField.text);
