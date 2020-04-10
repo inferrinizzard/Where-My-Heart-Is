@@ -19,16 +19,16 @@ public class MessageWriter : MonoBehaviour
 	private int currentCharacter;
 	private bool writingMessage;
 
-	private void Start() { }
+	// private void Start() { }
 
-	private void Update()
-	{
-		if (Input.GetKeyDown(KeyCode.P))
-		{
-			WriteMessage("It's lonely here.../ I'd feel better with something to listen to.../ I think my headphones are next to my lamp...");
+	// private void Update()
+	// {
+	// 	if (Input.GetKeyDown(KeyCode.P))
+	// 	{
+	// 		WriteMessage("It's lonely here.../ I'd feel better with something to listen to.../ I think my headphones are next to my lamp...");
 
-		}
-	}
+	// 	}
+	// }
 
 	public void WriteMessage(string message)
 	{

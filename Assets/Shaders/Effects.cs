@@ -7,14 +7,17 @@ using UnityEngine;
 public class Effects : MonoBehaviour
 {
 	Fade fadeController;
-	bool outlineOn = true;
-	bool bloomOn = false;
+	Wave waveController;
+	bool glowOn = false;
+	bool edgeOn = true;
+	bool bloomOn = true;
 	bool dissolveOn = false;
 	[SerializeField] Material defaultGlowMat = default;
 
-	void Start()
+	void Awake()
 	{
 		fadeController = GetComponent<Fade>();
+		waveController = GetComponent<Wave>();
 
 		ToggleMask(false);
 		ToggleEdgeOutline(outlineOn);
@@ -56,6 +59,8 @@ public class Effects : MonoBehaviour
 	public void ToggleDissolve(bool on) => ToggleEffect(on, "DISSOLVE");
 
 	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
+
+	public void SetWave(float distance) => waveController.waveDistance = distance;
 
 	void ToggleEffect(bool on, string keyword)
 	{

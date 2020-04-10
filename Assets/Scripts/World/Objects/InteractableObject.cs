@@ -8,17 +8,13 @@ public abstract class InteractableObject : MonoBehaviour
 	/// <summary> Whether or not this is the active item </summary>
 	[HideInInspector] public bool active;
 	public string prompt = "Press E to Interact";
-	public bool hasFlavorText;
-	public string flavorText;
-	public DialogueSystem dialogue;
-	System.Action glowFunction = null;
+	string flavorText = "";
+	DialogueSystem dialogue;
 
 	public virtual void Interact()
 	{
-		if (hasFlavorText)
-		{
+		if (flavorText != "")
 			StartCoroutine(dialogue.WriteDialogue(flavorText));
-		}
 	}
 
 	protected virtual void Start()

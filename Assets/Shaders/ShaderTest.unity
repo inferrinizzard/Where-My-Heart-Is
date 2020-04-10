@@ -929,7 +929,7 @@ Transform:
   m_GameObject: {fileID: 1143632445}
   m_LocalRotation: {x: 0.13052616, y: 0, z: 0, w: 0.9914449}
   m_LocalPosition: {x: 0.95, y: 1.28, z: -4.09}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.99999994, z: 0.9999999}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
@@ -1239,7 +1239,7 @@ Transform:
   m_GameObject: {fileID: 1655133927}
   m_LocalRotation: {x: 0.13052616, y: 0, z: 0, w: 0.9914449}
   m_LocalPosition: {x: -0.45, y: -0.02, z: -3.33}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.99999994, z: 0.9999999}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
@@ -1834,6 +1834,7 @@ GameObject:
   - component: {fileID: 2104452536}
   - component: {fileID: 2104452535}
   - component: {fileID: 2104452539}
+  - component: {fileID: 2104452540}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1901,7 +1902,7 @@ Transform:
   m_GameObject: {fileID: 2104452534}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1.0000001, z: 0.99999994}
   m_Children:
   - {fileID: 308270638}
   m_Father: {fileID: 0}
@@ -1919,8 +1920,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2c687717f027994d995cc41a20c9797, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  depthShader: {fileID: 4800000, guid: 94714af39165dca4b8c9bda04db860b3, type: 3}
-  depthMat: {fileID: 2100000, guid: c37d1b0b8c59de043bc38fb86fc2c789, type: 2}
+  outlineMat: {fileID: 2100000, guid: 6abbd9c41a583574fb0833007c877c88, type: 2}
+--- !u!114 &2104452540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2104452534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5f860fa0d5f69d4a9596cca24bc1e54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waveShader: {fileID: 4800000, guid: bff4a2ec768bd8247a22e0ffad695941, type: 3}
+  waveColour: {r: 0, g: 0, b: 0, a: 0}
+  waveDistance: 6.666667
+  waveMat: {fileID: 0}
 --- !u!1 &2145135481
 GameObject:
   m_ObjectHideFlags: 0

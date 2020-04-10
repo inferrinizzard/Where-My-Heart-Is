@@ -115,6 +115,7 @@ public class Player : Singleton<Player>, IStateMachine
 		canMove = true;
 		looking = false;
 		window.world = World.Instance;
+		window.cam = cam;
 		VFX.ToggleMask(false);
 		window.Invoke("CreateFoVMesh", 1);
 	}
@@ -374,6 +375,7 @@ public class Player : Singleton<Player>, IStateMachine
 		{
 			// SetState(new Cut(this));
 			window.ApplyCut();
+			hands.RevertAim();
 			audioController.PlaceWindow();
 			heartWindow.SetActive(false);
 			VFX.ToggleMask(false);
