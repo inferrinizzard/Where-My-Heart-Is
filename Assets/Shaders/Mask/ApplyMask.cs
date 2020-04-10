@@ -26,8 +26,10 @@ public class ApplyMask : MonoBehaviour
 
 		// get ref to heart world cam and assign generated RenderTexture
 		mainCam = GetComponent<Camera>();
+		mainCam.depthTextureMode = mainCam.depthTextureMode | DepthTextureMode.DepthNormals;
 		heartCam = this.GetComponentOnlyInChildren<Camera>();
 		heart = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
+		heartCam.depthTextureMode = heartCam.depthTextureMode | DepthTextureMode.DepthNormals;
 		heart.name = "Heart World";
 		heartCam.targetTexture = heart;
 

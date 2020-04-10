@@ -549,8 +549,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43ddf123199201b4180c2144089a2d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  glowMaterial: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
+  outlineShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
   depthCheck: 0
+  outlineColour: {r: 0, g: 0, b: 1, a: 1}
 --- !u!64 &203059684820443497
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1105,9 +1106,6 @@ MonoBehaviour:
   player: {fileID: 0}
   active: 0
   prompt: Press E to Interact
-  hasFlavorText: 0
-  flavorText: 
-  dialogue: {fileID: 0}
   preview: {fileID: 0}
   manualTarget: 
 --- !u!1 &203059685307545870
@@ -1917,8 +1915,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43ddf123199201b4180c2144089a2d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  glowMaterial: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
+  outlineShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
   depthCheck: 0
+  outlineColour: {r: 0, g: 0, b: 1, a: 1}
 --- !u!64 &203059686380578848
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1995,9 +1994,6 @@ MonoBehaviour:
   player: {fileID: 0}
   active: 0
   prompt: Press E to Interact
-  hasFlavorText: 0
-  flavorText: 
-  dialogue: {fileID: 0}
   preview: {fileID: 0}
   manualTarget: 
 --- !u!1 &203059686410720106

@@ -10,6 +10,7 @@ public abstract class InteractableObject : MonoBehaviour
 	public string prompt = "Press E to Interact";
 	string flavorText = "";
 	DialogueSystem dialogue;
+	System.Action glowFunction = null;
 
 	public virtual void Interact()
 	{
