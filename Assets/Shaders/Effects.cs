@@ -7,7 +7,7 @@ using UnityEngine;
 public class Effects : MonoBehaviour
 {
 	Fade fadeController;
-	Wave waveController;
+	[HideInInspector] public Wave waveController; // TODO: add wave controller?
 	bool outlineOn = true;
 	bool bloomOn = false;
 	bool dissolveOn = false;
@@ -21,6 +21,8 @@ public class Effects : MonoBehaviour
 		ToggleMask(false);
 		ToggleEdgeOutline(outlineOn);
 		ToggleDissolve(dissolveOn);
+		ToggleBoil(true);
+		ToggleBird(true);
 	}
 
 	void Update()
@@ -52,14 +54,16 @@ public class Effects : MonoBehaviour
 	/// <summary> toggles edge outline on and off </summary>
 	/// <param name="on"> Is edge outline on? </summary>
 	public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE");
-
 	public void ToggleBloom(bool on) => ToggleEffect(on, "BLOOM");
-
 	public void ToggleDissolve(bool on) => ToggleEffect(on, "DISSOLVE");
+	public void ToggleBoil(bool on) => ToggleEffect(on, "BOIL");
+	public void ToggleWave(bool on) => ToggleEffect(on, "WAVE");
+	public void ToggleBird(bool on) => ToggleEffect(on, "BIRD");
 
 	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
 
-	public void SetWave(float distance) => waveController.waveDistance = distance;
+	// public void SetWave(float distance) => waveController.waveDistance = distance;
+	public void SetWave(float distance) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", distance);
 
 	void ToggleEffect(bool on, string keyword)
 	{

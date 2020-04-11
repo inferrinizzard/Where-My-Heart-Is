@@ -6,16 +6,24 @@ Shader "Mask/Merge"
 
 		_Intensity("Intensity", float) = 2
 
+		[Header(Boil)]
 		_HatchTex ("Hatch Texture", 2D) = "white" {}
-		_Size ("Size", Int) = 3
-		_Speed ("Speed", Int) = 10
-		_Distortion ("Distortion Amount", Range(1, 1000)) = 700
-		_NoiseSpeed ("Distortion Rate", Range(1, 500)) = 400
-		_Colour ("Outline Color", Color) = (0, 0, 0, 1)
-		_NormalMult ("Normal Outline Multiplier", Range(0, 4)) = 1
-		_NormalBias ("Normal Outline Bias", Range(1, 4)) = 1
+		_HatchSize ("Size", Int) = 3
+		_HatchSpeed ("Speed", Int) = 5
+		_Distortion ("Distortion Amount", Range(1, 1000)) = 1000
+		_NoiseSpeed ("Distortion Rate", Range(1, 500)) = 200
+		_DepthOutlineColour ("Outline Color", Color) = (1, 1, 1, 1)
+		_NormalMult ("Normal Outline Multiplier", Range(0, 4)) = 0.4
+		_NormalBias ("Normal Outline Bias", Range(1, 4)) = 4
 		_DepthMult ("Depth Outline Multiplier", Range(0, 4)) = 1
-		_DepthBias ("Depth Outline Bias", Range(1, 4)) = 1
+		_DepthBias ("Depth Outline Bias", Range(1, 4)) = 1.6
+
+		[Header(Wave)]
+		_WaveDistance ("Distance from player", float) = 0
+		_WaveTrail ("Length of the trail", Range(0,5)) = 1
+		_WaveColour ("Colour", Color) = (0, 0, 1, 1)
+
+		_Background ("Texture", 2D) = "white" {}
 	}
 	SubShader {
 		Tags { "Queue" = "Transparent" }
@@ -53,6 +61,7 @@ Shader "Mask/Merge"
 			float _Intensity;
 			// float4 _Filter;
 
+			sampler2D _CameraDepthTexture;
 			sampler2D _CameraDepthNormalsTexture;
 			float4 _CameraDepthNormalsTexture_TexelSize;
 			static const float4x2 dirs = { 0, 1, 1, 0, 0, -1, -1, 0 };
@@ -68,6 +77,9 @@ Shader "Mask/Merge"
 			float _WaveDistance;
 			float _WaveTrail;
 			float4 _WaveColour;
+
+			sampler2D _BirdMask;
+			sampler2D _Background;
 
 			void Compare(inout float depthOutline, inout float normalOutline, float baseDepth, float3 baseNormal, float2 uv, float2 offset) {
 				//read neighbor pixel
@@ -106,6 +118,7 @@ Shader "Mask/Merge"
 			}
 
 			fixed4 frag (v2f_img i) : SV_Target {
+				// return tex2D(_BirdMask, i.uv);
 				float4 output;
 				#if MASK
 					float mask = tex2D(_Mask, i.uv).r;
@@ -143,23 +156,17 @@ Shader "Mask/Merge"
 					}
 				#endif
 
-				#if BOIL || WAVE
+				#if BOIL
+					float texIndex = floor(_Time.y * _HatchSpeed % 9);
+					float row = 1 + texIndex % (_HatchSize - 1);
+					float col = floor(texIndex / _HatchSize);
+					
 					float4 depthNormal = tex2D(_CameraDepthNormalsTexture, i.uv);
 
 					float3 normal;
-					float depth;
-					DecodeDepthNormal(depthNormal, depth, normal);
-				#endif
-
-				#if BOIL
-					float texIndex = floor(_Time.y * _Speed % 9);
-					float row = 1 + texIndex % (_Size - 1);
-					float col = floor(texIndex / _Size);
-					
-					// save depth here and use to reduce outline size / don't show after certain distance
-
-					//get depth as distance from camera in units 
-					float boilDepth *= _ProjectionParams.z;
+					float boilDepth;
+					DecodeDepthNormal(depthNormal, boilDepth, normal);
+					boilDepth *= _ProjectionParams.z;
 
 					float depthDifference = 0;
 					float normalDifference = 0;
@@ -175,28 +182,37 @@ Shader "Mask/Merge"
 					normalDifference = pow(normalDifference, _NormalBias);
 
 					float outline = normalDifference + depthDifference;
-					float4 color = lerp(output, _Colour, outline);
-					if(!rgbEquals(output, color)) output *= tex2D(_HatchTex, modUV(i.uv * _Size, row, col, _Size));
+					float4 color = lerp(output, _DepthOutlineColour, outline);
+					if(!rgbEquals(output, color)) { 
+						float4 preOutline = color * tex2D(_HatchTex, modUV(i.uv * _HatchSize, row, col, _HatchSize));
+						#if MASK
+							if(mask > .5) preOutline = 0; // TODO: heart world depth normal texture lookup;
+						#endif
+						output += preOutline;
+					}
 				#endif
 
 				#if WAVE
-					float waveDepth = Linear01Depth(depth);
-					waveDepth = waveDepth * _ProjectionParams.z;
+					float waveDepth = Linear01Depth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv)) * _ProjectionParams.z;
 
 					if(waveDepth < _ProjectionParams.z) {
-
-						float waveFront = step(depth, _WaveDistance);
-						float waveTrail = smoothstep(_WaveDistance - _WaveTrail, _WaveDistance, depth);
+						float waveFront = step(waveDepth, _WaveDistance);
+						float waveTrail = smoothstep(_WaveDistance - _WaveTrail, _WaveDistance, waveDepth);
 						float wave = waveFront * waveTrail;
 
 						output = lerp(output, _WaveColour, wave);
 					}
 				#endif
 
-				#if BIRD
-					float4 mask =  tex2D(_BirdMask, i.uv);
-					if(mask.r > 0 || mask.g > 0 || mask.b > 0) return float4(tex2D(_Background, i.uv + float2(_Time.x, _Time.x)).rgb, mask.b);
-				#endif
+				// #if BIRD
+				// 	float4 birdMask =  tex2D(_BirdMask, i.uv);
+				// 	if(birdMask.r > 0 || birdMask.g > 0 || birdMask.b > 0) {
+					// 		#if MASK
+					// 			if(mask > .5)  return 1 - float4(tex2D(_Background, i.uv + float2(_Time.x, _Time.x)).rgb, birdMask.b);
+					// 		#endif
+					// 		return float4(tex2D(_Background, i.uv + float2(_Time.x, _Time.x)).rgb, birdMask.b);
+				// 	}
+				// #endif
 
 				return output;
 			}

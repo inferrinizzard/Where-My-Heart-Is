@@ -60,6 +60,7 @@ public class Window : MonoBehaviour
 
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds)
 	{
+		Player.Instance.VFX.ToggleWave(true);
 		float startTime = Time.realtimeSinceStartup;
 		float sqrMagCurrent = 0;
 		foreach (var(clippable, type) in world.clippables)
@@ -85,6 +86,7 @@ public class Window : MonoBehaviour
 				startTime = Time.realtimeSinceStartup;
 			}
 		}
+		Player.Instance.VFX.ToggleWave(false);
 
 		// foreach (ClippableObject clippable in world.GetHeartObjects().OrderBy(obj => (obj.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList())
 		// {

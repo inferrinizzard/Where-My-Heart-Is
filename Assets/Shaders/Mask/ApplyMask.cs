@@ -11,11 +11,13 @@ public class ApplyMask : MonoBehaviour
 	///<summary> Shader that combines views </summary>
 	[SerializeField] Shader merge = default, transition = default;
 	///<summary> Generated material for screen shader </summary>
-	Material screenMat;
+	public Material screenMat;
 	[HideInInspector] public Material transitionMat;
 	///<summary> Generated RenderTexture for Heart World </summary>\
 	RenderTexture heart;
 	[SerializeField] Texture2D dissolveTexture = default;
+	[SerializeField] Texture2D hatchTexture = default;
+	[SerializeField] Texture2D birdBackground = default;
 	Texture2D curSave;
 	int _HeartID;
 
@@ -26,14 +28,17 @@ public class ApplyMask : MonoBehaviour
 
 		// get ref to heart world cam and assign generated RenderTexture
 		mainCam = GetComponent<Camera>();
-		mainCam.depthTextureMode = mainCam.depthTextureMode | DepthTextureMode.DepthNormals;
+		mainCam.depthTextureMode = mainCam.depthTextureMode | DepthTextureMode.DepthNormals | DepthTextureMode.Depth;
 		heartCam = this.GetComponentOnlyInChildren<Camera>();
 		heart = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
-		heartCam.depthTextureMode = heartCam.depthTextureMode | DepthTextureMode.DepthNormals;
+		heartCam.depthTextureMode = heartCam.depthTextureMode | DepthTextureMode.DepthNormals | DepthTextureMode.Depth;
 		heart.name = "Heart World";
 		heartCam.targetTexture = heart;
 
 		CreateMask();
+		screenMat.SetTexture("_HatchTex", hatchTexture);
+		screenMat.SetTexture("_Background", birdBackground);
+		// screenMat.SetColor("_DepthOutlineColour", Color.white);
 	}
 
 	public void CreateMask()

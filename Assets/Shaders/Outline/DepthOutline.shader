@@ -31,6 +31,8 @@
 			int _Size, _Speed;
 			float _Distortion, _NoiseSpeed;
 
+			sampler2D _CameraDepthTexture;
+			float4 _CameraDepthTexture_TexelSize;
 			sampler2D _CameraDepthNormalsTexture;
 			float4 _CameraDepthNormalsTexture_TexelSize;
 			static const float4x2 dirs = { 0, 1, 1, 0, 0, -1, -1, 0 };
@@ -45,9 +47,13 @@
 				float3 neighborNormal;
 				float neighborDepth;
 				DecodeDepthNormal(neighbour, neighborDepth, neighborNormal);
+
+				// float depth2 = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv + _CameraDepthTexture_TexelSize.xy * offset);
+
 				neighborDepth *= _ProjectionParams.z;
 
 				depthOutline += baseDepth - neighborDepth;
+				// depthOutline += (baseDepth - neighborDepth) * depth2;
 
 				float3 normalDifference = baseNormal - neighborNormal;
 				normalDifference = normalDifference.r + normalDifference.g + normalDifference.b;
@@ -93,6 +99,7 @@
 
 				float3 normal;
 				float depth;
+				// float depth2 = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
 				DecodeDepthNormal(depthNormal, depth, normal);
 
 				// save depth here and use to reduce outline size / don't show after certain distance

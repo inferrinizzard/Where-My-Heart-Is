@@ -25,7 +25,7 @@ public class BirdTrail : MonoBehaviour
 		drawMat = new Material(drawShader);
 		drawMat.SetColor("_Colour", new Color(0, 1, 1, 1));
 
-		cam = Camera.main;
+		cam = Player.Instance.GetComponentInChildren<Camera>() ?? Camera.main; // TODO: fix this reference
 		birdBuffer = new CommandBuffer();
 		birdBuffer.GetTemporaryRT(birdTemp, -1, -1, 24, FilterMode.Bilinear);
 		birdBuffer.SetRenderTarget(birdTemp);
