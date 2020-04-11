@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// <summary> Constrols app macro and scene manipulations </summary>
 public class GameManager : Singleton<GameManager>
 {
-	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "OneCut", "ComplexGate", "HalfCut 1", "AutumnFinal" };
+	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "OneCut", "ComplexGate", "HalfCut", "AutumnFinal" };
 	public int sceneIndex = -1;
 	public bool duringLoad;
 

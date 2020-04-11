@@ -9,9 +9,11 @@ public class PlayerTrigger : MonoBehaviour
 	public event Action OnPlayerEnter;
 	public event Action<PlayerTrigger> OnPlayerEnterID;
 	public bool destroyAfterTrigger;
-	public DialogueSystem dialogueSystem;
+	DialogueSystem dialogueSystem;
 
 	public string flavor;
+
+	void Start() => dialogueSystem = GameManager.Instance.dialogue;
 
 	private void OnTriggerEnter(Collider other)
 	{
