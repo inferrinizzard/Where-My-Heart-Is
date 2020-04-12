@@ -23,11 +23,10 @@
 		Tags { "RenderType"="Opaque" "LightMode"="ForwardBase"}
 		LOD 200
 
-		Blend SrcAlpha OneMinusSrcAlpha
+		// Blend SrcAlpha OneMinusSrcAlpha
 
 		CGPROGRAM
-		#pragma surface surf Standard vertex:vert
-		// #pragma surface surf Standard
+		#pragma surface surf BlinnPhong noforwardadd nolightmap vertex:vert
 		#pragma target 3.5
 		// #pragma debug
 
@@ -60,16 +59,15 @@
 		UNITY_INSTANCING_BUFFER_END(Props)
 		
 		fixed4 screen (fixed4 colA, fixed4 colB) {
-			fixed4 white = fixed4(1, 1, 1, 1);
-			return white - (white - colA) * (white - colB);
+			// fixed4 white = fixed4(1, 1, 1, 1);
+			return 1 - (1 - colA) * (1 - colB);
 		}
 
 		fixed4 softlight (fixed4 colA, fixed4 colB) {
-			fixed4 white = fixed4(1, 1, 1, 1);
-			return (white - 2 * colB) * pow(colA, 2) + 2 * colB * colA;
+			return (1 - 2 * colB) * pow(colA, 2) + 2 * colB * colA;
 		}
 
-		void vert (inout appdata_base v, out Input o) {
+		void vert (inout appdata_full v, out Input o) {
 			UNITY_INITIALIZE_OUTPUT(Input, o);
 			float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
@@ -98,7 +96,7 @@
 			// float atten = tex2D(_LightTextureB0, (attenUV * attenUV).xx).UNITY_ATTEN_CHANNEL;
 		}
 
-		void surf (Input IN, inout SurfaceOutputStandard o) {
+		void surf (Input IN, inout SurfaceOutput o) {
 			#if DISSOLVE
 				if(_Dissolve == 1) {
 					float camDist = distance(IN.worldPos, _WorldSpaceCameraPos + float3(_ViewDir.x, max(0, _ViewDir.y), _ViewDir.z));
