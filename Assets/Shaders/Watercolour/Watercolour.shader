@@ -57,6 +57,7 @@
 			#endif
 			float3 lightDir;
 			float4 lightColour;
+			float lightAtten;
 		};
 
 		UNITY_INSTANCING_BUFFER_START(Props)
@@ -78,6 +79,7 @@
 
 			float3 lightDir = float3(0, 0, 0);
 			float4 lightColour = float4(0, 0, 0, 0);
+			float lightAtten = 0;
 			int lights = 4;
 
 			// _WorldSpaceLightPos0 // direction of dir light, w = 0 if dir light, else 1
@@ -94,13 +96,16 @@
 				// float normDist = unity_4LightAtten0[i] * length(vertToLight, vertToLight);
 				float normMag = unity_4LightAtten0[i] * unity_4LightAtten0[i] * dot(vertToLight, vertToLight); // normDist^2
 				// lightAtten += 1 / (1 + _LightAttenBias * normDist * normDist);
-				lightColour.w += 1.0 / (1.0 + _LightAttenBias * normMag) * saturate((1 - sqrt(normMag)) * 5.0);
-				lightColour.xyz += unity_LightColor[i].xyz * unity_LightColor[i].a;
+				float atten = 1.0 / (1.0 + _LightAttenBias * normMag) * saturate((1 - sqrt(normMag)) * 5.0);
+				// lightColour.w += 1.0 / (1.0 + _LightAttenBias * normMag) * saturate((1 - sqrt(normMag)) * 5.0);
+				// lightColour.xyz += unity_LightColor[i].xyz * unity_LightColor[i].a;
+				lightAtten += atten;
+				lightColour += unity_LightColor[i] * atten;
 			}
 			o.lightDir = lightDir / lights;
-			// o.lightColour.w = saturate(lightColour.w);
-			// o.lightColour = lightColour;
-			o.lightColour = float4(lightColour.xyz / lights, saturate(lightColour.w));
+			// o.lightColour = float4(lightColour.xyz / lights, saturate(lightColour.w));
+			o.lightColour = lightColour / lights;
+			o.lightAtten = saturate(lightAtten);
 
 			// o.lightDir = normalize(lightDir);
 		}
@@ -122,7 +127,8 @@
 			c -= _BlotchSub;			
 			c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
 
-			float lightAtten = IN.lightColour.w;
+			// float lightAtten = IN.lightColour.w;
+			float lightAtten = IN.lightAtten;
 			// float f = (1 - dot(IN.worldNormal, IN.lightDir)) * lightAtten;
 			float f = lightAtten;
 			f = pow(f, _FresnelExponent);
@@ -136,8 +142,8 @@
 			
 			fixed4 ink = screen(_InkCol, fixed4(c, c, c, 1));
 
-			o.Albedo = IN.lightColour * lightAtten;
-			// o.Albedo = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength);
+			// o.Albedo = IN.lightColour * lightAtten;
+			o.Albedo = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength) + IN.lightColour * lightAtten;
 			// o.Albedo = IN.lightDir * lightAtten;
 			// o.Albedo = dot(IN.worldNormal, IN.lightDir);
 		}
