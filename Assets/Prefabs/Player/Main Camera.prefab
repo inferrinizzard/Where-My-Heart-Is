@@ -14,6 +14,8 @@ GameObject:
   - component: {fileID: 3177498603613522797}
   - component: {fileID: 3203434368716650614}
   - component: {fileID: 4576579170401598532}
+  - component: {fileID: 5757688750421981512}
+  - component: {fileID: 6582717167106706068}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: Untagged
@@ -139,6 +141,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b74220d8a90a986409ce73686e565930, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5757688750421981512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3177498603613522795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5f860fa0d5f69d4a9596cca24bc1e54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waveColour: {r: 0, g: 0, b: 1, a: 1}
+  waveDistance: 0
+--- !u!45 &6582717167106706068
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3177498603613522795}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 2100000, guid: 4ae888627536169469f26c3be32b0069, type: 2}
 --- !u!1 &3177498604957221190
 GameObject:
   m_ObjectHideFlags: 0

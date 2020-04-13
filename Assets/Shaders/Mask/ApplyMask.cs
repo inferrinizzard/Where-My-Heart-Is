@@ -83,8 +83,8 @@ public class ApplyMask : MonoBehaviour
 			Graphics.Blit(source, dest, screenMat);
 			// source.DiscardContents();
 			// heart.DiscardContents();
-			source.Release();
-			heart.Release();
+			// source.Release();
+			// heart.Release();
 			// ClearRT(heart, heartCam);
 			// ClearRT(source, mainCam);
 		}
