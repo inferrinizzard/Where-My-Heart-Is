@@ -28,7 +28,7 @@ public abstract class InteractableObject : MonoBehaviour
 	void OnMouseOver()
 	{
 		// if(!TryComponent<OutlineObject>())
-		if (!GetComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
+		if (!GetComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach && !player.heldObject)
 			glowFunction = Func.Lambda(() => GameManager.Instance.VFX.RenderGlowMap(GetComponentsInChildren<Renderer>()));
 		else
 			glowFunction = null;
