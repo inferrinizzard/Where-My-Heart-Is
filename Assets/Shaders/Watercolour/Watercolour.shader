@@ -15,9 +15,9 @@
 		_BlotchMulti ("Blotch Multiply", Range(0,16)) = 4
 		_BlotchSub ("Blotch Subtract", Range(0,8)) = 2
 
-		[PowerSlider(8)] _FresnelExponent ("Fresnel Exponent", Range(0, 4)) = 1
+		[PowerSlider(2)] _AttenExponent ("Attenuation Exponent", Range(0, 2)) = 1
 
-		_Dissolve ("Dissolve", int) = 0
+		// _Dissolve ("Dissolve", int) = 0
 		// _LightAttenBias ("Inverse Light Factor", Range(0,30)) = 25
 	}
 	SubShader {
@@ -38,9 +38,9 @@
 		half _TintScale;
 		half _PaperStrength;
 		fixed4 _Color, _Color2, _InkCol;
-		half _FresnelExponent;
+		half _AttenExponent;
 
-		int _Dissolve;
+		// int _Dissolve;
 		float3 _ViewDir;
 		float _ManualDissolve;
 
@@ -55,7 +55,7 @@
 			#if DISSOLVE
 				float3 worldPos;
 			#endif
-			float3 lightDir;
+			// float3 lightDir;
 			float4 lightColour;
 			float lightAtten;
 		};
@@ -77,7 +77,7 @@
 			UNITY_INITIALIZE_OUTPUT(Input, o);
 			float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
-			float3 lightDir = float3(0, 0, 0);
+			// float3 lightDir = float3(0, 0, 0);
 			float4 lightColour = float4(0, 0, 0, 0);
 			float lightAtten = 0;
 			int lights = 4;
@@ -92,17 +92,20 @@
 					continue;
 				}
 				float3 vertToLight = lightPos - worldPos;
-				lightDir += normalize(vertToLight);
+				// lightDir += normalize(vertToLight);
+
 				// float normDist = unity_4LightAtten0[i] * length(vertToLight, vertToLight);
 				float normMag = unity_4LightAtten0[i] * unity_4LightAtten0[i] * dot(vertToLight, vertToLight); // normDist^2
 				// lightAtten += 1 / (1 + _LightAttenBias * normDist * normDist);
 				float atten = 1.0 / (1.0 + _LightAttenBias * normMag) * saturate((1 - sqrt(normMag)) * 5.0);
+
 				// lightColour.w += 1.0 / (1.0 + _LightAttenBias * normMag) * saturate((1 - sqrt(normMag)) * 5.0);
 				// lightColour.xyz += unity_LightColor[i].xyz * unity_LightColor[i].a;
 				lightAtten += atten;
 				lightColour += unity_LightColor[i] * atten;
 			}
-			o.lightDir = lightDir / lights;
+			// o.lightDir = lightDir / lights;
+
 			// o.lightColour = float4(lightColour.xyz / lights, saturate(lightColour.w));
 			o.lightColour = lightColour / lights;
 			o.lightAtten = saturate(lightAtten);
@@ -112,11 +115,11 @@
 
 		void surf (Input IN, inout SurfaceOutput o) {
 			#if DISSOLVE
-				if(_Dissolve == 1) {
+				// if(_Dissolve == 1) {
 					float camDist = distance(IN.worldPos, _WorldSpaceCameraPos + float3(_ViewDir.x, max(0, _ViewDir.y), _ViewDir.z));
 					float isVisible = tex2D(_DetailTex, IN.uv_DetailTex).r * 0.999 - exp(-camDist);
-					clip(isVisible);
-				}
+					clip(isVisible); // TODO: set by alpha instead?
+				// }
 			#elif DISSOLVE_MANUAL
 				float isVisible = tex2D(_DetailTex, IN.uv_DetailTex).r * 0.999 - _ManualDissolve;
 				clip(isVisible);
@@ -131,21 +134,18 @@
 			float lightAtten = IN.lightAtten;
 			// float f = (1 - dot(IN.worldNormal, IN.lightDir)) * lightAtten;
 			float f = lightAtten;
-			f = pow(f, _FresnelExponent);
+			f = pow(f, _AttenExponent);
 
 			c = saturate(c * .3 + f);
 			c = tex2D (_RampTex, half2(1 - c, 0)).r;
 			c = saturate(c);
 
 			fixed4 tint = tex2D (_BlotchTex, IN.uv_BlotchTex / _TintScale);	
-			tint = lerp(_Color, _Color2, tint.r);
+			tint = lerp(_Color, _Color2, tint.r)  + IN.lightColour * f;
 			
 			fixed4 ink = screen(_InkCol, fixed4(c, c, c, 1));
 
-			// o.Albedo = IN.lightColour * lightAtten;
-			o.Albedo = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength) + IN.lightColour * lightAtten;
-			// o.Albedo = IN.lightDir * lightAtten;
-			// o.Albedo = dot(IN.worldNormal, IN.lightDir);
+			o.Albedo = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength);
 		}
 
 		void colour(Input IN, SurfaceOutput o, inout fixed4 color) {
