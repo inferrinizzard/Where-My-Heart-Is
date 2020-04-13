@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class Effects : MonoBehaviour
 {
 	Fade fadeController;
@@ -13,8 +14,11 @@ public class Effects : MonoBehaviour
 	bool bloomOn = true;
 	bool dissolveOn = false;
 
+	[SerializeField, Range(0, 30)] float lightPower = 5;
+
 	void Awake()
 	{
+		Shader.SetGlobalFloat("_LightAttenBias", 30 - lightPower);
 		fadeController = GetComponent<Fade>();
 		waveController = GetComponent<Wave>();
 
@@ -35,6 +39,10 @@ public class Effects : MonoBehaviour
 			ToggleBloom(bloomOn = !bloomOn);
 		if (Input.GetKeyDown(KeyCode.Alpha4))
 			ToggleDissolve(dissolveOn = !dissolveOn);
+
+#if UNITY_EDITOR
+		Shader.SetGlobalFloat("_LightAttenBias", 30 - lightPower);
+#endif
 	}
 #endif
 

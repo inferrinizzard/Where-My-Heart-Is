@@ -18,15 +18,15 @@
 		[PowerSlider(8)] _FresnelExponent ("Fresnel Exponent", Range(0, 4)) = 1
 
 		_Dissolve ("Dissolve", int) = 0
-		_LightAttenBias ("Inverse Light Factor", Range(0,30)) = 25
+		// _LightAttenBias ("Inverse Light Factor", Range(0,30)) = 25
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" "LightMode"="ForwardBase"}
 		LOD 200
 
 		CGPROGRAM
-		#pragma surface surf BlinnPhong noforwardadd nolightmap vertex:vert
-		#pragma target 3.5
+		#pragma surface surf BlinnPhong noforwardadd nolightmap vertex:vert finalcolor:colour
+		#pragma target 3.0
 
 		#pragma multi_compile_local __ DISSOLVE DISSOLVE_MANUAL
 
@@ -47,15 +47,16 @@
 		float _LightAttenBias;
 
 		struct Input {
-			float2 uv_BlotchTex, uv_DetailTex, uv_PaperTex;
-			float2 uv_RampTex;
+			float2 uv_BlotchTex : TEXCOORD0;
+			float2 uv_DetailTex : TEXCOORD1;
+			float2 uv_PaperTex : TEXCOORD2;
+			float2 uv_RampTex : TEXCOORD3;
 			float3 worldNormal;
 			#if DISSOLVE
 				float3 worldPos;
 			#endif
 			float3 lightDir;
-			float3 lightColour; // maybe combine lightAtten as w;
-			float lightAtten;
+			float4 lightColour;
 		};
 
 		UNITY_INSTANCING_BUFFER_START(Props)
@@ -76,8 +77,7 @@
 			float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
 
 			float3 lightDir = float3(0, 0, 0);
-			float3 lightColour = float3(0, 0, 0);
-			float lightAtten = 0;
+			float4 lightColour = float4(0, 0, 0, 0);
 			int lights = 4;
 
 			// _WorldSpaceLightPos0 // direction of dir light, w = 0 if dir light, else 1
@@ -94,12 +94,14 @@
 				// float normDist = unity_4LightAtten0[i] * length(vertToLight, vertToLight);
 				float normMag = unity_4LightAtten0[i] * unity_4LightAtten0[i] * dot(vertToLight, vertToLight); // normDist^2
 				// lightAtten += 1 / (1 + _LightAttenBias * normDist * normDist);
-				lightAtten += 1.0 / (1.0 + _LightAttenBias * normMag) * saturate((1 - sqrt(normMag)) * 5.0);
-				lightColour += unity_LightColor[i];
+				lightColour.w += 1.0 / (1.0 + _LightAttenBias * normMag) * saturate((1 - sqrt(normMag)) * 5.0);
+				lightColour.xyz += unity_LightColor[i].xyz * unity_LightColor[i].a;
 			}
 			o.lightDir = lightDir / lights;
-			o.lightAtten = saturate(lightAtten);
-			o.lightColour = lightColour;
+			// o.lightColour.w = saturate(lightColour.w);
+			// o.lightColour = lightColour;
+			o.lightColour = float4(lightColour.xyz / lights, saturate(lightColour.w));
+
 			// o.lightDir = normalize(lightDir);
 		}
 
@@ -120,7 +122,9 @@
 			c -= _BlotchSub;			
 			c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
 
-			float f = (1 - dot(IN.worldNormal, IN.lightDir)) * IN.lightAtten;
+			float lightAtten = IN.lightColour.w;
+			// float f = (1 - dot(IN.worldNormal, IN.lightDir)) * lightAtten;
+			float f = lightAtten;
 			f = pow(f, _FresnelExponent);
 
 			c = saturate(c * .3 + f);
@@ -132,10 +136,14 @@
 			
 			fixed4 ink = screen(_InkCol, fixed4(c, c, c, 1));
 
-			o.Albedo = IN.lightAtten;
+			o.Albedo = IN.lightColour * lightAtten;
 			// o.Albedo = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength);
-			// o.Albedo = IN.lightDir * IN.lightAtten;
+			// o.Albedo = IN.lightDir * lightAtten;
 			// o.Albedo = dot(IN.worldNormal, IN.lightDir);
+		}
+
+		void colour(Input IN, SurfaceOutput o, inout fixed4 color) {
+			// color += IN.lightColour;
 		}
 		ENDCG
 	}
