@@ -16,12 +16,15 @@ public class Window : MonoBehaviour
 	public GameObject fieldOfViewSource;
 	public GameObject fieldOfView;
 	public CSG.Model fieldOfViewModel;
-	public Material tempMaterial;
+    public GameObject mirror;
 	public int framerateTarget;
 
-    private float initialTime;
+    [HideInInspector] public float fovDistance; 
 
-	void Start()
+    private float initialTime;
+    private bool cutInProgress;
+
+    void Start()
 	{
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
 		//Invoke("CreateFoVMesh", 0.5f); //TODO: extreme hack
@@ -29,12 +32,17 @@ public class Window : MonoBehaviour
 
 	public void ApplyCut()
 	{
+        if(cutInProgress)
+        {
+            Debug.Log("Cut attempted during other cut");
+            return;
+        }
+        cutInProgress = true;
         initialTime = Time.realtimeSinceStartup;
         world.ResetCut();
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh, fieldOfView.transform);
 		fieldOfViewModel.ConvertToWorld();
-		fieldOfViewModel.Draw(Color.red);
-		StartCoroutine(ApplyCutCoroutine(1f / ((float) framerateTarget), new Bounds(fieldOfView.GetComponent<MeshCollider>().bounds.center, fieldOfView.GetComponent<MeshCollider>().bounds.size)));
+		StartCoroutine(ApplyCutCoroutine(1f / ((float) framerateTarget), new Bounds(fieldOfView.GetComponent<MeshCollider>().bounds.center, fieldOfView.GetComponent<MeshCollider>().bounds.size), fieldOfViewModel));
 	}
 
 	/*private void ApplyCutSynchronous()
@@ -56,15 +64,17 @@ public class Window : MonoBehaviour
 		}
 	}*/
 
-	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds)
+	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds, CSG.Model boundModel)
 	{
         float startTime = Time.realtimeSinceStartup;
 
-		foreach (ClippableObject clippable in world.GetHeartObjects())
+        
+
+        foreach (ClippableObject clippable in world.GetHeartObjects())
 		{
 			if (IntersectsBounds(clippable, bounds))
 			{
-				clippable.UnionWith(fieldOfViewModel);
+				clippable.UnionWith(boundModel);
 			}
 
 			if (Time.realtimeSinceStartup - startTime > frameLength)
@@ -78,7 +88,7 @@ public class Window : MonoBehaviour
 		{
 			if (IntersectsBounds(clippable, bounds))
 			{
-				clippable.Subtract(fieldOfViewModel);
+				clippable.Subtract(boundModel);
 			}
 
 			if (Time.realtimeSinceStartup - startTime > frameLength)
@@ -99,7 +109,7 @@ public class Window : MonoBehaviour
 			{
 				if (IntersectsBounds(clippable, bounds))
 				{
-					clippable.UnionWith(fieldOfViewModel);
+					clippable.UnionWith(boundModel);
 				}
 
 				if (Time.realtimeSinceStartup - startTime > frameLength)
@@ -112,7 +122,7 @@ public class Window : MonoBehaviour
 			{
 				if (IntersectsBounds(clippable, bounds))
 				{
-					clippable.Subtract(fieldOfViewModel);
+					clippable.Subtract(boundModel);
 				}
 
 				if (Time.realtimeSinceStartup - startTime > frameLength)
@@ -123,6 +133,20 @@ public class Window : MonoBehaviour
 			}
 		}
 
+        if (mirror.GetComponent<ClippableObject>().CachedModel.Intersects(boundModel, 0.0001f, true))
+        {
+            CSG.Model mirrorBoundModel = mirror.GetComponent<Mirror>().CreateBound();
+
+            foreach (ClippableObject clippable in world.GetHeartObjects())
+            {
+                Debug.Log("clipping " + clippable);
+                mirrorBoundModel.FlipNormals();
+                ClippableObject clipTarget = clippable.uncutCopy ? clippable.uncutCopy.GetComponent<ClippableObject>() : clippable;
+                clipTarget.GetComponent<ClippableObject>().UnionMirrored(mirrorBoundModel, mirror.GetComponent<Mirror>().reflectionMatrix);
+            }
+        }
+
+        cutInProgress = false;
         Debug.Log(Time.realtimeSinceStartup - initialTime);
 	}
 
@@ -151,9 +175,9 @@ public class Window : MonoBehaviour
 	{
 		Bounds sceneBound = GetSceneBounds();
 
-		float distance = sceneBound.extents.magnitude * 2;
+		fovDistance = Mathf.Max(sceneBound.size.magnitude, 40f);
 
-		Mesh sourceMesh = fieldOfViewSource.GetComponent<MeshFilter>().mesh;
+        Mesh sourceMesh = fieldOfViewSource.GetComponent<MeshFilter>().mesh;
 
 		CSG.Model model = new CSG.Model(fieldOfViewSource.GetComponent<MeshFilter>().mesh);
 		List<CSG.Vertex> toIgnore = new List<CSG.Vertex>();
@@ -165,12 +189,12 @@ public class Window : MonoBehaviour
 			}
 		});
 
-		model.ConvertToWorld(fieldOfView.transform.localToWorldMatrix);
+		model.ApplyTransformation(fieldOfView.transform.localToWorldMatrix);
 
 		// project out the points of the original surface
 		model.vertices.ForEach(vertex =>
 		{
-			vertex.value = camera.transform.position + (vertex.value - camera.transform.position).normalized * distance;
+			vertex.value = camera.transform.position + (vertex.value - camera.transform.position).normalized * fovDistance;
 		});
 		// flip their normals
 
@@ -195,9 +219,10 @@ public class Window : MonoBehaviour
 	{
 		ClippableObject[] clippables = FindObjectsOfType<ClippableObject>();
 
-		Bounds bound = clippables[0].GetComponent<MeshCollider>().bounds;
+        //Bounds bound = clippables[0].GetComponent<MeshCollider>().bounds;
+        Bounds bound = new Bounds(Player.Instance.transform.position, clippables[0].GetComponent<MeshCollider>().bounds.size);
 
-		for (int i = 1; i < clippables.Length; i++)
+		for (int i = 0; i < clippables.Length; i++)
 		{
 			bound.Encapsulate(clippables[i].GetComponent<MeshCollider>().bounds);
 		}

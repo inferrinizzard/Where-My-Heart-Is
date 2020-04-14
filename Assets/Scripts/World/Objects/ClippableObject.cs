@@ -10,7 +10,9 @@ public class ClippableObject : MonoBehaviour
 	[HideInInspector] public bool isClipped;
 	[HideInInspector] public GameObject uncutCopy;
 
-	public CSG.Model CachedModel
+    private GameObject mirroredCopy;
+
+    public CSG.Model CachedModel
 	{
 		get
 		{
@@ -55,7 +57,9 @@ public class ClippableObject : MonoBehaviour
 	public virtual void UnionWith(CSG.Model other)
 	{
 		isClipped = true;
+
 		mat.SetInt(_DissolveID, 0);
+
 		uncutCopy = Instantiate(gameObject, transform.position, transform.rotation, transform);
 		uncutCopy.transform.localScale = Vector3.one;
 		oldLayer = gameObject.layer;
@@ -72,6 +76,28 @@ public class ClippableObject : MonoBehaviour
 		UpdateInteractable();
 	}
 
+    public virtual void UnionMirrored(CSG.Model other, Matrix4x4 reflectionMatrix)
+    {
+        CSG.Model model = CachedModel;
+        mirroredCopy = Instantiate(gameObject, transform.position, transform.rotation);
+        mirroredCopy.transform.position = reflectionMatrix.MultiplyPoint(transform.position);
+        //mirroredCopy.transform.localScale = reflectionMatrix.MultiplyVector(transform.localScale);
+
+        if (!volumeless)
+            mirroredCopy.GetComponent<MeshFilter>().mesh = CSG.Operations.Intersect(model, other, true, mirroredCopy.transform.worldToLocalMatrix * reflectionMatrix);
+        else
+            mirroredCopy.GetComponent<MeshFilter>().mesh = CSG.Operations.ClipAToB(model, other, true, true, mirroredCopy.transform.worldToLocalMatrix * reflectionMatrix);
+
+        other.Draw(Color.red);
+
+        if (this.TryComponent(out MeshCollider col))
+            col.sharedMesh = meshFilter.mesh;
+
+        Debug.Log(mirroredCopy);
+
+        mirroredCopy.layer = 9;
+    }
+
 	public virtual void Revert()
 	{
 		isClipped = false;
@@ -81,8 +107,13 @@ public class ClippableObject : MonoBehaviour
 		//GetComponent<Collider>().enabled = false;
 		if (uncutCopy)
 		{
+            uncutCopy.GetComponent<ClippableObject>().Revert();
 			DestroyImmediate(uncutCopy);
 		}
+        if(mirroredCopy)
+        {
+            DestroyImmediate(mirroredCopy);
+        }
 
 		UpdateInteractable();
 
