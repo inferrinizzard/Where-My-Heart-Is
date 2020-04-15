@@ -60,14 +60,13 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player gravity variable. </summary>
 	[SerializeField] float gravity = 25f;
 	/// <summary> Player jump force. </summary>
-	public float jumpForce = 7f;
+	[SerializeField] float jumpForce = 7f;
 	/// <summary> Mouse sensitivity for camera rotation. </summary>
 	public static float mouseSensitivity = 2f;
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
 	public bool windowEnabled = true;
-	public bool sceneActive;
-	public float fadeDuration;
+	[SerializeField] float fadeDuration;
 
 	// [Header("Camera Variables")]
 	/// <summary> Bounds angle the player can look upward. </summary>
@@ -78,7 +77,6 @@ public class Player : Singleton<Player>, IStateMachine
 
 	void Start()
 	{
-		sceneActive = true;
 		characterController = GetComponent<CharacterController>();
 		cam = GetComponentInChildren<Camera>();
 		VFX = cam.GetComponent<Effects>();
@@ -120,38 +118,24 @@ public class Player : Singleton<Player>, IStateMachine
 		window.Invoke("CreateFoVMesh", 1);
 	}
 
-	public override void OnBeginTransition()
+	public override void OnExitScene()
 	{
 		characterController.enabled = false;
-		sceneActive = false;
 	}
 
-	public override void OnCompleteTransition()
+	public override void OnEnterScene()
 	{
-		window.CreateFoVMesh();
+		// window.CreateFoVMesh();
 
 		DialoguePacket packet = FindObjectOfType<DialoguePacket>();
 		if (packet != null)
 		{
-			DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
-			StartCoroutine(dialogueSystem.WriteDialogue(packet.text));
-			dialogueSystem.TextComplete += EndSceneTransitionHelper;
+			// DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
+			StartCoroutine(GameManager.Instance.dialogue.WriteDialogue(packet.text));
 		}
-		else
-		{
-			EndSceneTransitionHelper();
-		}
-	}
 
-	private void EndSceneTransitionHelper(DialogueSystem dialogueSystem = null)
-	{
-		if (dialogueSystem != null)
-		{
-			dialogueSystem.TextComplete -= EndSceneTransitionHelper;
-		}
 		Initialize();
 		characterController.enabled = true;
-		Player.Instance.sceneActive = true;
 		VFX.StartFade(true, fadeDuration);
 	}
 
@@ -200,7 +184,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 	void FixedUpdate()
 	{
-		if (sceneActive)
+		if (!GameManager.Instance.duringLoad)
 		{
 			if (canMove)
 			{
@@ -361,7 +345,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player aiming function. </summary>
 	private void Aiming()
 	{
-		if (windowEnabled && !heldObject && sceneActive)
+		if (windowEnabled && !heldObject && !GameManager.Instance.duringLoad)
 		{
 			SetState(new Aiming(this));
 			StartCoroutine(hands.WaitAndAim());

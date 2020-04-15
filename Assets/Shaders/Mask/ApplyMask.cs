@@ -18,6 +18,7 @@ public class ApplyMask : MonoBehaviour
 	[SerializeField] Texture2D dissolveTexture = default;
 	[SerializeField] Texture2D hatchTexture = default;
 	[SerializeField] Texture2D birdBackground = default;
+	Texture2D persistentMask;
 	Texture2D curSave;
 	int _HeartID;
 
@@ -67,7 +68,7 @@ public class ApplyMask : MonoBehaviour
 		var mask2D = new Texture2D(mask.width, mask.height);
 		mask2D.ReadPixels(new Rect(0, 0, mask.width, mask.height), 0, 0);
 		mask2D.Apply();
-		Shader.SetGlobalTexture("_Mask", Instantiate(mask2D));
+		Shader.SetGlobalTexture("_Mask", persistentMask = mask2D);
 		RenderTexture.active = screen;
 
 		// remove temp cam

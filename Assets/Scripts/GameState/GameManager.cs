@@ -12,9 +12,6 @@ public class GameManager : Singleton<GameManager>
 	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "OneCut", "ComplexGate", "HalfCut", "AutumnFinal" };
 	public int sceneIndex = -1;
 	public bool duringLoad;
-
-	// [HideInInspector] public float loadProgress;
-
 	public DialogueSystem dialogue;
 	public Prompt prompt;
 	public Effects VFX;
@@ -33,7 +30,8 @@ public class GameManager : Singleton<GameManager>
 	{
 		sceneIndex = levels.ToList().FindIndex(name => name == SceneManager.GetActiveScene().name);
 		World.Instance.name += $" [{SceneManager.GetActiveScene().name}]";
-		SceneManager.sceneLoaded += CreateSceneLoader;
+		SceneManager.sceneLoaded += new UnityEngine.Events.UnityAction<Scene, LoadSceneMode>((scene, _) => OnEnterScene());
+		// SceneManager.activeSceneChanged += new UnityEngine.Events.UnityAction<Scene, Scene>((_, __) => this.Print("ActiveSceneChanged", SceneManager.GetActiveScene().name));
 	}
 
 	/// <summary> Closes the Application </summary>
@@ -43,37 +41,18 @@ public class GameManager : Singleton<GameManager>
 		Application.Quit();
 	}
 
-	/// <summary> Will delegate sub Reset calls </summary>
-	public override void OnBeginTransition()
-	{
-		GetIPersistents().ForEach(singleton => singleton.OnBeginTransition());
-	}
-
 	public void ChangeLevel(string scene) => Transition(scene); // temp, to be deleted
 
 	/// <summary> Starts Coroutine to load scene async  </summary>
 	/// <param name="scene"> Name of scene to load  </param>
-	public static void Transition(string scene)
-	{
-		instance.StartCoroutine(LoadScene(scene));
-	}
-
-	private List<IPersistent> GetIPersistents()
-	{
-		// TODO: fix this
-		List<IPersistent> result = FindObjectsOfType<MonoBehaviour>().OfType<IPersistent>().Where(persistent => (object) persistent != this).ToList();
-		return result;
-	}
+	public static void Transition(string scene) => instance.StartCoroutine(LoadScene(scene));
 
 	/// <summary> Loads scene asynchronously, will transition when ready </summary>
 	/// <param name="scene"> Name of scene to load  </param>
 	static IEnumerator LoadScene(string name, float minDuration = 3)
 	{
 		instance.duringLoad = true;
-		// instance.loadProgress = 0;
-		instance.OnBeginTransition();
-
-		List<IPersistent> persistents = instance.GetIPersistents();
+		Player.Instance.OnExitScene();
 
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(name);
 		asyncLoad.allowSceneActivation = false;
@@ -91,7 +70,7 @@ public class GameManager : Singleton<GameManager>
 			float loadProgress = Mathf.Min(asyncLoad.progress / .9f, currentTime / minDuration);
 			transitionMat.SetFloat(_CutoffID, loadProgress * 2); // add curve here
 
-			persistents.ForEach(persistent => persistent.TransitionUpdate());
+			Player.Instance.TransitionUpdate();
 
 			if (asyncLoad.progress >= .9f && currentTime > minDuration)
 				inProgress = false;
@@ -101,15 +80,10 @@ public class GameManager : Singleton<GameManager>
 		instance.duringLoad = false;
 	}
 
-	public void CreateSceneLoader(Scene from, LoadSceneMode mode = LoadSceneMode.Single)
-	{
-		Instantiate(new GameObject()).AddComponent<SceneLoader>();
-	}
-
-	public override void OnCompleteTransition()
+	public override void OnEnterScene()
 	{
 		World.Instance.name += $"[{levels[++sceneIndex]}]";
-		GetIPersistents().ForEach(persistent => persistent.OnCompleteTransition());
+		Player.Instance.OnEnterScene();
 	}
 
 	/// <summary> Unloads scene asynchronously </summary>
