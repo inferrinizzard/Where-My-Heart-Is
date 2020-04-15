@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 
@@ -10,6 +11,50 @@ public class World : MonoBehaviour
 	public Transform heartWorldContainer;
 	public Transform realWorldContainer;
 	public Transform entangledWorldContainer;
+
+	public enum WorldType { Real, Heart, Entangled }
+
+	List<ClippableObject> heartClippables, realClippables;
+
+	[HideInInspector] public List < (ClippableObject, WorldType) > clippables
+	{
+		get
+		{
+			List < (ClippableObject, WorldType) > objs = new List < (ClippableObject, WorldType) > ();
+			foreach (ClippableObject c in heartClippables)
+				objs.Add((c, WorldType.Heart));
+			foreach (ClippableObject c in realClippables)
+				objs.Add((c, WorldType.Real));
+
+			// foreach (ClippableObject c in heartWorldContainer.GetComponentsInChildren<ClippableObject>())
+			// 	objs.Add((c, WorldType.Heart));
+			// foreach (ClippableObject c in realWorldContainer.GetComponentsInChildren<ClippableObject>())
+			// 	objs.Add((c, WorldType.Real));
+			// foreach (EntangledClippable e in entangledWorldContainer.GetComponentsInChildren<EntangledClippable>())
+			// {
+			// 	foreach (ClippableObject c in e.heartObject.GetComponentsInChildren<ClippableObject>())
+			// 		objs.Add((c, WorldType.Heart));
+			// 	foreach (ClippableObject c in e.realObject.GetComponentsInChildren<ClippableObject>())
+			// 		objs.Add((c, WorldType.Real));
+			// }
+			return objs.OrderBy(pair => (pair.Item1.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList();
+		}
+	}
+
+	public ClippableObject[] GetHeartObjects()
+	{
+		return heartWorldContainer.GetComponentsInChildren<ClippableObject>(); // TODO: do these ever change?
+	}
+
+	public ClippableObject[] GetRealObjects()
+	{
+		return realWorldContainer.GetComponentsInChildren<ClippableObject>();
+	}
+
+	public ClippableObject[] GetEntangledObjects()
+	{
+		return entangledWorldContainer.GetComponentsInChildren<EntangledClippable>();
+	}
 
 	public void Awake()
 	{
@@ -24,6 +69,14 @@ public class World : MonoBehaviour
 
 		ConfigureWorld("Heart", heartWorldContainer);
 		ConfigureWorld("Real", realWorldContainer);
+
+		heartClippables = heartWorldContainer.GetComponentsInChildren<ClippableObject>().ToList();
+		realClippables = realWorldContainer.GetComponentsInChildren<ClippableObject>().ToList();
+		foreach (EntangledClippable e in entangledWorldContainer.GetComponentsInChildren<EntangledClippable>())
+		{
+			heartClippables.AddRange(e.heartObject.GetComponentsInChildren<ClippableObject>());
+			realClippables.AddRange(e.realObject.GetComponentsInChildren<ClippableObject>());
+		}
 	}
 
 	/*public void Initialize()
@@ -99,20 +152,5 @@ public class World : MonoBehaviour
 		// foreach (Transform child in entangledWorldContainer)
 		// 	foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
 		// 		if (obj.isClipped) obj.Revert();
-	}
-
-	public ClippableObject[] GetHeartObjects()
-	{
-		return heartWorldContainer.GetComponentsInChildren<ClippableObject>(); // TODO: do these ever change?
-	}
-
-	public ClippableObject[] GetRealObjects()
-	{
-		return realWorldContainer.GetComponentsInChildren<ClippableObject>();
-	}
-
-	public ClippableObject[] GetEntangledObjects()
-	{
-		return entangledWorldContainer.GetComponentsInChildren<EntangledClippable>();
 	}
 }

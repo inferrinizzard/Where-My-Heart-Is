@@ -12,29 +12,31 @@ using UnityEngine;
 public class Window : MonoBehaviour
 {
 	[HideInInspector] public World world;
-	public new Camera camera;
+	[HideInInspector] public Camera cam;
 	public GameObject fieldOfViewSource;
 	public GameObject fieldOfView;
+	MeshFilter fovFilter;
 	public CSG.Model fieldOfViewModel;
-	public Material tempMaterial;
+	// public Material tempMaterial;
 	public int framerateTarget;
 
-    private float initialTime;
+	private float initialTime;
 
 	void Start()
 	{
-		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
+		fovFilter = fieldOfView.GetComponent<MeshFilter>();
+		fieldOfViewModel = new CSG.Model(fovFilter.mesh);
 		//Invoke("CreateFoVMesh", 0.5f); //TODO: extreme hack
 	}
 
 	public void ApplyCut()
 	{
-        initialTime = Time.realtimeSinceStartup;
-        world.ResetCut();
-		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh, fieldOfView.transform);
+		initialTime = Time.realtimeSinceStartup;
+		world.ResetCut();
+		fieldOfViewModel = new CSG.Model(fovFilter.mesh, fieldOfView.transform);
 		fieldOfViewModel.ConvertToWorld();
 		fieldOfViewModel.Draw(Color.red);
-		StartCoroutine(ApplyCutCoroutine(1f / ((float) framerateTarget), new Bounds(fieldOfView.GetComponent<MeshCollider>().bounds.center, fieldOfView.GetComponent<MeshCollider>().bounds.size)));
+		StartCoroutine(ApplyCutCoroutine(1f / framerateTarget, new Bounds(fieldOfView.GetComponent<MeshCollider>().bounds.center, fieldOfView.GetComponent<MeshCollider>().bounds.size)));
 	}
 
 	/*private void ApplyCutSynchronous()
@@ -58,87 +60,111 @@ public class Window : MonoBehaviour
 
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds)
 	{
-        float startTime = Time.realtimeSinceStartup;
-
-		foreach (ClippableObject clippable in world.GetHeartObjects())
+		float startTime = Time.realtimeSinceStartup;
+		float sqrMagCurrent = 0;
+		foreach (var(clippable, type) in world.clippables)
 		{
 			if (IntersectsBounds(clippable, bounds))
 			{
-				clippable.UnionWith(fieldOfViewModel);
-			}
-
-			if (Time.realtimeSinceStartup - startTime > frameLength)
-			{
-				yield return null;
-				startTime = Time.realtimeSinceStartup;
-			}
-		}
-
-		foreach (ClippableObject clippable in world.GetRealObjects())
-		{
-			if (IntersectsBounds(clippable, bounds))
-			{
-				clippable.Subtract(fieldOfViewModel);
-			}
-
-			if (Time.realtimeSinceStartup - startTime > frameLength)
-			{
-				yield return null;
-				startTime = Time.realtimeSinceStartup;
-			}
-		}
-
-		foreach (EntangledClippable entangled in world.GetEntangledObjects())
-		{
-			// clip the immediate children of entangled
-			//if (IntersectsBounds(entangled.heartVersion)) entangled.heartVersion.UnionWith(fieldOfView, csgOperator);
-			//if (IntersectsBounds(entangled.realVersion)) entangled.realVersion.Subtract(fieldOfView, csgOperator);
-
-			// clip any children below them to the correct world
-			foreach (ClippableObject clippable in entangled.heartObject.GetComponentsInChildren<ClippableObject>())
-			{
-				if (IntersectsBounds(clippable, bounds))
-				{
+				if (type == World.WorldType.Heart)
 					clippable.UnionWith(fieldOfViewModel);
-				}
+				else
+					clippable.Subtract(fieldOfViewModel);
 
-				if (Time.realtimeSinceStartup - startTime > frameLength)
+				float sqrDist = (clippable.transform.position - Player.Instance.transform.position).sqrMagnitude;
+				if (sqrDist > sqrMagCurrent)
 				{
-					yield return null;
-					startTime = Time.realtimeSinceStartup;
+					sqrMagCurrent = sqrDist;
+					Player.Instance.VFX.SetWave(Mathf.Sqrt(sqrDist));
 				}
 			}
-			foreach (ClippableObject clippable in entangled.realObject.GetComponentsInChildren<ClippableObject>())
-			{
-				if (IntersectsBounds(clippable, bounds))
-				{
-					clippable.Subtract(fieldOfViewModel);
-				}
 
-				if (Time.realtimeSinceStartup - startTime > frameLength)
-				{
-					yield return null;
-					startTime = Time.realtimeSinceStartup;
-				}
+			if (Time.realtimeSinceStartup - startTime > frameLength)
+			{
+				yield return null;
+				startTime = Time.realtimeSinceStartup;
 			}
 		}
 
-        Debug.Log(Time.realtimeSinceStartup - initialTime);
+		// foreach (ClippableObject clippable in world.GetHeartObjects().OrderBy(obj => (obj.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList())
+		// {
+		// 	if (IntersectsBounds(clippable, bounds))
+		// 	{
+		// 		clippable.UnionWith(fieldOfViewModel);
+		// 	}
+
+		// 	if (Time.realtimeSinceStartup - startTime > frameLength)
+		// 	{
+		// 		yield return null;
+		// 		startTime = Time.realtimeSinceStartup;
+		// 	}
+		// }
+
+		// foreach (ClippableObject clippable in world.GetRealObjects().OrderBy(obj => (obj.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList())
+		// {
+		// 	if (IntersectsBounds(clippable, bounds))
+		// 	{
+		// 		clippable.Subtract(fieldOfViewModel);
+		// 	}
+
+		// 	if (Time.realtimeSinceStartup - startTime > frameLength)
+		// 	{
+		// 		yield return null;
+		// 		startTime = Time.realtimeSinceStartup;
+		// 	}
+		// }
+
+		// foreach (EntangledClippable entangled in world.GetEntangledObjects().OrderBy(obj => (obj.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList())
+		// {
+		// 	// clip the immediate children of entangled
+		// 	//if (IntersectsBounds(entangled.heartVersion)) entangled.heartVersion.UnionWith(fieldOfView, csgOperator);
+		// 	//if (IntersectsBounds(entangled.realVersion)) entangled.realVersion.Subtract(fieldOfView, csgOperator);
+
+		// 	// clip any children below them to the correct world
+		// 	foreach (ClippableObject clippable in entangled.heartObject.GetComponentsInChildren<ClippableObject>())
+		// 	{
+		// 		if (IntersectsBounds(clippable, bounds))
+		// 		{
+		// 			clippable.UnionWith(fieldOfViewModel);
+		// 		}
+
+		// 		if (Time.realtimeSinceStartup - startTime > frameLength)
+		// 		{
+		// 			yield return null;
+		// 			startTime = Time.realtimeSinceStartup;
+		// 		}
+		// 	}
+		// 	foreach (ClippableObject clippable in entangled.realObject.GetComponentsInChildren<ClippableObject>())
+		// 	{
+		// 		if (IntersectsBounds(clippable, bounds))
+		// 		{
+		// 			clippable.Subtract(fieldOfViewModel);
+		// 		}
+
+		// 		if (Time.realtimeSinceStartup - startTime > frameLength)
+		// 		{
+		// 			yield return null;
+		// 			startTime = Time.realtimeSinceStartup;
+		// 		}
+		// 	}
+		// }
+
+		Debug.Log(Time.realtimeSinceStartup - initialTime);
 	}
 
 	private bool IntersectsBounds(ClippableObject clippableObject, Bounds bounds)
 	{
-        //return true;
-        // less expensive, less accurate intersection check
-        //TODO: checking the bound intersections doesn't consider world space, just model space, so it's basically trash
-        //Debug.Log(clippableObject.GetComponent<MeshFilter>().mesh.bounds.extents);
-        //Debug.Log(bounds.min + " :: " + bounds.max);
-        //Debug.Log(clippableObject.GetComponent<MeshCollider>().bounds.min + " :: " + clippableObject.GetComponent<MeshCollider>().bounds.max);
-        if (bounds.Intersects(clippableObject.GetComponent<MeshCollider>().bounds))//true || 
-        {
-            //Debug.Log(clippableObject.IntersectsBound(fieldOfViewModel));
-            // more expensive, more accurate intersection check
-            if (clippableObject.IntersectsBound(fieldOfViewModel))
+		//return true;
+		// less expensive, less accurate intersection check
+		//TODO: checking the bound intersections doesn't consider world space, just model space, so it's basically trash
+		//Debug.Log(clippableObject.GetComponent<MeshFilter>().mesh.bounds.extents);
+		//Debug.Log(bounds.min + " :: " + bounds.max);
+		//Debug.Log(clippableObject.GetComponent<MeshCollider>().bounds.min + " :: " + clippableObject.GetComponent<MeshCollider>().bounds.max);
+		if (bounds.Intersects(clippableObject.GetComponent<MeshCollider>().bounds)) //true || 
+		{
+			//Debug.Log(clippableObject.IntersectsBound(fieldOfViewModel));
+			// more expensive, more accurate intersection check
+			if (clippableObject.IntersectsBound(fieldOfViewModel))
 			{
 				return true;
 			}
@@ -170,12 +196,12 @@ public class Window : MonoBehaviour
 		// project out the points of the original surface
 		model.vertices.ForEach(vertex =>
 		{
-			vertex.value = camera.transform.position + (vertex.value - camera.transform.position).normalized * distance;
+			vertex.value = cam.transform.position + (vertex.value - cam.transform.position).normalized * distance;
 		});
 		// flip their normals
 
 		// now create the sides of the view
-		CSG.Vertex originVertex = new CSG.Vertex(0, camera.transform.position);
+		CSG.Vertex originVertex = new CSG.Vertex(0, cam.transform.position);
 
 		model.edges.ForEach(edge =>
 		{
@@ -185,23 +211,15 @@ public class Window : MonoBehaviour
 			}
 		});
 		model.edges.ForEach(edge => edge.Draw(Color.red));
-        // convert to local space of the camera
-		fieldOfView.GetComponent<MeshFilter>().mesh = model.ToMesh(fieldOfView.transform.worldToLocalMatrix);
-		fieldOfView.GetComponent<MeshCollider>().sharedMesh = fieldOfView.GetComponent<MeshFilter>().mesh;
-		fieldOfView.GetComponent<MeshFilter>().mesh.RecalculateNormals();
+		// convert to local space of the cam
+		fovFilter.mesh = model.ToMesh(fieldOfView.transform.worldToLocalMatrix);
+		fieldOfView.GetComponent<MeshCollider>().sharedMesh = fovFilter.mesh;
+		fovFilter.mesh.RecalculateNormals();
 	}
 
 	private Bounds GetSceneBounds()
 	{
-		ClippableObject[] clippables = FindObjectsOfType<ClippableObject>();
-
-		Bounds bound = clippables[0].GetComponent<MeshCollider>().bounds;
-
-		for (int i = 1; i < clippables.Length; i++)
-		{
-			bound.Encapsulate(clippables[i].GetComponent<MeshCollider>().bounds);
-		}
-
-		return bound;
+		var clippables = world.GetComponentsInChildren<ClippableObject>();
+		return clippables.Aggregate(clippables[0].GetComponent<MeshCollider>().bounds, (bound, cur) => { bound.Encapsulate(cur.GetComponent<MeshCollider>().bounds); return bound; });
 	}
 }
