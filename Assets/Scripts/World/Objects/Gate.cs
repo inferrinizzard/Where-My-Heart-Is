@@ -10,11 +10,8 @@ public class Gate : MonoBehaviour
 	[SerializeField] Transform leftDoor = default;
 	[SerializeField] Transform rightDoor = default;
 
-	[FMODUnity.EventRef]
-	public string GateOpenEvent;
-
+	[FMODUnity.EventRef] public string GateOpenEvent;
 	public GameObject keyHole;
-
 	private bool open = false;
 
 	public void Open()
