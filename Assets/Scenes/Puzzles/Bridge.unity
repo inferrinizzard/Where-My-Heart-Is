@@ -500,11 +500,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
-        type: 3}
-      propertyPath: m_Name
-      value: DeathPlane
-      objectReference: {fileID: 0}
     - target: {fileID: 4037872479478507742, guid: 584309737b83dd34496c239b4a574f67,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -559,6 +554,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
+        type: 3}
+      propertyPath: m_Name
+      value: DeathPlane
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 584309737b83dd34496c239b4a574f67, type: 3}
@@ -5791,7 +5791,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outlineShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
   depthCheck: 0
-  outlineColour: {r: 0, g: 0, b: 1, a: 1}
+  outlineColour: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &1638550842
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6397,7 +6397,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outlineShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
   depthCheck: 0
-  outlineColour: {r: 0, g: 0, b: 1, a: 1}
+  outlineColour: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &1959018793
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6536,6 +6536,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 389551678505213806}
     m_Modifications:
+    - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 9.53
+      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_Name
@@ -6615,11 +6620,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.x
       value: 9.37
-      objectReference: {fileID: 0}
-    - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 9.53
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69023363a35bf8a489aeab09c8f4edc2, type: 3}
@@ -6911,6 +6911,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Spawn Point
       objectReference: {fileID: 0}
+    - target: {fileID: 2682051114935348213, guid: c1ad9c75fb5753e4886d56e6b2740636,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4681228249720185880, guid: 2e408cfb269dae24999d2b21e62931c5,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -6959,11 +6964,6 @@ PrefabInstance:
     - target: {fileID: 4681228249720185880, guid: 2e408cfb269dae24999d2b21e62931c5,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2682051114935348213, guid: c1ad9c75fb5753e4886d56e6b2740636,
-        type: 3}
-      propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -7113,16 +7113,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5407968008035840464, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: interactPrompt
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5407968008035840464, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: interactPrompt
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 6145140127035620904, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7142,6 +7132,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5407968008035840464, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: interactPrompt
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5407968008035840464, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: interactPrompt
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5431529102450659146, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
@@ -7195,11 +7195,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
-        type: 3}
-      propertyPath: m_Name
-      value: DeathPlane
-      objectReference: {fileID: 0}
     - target: {fileID: 4037872479478507742, guid: 584309737b83dd34496c239b4a574f67,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7254,6 +7249,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
+        type: 3}
+      propertyPath: m_Name
+      value: DeathPlane
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 584309737b83dd34496c239b4a574f67, type: 3}

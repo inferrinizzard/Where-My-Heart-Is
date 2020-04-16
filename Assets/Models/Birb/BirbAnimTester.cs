@@ -43,7 +43,7 @@ public class BirbAnimTester : MonoBehaviour
 
 		currCurve = -1;
 
-		StartNextCurve();
+		//StartNextCurve();
 	}
 
 	void Update()
