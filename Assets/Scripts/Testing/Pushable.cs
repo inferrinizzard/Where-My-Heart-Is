@@ -10,6 +10,13 @@ public class Pushable : MonoBehaviour
     public float pushSpeed;
     public bool debug;
 
+    private Vector3 spawn;
+
+    private void Start()
+    {
+        spawn = transform.position;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -26,6 +33,12 @@ public class Pushable : MonoBehaviour
         else
         {
             GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity.y * Vector3.up;
+        }
+
+        if(transform.position.y < Player.Instance.deathPlane.position.y)
+        {
+            transform.position = spawn;
+            GetComponent<Rigidbody>().velocity = Vector3.zero;
         }
     }
 }

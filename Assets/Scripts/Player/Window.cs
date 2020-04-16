@@ -75,7 +75,7 @@ public class Window : MonoBehaviour
 				if (sqrDist > sqrMagCurrent)
 				{
 					sqrMagCurrent = sqrDist;
-					Player.Instance.VFX.SetWave(Mathf.Sqrt(sqrDist));
+					//Player.Instance.VFX.SetWave(Mathf.Sqrt(sqrDist));
 				}
 			}
 
