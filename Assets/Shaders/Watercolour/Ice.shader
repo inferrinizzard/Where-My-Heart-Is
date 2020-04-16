@@ -1,4 +1,4 @@
-﻿Shader "Watercolour/Transparent"
+﻿Shader "Watercolour/Ice"
 {
 	Properties {
 		_Color ("Tint Color 1", Color) = (1,1,1,1)
@@ -25,6 +25,9 @@
 	SubShader {
 		Tags { "Queue"="Transparent" "RenderType"="Transparent" "LightMode"="ForwardBase"}
 		LOD 200
+
+		Cull Off
+		Blend SrcAlpha OneMinusSrcAlpha
 
 		CGPROGRAM
 		#pragma surface surf BlinnPhong noforwardadd nolightmap vertex:vert finalcolor:colour alpha
@@ -151,8 +154,8 @@
 
 			if(_AlphaBlotches == 1) {
 				float3 finalColour = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength);
-				o.Albedo = finalColour;
-				o.Alpha = finalColour;
+				o.Albedo = saturate(finalColour);
+				o.Alpha = finalColour + _Transparency;
 			}
 			else {
 				o.Albedo = lerp(ink * tint, softlight(tex2D (_PaperTex, IN.uv_PaperTex), ink * tint), _PaperStrength);
