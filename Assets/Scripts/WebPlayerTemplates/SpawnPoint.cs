@@ -3,6 +3,8 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class SpawnPoint : MonoBehaviour
 {
+#if UNITY_EDITOR
+
 	Transform player, cam;
 
 	void OnEnable()
@@ -12,10 +14,13 @@ public class SpawnPoint : MonoBehaviour
 	}
 	void Update()
 	{
-		if (Application.isPlaying)
-			return;
-
-		transform.position = player.position;
-		transform.eulerAngles = new Vector3(cam.eulerAngles.x, player.eulerAngles.y, 0);
+		if (Application.isEditor && !Application.isPlaying)
+		{
+			transform.position = player.position;
+			transform.eulerAngles = new Vector3(cam.eulerAngles.x, player.eulerAngles.y, 0);
+		}
+		else
+			Destroy(this);
 	}
+#endif
 }
