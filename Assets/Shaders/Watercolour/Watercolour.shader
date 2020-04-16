@@ -14,6 +14,7 @@
 		_PaperStrength ("Paper Strength", Range(0,1)) = 1
 		_BlotchMulti ("Blotch Multiply", Range(0,16)) = 4
 		_BlotchSub ("Blotch Subtract", Range(0,8)) = 2
+		_BlotchWorldScale ("Blotch World Scale", Range(0, 1)) = 0.2// testing world uv indexing
 
 		[PowerSlider(2)] _AttenExponent ("Attenuation Exponent", Range(0, 2)) = 1
 
@@ -37,6 +38,7 @@
 		half _BlotchSub;
 		half _TintScale;
 		half _PaperStrength;
+		half _BlotchWorldScale;// testing world uv indexing
 		fixed4 _Color, _Color2, _InkCol;
 		half _AttenExponent;
 
@@ -52,9 +54,9 @@
 			float2 uv_PaperTex : TEXCOORD2;
 			float2 uv_RampTex : TEXCOORD3;
 			float3 worldNormal;
-			#if DISSOLVE
-				float3 worldPos;
-			#endif
+			//#if DISSOLVE
+			float3 worldPos;
+			//#endif
 			// float3 lightDir;
 			float4 lightColour;
 			float lightAtten;
@@ -125,10 +127,15 @@
 				clip(isVisible);
 			#endif
 
-			fixed c = tex2D (_BlotchTex, IN.uv_BlotchTex).r;
+			float2 worldUV = float2(((IN.worldPos.x + IN.worldPos.y) * _BlotchWorldScale) % 1, ((IN.worldPos.z + IN.worldPos.y) * _BlotchWorldScale) % 1);
+
+
+			//fixed c = tex2D(_BlotchTex, IN.uv_BlotchTex).r;
+			fixed c = tex2D (_BlotchTex, worldUV).r;
 			c *= _BlotchMulti;
 			c -= _BlotchSub;			
-			c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
+			//c *= tex2D(_DetailTex, IN.uv_DetailTex).r;
+			c *= tex2D (_DetailTex, worldUV).r;
 
 			// float lightAtten = IN.lightColour.w;
 			float lightAtten = IN.lightAtten;
@@ -140,7 +147,9 @@
 			c = tex2D (_RampTex, half2(1 - c, 0)).r;
 			c = saturate(c);
 
-			fixed4 tint = tex2D (_BlotchTex, IN.uv_BlotchTex / _TintScale);	
+
+			//fixed4 tint = tex2D (_BlotchTex, IN.uv_BlotchTex / _TintScale);	
+			fixed4 tint = tex2D (_BlotchTex, worldUV / _TintScale);
 			tint = lerp(_Color, _Color2, tint.r)  + IN.lightColour * f;
 			
 			fixed4 ink = screen(_InkCol, fixed4(c, c, c, 1));
