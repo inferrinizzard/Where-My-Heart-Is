@@ -16,12 +16,10 @@ public class Player : Singleton<Player>, IStateMachine
 
 	/// <summary> Reference to the players last spawn. </summary>
 	[HideInInspector] public Transform lastSpawn;
-	/// <summary> Reference to player CharacterController. </summary>
-	//[HideInInspector] public CharacterController characterController;
-
+	/// <summary> Reference to player rigidbody. </summary>
 	[HideInInspector] public Rigidbody body;
-	public GameObject playerCollider;
-
+	/// <summary> Reference to player collider. </summary>
+	[HideInInspector] public CapsuleCollider playerCollider;
 	/// <summary> Reference to player Camera. </summary>
 	[HideInInspector] public Camera cam;
 	/// <summary> Reference to FX Controller. </summary>
@@ -44,9 +42,6 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
 	private bool stillCrouching = false;
 	public bool pickedUpFirst = false;
-
-	/// <summary> Vector3 to store and calculate move direction. </summary>
-	private Vector3 moveDirection;
 
 	// [Header("Game Object References")]
 	/// <summary> Reference to heart window. </summary>
@@ -85,7 +80,7 @@ public class Player : Singleton<Player>, IStateMachine
 	void Start()
 	{
 		sceneActive = true;
-		//characterController = GetComponent<CharacterController>();
+		playerCollider = GetComponentInChildren<CapsuleCollider>();
 		body = GetComponent<Rigidbody>();
 		cam = GetComponentInChildren<Camera>();
 		VFX = cam.GetComponent<Effects>();
@@ -95,8 +90,6 @@ public class Player : Singleton<Player>, IStateMachine
 		hands = GetComponentInChildren<Hands>();
 		prompt = GameManager.Instance.prompt;
 
-		// Get reference to the player height using the CharacterController's height.
-		// playerHeight = characterController.height;
 		// Creates an empty game object at the position where a held object should be.
 		heldObjectLocation = new GameObject("HeldObjectLocation").transform;
 		heldObjectLocation.position = cam.transform.position + cam.transform.forward;
@@ -128,7 +121,6 @@ public class Player : Singleton<Player>, IStateMachine
 
 	public override void OnBeginTransition()
 	{
-		//characterController.enabled = false;
 		sceneActive = false;
 	}
 
@@ -156,7 +148,6 @@ public class Player : Singleton<Player>, IStateMachine
 			dialogueSystem.TextComplete -= EndSceneTransitionHelper;
 		}
 		Initialize();
-		//characterController.enabled = true;
 		Player.Instance.sceneActive = true;
 		VFX.StartFade(true, fadeDuration);
 	}
@@ -211,13 +202,10 @@ public class Player : Singleton<Player>, IStateMachine
 			if (canMove)
 			{
 				Move();
-				ApplyGravity();
 				Rotate();
-				//characterController.Move(moveDirection);
 			}
 
 			prompt.UpdateText(); // non physics
-			// StuckCrouching();
 			Die();
 		}
 	}
@@ -247,11 +235,6 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
 	private void Move()
 	{
-		//moveDirection = Input.GetAxis("Vertical") * transform.forward + Input.GetAxis("Horizontal") * transform.right;
-		//Vector3 horizontal = characterController.velocity - characterController.velocity.y * Vector3.up;
-		//audioController.SetWalkingVelocity(Mathf.RoundToInt(horizontal.magnitude) / speed);
-		//moveDirection *= speed * Time.deltaTime;
-
 		Vector3 targetVelocity = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 		targetVelocity = transform.TransformDirection(targetVelocity);
 		targetVelocity *= speed;
@@ -264,35 +247,13 @@ public class Player : Singleton<Player>, IStateMachine
 		body.AddForce(velocityChange, ForceMode.VelocityChange);
 	}
 
-	/// <summary> Applies gravity to the player and includes jump. </summary>
-	private void ApplyGravity()
-	{
-		/*if (!characterController.isGrounded)
-			verticalVelocity -= gravity * Time.deltaTime;
-		moveDirection.y = verticalVelocity * Time.deltaTime;*/
-	}
-
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
 		if (IsGrounded())
 		{
-            Debug.Log("jump");
             body.AddForce(Vector3.up * 200);
 		}
-		/*if (characterController.isGrounded)
-		{
-			verticalVelocity = jumpForce;
-			audioController.JumpLiftoff();
-
-			// Landing sound.
-			int mask = ~gameObject.layer;
-			Physics.Raycast(new Ray(transform.position, Vector3.down), out RaycastHit hit, 5f, mask);
-			if (verticalVelocity < 0 && hit.distance < audioController.landingDistanceThreshold)
-			{
-				audioController.JumpLanding();
-			}
-		}*/
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
@@ -314,13 +275,6 @@ public class Player : Singleton<Player>, IStateMachine
 			cam.transform.localEulerAngles = new Vector3(-rotation.x, 0, 0);
 
 			Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
-
-			// Allow the player to get out of the mouse lock.
-			/*if (Input.GetKey(KeyCode.Escape))
-			{
-				Cursor.lockState = CursorLockMode.None;
-				Cursor.visible = true;
-			}*/
 		}
 	}
 
@@ -395,7 +349,6 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (State is Aiming && windowEnabled && !heldObject)
 		{
-			// SetState(new Cut(this));
 			window.ApplyCut();
 			hands.RevertAim();
 			audioController.PlaceWindow();
