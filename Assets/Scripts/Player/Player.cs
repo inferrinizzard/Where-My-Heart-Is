@@ -90,6 +90,8 @@ public class Player : Singleton<Player>, IStateMachine
 		hands = GetComponentInChildren<Hands>();
 		prompt = GameManager.Instance.prompt;
 
+		playerHeight = playerCollider.height;
+
 		// Creates an empty game object at the position where a held object should be.
 		heldObjectLocation = new GameObject("HeldObjectLocation").transform;
 		heldObjectLocation.position = cam.transform.position + cam.transform.forward;
@@ -203,6 +205,7 @@ public class Player : Singleton<Player>, IStateMachine
 			{
 				Move();
 				Rotate();
+				AdjustGravity();
 			}
 
 			prompt.UpdateText(); // non physics
@@ -250,10 +253,14 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-		if (IsGrounded())
-		{
-            body.AddForce(Vector3.up * 200);
-		}
+		if (IsGrounded()) body.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+	}
+
+	/// <summary> Increases gravity while falling. </summary>
+	/// <remarks> Used to create better feeling jump arc. </remarks>
+	private void AdjustGravity()
+	{
+		if(!IsGrounded() && body.velocity.y < 0) body.AddForce(new Vector3(0, -10f, 0));
 	}
 
 	/// <summary> Rotates the player and camera based on mouse movement. </summary>
@@ -357,8 +364,10 @@ public class Player : Singleton<Player>, IStateMachine
 			EndState();
 		}
 	}
-
-	public bool IsGrounded() { return Physics.Raycast(playerCollider.transform.position, -Vector3.up, playerCollider.GetComponent<Collider>().bounds.extents.y + 0.1f); }
+	public bool IsGrounded() {
+		RaycastHit ray;
+		return Physics.SphereCast(playerCollider.transform.position, 0.2f, Vector3.down, out ray, playerHeight/2 - 0.1f);
+	}
 
 	public InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }
