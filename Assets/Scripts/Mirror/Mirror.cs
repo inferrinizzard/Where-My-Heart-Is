@@ -37,18 +37,25 @@ public class Mirror : ClippableObject
         }
     }
 
-    public override void UnionWith(Model other)
+    public override void ClipWith(CSG.Model other)
     {
-        base.UnionWith(other);
+        if (isClipped) return;
+        base.ClipWith(other);
+    }
+
+
+    public override void IntersectWith(Model other)
+    {
+        base.IntersectWith(other);
         uncutCopy.GetComponent<Mirror>().reflectionCamera = reflectionCamera;
     }
 
-    public override void UnionMirrored(Model other, Matrix4x4 reflectionMatrix)
+    public override void IntersectMirrored(Model other, Matrix4x4 reflectionMatrix)
     {
         
     }
 
-    public CSG.Model CreateBound()
+    public CSG.Model CreateBound(out Bounds bound)
     {
         CSG.Model sourceModel = new CSG.Model(GetComponent<MeshFilter>().mesh);
         sourceModel.ApplyTransformation(transform.localToWorldMatrix);
@@ -122,6 +129,16 @@ public class Mirror : ClippableObject
         /*GameObject test = new GameObject();
         test.AddComponent<MeshFilter>().mesh = result.ToMesh(test.transform.worldToLocalMatrix);
         test.AddComponent<MeshRenderer>();*/
+
+        bound = new Bounds();
+        Vector3 center = Vector3.zero;
+        result.vertices.ForEach(vertex => center += vertex.value);
+        center /= result.vertices.Count;
+        bound.center = center;
+        foreach (Vertex vertex in result.vertices)
+        {
+            bound.Encapsulate(vertex.value);
+        }
 
         return result;
     }

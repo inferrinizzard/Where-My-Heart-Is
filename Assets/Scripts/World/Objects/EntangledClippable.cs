@@ -25,7 +25,7 @@ public class EntangledClippable : ClippableObject
 
 	public bool Visable => realVersion.gameObject.GetComponent<MeshRenderer>().enabled;
 
-	public override void UnionWith(CSG.Model model)
+	public override void IntersectWith(CSG.Model model)
 	{
 		//heartVersion.UnionWith(other, operations);
 		//realVersion.Subtract(other, operations);

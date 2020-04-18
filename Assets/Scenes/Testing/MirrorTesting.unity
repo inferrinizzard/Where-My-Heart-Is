@@ -230,6 +230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf52a40027515b46b1b2fc29f0d4ec1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldType: 0
   volumeless: 1
   tiedInteractable: {fileID: 0}
   isClipped: 0
@@ -246,6 +247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bdcbecc1d3d0114698e060270606ee3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldType: 0
   volumeless: 0
   tiedInteractable: {fileID: 0}
   isClipped: 0
@@ -387,6 +389,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bdcbecc1d3d0114698e060270606ee3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  worldType: 0
   volumeless: 1
   tiedInteractable: {fileID: 0}
   isClipped: 0
@@ -915,6 +918,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1457592497}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1498448412 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6145140127035620908, guid: ce2e34029942daa4c845cd2ceec80c14,
+    type: 3}
+  m_PrefabInstance: {fileID: 7294522663246278166}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1856146218
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1323,6 +1332,8 @@ MonoBehaviour:
   heartWorldContainer: {fileID: 0}
   realWorldContainer: {fileID: 4538974044078226971}
   entangledWorldContainer: {fileID: 7515926175239197052}
+  heartClippables: []
+  realClippables: []
 --- !u!4 &6354875879375548175
 Transform:
   m_ObjectHideFlags: 0
@@ -1412,6 +1423,11 @@ PrefabInstance:
       propertyPath: mirror
       value: 
       objectReference: {fileID: 962236878}
+    - target: {fileID: 5407968008035840464, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: heartWindow
+      value: 
+      objectReference: {fileID: 1498448412}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce2e34029942daa4c845cd2ceec80c14, type: 3}
 --- !u!4 &7515926175239197052

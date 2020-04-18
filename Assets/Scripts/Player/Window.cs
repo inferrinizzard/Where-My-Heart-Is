@@ -81,15 +81,19 @@ public class Window : MonoBehaviour
 
         if (mirror.GetComponent<ClippableObject>().CachedModel.Intersects(boundModel, 0.0001f, true))
         {
-            Bounds mirrorBound = new Bounds();
+            Debug.Log("hi");
+            mirror.GetComponent<ClippableObject>().ClipWith(boundModel);
+            Debug.Log("enjd");
+            new CSG.Model(mirror.GetComponent<MeshFilter>().mesh).Draw(Color.cyan);
+
+            Bounds mirrorBound;
             CSG.Model mirrorBoundModel = mirror.GetComponent<Mirror>().CreateBound(out mirrorBound);
 
             foreach (ClippableObject clippable in world.heartClippables)
             {
-                clippable.GetComponent<ClippableObject>().IntersectMirrored(mirrorBoundModel, mirror.GetComponent<Mirror>().reflectionMatrix);
-                if (IntersectsBounds(clippable, mirrorBound))
+                if (true ||IntersectsBounds(clippable, mirrorBound))
                 {
-                    clippable.ClipWith(mirrorBoundModel);
+                    clippable.GetComponent<ClippableObject>().IntersectMirrored(mirrorBoundModel, mirror.GetComponent<Mirror>().reflectionMatrix);
                 }
             }
 

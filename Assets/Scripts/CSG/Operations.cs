@@ -30,7 +30,6 @@ namespace CSG
         public static Mesh Intersect(Model modelA, Model modelB, bool flipNormals = false, Matrix4x4? matrixOverride = null)
 		{
             Matrix4x4 conversionMatrix = matrixOverride == null ? modelA.worldToLocal : ((Matrix4x4)matrixOverride);
-
             modelA.IntersectWith(modelB); //generate all intersections
 
 			Model clippedA = ClipModelAToModelB(modelA, modelB, true, flipNormals);
