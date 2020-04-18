@@ -11,7 +11,7 @@ public class Outline : MonoBehaviour
 	Camera outlineCam;
 	float[] kernel;
 
-#if (UNITY_EDITOR)
+#if UNITY_EDITOR
 	void OnEnable()
 	{
 		Start();

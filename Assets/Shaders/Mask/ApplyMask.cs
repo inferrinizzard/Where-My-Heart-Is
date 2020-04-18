@@ -15,11 +15,16 @@ public class ApplyMask : MonoBehaviour
 	///<summary> Shader that combines views </summary>
 	[SerializeField] Shader merge = default, transition = default;
 	///<summary> Generated material for screen shader </summary>
-	Material screenMat;
+	public Material screenMat;
 	[HideInInspector] public Material transitionMat;
 	///<summary> Gene()rated RenderTexture for Heart World </summary>
 	public RenderTexture heart;
+    
 	[SerializeField] Texture2D dissolveTexture = default;
+	[SerializeField] Texture2D hatchTexture = default;
+	[SerializeField] Texture2D birdBackground = default;
+
+    //Texture2D persistentMask;
 	Texture2D curSave;
 	int _HeartID;
 
@@ -35,18 +40,20 @@ public class ApplyMask : MonoBehaviour
 
 		// get ref to heart world cam and assign generated RenderTexture
 		mainCam = GetComponent<Camera>();
+		mainCam.depthTextureMode = mainCam.depthTextureMode | DepthTextureMode.DepthNormals | DepthTextureMode.Depth;
 		heartCam = this.GetComponentOnlyInChildren<Camera>();
 		heart = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
+		heartCam.depthTextureMode = heartCam.depthTextureMode | DepthTextureMode.DepthNormals | DepthTextureMode.Depth;
 		heart.name = "Heart World";
 		heartCam.targetTexture = heart;
 
         rampMask = false;
         rampResult = new RenderTexture(Screen.width, Screen.height, 8, RenderTextureFormat.Default);
 
-        
-
-
-        CreateMask();
+		CreateMask();
+		screenMat.SetTexture("_HatchTex", hatchTexture);
+		screenMat.SetTexture("_Background", birdBackground);
+		// screenMat.SetColor("_DepthOutlineColour", Color.white);
 	}
 
     private void Update()
@@ -121,8 +128,8 @@ public class ApplyMask : MonoBehaviour
 			Graphics.Blit(source, dest, screenMat);
 			// source.DiscardContents();
 			// heart.DiscardContents();
-			source.Release();
-			heart.Release();
+			// source.Release();
+			// heart.Release();
 			// ClearRT(heart, heartCam);
 			// ClearRT(source, mainCam);
 		}
@@ -154,8 +161,8 @@ public class ApplyMask : MonoBehaviour
         Texture2D mask2D = new Texture2D(nextMask.width, nextMask.height);
         mask2D.ReadPixels(new Rect(0, 0, nextMask.width, nextMask.height), 0, 0);
         mask2D.Apply();
-        Shader.SetGlobalTexture("_Mask", mask2D);//
-        RenderTexture.active = screen;
+        Shader.SetGlobalTexture("_Mask", mask2D);
+		RenderTexture.active = screen;
     }
 
 	void ClearRT(RenderTexture r, Camera cam)

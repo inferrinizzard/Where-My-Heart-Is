@@ -238,7 +238,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyAfterTrigger: 1
-  dialogueSystem: {fileID: 0}
   flavor: If only I had a bridge in my life to point me in the right direction...
 --- !u!65 &86167899
 BoxCollider:
@@ -658,6 +657,120 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 230594501}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &247353652
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4454646879193731711, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_Name
+      value: Bird
+      objectReference: {fileID: 0}
+    - target: {fileID: 4454646879193731711, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 11.092418
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.3165388
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -6.9608965
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.026151441
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.13497375
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.0035636208
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9904976
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -17.544
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -198.26999
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 4.236
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.20929708
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.20929708
+      objectReference: {fileID: 0}
+    - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.20929708
+      objectReference: {fileID: 0}
+    - target: {fileID: 5689164163903171203, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: curves.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5689164163903171203, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: pathTriggers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5689164163903171203, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: curves.Array.data[0]
+      value: 
+      objectReference: {fileID: 889520233}
+    - target: {fileID: 5689164163903171203, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: flySpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5689164163903171203, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: pathTriggers.Array.data[0]
+      value: 
+      objectReference: {fileID: 510705226}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ff4f26a49f96f644b91a6337df60e530, type: 3}
 --- !u!1001 &304666830
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2231,7 +2344,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyAfterTrigger: 1
-  dialogueSystem: {fileID: 0}
   flavor: "Curiouser and curiouser\u2026"
 --- !u!65 &510705227
 BoxCollider:
@@ -2262,6 +2374,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -6057140222963153312, guid: 2fd7fc7960fc4d14e808cd00e107f1c3,
         type: 3}
@@ -2362,6 +2479,21 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 550012564}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &550012567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 550012566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bddbda3483be07409d3cbbbe64d2f4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  drawShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
+  count: 3
+  length: 20
 --- !u!114 &550012568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4370,7 +4502,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyAfterTrigger: 1
-  dialogueSystem: {fileID: 0}
   flavor: Like Chagall said/"Pick up where nature ends."
 --- !u!65 &1105046917
 BoxCollider:
@@ -4903,7 +5034,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyAfterTrigger: 1
-  dialogueSystem: {fileID: 0}
   flavor: I can imagine a lovely marble bridge going here.
 --- !u!65 &1292624362
 BoxCollider:
@@ -5303,7 +5433,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyAfterTrigger: 1
-  dialogueSystem: {fileID: 0}
   flavor: "\u201CGreat Art Picks Up Where Nature Ends\u201D"
 --- !u!65 &1392974721
 BoxCollider:
@@ -6375,7 +6504,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   destroyAfterTrigger: 1
-  dialogueSystem: {fileID: 0}
   flavor: Where are you taking me?
 --- !u!65 &1719662016
 BoxCollider:
@@ -6590,11 +6718,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 9.53
-      objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 69023363a35bf8a489aeab09c8f4edc2,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -6670,6 +6793,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: f994da744d726e6409c41b8b93b0c42f, type: 2}
+    - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 9.53
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69023363a35bf8a489aeab09c8f4edc2, type: 3}
 --- !u!4 &2106632724 stripped
@@ -7170,7 +7298,7 @@ PrefabInstance:
     - target: {fileID: 5431529102450659146, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840464, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
@@ -7222,7 +7350,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5f860fa0d5f69d4a9596cca24bc1e54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveShader: {fileID: 4800000, guid: bff4a2ec768bd8247a22e0ffad695941, type: 3}
   waveColour: {r: 1, g: 1, b: 1, a: 1}
   waveDistance: 16.993355
 --- !u!1 &8458773049932710894

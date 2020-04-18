@@ -23,28 +23,23 @@
 		Tags { "RenderType"="Opaque" "LightMode"="ForwardBase"}
 		LOD 200
 
-		Blend SrcAlpha OneMinusSrcAlpha
+		// Blend SrcAlpha OneMinusSrcAlpha
 
 		CGPROGRAM
-		// #pragma surface surf Standard fullforwardshadows vertex:vert
-		#pragma surface surf Standard fullforwardshadows
+		#pragma surface surf BlinnPhong noforwardadd nolightmap vertex:vert
 		#pragma target 3.5
 		// #pragma debug
 
 		#pragma multi_compile_local __ DISSOLVE DISSOLVE_MANUAL
 
-		sampler2D _BlotchTex;
-		sampler2D _DetailTex;
-		sampler2D _PaperTex;
+		sampler2D _BlotchTex, _DetailTex, _PaperTex;
 		sampler2D _RampTex;
 		float4 _RampTex_TexelSize;
 		half _BlotchMulti;
 		half _BlotchSub;
 		half _TintScale;
 		half _PaperStrength;
-		fixed4 _Color;
-		fixed4 _Color2;
-		fixed4 _InkCol;
+		fixed4 _Color, _Color2, _InkCol;
 		half _FresnelExponent;
 
 		int _Dissolve;
@@ -52,61 +47,56 @@
 		float _ManualDissolve;
 
 		struct Input {
-			float2 uv_BlotchTex;
-			float2 uv_DetailTex;
-			float2 uv_PaperTex;
+			float2 uv_BlotchTex, uv_DetailTex, uv_PaperTex;
 			float2 uv_RampTex;
-			float3 worldNormal;
-			float3 worldPos;
-			float3 viewDir;
-			// float3 lightDir;
-			// float lightAtten;
+			float3 worldNormal, worldPos;
+			float3 lightDir;
+			float lightAtten;
 		};
 
 		UNITY_INSTANCING_BUFFER_START(Props)
 		// put more per-instance properties here
 		UNITY_INSTANCING_BUFFER_END(Props)
-
-		void vert (inout appdata_base v, out Input o) {
-			UNITY_INITIALIZE_OUTPUT(Input, o);
-			// 	float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
-
-			// 	float3 lightDir = float3(0, 0, 0);
-			// 	float lightAtten = 0;
-			// 	int lights = 4;
-			
-			// 	for(int i = 0; i < 4; i++) {
-				// 		float3 lightPos = float3(unity_4LightPosX0[i], unity_4LightPosY0[i], unity_4LightPosZ0[i]);
-				// 		if(lightPos[0] == 0 && lightPos[1] == 0 && lightPos[2] == 0) {
-					// 			lights--;
-					// 			continue;
-				// 		}
-				// 		lightDir += normalize(lightPos - worldPos);
-				// 		lightAtten += (1 - unity_4LightAtten0[i]) * length(unity_LightColor[0]);
-				// 		// lightAtten += length(unity_LightColor[0]);
-			// 	}
-			// 	o.lightDir = lightDir / lights;
-			// 	o.lightAtten = lightAtten / lights;
-			// 	// o.lightDir = normalize(lightDir);
-
-			// 	// bgolus god fix
-			// 	// float range = (0.005 * sqrt(1000000 - unity_4LightAtten0[0]])) / sqrt(unity_4LightAtten0[0]]);
-			// 	// float attenUV = distance(lightPos, worldPos) / range;
-			// 	// float atten = saturate(1.0 / (1.0 + 25.0 * attenUV*attenUV) * saturate((1 - attenUV) * 5.0));
-			// 	// float atten = tex2D(_LightTextureB0, (attenUV * attenUV).xx).UNITY_ATTEN_CHANNEL;
-		}
-
+		
 		fixed4 screen (fixed4 colA, fixed4 colB) {
-			fixed4 white = fixed4(1, 1, 1, 1);
-			return white - (white - colA) * (white - colB);
+			// fixed4 white = fixed4(1, 1, 1, 1);
+			return 1 - (1 - colA) * (1 - colB);
 		}
 
 		fixed4 softlight (fixed4 colA, fixed4 colB) {
-			fixed4 white = fixed4(1, 1, 1, 1);
-			return (white - 2 * colB) * pow(colA, 2) + 2 * colB * colA;
+			return (1 - 2 * colB) * pow(colA, 2) + 2 * colB * colA;
 		}
 
-		void surf (Input IN, inout SurfaceOutputStandard o) {
+		void vert (inout appdata_full v, out Input o) {
+			UNITY_INITIALIZE_OUTPUT(Input, o);
+			float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
+
+			float3 lightDir = float3(0, 0, 0);
+			float lightAtten = 0;
+			int lights = 4;
+			
+			for(int i = 0; i < 4; i++) {
+				float3 lightPos = float3(unity_4LightPosX0[i], unity_4LightPosY0[i], unity_4LightPosZ0[i]);
+				if(lightPos[0] == 0 && lightPos[1] == 0 && lightPos[2] == 0) {
+					lights--;
+					continue;
+				}
+				lightDir += normalize(lightPos - worldPos);
+				lightAtten += (1 - unity_4LightAtten0[i]) * length(unity_LightColor[0]);
+				// lightAtten += length(unity_LightColor[0]);
+			}
+			o.lightDir = lightDir / lights;
+			o.lightAtten = lightAtten / lights;
+			// o.lightDir = normalize(lightDir);
+
+			// bgolus god fix
+			// float range = (0.005 * sqrt(1000000 - unity_4LightAtten0[0]])) / sqrt(unity_4LightAtten0[0]]);
+			// float attenUV = distance(lightPos, worldPos) / range;
+			// float atten = saturate(1.0 / (1.0 + 25.0 * attenUV*attenUV) * saturate((1 - attenUV) * 5.0));
+			// float atten = tex2D(_LightTextureB0, (attenUV * attenUV).xx).UNITY_ATTEN_CHANNEL;
+		}
+
+		void surf (Input IN, inout SurfaceOutput o) {
 			#if DISSOLVE
 				if(_Dissolve == 1) {
 					float camDist = distance(IN.worldPos, _WorldSpaceCameraPos + float3(_ViewDir.x, max(0, _ViewDir.y), _ViewDir.z));
@@ -123,8 +113,7 @@
 			c -= _BlotchSub;			
 			c *= tex2D (_DetailTex, IN.uv_DetailTex).r;			
 
-			// float f = (1 - dot(IN.worldNormal, IN.lightDir)) * IN.lightAtten;
-			float f = dot(IN.worldNormal, IN.viewDir);
+			float f = (1 - dot(IN.worldNormal, IN.lightDir)) * IN.lightAtten;
 			f = pow(f, _FresnelExponent);
 
 			c = saturate(c * .3 + f);

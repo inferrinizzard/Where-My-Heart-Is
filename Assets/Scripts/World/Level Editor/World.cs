@@ -40,10 +40,7 @@ public class World : MonoBehaviour
 		return entangledWorldContainer.GetComponentsInChildren<EntangledClippable>();
 	}
 
-	public void Awake()
-	{
-		Instance = this;
-	}
+	public void Awake() => Instance = this;
 
 	public void Start()
 	{
@@ -84,13 +81,13 @@ public class World : MonoBehaviour
 	}*/
 
 	/*/// <summary> configures children and related clippables, interactables </summary>
-	public void OnBeginTransition()
+	public void OnExitScene()
 	{
         Initialize();
 	}*/
 
 	/*/// <summary> removes refs and deletes current to pass singleton to next world </summary>
-	public void OnCompleteTransition()
+	public void OnEnterScene()
 	{
 		heartWorldContainer = null;
 		realWorldContainer = null;

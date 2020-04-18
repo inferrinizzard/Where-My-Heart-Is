@@ -59,6 +59,7 @@ public class Window : MonoBehaviour
 
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds, CSG.Model boundModel)
 	{
+		Player.Instance.VFX.ToggleWave(true);
 		float startTime = Time.realtimeSinceStartup;
         Matrix4x4 reflectionMatrix = new Matrix4x4(
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(0),
@@ -104,6 +105,7 @@ public class Window : MonoBehaviour
 				startTime = Time.realtimeSinceStartup;
 			}
 		}
+		Player.Instance.VFX.ToggleWave(false);
 
 
         cutInProgress = false;

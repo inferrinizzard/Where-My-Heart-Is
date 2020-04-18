@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary> Generic Singleton implementation </summary>
-public class Singleton<T> : MonoBehaviour, IPersistent where T : Component
+public class Singleton<T> : MonoBehaviour where T : Component
 {
 	/// <summary> Local instance reference, to be used to child class </summary>
 	protected static T instance;
@@ -40,7 +40,7 @@ public class Singleton<T> : MonoBehaviour, IPersistent where T : Component
 	}
 
 	public virtual void Initialize() { }
-	public virtual void OnBeginTransition() { }
+	public virtual void OnExitScene() { }
 	public virtual void TransitionUpdate() { }
-	public virtual void OnCompleteTransition() { }
+	public virtual void OnEnterScene() { }
 }
