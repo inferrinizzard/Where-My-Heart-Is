@@ -48,12 +48,8 @@ public class ApplyMask : MonoBehaviour
 
 	public void CreateMask()
 	{
-		// same as above, does not work
-		// mask = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.R8);
-		// mask = RenderTexture.GetTemporary(Screen.width, Screen.height, 16, RenderTextureFormat.R8);
-		// mask.Create();
-		// mask.name = "Internal Mask";
-        mask = new RenderTexture(Screen.width, Screen.height, 16);
+		var mask = RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
+		mask.name = "Internal Mask";
 
 		// spawn temp mask cam and configure transform
 		maskCam = new GameObject("Mask Cam").AddComponent<Camera>();
@@ -77,12 +73,11 @@ public class ApplyMask : MonoBehaviour
 		mask2D.ReadPixels(new Rect(0, 0, mask.width, mask.height), 0, 0);
 		mask2D.Apply();
 		Shader.SetGlobalTexture("_Mask", Instantiate(mask2D));
-
 		RenderTexture.active = screen;
 
 		// remove temp cam
 		Destroy(maskCam.gameObject);
-		// RenderTexture.ReleaseTemporary(mask);
+		RenderTexture.ReleaseTemporary(mask);
 	}
 
 	void OnRenderImage(RenderTexture source, RenderTexture dest)
