@@ -27,6 +27,7 @@ public class Window : MonoBehaviour
 
     // behavior
     [HideInInspector] public float fovDistance;// distance from camera to the far end of the fov object, calculated at the beginning of each puzzle
+    [HideInInspector] public float cutStartTime;
 
     // state management
     private bool cutInProgress;
@@ -56,54 +57,37 @@ public class Window : MonoBehaviour
 		StartCoroutine(ApplyCutCoroutine(1f / ((float) framerateTarget), new Bounds(fieldOfView.GetComponent<MeshCollider>().bounds.center, fieldOfView.GetComponent<MeshCollider>().bounds.size), fieldOfViewModel));
 	}
 
-	/*private void ApplyCutSynchronous()
-	{
-		world.GetHeartObjects().ToList().ForEach(clippable => { if (IntersectsBounds(clippable)) clippable.UnionWith(fieldOfViewModel); });
-		world.GetRealObjects().ToList().ForEach(clippable => { if (IntersectsBounds(clippable)) clippable.Subtract(fieldOfViewModel); });
-
-		foreach (EntangledClippable entangled in world.GetEntangledObjects())
-		{
-			// clip the immediate children of entangled
-			//if (IntersectsBounds(entangled.heartVersion)) entangled.heartVersion.UnionWith(fieldOfView, csgOperator);
-			//if (IntersectsBounds(entangled.realVersion)) entangled.realVersion.Subtract(fieldOfView, csgOperator);
-
-			// clip any children below them to the correct world
-			entangled.heartObject.GetComponentsInChildren<ClippableObject>().ToList().ForEach(
-				clippable => { if (IntersectsBounds(clippable)) clippable.UnionWith(fieldOfViewModel); });
-			entangled.realObject.GetComponentsInChildren<ClippableObject>().ToList().ForEach(
-				clippable => { if (IntersectsBounds(clippable)) clippable.Subtract(fieldOfViewModel); });
-		}
-	}*/
-
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds, CSG.Model boundModel)
 	{
 		float startTime = Time.realtimeSinceStartup;
+        Matrix4x4 reflectionMatrix = new Matrix4x4(
+            mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(0),
+            mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(1),
+            mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(2),
+            mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(3)
+            );
 
         if (mirror.GetComponent<ClippableObject>().CachedModel.Intersects(boundModel, 0.0001f, true))
         {
-            Debug.Log("hi");
             mirror.GetComponent<ClippableObject>().ClipWith(boundModel);
-            Debug.Log("enjd");
             new CSG.Model(mirror.GetComponent<MeshFilter>().mesh).Draw(Color.cyan);
 
             Bounds mirrorBound;
             CSG.Model mirrorBoundModel = mirror.GetComponent<Mirror>().CreateBound(out mirrorBound);
+            mirrorBoundModel.Draw(Color.green);
 
-            foreach (ClippableObject clippable in world.heartClippables)
+            foreach (ClippableObject clippable in world.heartWorldContainer.GetComponentsInChildren<ClippableObject>())
             {
-                if (true ||IntersectsBounds(clippable, mirrorBound))
+                if (IntersectsBounds(clippable, mirrorBound))
                 {
-                    clippable.GetComponent<ClippableObject>().IntersectMirrored(mirrorBoundModel, mirror.GetComponent<Mirror>().reflectionMatrix);
+                    clippable.GetComponent<ClippableObject>().IntersectMirrored(mirrorBoundModel, reflectionMatrix);
                 }
             }
 
-            /*foreach(EntangledClippable entangled in world.entangledClippables)
+            foreach(EntangledClippable entangled in world.entangledClippables)
             {
-                foreach()
-                {
-
-                }
-            }*/
+                entangled.ClipMirrored(this, mirrorBound, mirrorBoundModel, reflectionMatrix, frameLength);
+            }
         }
 
 		foreach (ClippableObject clippable in world.clippables)
@@ -126,7 +110,7 @@ public class Window : MonoBehaviour
         OnCompleteCut?.Invoke();
     }
 
-	private bool IntersectsBounds(ClippableObject clippableObject, Bounds bounds)
+	public bool IntersectsBounds(ClippableObject clippableObject, Bounds bounds)
 	{
 		//return true;
 		// less expensive, less accurate intersection check

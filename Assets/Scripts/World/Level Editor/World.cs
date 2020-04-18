@@ -25,9 +25,9 @@ public class World : MonoBehaviour
     }
 	[HideInInspector] public List <ClippableObject> clippables
 	{
-		get
-		{
-			List <ClippableObject> objs = new List <ClippableObject>();
+        get
+        {
+            List<ClippableObject> objs = new List<ClippableObject>();
             objs.AddRange(realClippables);
             objs.AddRange(heartClippables);
 
@@ -60,7 +60,17 @@ public class World : MonoBehaviour
 		{
 			heartClippables.AddRange(entangled.heartObject.GetComponentsInChildren<ClippableObject>());
 			realClippables.AddRange(entangled.realObject.GetComponentsInChildren<ClippableObject>());
-		}
+
+            foreach (ClippableObject clippable in entangled.heartObject.GetComponentsInChildren<ClippableObject>())
+            {
+                clippable.worldType = ClippableObject.WorldType.Heart;
+            }
+
+            foreach (ClippableObject clippable in entangled.realObject.GetComponentsInChildren<ClippableObject>())
+            {
+                clippable.worldType = ClippableObject.WorldType.Real;
+            }
+        }
 	}
 
 	/*public void Initialize()
@@ -122,8 +132,10 @@ public class World : MonoBehaviour
 
 	public void ResetCut()
 	{
-		foreach (ClippableObject obj in GetComponentsInChildren<ClippableObject>())
-			if (obj.isClipped) obj.Revert();
+		foreach (ClippableObject clippable in GetComponentsInChildren<ClippableObject>())
+			if (clippable.isClipped) clippable.Revert();
+        foreach (EntangledClippable entangled in GetComponentsInChildren<EntangledClippable>())
+            if (entangled.isClipped) entangled.Revert();
 
 		// foreach (Transform child in heartWorldContainer)
 		// 	foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())

@@ -31,11 +31,48 @@ public class EntangledClippable : ClippableObject
 		//realVersion.Subtract(other, operations);
 	}
 
+    public void ClipMirrored(Window window, Bounds mirrorBound, CSG.Model mirrorBoundModel, Matrix4x4 reflectionMatrix, float frameLength)
+    {
+        isClipped = true; 
+        mirroredCopy = Instantiate(gameObject, transform.parent);
+        Destroy(mirroredCopy.GetComponent<EntangledClippable>().realObject);
+
+        foreach (ClippableObject clippable in mirroredCopy.GetComponent<EntangledClippable>().heartObject.GetComponentsInChildren<ClippableObject>())
+        {
+            if (window.IntersectsBounds(clippable, mirrorBound))
+            {
+                clippable.GetComponent<ClippableObject>().StageIntersectMirroredInPlace(mirrorBoundModel);
+            }
+        }
+
+        mirroredCopy.transform.position = reflectionMatrix.MultiplyPoint(mirroredCopy.transform.position);
+        mirroredCopy.transform.LookAt(mirroredCopy.transform.position + reflectionMatrix.MultiplyVector(mirroredCopy.transform.forward),
+            reflectionMatrix.MultiplyVector(mirroredCopy.transform.up));
+
+        foreach (ClippableObject clippable in mirroredCopy.GetComponent<EntangledClippable>().heartObject.GetComponentsInChildren<ClippableObject>())
+        {
+            if (clippable.isClipped)
+            {
+                clippable.GetComponent<ClippableObject>().ApplyIntersectMirroredInPlace(reflectionMatrix);
+            }
+        }
+    }
+
+    /*public GameObject Clip()
+    {
+        isClipped = true;
+        uncutCopy
+    }*/
+
 	public override void Revert()
 	{
-		//heartVersion.Revert();
-		//realVersion.Revert();
-	}
+        isClipped = false;
+
+        if(mirroredCopy)
+        {
+            Destroy(mirroredCopy);
+        }
+    }
 
 	public void OnRealChange(GameObject realPrefab)
 	{

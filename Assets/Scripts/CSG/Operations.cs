@@ -30,15 +30,20 @@ namespace CSG
         public static Mesh Intersect(Model modelA, Model modelB, bool flipNormals = false, Matrix4x4? matrixOverride = null)
 		{
             Matrix4x4 conversionMatrix = matrixOverride == null ? modelA.worldToLocal : ((Matrix4x4)matrixOverride);
+            
+
+			return Intersect(modelA, modelB, flipNormals).ToMesh(conversionMatrix);
+		}
+
+        public static Model Intersect(Model modelA, Model modelB, bool flipNormals = false)
+        {
             modelA.IntersectWith(modelB); //generate all intersections
 
-			Model clippedA = ClipModelAToModelB(modelA, modelB, true, flipNormals);
-			Model clippedB = ClipModelAToModelB(modelB, modelA, true, flipNormals);
+            Model clippedA = ClipModelAToModelB(modelA, modelB, true, flipNormals);
+            Model clippedB = ClipModelAToModelB(modelB, modelA, true, flipNormals);
 
-			Model result = Model.Combine(clippedA, clippedB);
-
-			return result.ToMesh(conversionMatrix);
-		}
+            return Model.Combine(clippedA, clippedB);
+        }
 
 		/// <summary>
 		/// Subtracts shapeB from shapeA
@@ -67,15 +72,18 @@ namespace CSG
 		public static Mesh ClipAToB(Model modelA, Model modelB, bool clipInside = true, bool flipNormals = false, Matrix4x4? matrixOverride = null)
 		{
             Matrix4x4 conversionMatrix = matrixOverride == null ? modelA.worldToLocal : modelA.worldToLocal * ((Matrix4x4)matrixOverride);
+			return ClipAToB(modelA, modelB, clipInside, flipNormals).ToMesh(conversionMatrix);
+		}
 
+        public static Model ClipAToB(Model modelA, Model modelB, bool clipInside = true, bool flipNormals = false)
+        {
             modelA.IntersectWith(modelB); //generate all intersections
 
-			Model clippedA = ClipModelAToModelB(modelA, modelB, clipInside);
+            Model clippedA = ClipModelAToModelB(modelA, modelB, clipInside);
             if (flipNormals) clippedA.FlipNormals();
-			//clippedA.ConvertToLocal(modelA.worldToLocal);
 
-			return clippedA.ToMesh(modelA.worldToLocal);
-		}
+            return clippedA;
+        }
 
 		/// <summary>
 		/// Generates a mesh that matches the portion of the given "toClip" object's mesh contained by the 
