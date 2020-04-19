@@ -133,9 +133,9 @@ public class Mirror : ClippableObject
         result.CreateEdges();
         //result.FlipNormals();
 
-        GameObject test = new GameObject();
+        /*GameObject test = new GameObject();
         test.AddComponent<MeshFilter>().mesh = result.ToMesh(test.transform.worldToLocalMatrix);
-        test.AddComponent<MeshRenderer>();
+        test.AddComponent<MeshRenderer>();*/
         
 
         bound = new Bounds();
