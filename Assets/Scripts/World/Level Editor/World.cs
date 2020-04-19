@@ -14,28 +14,28 @@ public class World : MonoBehaviour
 
 	public List<ClippableObject> heartClippables, realClippables;
 
-    [HideInInspector] public List<EntangledClippable> entangledClippables
+    [HideInInspector] public List<EntangledClippable> EntangledClippables
     {
         get
         {
-            List<EntangledClippable> objs = entangledWorldContainer.GetComponentsInChildren<EntangledClippable>().ToList();
-
-            return objs.OrderBy(clippable => (clippable.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList();
+            return entangledClippables.OrderBy(clippable => (clippable.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList();
         }
     }
-	[HideInInspector] public List <ClippableObject> clippables
+
+    private List<EntangledClippable> entangledClippables;
+
+	[HideInInspector] public List <ClippableObject> Clippables
 	{
         get
         {
-            List<ClippableObject> objs = new List<ClippableObject>();
-            objs.AddRange(realClippables);
-            objs.AddRange(heartClippables);
-
-            return objs.OrderBy(clippable => (clippable.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList();
+            return clippables.OrderBy(clippable => (clippable.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList();
 		}
 	}
 
-	public ClippableObject[] GetEntangledObjects()
+    private List<ClippableObject> clippables;
+
+
+    public ClippableObject[] GetEntangledObjects()
 	{
 		return entangledWorldContainer.GetComponentsInChildren<EntangledClippable>();
 	}
@@ -56,7 +56,9 @@ public class World : MonoBehaviour
 
 		heartClippables = heartWorldContainer.GetComponentsInChildren<ClippableObject>().ToList();
 		realClippables = realWorldContainer.GetComponentsInChildren<ClippableObject>().ToList();
-        foreach (EntangledClippable entangled in entangledWorldContainer.GetComponentsInChildren<EntangledClippable>().ToList())
+
+        entangledClippables = entangledWorldContainer.GetComponentsInChildren<EntangledClippable>().ToList();
+        foreach (EntangledClippable entangled in entangledClippables)
 		{
 			heartClippables.AddRange(entangled.heartObject.GetComponentsInChildren<ClippableObject>());
 			realClippables.AddRange(entangled.realObject.GetComponentsInChildren<ClippableObject>());
@@ -71,6 +73,10 @@ public class World : MonoBehaviour
                 clippable.worldType = ClippableObject.WorldType.Real;
             }
         }
+
+        clippables = new List<ClippableObject>();
+        clippables.AddRange(realClippables);
+        clippables.AddRange(heartClippables);
 	}
 
 	/*public void Initialize()
@@ -132,7 +138,7 @@ public class World : MonoBehaviour
 
 	public void ResetCut()
 	{
-		foreach (ClippableObject clippable in GetComponentsInChildren<ClippableObject>())
+		foreach (ClippableObject clippable in clippables)
 			if (clippable.isClipped) clippable.Revert();
         foreach (EntangledClippable entangled in GetComponentsInChildren<EntangledClippable>())
             if (entangled.isClipped) entangled.Revert();

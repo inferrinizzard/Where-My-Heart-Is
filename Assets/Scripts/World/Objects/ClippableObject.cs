@@ -122,6 +122,7 @@ public class ClippableObject : MonoBehaviour
         isClipped = true;
 
         CSG.Model model = CachedModel;
+        stagedModel = model;
 
         if (!volumeless)
             stagedModel = CSG.Operations.Intersect(model, other, true);// * reflectionMatrix

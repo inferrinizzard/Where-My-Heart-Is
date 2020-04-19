@@ -76,23 +76,25 @@ public class Window : MonoBehaviour
             CSG.Model mirrorBoundModel = mirror.GetComponent<Mirror>().CreateBound(out mirrorBound);
             mirrorBoundModel.Draw(Color.green);
 
+            foreach (EntangledClippable entangled in world.EntangledClippables)
+            {
+                entangled.ClipMirrored(this, mirrorBound, mirrorBoundModel, reflectionMatrix);
+            }
+
+
             foreach (ClippableObject clippable in world.heartWorldContainer.GetComponentsInChildren<ClippableObject>())
             {
-                if (IntersectsBounds(clippable, mirrorBound))
+                if (IntersectsBounds(clippable, mirrorBound, mirrorBoundModel))
                 {
                     clippable.GetComponent<ClippableObject>().IntersectMirrored(mirrorBoundModel, reflectionMatrix);
                 }
-            }
-
-            foreach(EntangledClippable entangled in world.entangledClippables)
-            {
-                entangled.ClipMirrored(this, mirrorBound, mirrorBoundModel, reflectionMatrix, frameLength);
+                
             }
         }
 
-		foreach (ClippableObject clippable in world.clippables)
+		foreach (ClippableObject clippable in world.Clippables)
 		{
-			if (IntersectsBounds(clippable, bounds))
+			if (IntersectsBounds(clippable, bounds, fieldOfViewModel))
 			{
                 clippable.ClipWith(boundModel);
                 OnClippableCut?.Invoke(clippable);
@@ -110,7 +112,7 @@ public class Window : MonoBehaviour
         OnCompleteCut?.Invoke();
     }
 
-	public bool IntersectsBounds(ClippableObject clippableObject, Bounds bounds)
+	public bool IntersectsBounds(ClippableObject clippableObject, Bounds bounds, CSG.Model boundsModel)
 	{
 		//return true;
 		// less expensive, less accurate intersection check
@@ -122,7 +124,7 @@ public class Window : MonoBehaviour
 		{
 			//Debug.Log(clippableObject.IntersectsBound(fieldOfViewModel));
 			// more expensive, more accurate intersection check
-			if (clippableObject.IntersectsBound(fieldOfViewModel))
+			if (clippableObject.IntersectsBound(boundsModel))
 			{
 				return true;
 			}
