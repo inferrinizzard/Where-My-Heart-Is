@@ -127,10 +127,8 @@ MonoBehaviour:
   speed: 4
   gravity: 20
   jumpForce: 6
-  mouseSensitivity: 2
   playerReach: 3
   windowEnabled: 1
-  sceneActive: 0
   fadeDuration: 1
   rotation: {x: 0, y: 0, z: 0}
 --- !u!114 &4516441798131658318
@@ -145,11 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca55f83601883c6428a51108bce61972, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpKey: 32
-  crouchKey: 304
-  interactKey: 101
-  altAimKey: 306
-  pauseKey: 27
 --- !u!114 &5407968008035840466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,7 +189,6 @@ MonoBehaviour:
   cam: {fileID: 0}
   fieldOfViewSource: {fileID: 6145140127035620908}
   fieldOfView: {fileID: 2766900623958999665}
-  tempMaterial: {fileID: 0}
   framerateTarget: 80
 --- !u!1001 &7427641284244191036
 PrefabInstance:
@@ -205,11 +197,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5407968008035840465}
     m_Modifications:
-    - target: {fileID: 3177498603613522795, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
-        type: 3}
-      propertyPath: m_Name
-      value: Main Camera
-      objectReference: {fileID: 0}
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -264,6 +251,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3177498603613522795, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
+        type: 3}
+      propertyPath: m_Name
+      value: Main Camera
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 31ce0a8a718ba094b9f6c937e3c9676c, type: 3}
