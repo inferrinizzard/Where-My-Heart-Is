@@ -122,7 +122,8 @@ Shader "Mask/Merge"
 				float4 output;
 				#if MASK
 					float mask = tex2D(_Mask, i.uv).r;
-					output = mask > .5 ? tex2D(_Heart, i.uv) : tex2D(_MainTex, i.uv);
+					output = mask > .5 ? mask * tex2D(_Heart, i.uv) + (1 - mask) * tex2D(_MainTex, i.uv) : tex2D(_MainTex, i.uv);
+					//output = mask * tex2D(_Heart, i.uv) + (1 - mask) * tex2D(_MainTex, i.uv);
 				#else
 					output = tex2D(_MainTex, i.uv);
 				#endif

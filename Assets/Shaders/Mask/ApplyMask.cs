@@ -9,6 +9,7 @@ public class ApplyMask : MonoBehaviour
     ///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
     //public static RenderTexture mask;
     public Material openWindowMat;
+    public Material rippleMat;
 
     ///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
     [HideInInspector] public Camera heartCam, maskCam, mainCam;
@@ -29,11 +30,26 @@ public class ApplyMask : MonoBehaviour
 	int _HeartID;
 
     private bool rampMask;
+    private bool ripple;
+    public float rippleLength;
     private float rampValue;
     public RenderTexture rampResult;
     public RenderTexture mask;
+    private float rampStartTime;
+    private float rippleStartTime;
+    public float rampLength;
+    public float rampTimeOffset;
+    public float breathMax;
+    public float breathMin;
+    private float currentBreath;
+    public float breathRate;
+    public bool breathIn;
+    public float rampTarget;
+    public float scrollRate;
 
-	void Start()
+
+
+    void Start()
 	{
 		screenMat = new Material(merge);
 		_HeartID = Shader.PropertyToID("_Heart");
@@ -50,7 +66,9 @@ public class ApplyMask : MonoBehaviour
         rampMask = false;
         rampResult = new RenderTexture(Screen.width, Screen.height, 8, RenderTextureFormat.Default);
 
-		CreateMask();
+        breathIn = false;
+
+        CreateMask();
 		screenMat.SetTexture("_HatchTex", hatchTexture);
 		screenMat.SetTexture("_Background", birdBackground);
 		// screenMat.SetColor("_DepthOutlineColour", Color.white);
@@ -62,12 +80,15 @@ public class ApplyMask : MonoBehaviour
         {
             rampMask = true;
             rampValue = 0;
+            rampStartTime = Time.time + rampTimeOffset;
 
             RenderTexture temp = Player.Instance.cam.targetTexture;
 
             Player.Instance.cam.targetTexture = rampResult;
             Player.Instance.cam.Render();
             Player.Instance.cam.targetTexture = temp;
+
+            //ripple = true;
         }
     }
 
@@ -78,6 +99,12 @@ public class ApplyMask : MonoBehaviour
         target.screenMat = this.screenMat;
         target.transitionMat = this.transitionMat;
         target.dissolveTexture = this.dissolveTexture;
+    }
+
+    public void StartRipple()
+    {
+        ripple = true;
+        rippleStartTime = Time.time;
     }
 
 	public void CreateMask()
@@ -100,7 +127,8 @@ public class ApplyMask : MonoBehaviour
 
         maskCam.Render();
 
-        
+
+        mask2D = new Texture2D(Screen.width, Screen.height);
 
         SetMask(mask);
 
@@ -125,14 +153,25 @@ public class ApplyMask : MonoBehaviour
 		if (transitionMat == null)
 		{ // pass both cameras to screen per render
 			screenMat.SetTexture(_HeartID, heart);
-			Graphics.Blit(source, dest, screenMat);
-			// source.DiscardContents();
-			// heart.DiscardContents();
-			// source.Release();
-			// heart.Release();
-			// ClearRT(heart, heartCam);
-			// ClearRT(source, mainCam);
-		}
+
+            if (ripple == true)
+            {
+                RenderTexture temp = RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
+			    Graphics.Blit(source, temp, screenMat);
+                Graphics.Blit(temp, dest, rippleMat);
+                RenderTexture.ReleaseTemporary(temp);
+            }
+            else
+            {
+                Graphics.Blit(source, dest, screenMat);
+            }
+            // source.DiscardContents();
+            // heart.DiscardContents();
+            // source.Release();
+            // heart.Release();
+            // ClearRT(heart, heartCam);
+            // ClearRT(source, mainCam);
+        }
 		else
 		{
 			Graphics.Blit(curSave, dest, transitionMat);
@@ -144,13 +183,59 @@ public class ApplyMask : MonoBehaviour
         // ramp here
         if(rampMask)
         {
-            Graphics.Blit(mask, rampResult, openWindowMat);
-            SetMask(mask);
+            float t = (Time.time - rampStartTime) / rampLength;
+            if(t < 1.1)
+            {
+                if(t > 0)
+                {
+                    openWindowMat.SetFloat("_Cutoff", Mathf.Lerp(0, 2, t));
+                    Graphics.Blit(mask, rampResult, openWindowMat);
+                    SetMask(rampResult);
+                }
+            }
+            else
+            {
+                rampMask = false;
+                currentBreath = Mathf.Lerp(0, 2, t);
+            }
         }
+        else
+        {
+            currentBreath = Mathf.Lerp(currentBreath, (breathIn ? breathMax : breathMin), breathRate * Time.deltaTime);
+            if (Mathf.Abs(currentBreath - (breathIn ? breathMax : breathMin)) < 0.1)
+            {
+                breathIn = !breathIn;
+            }
+
+            openWindowMat.SetTextureOffset("_RampTex", openWindowMat.GetTextureOffset("_RampTex") + Vector2.right * scrollRate * Time.deltaTime);
+
+            openWindowMat.SetFloat("_Cutoff", currentBreath);
+            Graphics.Blit(mask, rampResult, openWindowMat);
+            SetMask(rampResult);
+        }
+
+        if (ripple)
+        {
+            float t = (Time.time - rippleStartTime) / rippleLength;
+            if (t < 1.1)
+            {
+                if (t > 0)
+                {
+                    rippleMat.SetFloat("_Offset", Mathf.Lerp(0, 10, t));
+                }
+            }
+            else
+            {
+                ripple = false;
+            }
+        }
+        
 
         // GL.ClearWithSkybox(true, heartCam);
         // GL.ClearWithSkybox(true, mainCam);
     }
+
+    private Texture2D mask2D;
 
     private void SetMask(RenderTexture nextMask)
     {
@@ -158,7 +243,6 @@ public class ApplyMask : MonoBehaviour
         RenderTexture.active = nextMask;
 
         // copy to Texture2D and pass to shader
-        Texture2D mask2D = new Texture2D(nextMask.width, nextMask.height);
         mask2D.ReadPixels(new Rect(0, 0, nextMask.width, nextMask.height), 0, 0);
         mask2D.Apply();
         Shader.SetGlobalTexture("_Mask", mask2D);

@@ -357,7 +357,8 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (State is Aiming && windowEnabled && !heldObject)
 		{
-			// SetState(new Cut(this));
+            // SetState(new Cut(this));
+            GetComponentInChildren<ApplyMask>().StartRipple();
 			window.ApplyCut();
 			hands.RevertAim();
 			audioController.PlaceWindow();

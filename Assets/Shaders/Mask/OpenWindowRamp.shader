@@ -3,6 +3,8 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+		_RampTex ("Ramp Texture", 2D) = "white" {}
+		_Cutoff ("Cutoff", float) = 0
     }
     SubShader
     {
@@ -16,6 +18,11 @@
             #pragma fragment frag
 
             #include "UnityCG.cginc"
+
+			sampler2D _RampTex;
+			float _Cutoff;
+			float4 _RampTex_ST;
+
 
             struct appdata
             {
@@ -42,8 +49,15 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
-                // just invert the colors
-                col.rgb = 1 - col.rgb;
+				if (col.r > 0.5)
+				{
+					col = tex2D(_RampTex, TRANSFORM_TEX(i.uv, _RampTex)) * _Cutoff;
+				}
+				/*if (ramp.r > _Cutoff)
+				{
+					col = float4(0, 0, 0, 0);
+				}*/
+
                 return col;
             }
             ENDCG
