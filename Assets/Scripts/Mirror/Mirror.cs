@@ -112,12 +112,18 @@ public class Mirror : ClippableObject
         farLoop = farModel.vertices;
 
         // flip the normals of the initial face so it faces outwards
-        sourceModel.FlipNormals();
+        farModel.FlipNormals();
 
         CSG.Model result = CSG.Model.Combine(sourceModel, farModel);
 
+        Vector3 testNormal = new CSG.Triangle(farLoop[order[0]], closeLoop[order[1]], farLoop[order[2]]).CalculateNormal();
+        if(Vector3.Dot(testNormal, sourceModel.triangles[0].CalculateNormal()) > 0)
+        {
+            order.Reverse();
+        }
+
         // for every pair of vertices on the close face
-        for(int i = 0; i < order.Count; i++)
+        for (int i = 0; i < order.Count; i++)
         {
             // create two new triangles that connect them to the corrosponding pair on the other surface
             result.AddTriangle(new CSG.Triangle(farLoop[order[i]], closeLoop[order[i]], farLoop[order[(i + 1) % order.Count]]));
@@ -125,11 +131,11 @@ public class Mirror : ClippableObject
         }
 
         result.CreateEdges();
+        //result.FlipNormals();
 
-        result.FlipNormals();
-        /*GameObject test = new GameObject();
+        GameObject test = new GameObject();
         test.AddComponent<MeshFilter>().mesh = result.ToMesh(test.transform.worldToLocalMatrix);
-        test.AddComponent<MeshRenderer>();*/
+        test.AddComponent<MeshRenderer>();
         
 
         bound = new Bounds();
