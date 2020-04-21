@@ -137,27 +137,78 @@ namespace CSG
 			List<Triangle> triangles = new List<Triangle>();
 
 			List<int> indicies = new List<int>();
-			indicies.Add(0);
-			indicies.Add(vertices.Count - 1);
+
+            indicies.Add(0);
+            indicies.Add(0);
+            indicies.Add(1);
+            //indicies.Add(vertices.Count - 1);
+
+            //triangles.Add(new Triangle(vertices[indicies[0]], vertices[indicies[1]], vertices[indicies[2]]));
+
+            int i = 1;
+
+            while (i < vertices.Count / 2)
+            {
+                indicies.RemoveAt(0);
+                indicies.Add(vertices.Count - i);
+                triangles.Add(new Triangle(vertices[indicies[0]], vertices[indicies[1]], vertices[indicies[2]]));
+
+                i++;
+
+                indicies.RemoveAt(0);// dequeue
+                indicies.Add(i);
+                triangles.Add(new Triangle(vertices[indicies[2]], vertices[indicies[1]], vertices[indicies[0]]));
+            }
+
+            if (vertices.Count % 2 == 1 )// count even
+            {
+                indicies.RemoveAt(0);
+                indicies.Add(vertices.Count - i);
+                triangles.Add(new Triangle(vertices[indicies[0]], vertices[indicies[1]], vertices[indicies[2]]));
+            }
+
+            
+            /*
+            indicies.Add(0);
 			indicies.Add(1);
+			indicies.Add(vertices.Count - 1);
 
-			triangles.Add(new Triangle(vertices[indicies[2]], vertices[indicies[1]], vertices[indicies[0]]));
+			triangles.Add(new Triangle(vertices[indicies[0]], vertices[indicies[1]], vertices[indicies[2]]));
 
-			int i = 1;
-			while (i < Mathf.FloorToInt((vertices.Count) / 2))
+			int i = 2;
+            //Debug.Log(Mathf.FloorToInt((vertices.Count) / 2));
+            while (i < vertices.Count - 2)
+            {
+                indicies.RemoveAt(0); //dequeue
+                indicies.Add(i);
+                triangles.Add(new Triangle(vertices[indicies[0]], vertices[indicies[1]], vertices[indicies[2]]));
+
+                if (i >= vertices.Count - 2) break;
+                //if (i >= Mathf.CeilToInt((vertices.Count) / 2)) break;
+
+                indicies.RemoveAt(0);
+                indicies.Add(vertices.Count - i);
+                triangles.Add(new Triangle(vertices[indicies[0]], vertices[indicies[1]], vertices[indicies[2]]));
+
+                i++;
+            }*/
+
+            /*while (i < vertices.Count - 2)
 			{
 				indicies.RemoveAt(0); //dequeue
 				indicies.Add(vertices.Count - 1 - i);
 				triangles.Add(new Triangle(vertices[indicies[0]], vertices[indicies[1]], vertices[indicies[2]]));
 
 				i++;
+                if (i >= vertices.Count - 2) break;
+                //if (i >= Mathf.CeilToInt((vertices.Count) / 2)) break;
 
-				indicies.RemoveAt(0); //dequeue
+                indicies.RemoveAt(0); //dequeue
 				indicies.Add(i);
 				triangles.Add(new Triangle(vertices[indicies[2]], vertices[indicies[1]], vertices[indicies[0]]));
-			}
+			}*/
 
-			return triangles;
+            return triangles;
 		}
 
 		/// <summary>
@@ -207,7 +258,7 @@ namespace CSG
 			{
 				vertices[i].Draw(0.05f, Vector3.forward, vertexColor);
 				color += secondaryColor * increment;
-				Debug.DrawLine(vertices[i].value, vertices[(i + 1) % vertices.Count].value, color);
+				Debug.DrawLine(vertices[i].value, vertices[(i + 1) % vertices.Count].value, color, 60f);
 			}
 		}
 
