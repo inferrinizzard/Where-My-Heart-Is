@@ -9,7 +9,7 @@ public class ApplyMask : MonoBehaviour
 	///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
 	Camera heartCam, maskCam, mainCam;
 	///<summary> Shader that combines views </summary>
-	[SerializeField] Shader merge = default, transition = default;
+	[SerializeField] Shader transition = default;
 	///<summary> Generated material for screen shader </summary>
 	public Material screenMat;
 	[HideInInspector] public Material transitionMat;
@@ -24,7 +24,6 @@ public class ApplyMask : MonoBehaviour
 
 	void Start()
 	{
-		screenMat = new Material(merge);
 		_HeartID = Shader.PropertyToID("_Heart");
 
 		// get ref to heart world cam and assign generated RenderTexture
@@ -37,8 +36,8 @@ public class ApplyMask : MonoBehaviour
 		heartCam.targetTexture = heart;
 
 		CreateMask();
-		screenMat.SetTexture("_HatchTex", hatchTexture);
-		screenMat.SetTexture("_Background", birdBackground);
+		//screenMat.SetTexture("_HatchTex", hatchTexture);
+		//screenMat.SetTexture("_Background", birdBackground);
 		// screenMat.SetColor("_DepthOutlineColour", Color.white);
 	}
 
