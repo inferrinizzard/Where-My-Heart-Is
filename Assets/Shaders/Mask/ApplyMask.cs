@@ -46,7 +46,6 @@ public class ApplyMask : MonoBehaviour
 
     public void CopyInto(ApplyMask target)
     {
-        target.merge = this.merge;
         target.transition = this.transition;
         target.screenMat = this.screenMat;
         target.transitionMat = this.transitionMat;
