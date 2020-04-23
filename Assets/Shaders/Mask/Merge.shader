@@ -131,7 +131,7 @@ Shader "Mask/Merge"
 					float4 glow = tex2D(_GlowMap, i.uv);
 					// return glow;
 					if(glow.a == 0) {
-						int NumberOfIterations = 9;
+						int NumberOfIterations = 3;
 						
 						//split texel size into smaller words
 						float TX_x = _GlowMap_TexelSize.x;

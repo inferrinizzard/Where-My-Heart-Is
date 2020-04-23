@@ -894,6 +894,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
+        type: 3}
+      propertyPath: m_Name
+      value: DeathPlane
+      objectReference: {fileID: 0}
     - target: {fileID: 4037872479478507742, guid: 584309737b83dd34496c239b4a574f67,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -948,11 +953,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4037872479478507743, guid: 584309737b83dd34496c239b4a574f67,
-        type: 3}
-      propertyPath: m_Name
-      value: DeathPlane
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 584309737b83dd34496c239b4a574f67, type: 3}
@@ -9170,11 +9170,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rock_Han_Spring
       objectReference: {fileID: 0}
-    - target: {fileID: -1504981713932161579, guid: f51fc6c7f4f5eb945af615c4a28577f0,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 91ea2aa83ea81a641a70b5f0d2d6111d, type: 2}
     - target: {fileID: -4216859302048453862, guid: f51fc6c7f4f5eb945af615c4a28577f0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9245,6 +9240,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.095297
       objectReference: {fileID: 0}
+    - target: {fileID: -1504981713932161579, guid: f51fc6c7f4f5eb945af615c4a28577f0,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 91ea2aa83ea81a641a70b5f0d2d6111d, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f51fc6c7f4f5eb945af615c4a28577f0, type: 3}
 --- !u!1001 &1364150367
@@ -12522,6 +12522,8 @@ MonoBehaviour:
   heartWorldContainer: {fileID: 4028858480073816013}
   realWorldContainer: {fileID: 389551678505213806}
   entangledWorldContainer: {fileID: 7014675965803485354}
+  heartClippables: []
+  realClippables: []
 --- !u!4 &5847291177430034137
 Transform:
   m_ObjectHideFlags: 0
@@ -12655,11 +12657,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.08
-      objectReference: {fileID: 0}
-    - target: {fileID: 5407968007786445907, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_ClearFlags
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5431529102450659146, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
