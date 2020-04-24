@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 
 namespace CSG
@@ -9,16 +10,16 @@ namespace CSG
 	/// <summary>
 	/// Supplies methods for performing constructive solid geometry boolean operations
 	/// </summary>
-	public class Operations : MonoBehaviour
+	public static class Operations
 	{
 		[Tooltip("Breakpoint for equality comparisons between floats")]
-		public float error;
+		public static float error = 0.001f;
 
 		[Header("Debug Variables")]
-		public int faceIndex = -1;
-		public int edgeLoopIndex = -1;
+		public static int faceIndex = -1;
+		public static int edgeLoopIndex = -1;
 
-		public int earToDraw = -1;
+		public static int earToDraw = -1;
 
 		/// <summary>
 		/// Generates the intersection of two shapes
@@ -26,35 +27,28 @@ namespace CSG
 		/// <param name="shapeA">The first shape to intersect</param>
 		/// <param name="shapeB">The second shape to intersect</param>
 		/// <returns>The intersection of the two shapes</returns>
-		public Mesh Intersect(GameObject shapeA, GameObject shapeB)
+		public static Mesh Intersect(Model modelA, Model modelB, bool flipNormals = false, Matrix4x4? matrixOverride = null)
 		{
-			Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
-			modelA.ConvertToWorld(shapeA.transform);
+			Matrix4x4 conversionMatrix = matrixOverride == null ? modelA.worldToLocal : ((Matrix4x4) matrixOverride);
 
-			Model modelB = new Model(shapeB.GetComponent<MeshFilter>().mesh);
-			modelB.ConvertToWorld(shapeB.transform);
+			return Intersect(modelA, modelB, flipNormals).ToMesh(conversionMatrix);
+		}
 
+		public static Model Intersect(Model modelA, Model modelB, bool flipNormals = false)
+		{
 			modelA.IntersectWith(modelB); //generate all intersections
 
-			Model clippedA = ClipModelAToModelB(modelA, modelB, true);
-			Model clippedB = ClipModelAToModelB(modelB, modelA, true);
+			Model clippedA = ClipModelAToModelB(modelA, modelB, true, flipNormals);
+			Model clippedB = ClipModelAToModelB(modelB, modelA, true, flipNormals);
 
-			Model result = Model.Combine(clippedA, clippedB);
-			result.ConvertToLocal(shapeA.transform);
-
-			return result.ToMesh();
+			return Model.Combine(clippedA, clippedB);
 		}
 
 		/// <summary>
 		/// Subtracts shapeB from shapeA
 		/// </summary>
-		public Mesh Subtract(GameObject shapeA, GameObject shapeB)
+		public static Mesh Subtract(Model modelA, Model modelB)
 		{
-			Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
-			modelA.ConvertToWorld(shapeA.transform);
-
-			Model modelB = new Model(shapeB.GetComponent<MeshFilter>().mesh);
-			modelB.ConvertToWorld(shapeB.transform);
 
 			modelA.IntersectWith(modelB); //generate all intersections
 
@@ -62,9 +56,9 @@ namespace CSG
 			Model clippedB = ClipModelAToModelB(modelB, modelA, true, true);
 
 			Model result = Model.Combine(clippedA, clippedB);
-			result.ConvertToLocal(shapeA.transform);
+			//result.ConvertToLocal(modelA.worldToLocal);
 
-			return result.ToMesh();
+			return result.ToMesh(modelA.worldToLocal);
 		}
 
 		/// <summary>
@@ -74,21 +68,20 @@ namespace CSG
 		/// <param name="shapeB"></param>
 		/// <param name="clipInside">If true, shapeA will be clipped to only geometry contained by shapeB, if false, it will be clipped only to geometry NOT contained by shapeB</param>
 		/// <returns></returns>
-		public Mesh ClipAToB(GameObject shapeA, GameObject shapeB, bool clipInside = true)
+		public static Mesh ClipAToB(Model modelA, Model modelB, bool clipInside = true, bool flipNormals = false, Matrix4x4? matrixOverride = null)
 		{
-			Model modelA = new Model(shapeA.GetComponent<MeshFilter>().mesh);
-			modelA.ConvertToWorld(shapeA.transform);
+			Matrix4x4 conversionMatrix = matrixOverride == null ? modelA.worldToLocal : modelA.worldToLocal * ((Matrix4x4) matrixOverride);
+			return ClipAToB(modelA, modelB, clipInside, flipNormals).ToMesh(conversionMatrix);
+		}
 
-			Model modelB = new Model(shapeB.GetComponent<MeshFilter>().mesh);
-			modelB.ConvertToWorld(shapeB.transform);
-
+		public static Model ClipAToB(Model modelA, Model modelB, bool clipInside = true, bool flipNormals = false)
+		{
 			modelA.IntersectWith(modelB); //generate all intersections
 
 			Model clippedA = ClipModelAToModelB(modelA, modelB, clipInside);
+			if (flipNormals) clippedA.FlipNormals();
 
-			clippedA.ConvertToLocal(shapeA.transform);
-
-			return clippedA.ToMesh();
+			return clippedA;
 		}
 
 		/// <summary>
@@ -99,24 +92,14 @@ namespace CSG
 		/// <param name="modelB">The GameObject containing the Mesh to clip "toClip" to</param>
 		/// <param name="flipNormals">Whether the normals of the resulting mesh should be flipped</param>
 		/// <returns>The clipped Mesh</returns>
-		private Model ClipModelAToModelB(Model modelA, Model modelB, bool clipInside = true, bool flipNormals = false)
+		private static Model ClipModelAToModelB(Model modelA, Model modelB, bool clipInside = true, bool flipNormals = false)
 		{
 			// to create the triangles, we'll need a list of edge loops to triangulate
 			List<EdgeLoop> edgeLoops = new List<EdgeLoop>();
 
 			if (clipInside)
 			{
-				if (faceIndex > -1)
-				{
-					edgeLoops = new List<EdgeLoop>();
-					if (faceIndex < modelA.triangles.Count)
-					{
-						//modelA.triangles[limitTo].Draw(Color.red);
-						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[faceIndex], modelB, PointContainedByBound));
-						edgeLoops.ForEach(loop => loop.Draw(Color.red, Color.green, Color.blue));
-					}
-				}
-				else
+				if (faceIndex <= -1)
 				{
 					foreach (Triangle triangle in modelA.triangles)
 					{
@@ -129,11 +112,29 @@ namespace CSG
 							Debug.LogError("Failed to find edge loop for triangle #" + modelA.triangles.IndexOf(triangle) + ", ERROR: " + e.Message);
 						}
 					}
+
+				}
+				else // DEBUG
+				{
+					edgeLoops = new List<EdgeLoop>();
+					if (faceIndex < modelA.triangles.Count)
+					{
+						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[faceIndex], modelB, PointContainedByBound));
+						edgeLoops.ForEach(loop => loop.Draw(Color.red, Color.green, Color.blue));
+					}
 				}
 			}
 			else
 			{
-				if (faceIndex > -1)
+				if (faceIndex <= -1)
+				{
+					foreach (Triangle triangle in modelA.triangles)
+					{
+						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointExcludedByBound));
+					}
+
+				}
+				else
 				{
 					edgeLoops = new List<EdgeLoop>();
 					if (faceIndex < modelA.triangles.Count)
@@ -141,18 +142,16 @@ namespace CSG
 						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[faceIndex], modelB, PointExcludedByBound));
 					}
 				}
-				else
-				{
-					foreach (Triangle triangle in modelA.triangles)
-					{
-						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointExcludedByBound));
-					}
-				}
 			}
 			Model finalModel = new Model();
-
+			//Debug.Log(edgeLoops[foo].vertices.Count);
+			//edgeLoops[foo].Draw(Color.cyan, Color.cyan, Color.white);
 			edgeLoops.ForEach(loop =>
 			{
+				if (loop.vertices.Count == 4)
+				{
+					loop.Draw(Color.cyan, Color.cyan, Color.white);
+				}
 				try
 				{
 					if (loop.filled)
@@ -164,7 +163,7 @@ namespace CSG
 					EdgeLoop nestedLoop = loop.nestedLoop;
 					while (nestedLoop != null)
 					{
-						if (fillNested)finalModel.AddTriangles(nestedLoop.TriangulateStrip());
+						if (fillNested) finalModel.AddTriangles(nestedLoop.TriangulateStrip());
 						fillNested = !fillNested;
 						nestedLoop = nestedLoop.nestedLoop;
 					}
@@ -176,7 +175,7 @@ namespace CSG
 				}
 			});
 
-			if (flipNormals)finalModel.FlipNormals();
+			if (flipNormals) finalModel.FlipNormals();
 
 			return finalModel;
 		}
@@ -188,10 +187,9 @@ namespace CSG
 		/// <param name="boundsTriangles">A list of triangles defining the bounding object</param>
 		/// <param name="vertices">A list of the vertices of the object the triangle belongs to</param>
 		/// <returns>A list of edge loops which define the clipped version of the triangle</returns>
-		private List<EdgeLoop> IdentifyTriangleEdgeLoops(Triangle triangle, Model bound, Func<Vertex, Model, bool> ContainmentCheck)
+		private static List<EdgeLoop> IdentifyTriangleEdgeLoops(Triangle triangle, Model bound, Func<Vertex, Model, bool> ContainmentCheck)
 		{
-
-			triangle.ClearMetadata();
+			triangle.ClearLocalMetadata();
 			// organize the intersections into cuts
 			CreateCuts(triangle, bound);
 
@@ -227,6 +225,7 @@ namespace CSG
 					{
 						Debug.LogWarning("initial vertex does not have a previous loop to reference, using last found loop instead");
 						loop.filled = !loops.Last().filled;
+						// loop.filled = !(initialVertex?.loops.LastOrDefault() ?? loops.Last()).filled;
 					}
 				}
 				else // 2. a vertex of the original triangle
@@ -269,7 +268,7 @@ namespace CSG
 						perimeter[currentVertexIndex].loops.Add(loop);
 					}
 					overflow++;
-					if (overflow > 100)throw new Exception("Too many iterations when defining loops");
+					if (overflow > 100) throw new Exception("Too many iterations when defining loops");
 					// once the current vertex loops around to the start, we're done
 					currentVertexIndex = (currentVertexIndex + 1) % perimeter.Count;
 				} while (perimeter[currentVertexIndex] != initialVertex);
@@ -277,7 +276,7 @@ namespace CSG
 				loops.Add(loop);
 
 				overflow++;
-				if (overflow > 100)throw new Exception("Too many iterations when defining loops");
+				if (overflow > 100) throw new Exception("Too many iterations when defining loops");
 
 				currentVertexIndex = FindEarliestUnsatisfied(perimeter);
 			}
@@ -293,7 +292,7 @@ namespace CSG
 				DiscoverInternalLoop(unusedInternalIntersections, loops);
 
 				overflow++;
-				if (overflow > 100)throw new Exception("Too many iterations when defining loops");
+				if (overflow > 100) throw new Exception("Too many iterations when defining loops");
 			}
 
 			return loops;
@@ -313,7 +312,7 @@ namespace CSG
 		/// </remarks>
 		/// <param name="perimeter">The perimeter to examine for incomplete vertices</param>
 		/// <returns>The index of the earliest unsatisfied vertex in the loop, or -1 if none are left.</returns>
-		private int FindEarliestUnsatisfied(List<Vertex> perimeter) =>
+		private static int FindEarliestUnsatisfied(List<Vertex> perimeter) =>
 			perimeter.FindIndex(vertex => vertex.fromIntersection ? vertex.loops.Count < 2 : vertex.loops.Count < 1);
 
 		/// <summary>
@@ -323,7 +322,7 @@ namespace CSG
 		/// <param name="unusedIntersections">A list of vertices that could possibly be part of the loop</param>
 		/// <param name="loops">A list of all non-internal loops found for the current triangle</param>
 		/// <returns>An edge loop defining the loop associated with the given vertex</returns>
-		private EdgeLoop DiscoverInternalLoop(List<Intersection> unusedIntersections, List<EdgeLoop> loops)
+		private static EdgeLoop DiscoverInternalLoop(List<Intersection> unusedIntersections, List<EdgeLoop> loops)
 		{
 			EdgeLoop createdLoop = new EdgeLoop();
 
@@ -362,7 +361,7 @@ namespace CSG
 				}
 
 				overflow++;
-				if (overflow > 100)throw new Exception("Too many iterations in internal loop discovery");
+				if (overflow > 100) throw new Exception("Too many iterations in internal loop discovery");
 			} while (nextIntersection != null);
 
 			// if we haven't gotten back to the start, we don't have a valid loop
@@ -392,8 +391,11 @@ namespace CSG
 		/// </summary>
 		/// <param name="egresses">The list of Egresses to find cuts for</param>
 		/// <param name="intersections">The list of internal intersections that form the intermediate points in the created cuts</param>
-		private void CreateCuts(Triangle triangle, Model bounds)
+		private static void CreateCuts(Triangle triangle, Model bounds)
 		{
+			//Debug.Log(triangle.edges.Count);
+			//if (triangle.edges.Count == 0) new Triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]).Draw(Color.red);
+			//else triangle.Draw(Color.cyan);
 			for (int i = 0; i < 3; i++)
 			{
 				//TODO do this somewhere where it won't get called multiple times on the same edges
@@ -489,7 +491,7 @@ namespace CSG
 						}
 
 						overflow++;
-						if (overflow > 100)throw new Exception("Maxiumum iterations exceeded");
+						if (overflow > 100) throw new Exception("Maxiumum iterations exceeded");
 					}
 				}
 			}
@@ -502,7 +504,7 @@ namespace CSG
 		/// <param name="from">The GameObject defining the initial coordinate space</param>
 		/// <param name="to">The GameObject defining the target coordinate space</param>
 		/// <returns>The converted point</returns>
-		private Vector3 ConvertPointCoordinates(Vector3 toTransform, GameObject from, GameObject to)
+		private static Vector3 ConvertPointCoordinates(Vector3 toTransform, GameObject from, GameObject to)
 		{
 			Vector3 point = from.transform.localToWorldMatrix.MultiplyPoint3x4(toTransform);
 			point = to.transform.worldToLocalMatrix.MultiplyPoint3x4(point);
@@ -516,7 +518,7 @@ namespace CSG
 		/// <param name="mesh">The Mesh whose coordinates will be converted</param>
 		/// <param name="from">The GameObject defining the initial coordinate space</param>
 		/// <param name="to">The GameObject defining the target coordinate space</param>
-		private void ConvertMeshCoordinates(Mesh mesh, GameObject from, GameObject to)
+		private static void ConvertMeshCoordinates(Mesh mesh, GameObject from, GameObject to)
 		{
 			List<Vector3> newVertices = mesh.vertices.Select(vertex => ConvertPointCoordinates(vertex, from, to)).ToList();
 			mesh.SetVertices(newVertices);
@@ -528,12 +530,12 @@ namespace CSG
 		/// <param name="point">The point to check for containment</param>
 		/// <param name="boundsTriangles">A List of triangles representing the bounding shape</param>
 		/// <returns>True if the point is contained, false if it is not</returns>
-		private bool PointContainedByBound(Vertex point, Model bound)
+		private static bool PointContainedByBound(Vertex point, Model bound)
 		{
 			return point.ContainedBy(bound, error);
 		}
 
-		private bool PointExcludedByBound(Vertex point, Model bound)
+		private static bool PointExcludedByBound(Vertex point, Model bound)
 		{
 			return !PointContainedByBound(point, bound);
 		}

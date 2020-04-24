@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class Gate : MonoBehaviour
@@ -9,11 +10,8 @@ public class Gate : MonoBehaviour
 	[SerializeField] Transform leftDoor = default;
 	[SerializeField] Transform rightDoor = default;
 
-    [FMODUnity.EventRef]
-    public string GateOpenEvent;
-
+	[FMODUnity.EventRef] public string GateOpenEvent;
 	public GameObject keyHole;
-
 	private bool open = false;
 
 	public void Open()
@@ -21,7 +19,7 @@ public class Gate : MonoBehaviour
 		if (!open)
 		{
 			open = true;
-            StartCoroutine(OpenGate(rotationAngle, rotationTime));
+			StartCoroutine(OpenGate(rotationAngle, rotationTime));
 		}
 	}
 
@@ -33,7 +31,7 @@ public class Gate : MonoBehaviour
 		var leftStart = leftDoor.eulerAngles;
 		var rightStart = rightDoor.eulerAngles;
 
-        FMODUnity.RuntimeManager.PlayOneShot(GateOpenEvent, transform.position);
+		FMODUnity.RuntimeManager.PlayOneShot(GateOpenEvent, transform.position);
 
 		while (inProgress)
 		{

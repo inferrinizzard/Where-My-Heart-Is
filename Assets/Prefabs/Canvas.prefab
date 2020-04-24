@@ -452,8 +452,8 @@ GameObject:
   - component: {fileID: 203059684820443477}
   - component: {fileID: 203059684820443478}
   - component: {fileID: 203059684820443479}
-  - component: {fileID: 203059684820443496}
   - component: {fileID: 203059684820443497}
+  - component: {fileID: 5330048575095370595}
   m_Layer: 9
   m_Name: pasted__pCube14
   m_TagString: Untagged
@@ -537,20 +537,6 @@ MonoBehaviour:
   tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
---- !u!114 &203059684820443496
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 203059684820443499}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43ddf123199201b4180c2144089a2d72, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  glowMaterial: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
-  depthCheck: 0
 --- !u!64 &203059684820443497
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -565,6 +551,21 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 14
   m_Mesh: {fileID: -7864942920957863239, guid: d739997c3956144448ac1b722b68f372, type: 3}
+--- !u!114 &5330048575095370595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203059684820443499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43ddf123199201b4180c2144089a2d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
+  depthCheck: 0
+  outlineColour: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &203059684970376330
 GameObject:
   m_ObjectHideFlags: 0
@@ -821,7 +822,7 @@ Transform:
   - {fileID: 203059686293534427}
   - {fileID: 203059686410404397}
   m_Father: {fileID: 203059686410720105}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -71.09901, z: 0}
 --- !u!1 &203059685102272797
 GameObject:
@@ -1054,6 +1055,7 @@ GameObject:
   - component: {fileID: 203059685182156960}
   - component: {fileID: 203059685182156974}
   - component: {fileID: 9211694324306730243}
+  - component: {fileID: 6258822035514328914}
   m_Layer: 0
   m_Name: canvas_autumn
   m_TagString: Untagged
@@ -1104,8 +1106,24 @@ MonoBehaviour:
   hitboxObject: {fileID: 203059686380578862}
   player: {fileID: 0}
   active: 0
+  prompt: Press E to Interact
   preview: {fileID: 0}
   manualTarget: 
+--- !u!114 &6258822035514328914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203059685182156961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43ddf123199201b4180c2144089a2d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
+  depthCheck: 0
+  outlineColour: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &203059685307545870
 GameObject:
   m_ObjectHideFlags: 0
@@ -1582,7 +1600,7 @@ Transform:
   - {fileID: 203059685729840963}
   - {fileID: 203059685182156960}
   m_Father: {fileID: 203059686410720105}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: -71.09901, z: 0}
 --- !u!1 &203059686293534428
 GameObject:
@@ -1816,8 +1834,8 @@ GameObject:
   - component: {fileID: 203059686380578860}
   - component: {fileID: 203059686380578861}
   - component: {fileID: 203059686380578862}
-  - component: {fileID: 203059686380578863}
   - component: {fileID: 203059686380578848}
+  - component: {fileID: 4268235494870579992}
   m_Layer: 8
   m_Name: pasted__pCube14
   m_TagString: Untagged
@@ -1901,20 +1919,6 @@ MonoBehaviour:
   tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
---- !u!114 &203059686380578863
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 203059686380578850}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43ddf123199201b4180c2144089a2d72, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  glowMaterial: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
-  depthCheck: 0
 --- !u!64 &203059686380578848
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1929,6 +1933,21 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 14
   m_Mesh: {fileID: -7864942920957863239, guid: d739997c3956144448ac1b722b68f372, type: 3}
+--- !u!114 &4268235494870579992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203059686380578850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43ddf123199201b4180c2144089a2d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
+  depthCheck: 0
+  outlineColour: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &203059686410404398
 GameObject:
   m_ObjectHideFlags: 0
@@ -1940,6 +1959,7 @@ GameObject:
   - component: {fileID: 203059686410404397}
   - component: {fileID: 203059686410404395}
   - component: {fileID: 1822086574867330719}
+  - component: {fileID: 4069549531884458503}
   m_Layer: 0
   m_Name: canvas_autumn
   m_TagString: Untagged
@@ -1990,8 +2010,24 @@ MonoBehaviour:
   hitboxObject: {fileID: 203059684820443479}
   player: {fileID: 0}
   active: 0
+  prompt: Press E to Interact
   preview: {fileID: 0}
   manualTarget: 
+--- !u!114 &4069549531884458503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203059686410404398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43ddf123199201b4180c2144089a2d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
+  depthCheck: 0
+  outlineColour: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &203059686410720106
 GameObject:
   m_ObjectHideFlags: 0
@@ -2017,11 +2053,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 203059686410720106}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 39.51, y: -3.62, z: -3.49}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 203059685967278431}
   - {fileID: 203059685066391313}
+  - {fileID: 203059685967278431}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2041,7 +2077,5 @@ MonoBehaviour:
   tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
-  realVersion: {fileID: 0}
-  dreamVersion: {fileID: 0}
-  realObject: {fileID: 203059685967278416}
-  dreamObject: {fileID: 203059685066391314}
+  heartObject: {fileID: 203059685967278416}
+  realObject: {fileID: 203059685066391314}

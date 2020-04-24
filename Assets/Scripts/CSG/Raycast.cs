@@ -1,5 +1,6 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace CSG
@@ -107,17 +108,29 @@ namespace CSG
 				Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
 				Vector3 planePoint = triangle.vertices[0].value;
 
-				// get ray intersection with plane,
-				float numerator = normal.x * (planePoint.x - origin.x) + normal.y * (planePoint.y - origin.y) + normal.z * (planePoint.z - origin.z);
-				float denominator = normal.x * direction.x + normal.y * direction.y + normal.z * direction.z;
-				Vector3 intersectionPoint = ((numerator / denominator) * direction) + origin;
-
-				return new Vertex(0, intersectionPoint);
+				return new Vertex(0, RayToPlane(origin, direction, planePoint, normal));
 			}
 			else
 			{
 				return null;
 			}
+		}
+
+		/// <summary>
+		/// Casts a ray to the given plane and returns the point of intersection
+		/// </summary>
+		/// <param name="origin">The origin of the ray</param>
+		/// <param name="direction">The direction of the ray</param>
+		/// <param name="planePoint">An arbirtrary point lying on the plane</param>
+		/// <param name="planeNormal">The normal vector of the plane</param>
+		/// <returns>The point of intersection between the ray and the plane</returns>
+		public static Vector3 RayToPlane(Vector3 origin, Vector3 direction, Vector3 planePoint, Vector3 planeNormal)
+		{
+			// get ray intersection with plane,
+			float numerator = planeNormal.x * (planePoint.x - origin.x) + planeNormal.y * (planePoint.y - origin.y) + planeNormal.z * (planePoint.z - origin.z);
+			float denominator = planeNormal.x * direction.x + planeNormal.y * direction.y + planeNormal.z * direction.z;
+
+			return ((numerator / denominator) * direction) + origin;
 		}
 
 		/// <summary>
@@ -153,7 +166,7 @@ namespace CSG
 		/// <returns></returns>
 		private static int SignedVolume(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
 		{
-			return (int)Mathf.Sign(Vector3.Dot(Vector3.Cross(b - a, c - a), d - a));
+			return (int) Mathf.Sign(Vector3.Dot(Vector3.Cross(b - a, c - a), d - a));
 		}
 
 		/// <summary>

@@ -1,29 +1,40 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public abstract class InteractableObject : MonoBehaviour
 {
-	public ClipableObject hitboxObject;
+	public ClippableObject hitboxObject;
 	/// <summary> Reference to the player. </summary>
 	[HideInInspector] public Player player;
 	/// <summary> Whether or not this is the active item </summary>
 	[HideInInspector] public bool active;
-
-    public bool hasFlavorText;
-    public string flavorText;
-    public DialogueSystem dialogue;
+	public string prompt = "Press E to Interact";
+	string flavorText = "";
+	DialogueSystem dialogue;
+	System.Action glowFunction = null;
 
 	public virtual void Interact()
-    {
-        if (hasFlavorText)
-        {
-            StartCoroutine(dialogue.WriteDialogue(flavorText));
-        }
-    }
+	{
+		if (flavorText != "")
+			StartCoroutine(dialogue.WriteDialogue(flavorText));
+	}
 
 	protected virtual void Start()
 	{
-        dialogue = FindObjectOfType<DialogueSystem>();
+		dialogue = GameManager.Instance.dialogue;
 		player = Player.Instance;
-		if (hitboxObject)hitboxObject.GetComponent<ClipableObject>().tiedInteractable = this;
+		if (hitboxObject) hitboxObject.GetComponent<ClippableObject>().tiedInteractable = this;
 	}
+
+	void OnMouseOver()
+	{
+		// if(!TryComponent<OutlineObject>())
+		if (!player.heldObject && !GetComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
+			glowFunction = Func.Lambda(() => GameManager.Instance.VFX.RenderGlowMap(GetComponentsInChildren<Renderer>()));
+		else
+			glowFunction = null;
+	}
+
+	void OnMouseExit() => glowFunction = null;
+
+	void OnWillRenderObject() => glowFunction?.Invoke();
 }

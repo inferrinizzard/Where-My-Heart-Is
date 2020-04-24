@@ -7,11 +7,14 @@ ModelImporter:
       74: -6417265509983922
     second: Bird|Fly
   - first:
+      74: 6066442347095249276
+    second: Bird|From Glide
+  - first:
+      74: -8967693384263265322
+    second: Bird|Glide
+  - first:
       74: -3892815887587328361
     second: Bird|Idle
-  - first:
-      74: -3202849112060065530
-    second: Bird|Idle.001
   - first:
       74: 4199109624896279494
     second: Bird|Land - Quick
@@ -25,11 +28,17 @@ ModelImporter:
       74: 1866061176434402838
     second: Bird|Peck
   - first:
+      74: 5089920583541315709
+    second: Bird|Preen
+  - first:
       74: 5226081183447524752
     second: Bird|Take Off - DANK
   - first:
       74: 6249084382966971652
     second: Bird|Take Off - Quick
+  - first:
+      74: -9107507359547080999
+    second: Bird|To Glide
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -71,7 +80,7 @@ ModelImporter:
       loop: 0
       hasAdditiveReferencePose: 0
       loopTime: 1
-      loopBlend: 1
+      loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
@@ -82,46 +91,25 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0
+        functionName: _UpdateFlyState
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 0c3cec8e06daa664e8afc978aa4130fe,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Bird|Idle
-      takeName: Bird|Idle
+      name: Bird|From Glide
+      takeName: Bird|From Glide
       internalID: 0
       firstFrame: 1
-      lastFrame: 239
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 1
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: Bird|Idle.001
-      takeName: Bird|Idle.001
-      internalID: 0
-      firstFrame: 0
-      lastFrame: 239
+      lastFrame: 14
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -141,6 +129,79 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Bird|Glide
+      takeName: Bird|Glide
+      internalID: 0
+      firstFrame: 1
+      lastFrame: 79
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0
+        functionName: _UpdateFlyState
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Bird|Idle
+      takeName: Bird|Idle
+      internalID: 0
+      firstFrame: 1
+      lastFrame: 239
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0
+        functionName: _UpdateIdleState
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 0c3cec8e06daa664e8afc978aa4130fe,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -236,7 +297,7 @@ ModelImporter:
       name: Bird|Peck
       takeName: Bird|Peck
       internalID: 0
-      firstFrame: 0
+      firstFrame: 1
       lastFrame: 59
       wrapMode: 0
       orientationOffsetY: 0
@@ -257,6 +318,43 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Bird|Preen
+      takeName: Bird|Preen
+      internalID: 0
+      firstFrame: 1
+      lastFrame: 215
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0
+        functionName: _UpdateIdleState
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 0c3cec8e06daa664e8afc978aa4130fe,
+          type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -294,8 +392,37 @@ ModelImporter:
       name: Bird|Take Off - Quick
       takeName: Bird|Take Off - Quick
       internalID: 0
-      firstFrame: 1
+      firstFrame: 0
       lastFrame: 49
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Bird|To Glide
+      takeName: Bird|To Glide
+      internalID: 0
+      firstFrame: 1
+      lastFrame: 14
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

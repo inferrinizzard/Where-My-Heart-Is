@@ -1,19 +1,23 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
+/// <summary> Handles gameplay keys. </summary>
 public class InputManager : MonoBehaviour
 {
-	[Header("Keybinds")]
+	//[Header("Keybinds")]
 	/// <summary> KeyCode for player jump. </summary>
-	[SerializeField] private KeyCode jumpKey = KeyCode.Space;
+	public static KeyCode jumpKey = KeyCode.Space;
 	/// <summary> KeyCode for player crouch. </summary>
-	[SerializeField] private KeyCode crouchKey = KeyCode.LeftShift;
+	public static KeyCode crouchKey = KeyCode.LeftShift;
 	/// <summary> KeyCode for inspecting and picking up objects. </summary>
-	[SerializeField] private KeyCode pickUpKey = KeyCode.E;
+	public static KeyCode interactKey = KeyCode.E;
 	/// <summary> KeyCode for inspecting and picking up objects. </summary>
-	[SerializeField] private KeyCode altAimKey = KeyCode.LeftControl;
+	public static KeyCode altAimKey = KeyCode.LeftControl;
+	/// <summary> KeyCode for pausing the game. </summary>
+	public static KeyCode pauseKey = KeyCode.Escape;
 
 	// Crouch Key Actions
 	/// <summary> Crouch key is initially pressed down. </summary>
@@ -33,11 +37,11 @@ public class InputManager : MonoBehaviour
 
 	// Pick Up Key Actions
 	/// <summary> Pick Up key is initially pressed down. </summary>
-	public static event Action OnPickUpDown;
+	public static event Action OnInteractDown;
 	/// <summary> Pick Up key is held down. </summary>
-	public static event Action OnPickUpHeld;
+	public static event Action OnInteractHeld;
 	/// <summary> Pick Up key is let go. </summary>
-	public static event Action OnPickUpUp;
+	public static event Action OnInteractUp;
 
 	// Left Click Actions
 	/// <summary> Left Click is initially pressed down. </summary>
@@ -47,30 +51,39 @@ public class InputManager : MonoBehaviour
 	/// <summary> Left Click is let go. </summary>
 	public static event Action OnLeftClickUp;
 
-	// Alt Aim Key Actions
-	/// <summary> Alt Aim Key is initially pressed down. </summary>
-	public static event Action OnRightClickDown;
-	/// <summary> Alt Aim Key is held down. </summary>
-	public static event Action OnRightClickHeld;
-	/// <summary> Alt Aim Key is let go. </summary>
-	public static event Action OnRightClickUp;
-
 	// Right Click Actions
 	/// <summary> Right Click is initially pressed down. </summary>
-	public static event Action OnAltAimKeyDown;
+	public static event Action OnRightClickDown;
 	/// <summary> Right Click is held down. </summary>
-	public static event Action OnAltAimKeyHeld;
+	public static event Action OnRightClickHeld;
 	/// <summary> Right Click is let go. </summary>
+	public static event Action OnRightClickUp;
+
+	// Alt Aim Key Actions
+	/// <summary> Alt Aim Key is initially pressed down. </summary>
+	public static event Action OnAltAimKeyDown;
+	/// <summary> Alt Aim Key is held down. </summary>
+	public static event Action OnAltAimKeyHeld;
+	/// <summary> Alt Aim Key is let go. </summary>
 	public static event Action OnAltAimKeyUp;
+
+	//Pause Menu Key Actions
+	/// <summary> Pause Key is initially pressed down. </summary>
+	public static event Action OnPauseKeyDown;
+	/// <summary> Pause Key is held down. </summary>
+	public static event Action OnPauseKeyHeld;
+	/// <summary> Pause Key is let go. </summary>
+	public static event Action OnPauseKeyUp;
 
 	public void Update()
 	{
 		UpdateCrouch();
 		UpdateJump();
-		UpdatePickUp();
+		UpdateInteract();
 		UpdateLeftClick();
 		UpdateRightClick();
 		UpdateAltAimKey();
+		UpdatePauseKey();
 	}
 
 	/// <summary> Update the actions for the Crouch Key. </summary>
@@ -108,19 +121,19 @@ public class InputManager : MonoBehaviour
 	}
 
 	/// <summary> Update the actions for the Pick Up Key. </summary>
-	private void UpdatePickUp()
+	private void UpdateInteract()
 	{
-		if (Input.GetKeyDown(pickUpKey))
+		if (Input.GetKeyDown(interactKey))
 		{
-			OnPickUpDown?.Invoke();
+			OnInteractDown?.Invoke();
 		}
-		if (Input.GetKey(pickUpKey))
+		if (Input.GetKey(interactKey))
 		{
-			OnPickUpHeld?.Invoke();
+			OnInteractHeld?.Invoke();
 		}
-		if (Input.GetKeyUp(pickUpKey))
+		if (Input.GetKeyUp(interactKey))
 		{
-			OnPickUpUp?.Invoke();
+			OnInteractUp?.Invoke();
 		}
 	}
 
@@ -174,4 +187,22 @@ public class InputManager : MonoBehaviour
 			OnAltAimKeyUp?.Invoke();
 		}
 	}
+
+	/// <summary> Update the actions for the Pause Key. </summary>
+	private void UpdatePauseKey()
+	{
+		if (Input.GetKeyDown(pauseKey))
+		{
+			OnPauseKeyDown?.Invoke();
+		}
+		if (Input.GetKey(pauseKey))
+		{
+			OnPauseKeyHeld?.Invoke();
+		}
+		if (Input.GetKeyUp(pauseKey))
+		{
+			OnPauseKeyUp?.Invoke();
+		}
+	}
+
 }

@@ -1,14 +1,16 @@
-﻿using System;
-using UnityEngine;
+using System;
 using System.Collections;
 using System.IO;
 using System.IO.Compression;
+
 using UnityEditor;
+
+using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace BansheeGz.BGSpline.Editor
 {
-	public class BGEditorIcon 
+	public class BGEditorIcon
 	{
 		public const string ResourcesGuid = "24c6ad7c8291acc41914cdd6572f2f54";
 
@@ -19,7 +21,6 @@ namespace BansheeGz.BGSpline.Editor
 		private readonly int height;
 		private Texture2D texture;
 
-		
 		private readonly int offset;
 		private readonly int length;
 
@@ -38,32 +39,30 @@ namespace BansheeGz.BGSpline.Editor
 			get
 			{
 				if (texture != null) return texture;
-                
-                
 				var data = Data;
 				if (data == null) throw new Exception("Can not access data stream to load resource: stream is null");
 				if (data.Length < Offset + Length) throw new Exception("Can not read resource from stream: not enough data: " + data.Length + "<" + (Offset + Length));
 
 				texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
-/*
-                //this wont compile without unsafe switch for compiler
-                unsafe
-                {
-                    fixed (byte* p = data)
-                    {
-                        var ptr = new IntPtr(((IntPtr) p).ToInt64() + sizeof(byte) * Offset);
-                        texture.LoadRawTextureData(ptr, Length);
-                    }
-                }
-*/
+				/*
+				                //this wont compile without unsafe switch for compiler
+				                unsafe
+				                {
+				                    fixed (byte* p = data)
+				                    {
+				                        var ptr = new IntPtr(((IntPtr) p).ToInt64() + sizeof(byte) * Offset);
+				                        texture.LoadRawTextureData(ptr, Length);
+				                    }
+				                }
+				*/
 
 				//this is probably much slower than using  unsafe code above
 				var textureData = new byte[Length];
 				Buffer.BlockCopy(data, Offset, textureData, 0, Length);
 				texture.LoadRawTextureData(textureData);
-                    
+
 				texture.Apply();
-                    
+
 				Object.DontDestroyOnLoad(texture);
 				texture.hideFlags = HideFlags.DontUnloadUnusedAsset;
 
@@ -86,7 +85,7 @@ namespace BansheeGz.BGSpline.Editor
 			}
 		}
 
-		public BGEditorIcon(int offset, int length, int width, int height) 
+		public BGEditorIcon(int offset, int length, int width, int height)
 		{
 			this.offset = offset;
 			this.length = length;
@@ -94,17 +93,16 @@ namespace BansheeGz.BGSpline.Editor
 			this.height = height;
 		}
 
-
 		public static implicit operator Texture2D(BGEditorIcon icon)
 		{
 			return icon.Texture;
 		}
-		
+
 		private static byte[] Unzip(byte[] input)
 		{
-			using (var deflateStream = new DeflateStream(new MemoryStream(input), CompressionMode.Decompress))
+			using(var deflateStream = new DeflateStream(new MemoryStream(input), CompressionMode.Decompress))
 			{
-				using (var outputStream = new MemoryStream())
+				using(var outputStream = new MemoryStream())
 				{
 					CopyTo(deflateStream, outputStream);
 					return outputStream.ToArray();
@@ -112,7 +110,7 @@ namespace BansheeGz.BGSpline.Editor
 			}
 		}
 
-		private  static void CopyTo(Stream input, Stream output)
+		private static void CopyTo(Stream input, Stream output)
 		{
 			var buffer = new byte[64 * 1024];
 			int bytesRead;

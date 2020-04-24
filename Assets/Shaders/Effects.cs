@@ -1,53 +1,79 @@
-﻿// #define DEBUG
+#define DEBUG
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
+#if DEBUG
+[ExecuteInEditMode]
+#endif
 public class Effects : MonoBehaviour
 {
-	bool glowOn = false;
-	bool edgeOn = true;
-	bool bloomOn = true;
+	Fade fadeController;
+	[HideInInspector] public Wave waveController; // TODO: add wave controller?
+	bool outlineOn = true;
+	bool bloomOn = false;
 	bool dissolveOn = false;
+	[SerializeField] Material defaultGlowMat = default;
 
-	void Start()
+	[SerializeField, Range(0, 30)] float lightPower = 5;
+
+	void Awake()
 	{
+		Shader.SetGlobalFloat("_LightAttenBias", 30 - lightPower);
+		fadeController = GetComponent<Fade>();
+		waveController = GetComponent<Wave>();
+
 		ToggleMask(false);
-		ToggleGlowOutline(glowOn);
-		ToggleEdgeOutline(edgeOn);
+		ToggleEdgeOutline(false); //outlineOn
 		ToggleDissolve(dissolveOn);
+		ToggleBoil(true);
+		ToggleBird(true);
 	}
 
-#if DEBUG
 	void Update()
-	{ // debug toggles
-		if (Input.GetKeyDown(KeyCode.Alpha1))
-			ToggleGlowOutline(glowOn = !glowOn);
+	{
+#if DEBUG // debug toggles
 		if (Input.GetKeyDown(KeyCode.Alpha2))
-			ToggleEdgeOutline(edgeOn = !edgeOn);
+		{
+			ToggleEdgeOutline(outlineOn = !outlineOn);
+			print($"edge: {outlineOn}");
+		}
 		if (Input.GetKeyDown(KeyCode.Alpha3))
+		{
 			ToggleBloom(bloomOn = !bloomOn);
+			print($"bloom: {bloomOn}");
+		}
 		if (Input.GetKeyDown(KeyCode.Alpha4))
+		{
 			ToggleDissolve(dissolveOn = !dissolveOn);
-	}
+			print($"dissolve: {dissolveOn}");
+		}
+
+#if UNITY_EDITOR
+		Shader.SetGlobalFloat("_LightAttenBias", 30 - lightPower);
 #endif
+#endif
+	}
 
 	/// <summary> toggles mask on and off </summary>
 	/// <param name="on"> Is mask on? </summary>
 	// public void ToggleMask(bool on) => mask.enabled = on;
 	public void ToggleMask(bool on) => ToggleEffect(on, "MASK");
 
-	/// <summary> toggles glow outline on and off </summary>
-	/// <param name="on"> Is glow outline on? </summary>
-	public void ToggleGlowOutline(bool on) => ToggleEffect(on, "OUTLINE_GLOW");
-
 	/// <summary> toggles edge outline on and off </summary>
 	/// <param name="on"> Is edge outline on? </summary>
-	public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE_EDGE");
-
+	public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE");
 	public void ToggleBloom(bool on) => ToggleEffect(on, "BLOOM");
-
 	public void ToggleDissolve(bool on) => ToggleEffect(on, "DISSOLVE");
+	public void ToggleBoil(bool on) => ToggleEffect(on, "BOIL");
+	public void ToggleWave(bool on) => ToggleEffect(on, "WAVE");
+	public void ToggleBird(bool on) => ToggleEffect(on, "BIRD");
+
+	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
+
+	// public void SetWave(float distance) => waveController.waveDistance = distance;
+	public void SetWave(float distance) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", distance);
 
 	void ToggleEffect(bool on, string keyword)
 	{
@@ -57,32 +83,11 @@ public class Effects : MonoBehaviour
 			Shader.DisableKeyword(keyword);
 	}
 
-	public static IEnumerator DissolveOnDrop(GateKey obj, float time = .25f)
+	public void RenderGlowMap(Renderer[] renderers, Material mat = null)
 	{
-		obj.transform.parent = obj.oldParent;
-		Player.Instance.holding = false;
-		obj.GetComponent<Collider>().enabled = false;
-		Material mat = obj.GetComponent<MeshRenderer>().material;
-		mat.EnableKeyword("DISSOLVE_MANUAL");
-		int ManualDissolveID = Shader.PropertyToID("_ManualDissolve");
-
-		float start = Time.time;
-		bool inProgress = true;
-
-		while (inProgress)
-		{
-			yield return null;
-			float step = Time.time - start;
-			mat.SetFloat(ManualDissolveID, step / time);
-			if (step > time)
-				inProgress = false;
-		}
-		mat.DisableKeyword("DISSOLVE_MANUAL");
-		mat.SetFloat(ManualDissolveID, 1);
-
-		Player.Instance.holding = true;
-		obj.Interact();
-		obj.GetComponent<Collider>().enabled = true;
-		obj.active = false;
+		mat = mat ?? defaultGlowMat;
+		// mat.SetColor("_Colour", col);
+		foreach (Renderer r in renderers)
+			ApplyOutline.glowBuffer.DrawRenderer(r, mat);
 	}
 }

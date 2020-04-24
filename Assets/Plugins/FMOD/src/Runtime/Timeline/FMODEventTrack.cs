@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
@@ -11,58 +11,58 @@ using UnityEditor;
 [TrackBindingType(typeof(GameObject))]
 public class FMODEventTrack : TrackAsset
 {
-    public override Playable CreateTrackMixer(PlayableGraph graph, GameObject go, int inputCount)
-    {
-        var director = go.GetComponent<PlayableDirector>();
-        var trackTargetObject = director.GetGenericBinding(this) as GameObject;
+	public override Playable CreateTrackMixer(PlayableGraph graph, GameObject go, int inputCount)
+	{
+		var director = go.GetComponent<PlayableDirector>();
+		var trackTargetObject = director.GetGenericBinding(this) as GameObject;
 
-        foreach (var clip in GetClips())
-        {
-            var playableAsset = clip.asset as FMODEventPlayable;
+		foreach (var clip in GetClips())
+		{
+			var playableAsset = clip.asset as FMODEventPlayable;
 
-            if (playableAsset)
-            {
-                playableAsset.TrackTargetObject = trackTargetObject;
-                playableAsset.OwningClip = clip;
-            }
-        }
+			if (playableAsset)
+			{
+				playableAsset.TrackTargetObject = trackTargetObject;
+				playableAsset.OwningClip = clip;
+			}
+		}
 
-        var scriptPlayable = ScriptPlayable<FMODEventMixerBehaviour>.Create(graph, inputCount);
-        return scriptPlayable;
-    }
+		var scriptPlayable = ScriptPlayable<FMODEventMixerBehaviour>.Create(graph, inputCount);
+		return scriptPlayable;
+	}
 }
 
 public class FMODEventMixerBehaviour : PlayableBehaviour
 {
-    public override void ProcessFrame(Playable playable, FrameData info, object playerData)
-    {
+	public override void ProcessFrame(Playable playable, FrameData info, object playerData)
+	{
 #if UNITY_EDITOR
-        /*
-         * Process frame is called from OnGUI() when auditioning.
-         * Check playing to avoid retriggering sounds while scrubbing or repainting.
-         * Check IsQuitting to avoid accessing the RuntimeManager during the Play-In-Editor to Editor transition.
-         */
-        bool playing = playable.GetGraph().IsPlaying();
-        if (!playing)
-        {
-            return;
-        }
-        /* When auditioning manually update the StudioSystem in place of the RuntimeManager. */
-        if (!Application.isPlaying)
-        {
-            FMODUnity.RuntimeManager.StudioSystem.update();
-        }
+		/*
+		 * Process frame is called from OnGUI() when auditioning.
+		 * Check playing to avoid retriggering sounds while scrubbing or repainting.
+		 * Check IsQuitting to avoid accessing the RuntimeManager during the Play-In-Editor to Editor transition.
+		 */
+		bool playing = playable.GetGraph().IsPlaying();
+		if (!playing)
+		{
+			return;
+		}
+		/* When auditioning manually update the StudioSystem in place of the RuntimeManager. */
+		if (!Application.isPlaying)
+		{
+			FMODUnity.RuntimeManager.StudioSystem.update();
+		}
 #endif //UNITY_EDITOR
 
-        int inputCount = playable.GetInputCount();
-        float time = (float)playable.GetGraph().GetRootPlayable(0).GetTime();
+		int inputCount = playable.GetInputCount();
+		float time = (float) playable.GetGraph().GetRootPlayable(0).GetTime();
 
-        for (int i = 0; i < inputCount; i++)
-        {
-            ScriptPlayable<FMODEventPlayableBehavior> inputPlayable = (ScriptPlayable<FMODEventPlayableBehavior>)playable.GetInput(i);
-            FMODEventPlayableBehavior input = inputPlayable.GetBehaviour();
+		for (int i = 0; i < inputCount; i++)
+		{
+			ScriptPlayable<FMODEventPlayableBehavior> inputPlayable = (ScriptPlayable<FMODEventPlayableBehavior>) playable.GetInput(i);
+			FMODEventPlayableBehavior input = inputPlayable.GetBehaviour();
 
-            input.UpdateBehaviour(time);
-        }
-    }
+			input.UpdateBehaviour(time);
+		}
+	}
 }

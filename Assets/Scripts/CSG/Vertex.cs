@@ -1,6 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 
 namespace CSG
@@ -44,12 +45,14 @@ namespace CSG
 		//public List<Cut> cuts;
 		public Cut cut;
 
-        public Vector2 UV;
-        public Vector2 UV2;// optional container for the uv coord of duplicate vertices used for flat shading
+		public Vector2 UV;
+		public Vector2 UV2; // optional container for the uv coord of duplicate vertices used for flat shading
 
 		public Transform referenceFrame;
 
 		public bool fromIntersection;
+
+		private int hashCode;
 
 		/// <summary>
 		/// Constructor
@@ -67,26 +70,44 @@ namespace CSG
 			cut = null;
 			usedInLoop = false;
 			fromIntersection = false;
-        }
+			hashCode = -1;
+		}
 
-        public Vertex(int index, Vector3 value, Vector2 UV)
-        {
-            this.index = index;
-            this.value = value;
-            this.UV = UV;
+		public Vertex(int index, Vector3 value, Vector2 UV)
+		{
+			this.index = index;
+			this.value = value;
+			this.UV = UV;
 
-            loops = new List<EdgeLoop>();
-            triangles = new List<Triangle>();
-            cut = null;
-            usedInLoop = false;
-            fromIntersection = false;
-        }
-        /// <summary>
-        /// Determines whether this vertex and the given vertex both appear on the same triangle
-        /// </summary>
-        /// <param name="vertex">The vertex to compare against</param>
-        /// <returns>Whether this vertex and the given vertex both appear on the same triangle</returns>
-        public bool SharesTriangle(Vertex vertex) => triangles.Any(t => vertex.triangles.Contains(t));
+			loops = new List<EdgeLoop>();
+			triangles = new List<Triangle>();
+			cut = null;
+			usedInLoop = false;
+			fromIntersection = false;
+			hashCode = -1;
+		}
+
+		public void ClearCutMetadata()
+		{
+			loops.Clear();
+			usedInLoop = false;
+		}
+
+		public override int GetHashCode()
+		{
+			if (hashCode == -1)
+			{
+				hashCode = base.GetHashCode();
+			}
+			return hashCode;
+		}
+
+		/// <summary>
+		/// Determines whether this vertex and the given vertex both appear on the same triangle
+		/// </summary>
+		/// <param name="vertex">The vertex to compare against</param>
+		/// <returns>Whether this vertex and the given vertex both appear on the same triangle</returns>
+		public bool SharesTriangle(Vertex vertex) => triangles.Any(t => vertex.triangles.Contains(t));
 
 		public override string ToString()
 		{

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [ExecuteInEditMode]
 public class SpawnPoint : MonoBehaviour
@@ -7,7 +7,7 @@ public class SpawnPoint : MonoBehaviour
 
 	void OnEnable()
 	{
-		player = FindObjectOfType<Player>().transform;
+		player = FindObjectOfType<Player>().transform; // TODO: not use find
 		cam = player.GetComponentInChildren<Camera>().transform;
 	}
 	void Update()
