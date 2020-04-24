@@ -60,35 +60,40 @@ public class Window : MonoBehaviour
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds, CSG.Model boundModel)
 	{
 		float startTime = Time.realtimeSinceStartup;
-        Matrix4x4 reflectionMatrix = new Matrix4x4(
+        CSG.Model mirrorBoundModel = null;
+        Matrix4x4 reflectionMatrix = Matrix4x4.identity;
+
+        if (mirror)
+        {
+            reflectionMatrix = new Matrix4x4(
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(0),
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(1),
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(2),
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(3)
             );
 
-        if (mirror.GetComponent<ClippableObject>().CachedModel.Intersects(boundModel, 0.0001f, true))
-        {
-            mirror.GetComponent<ClippableObject>().ClipWith(boundModel);
-            new CSG.Model(mirror.GetComponent<MeshFilter>().mesh).Draw(Color.cyan);
-
-            Bounds mirrorBound;
-            CSG.Model mirrorBoundModel = mirror.GetComponent<Mirror>().CreateBound(out mirrorBound);
-            mirrorBoundModel.Draw(Color.green);
-
-            foreach (EntangledClippable entangled in world.EntangledClippables)
+            if (mirror.GetComponent<ClippableObject>().CachedModel.Intersects(boundModel, 0.0001f, true))
             {
-                entangled.ClipMirrored(this, mirrorBound, mirrorBoundModel, reflectionMatrix);
-            }
+                mirror.GetComponent<ClippableObject>().ClipWith(boundModel);
+                new CSG.Model(mirror.GetComponent<MeshFilter>().mesh).Draw(Color.cyan);
 
+                Bounds mirrorBound;
+                mirrorBoundModel = mirror.GetComponent<Mirror>().CreateBound(out mirrorBound);
 
-            foreach (ClippableObject clippable in world.heartWorldContainer.GetComponentsInChildren<ClippableObject>())
-            {
-                if (IntersectsBounds(clippable, mirrorBound, mirrorBoundModel))
+                foreach (EntangledClippable entangled in world.EntangledClippables)
                 {
-                    clippable.GetComponent<ClippableObject>().IntersectMirrored(mirrorBoundModel, reflectionMatrix);
+                    entangled.ClipMirrored(this, mirrorBound, mirrorBoundModel, reflectionMatrix);
                 }
-                
+
+
+                foreach (ClippableObject clippable in world.heartWorldContainer.GetComponentsInChildren<ClippableObject>())
+                {
+                    if (IntersectsBounds(clippable, mirrorBound, mirrorBoundModel))
+                    {
+                        clippable.GetComponent<ClippableObject>().IntersectMirrored(mirrorBoundModel, reflectionMatrix);
+                    }
+
+                }
             }
         }
 
@@ -107,6 +112,27 @@ public class Window : MonoBehaviour
 			}
 		}
 
+        if(mirror)
+        {
+            //reflect csg model
+            mirrorBoundModel.ApplyTransformation(reflectionMatrix);
+            //mirrorBoundModel.FlipNormals();
+
+            foreach (ClippableObject clippable in world.Clippables)
+            {
+                if (clippable.IntersectsBound(mirrorBoundModel))
+                {
+                    clippable.Subtract(mirrorBoundModel, false);
+                    OnClippableCut?.Invoke(clippable);
+                }
+
+                if (Time.realtimeSinceStartup - startTime > frameLength)
+                {
+                    yield return null;
+                    startTime = Time.realtimeSinceStartup;
+                }
+            }
+        }
 
         cutInProgress = false;
         OnCompleteCut?.Invoke();

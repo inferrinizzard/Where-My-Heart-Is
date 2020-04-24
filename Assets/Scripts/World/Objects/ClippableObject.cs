@@ -87,10 +87,10 @@ public class ClippableObject : MonoBehaviour
 			col.sharedMesh = meshFilter.mesh;
 	}
 
-    public void Subtract(CSG.Model other)
+    public void Subtract(CSG.Model other, bool normalOverride = true)
     {
         if (!volumeless)
-            meshFilter.mesh = CSG.Operations.Subtract(CachedModel, other);
+            meshFilter.mesh = CSG.Operations.Subtract(CachedModel, other, normalOverride);
         else
             meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other, false, false, null);
 

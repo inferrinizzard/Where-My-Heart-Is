@@ -48,13 +48,13 @@ namespace CSG
 		/// <summary>
 		/// Subtracts shapeB from shapeA
 		/// </summary>
-		public static Mesh Subtract(Model modelA, Model modelB)
+		public static Mesh Subtract(Model modelA, Model modelB, bool normalOverride = true)
 		{
 
 			modelA.IntersectWith(modelB); //generate all intersections
 
 			Model clippedA = ClipModelAToModelB(modelA, modelB, false);
-			Model clippedB = ClipModelAToModelB(modelB, modelA, true, true);
+			Model clippedB = ClipModelAToModelB(modelB, modelA, true, normalOverride);
 
 			Model result = Model.Combine(clippedA, clippedB);
 			//result.ConvertToLocal(modelA.worldToLocal);
