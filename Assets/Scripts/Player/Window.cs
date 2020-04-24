@@ -61,10 +61,12 @@ public class Window : MonoBehaviour
 	{
 		Player.Instance.VFX.ToggleWave(true);
 		float startTime = Time.realtimeSinceStartup;
+        CSG.Model mirrorBoundModel = null;
+        Matrix4x4 reflectionMatrix = Matrix4x4.identity;
 
-        if(mirror)
+        if (mirror)
         {
-            Matrix4x4 reflectionMatrix = new Matrix4x4(
+            reflectionMatrix = new Matrix4x4(
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(0),
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(1),
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(2),
@@ -77,8 +79,7 @@ public class Window : MonoBehaviour
                 new CSG.Model(mirror.GetComponent<MeshFilter>().mesh).Draw(Color.cyan);
 
                 Bounds mirrorBound;
-                CSG.Model mirrorBoundModel = mirror.GetComponent<Mirror>().CreateBound(out mirrorBound);
-                mirrorBoundModel.Draw(Color.green);
+                mirrorBoundModel = mirror.GetComponent<Mirror>().CreateBound(out mirrorBound);
 
                 foreach (EntangledClippable entangled in world.EntangledClippables)
                 {
@@ -114,6 +115,27 @@ public class Window : MonoBehaviour
 		}
 		Player.Instance.VFX.ToggleWave(false);
 
+        if(mirror)
+        {
+            //reflect csg model
+            mirrorBoundModel.ApplyTransformation(reflectionMatrix);
+            //mirrorBoundModel.FlipNormals();
+
+            foreach (ClippableObject clippable in world.Clippables)
+            {
+                if (clippable.IntersectsBound(mirrorBoundModel))
+                {
+                    clippable.Subtract(mirrorBoundModel, false);
+                    OnClippableCut?.Invoke(clippable);
+                }
+
+                if (Time.realtimeSinceStartup - startTime > frameLength)
+                {
+                    yield return null;
+                    startTime = Time.realtimeSinceStartup;
+                }
+            }
+        }
 
         cutInProgress = false;
         OnCompleteCut?.Invoke();
