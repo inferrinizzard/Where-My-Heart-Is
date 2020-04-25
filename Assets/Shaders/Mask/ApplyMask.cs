@@ -6,24 +6,27 @@ using UnityEngine;
 [System.Serializable]
 public class ApplyMask : MonoBehaviour
 {
-	///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
-	Camera heartCam, maskCam, mainCam;
+    ///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
+    public static RenderTexture mask;
+
+    ///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
+    [HideInInspector] public Camera heartCam, maskCam, mainCam;
 	///<summary> Shader that combines views </summary>
-	[SerializeField] Shader merge = default, transition = default;
+	[SerializeField] Shader transition = default;
 	///<summary> Generated material for screen shader </summary>
 	public Material screenMat;
 	[HideInInspector] public Material transitionMat;
-	///<summary> Generated RenderTexture for Heart World </summary>\
-	RenderTexture heart;
+	///<summary> Generated RenderTexture for Heart World </summary>
+	public RenderTexture heart;
 	[SerializeField] Texture2D dissolveTexture = default;
 	[SerializeField] Texture2D hatchTexture = default;
 	[SerializeField] Texture2D birdBackground = default;
+	Texture2D persistentMask;
 	Texture2D curSave;
 	int _HeartID;
 
 	void Start()
 	{
-		screenMat = new Material(merge);
 		_HeartID = Shader.PropertyToID("_Heart");
 
 		// get ref to heart world cam and assign generated RenderTexture
@@ -36,10 +39,18 @@ public class ApplyMask : MonoBehaviour
 		heartCam.targetTexture = heart;
 
 		CreateMask();
-		screenMat.SetTexture("_HatchTex", hatchTexture);
-		screenMat.SetTexture("_Background", birdBackground);
+		//screenMat.SetTexture("_HatchTex", hatchTexture);
+		//screenMat.SetTexture("_Background", birdBackground);
 		// screenMat.SetColor("_DepthOutlineColour", Color.white);
 	}
+
+    public void CopyInto(ApplyMask target)
+    {
+        target.transition = this.transition;
+        target.screenMat = this.screenMat;
+        target.transitionMat = this.transitionMat;
+        target.dissolveTexture = this.dissolveTexture;
+    }
 
 	public void CreateMask()
 	{
@@ -56,9 +67,9 @@ public class ApplyMask : MonoBehaviour
 		maskCam.cullingMask = 1 << LayerMask.NameToLayer("Mask");
 		maskCam.clearFlags = CameraClearFlags.SolidColor;
 		maskCam.backgroundColor = Color.clear;
-		maskCam.targetTexture = mask;
+        maskCam.targetTexture = mask;
 
-		maskCam.Render();
+        maskCam.Render();
 
 		var screen = RenderTexture.active;
 		RenderTexture.active = mask;
@@ -67,7 +78,7 @@ public class ApplyMask : MonoBehaviour
 		var mask2D = new Texture2D(mask.width, mask.height);
 		mask2D.ReadPixels(new Rect(0, 0, mask.width, mask.height), 0, 0);
 		mask2D.Apply();
-		Shader.SetGlobalTexture("_Mask", Instantiate(mask2D));
+		Shader.SetGlobalTexture("_Mask", persistentMask = mask2D);
 		RenderTexture.active = screen;
 
 		// remove temp cam

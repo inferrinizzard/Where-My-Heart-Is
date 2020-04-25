@@ -8,11 +8,11 @@ Shader "Mask/Merge"
 
 		[Header(Boil)]
 		_HatchTex ("Hatch Texture", 2D) = "white" {}
-		_HatchSize ("Size", Int) = 3
+		_HatchSize ("Size", Int) = 20
 		_HatchSpeed ("Speed", Int) = 5
 		_Distortion ("Distortion Amount", Range(1, 1000)) = 1000
 		_NoiseSpeed ("Distortion Rate", Range(1, 500)) = 200
-		_DepthOutlineColour ("Outline Color", Color) = (1, 1, 1, 1)
+		_DepthOutlineColour ("Outline Color", Color) = (0.1, 0, 0.1, 1)
 		_NormalMult ("Normal Outline Multiplier", Range(0, 4)) = 0.4
 		_NormalBias ("Normal Outline Bias", Range(1, 4)) = 4
 		_DepthMult ("Depth Outline Multiplier", Range(0, 4)) = 1
@@ -21,7 +21,7 @@ Shader "Mask/Merge"
 		[Header(Wave)]
 		_WaveDistance ("Distance from player", float) = 0
 		_WaveTrail ("Length of the trail", Range(0,5)) = 1
-		_WaveColour ("Colour", Color) = (0, 0, 1, 1)
+		_WaveColour ("Colour", Color) = (1, 1, 1, 1)
 
 		_Background ("Texture", 2D) = "white" {}
 	}
@@ -131,7 +131,7 @@ Shader "Mask/Merge"
 					float4 glow = tex2D(_GlowMap, i.uv);
 					// return glow;
 					if(glow.a == 0) {
-						int NumberOfIterations = 9;
+						int NumberOfIterations = 3;
 						
 						//split texel size into smaller words
 						float TX_x = _GlowMap_TexelSize.x;
@@ -181,15 +181,39 @@ Shader "Mask/Merge"
 					normalDifference = saturate(normalDifference);
 					normalDifference = pow(normalDifference, _NormalBias);
 
-					float outline = normalDifference + depthDifference;
+					float outline = normalDifference + depthDifference * 2;
+					//float4 color = lerp(output, _DepthOutlineColour, outline);
 					float4 color = lerp(output, _DepthOutlineColour, outline);
+					if (outline > 0.1)
+					{
+						float4 hatchColor = tex2D(_HatchTex, modUV(i.uv * _HatchSize, row, col, _HatchSize));
+						color = lerp(color, output, 1 - hatchColor.r);// subtract back to non-outline based on brightness of hatch
+						color = hatchColor;
+					}
+
+					#if MASK
+					color = output;
+					#endif
+					output = color;
+					/*if (outline > 0.8)
+					{
+						color = _DepthOutlineColour;
+					}
+					//output = color;
+
 					if(!rgbEquals(output, color)) { 
 						float4 preOutline = color * tex2D(_HatchTex, modUV(i.uv * _HatchSize, row, col, _HatchSize));
+						float4 hatchColor = tex2D(_HatchTex, modUV(i.uv * _HatchSize, row, col, _HatchSize));
+						
+
 						#if MASK
-							if(mask > .5) preOutline = 0; // TODO: heart world depth normal texture lookup;
+						if(mask > .5) preOutline = 0; // TODO: heart world depth normal texture lookup;
 						#endif
-						output += preOutline;
-					}
+
+						color = lerp(output, _DepthOutlineColour, outline);
+						//output = float4(output.r + color.r * hatchColor.r, output.g + color.g * hatchColor.r, output.b + color.b * hatchColor.r, output.a);
+						//output += preOutline;
+					}*/
 				#endif
 
 				#if WAVE
