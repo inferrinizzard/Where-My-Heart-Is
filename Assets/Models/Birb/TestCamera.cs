@@ -5,13 +5,18 @@ using UnityEngine;
 
 public class TestCamera : MonoBehaviour
 {
+	public Shader shader;
+	[SerializeField] Texture2D birdBackground;
+	Material mat;
 
 	float rotationX, rotationY;
 	[SerializeField] float mouseSensitivity = default;
 	// Start is called before the first frame update
 	void Start()
 	{
-
+		transform.LookAt(FindObjectOfType<BirdTrail>().transform.position);
+		mat = new Material(shader);
+		mat.SetTexture("_Background", birdBackground);
 	}
 
 	// Update is called once per frame
@@ -28,5 +33,10 @@ public class TestCamera : MonoBehaviour
 		rotationY += Input.GetAxis("Mouse X") * mouseSensitivity;
 		rotationX += Input.GetAxis("Mouse Y") * mouseSensitivity;
 		transform.localEulerAngles = new Vector3(-rotationX, rotationY, 0);
+	}
+
+	void OnRenderImage(RenderTexture src, RenderTexture dest)
+	{
+		Graphics.Blit(src, dest, mat);
 	}
 }

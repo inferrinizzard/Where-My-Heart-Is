@@ -10,6 +10,7 @@ public abstract class InteractableObject : MonoBehaviour
 	public string prompt = "Press E to Interact";
 	string flavorText = "";
 	DialogueSystem dialogue;
+	System.Action glowFunction = null;
 
 	public virtual void Interact()
 	{
@@ -23,4 +24,17 @@ public abstract class InteractableObject : MonoBehaviour
 		player = Player.Instance;
 		if (hitboxObject) hitboxObject.GetComponent<ClippableObject>().tiedInteractable = this;
 	}
+
+	void OnMouseOver()
+	{
+		// if(!TryComponent<OutlineObject>())
+		if (!player.heldObject && !GetComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
+			glowFunction = Func.Lambda(() => GameManager.Instance.VFX.RenderGlowMap(GetComponentsInChildren<Renderer>()));
+		else
+			glowFunction = null;
+	}
+
+	void OnMouseExit() => glowFunction = null;
+
+	void OnWillRenderObject() => glowFunction?.Invoke();
 }

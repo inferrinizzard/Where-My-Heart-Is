@@ -18,6 +18,8 @@ public class Fade : MonoBehaviour
 
 	IEnumerator FadeRoutine(bool fadingIn, float time)
 	{
+		if (!enabled)
+			yield break;
 		float start = Time.time;
 		bool inProgress = true;
 		while (inProgress)
