@@ -9,13 +9,14 @@ using UnityEngine.UI;
 /// <summary> Constrols app macro and scene manipulations </summary>
 public class GameManager : Singleton<GameManager>
 {
-	public readonly string[] levels = new string[] { "Intro", "BridgeRedo", "SimpleGate", "OneCutRedo", "ComplexGate", "Pushable", "BoxHalfCut", "End" };
-	public int sceneIndex = -1;
+	//public readonly string[] levels = new string[] { "Intro", "BridgeRedo", "SimpleGate", "OneCutRedo", "ComplexGate", "Pushable", "BoxHalfCut", "End" };
+	public int sceneIndex = 0;
 	public bool duringLoad;
 	public DialogueSystem dialogue;
 	public Prompt prompt;
 	public Effects VFX;
 	public PauseMenu pause;
+	public LevelOrder levelOrder;
 
 	public override void Awake()
 	{
@@ -28,7 +29,7 @@ public class GameManager : Singleton<GameManager>
 
 	void Start()
 	{
-		sceneIndex = levels.ToList().FindIndex(name => name == SceneManager.GetActiveScene().name);
+		//sceneIndex = levels.ToList().FindIndex(name => name == SceneManager.GetActiveScene().name);
 		World.Instance.name += $" [{SceneManager.GetActiveScene().name}]";
 		SceneManager.sceneLoaded += new UnityEngine.Events.UnityAction<Scene, LoadSceneMode>((scene, _) => OnEnterScene());
 		// SceneManager.activeSceneChanged += new UnityEngine.Events.UnityAction<Scene, Scene>((_, __) => this.Print("ActiveSceneChanged", SceneManager.GetActiveScene().name));
@@ -41,11 +42,15 @@ public class GameManager : Singleton<GameManager>
 		Application.Quit();
 	}
 
-	public void ChangeLevel(string scene) => Transition(scene); // temp, to be deleted
+	public void ChangeLevel()
+	{
+		sceneIndex++;
+		Transition(levelOrder.getSceneName(sceneIndex));
+	}
 
 	/// <summary> Starts Coroutine to load scene async  </summary>
 	/// <param name="scene"> Name of scene to load  </param>
-	public static void Transition(string scene) => instance.StartCoroutine(LoadScene(scene));
+	static void Transition(string name) => instance.StartCoroutine(LoadScene(name));
 
 	/// <summary> Loads scene asynchronously, will transition when ready </summary>
 	/// <param name="scene"> Name of scene to load  </param>
@@ -60,6 +65,7 @@ public class GameManager : Singleton<GameManager>
 		float startTime = Time.time;
 		bool inProgress = true;
 
+		Debug.Log(Player.Instance.mask.transitionMat);
 		Material transitionMat = Player.Instance.mask.transitionMat;
 		int _CutoffID = Shader.PropertyToID("_Cutoff");
 
@@ -82,7 +88,7 @@ public class GameManager : Singleton<GameManager>
 
 	public override void OnEnterScene()
 	{
-		World.Instance.name += $"[{levels[++sceneIndex]}]";
+		//World.Instance.name += $"[{levels[++sceneIndex]}]";
 		Player.Instance.OnEnterScene();
 	}
 
