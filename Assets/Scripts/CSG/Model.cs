@@ -93,12 +93,14 @@ namespace CSG
 		/// <summary>
 		/// Creates an edge object for each unique pair of vertices in this model that share a triangle
 		/// </summary>
-		private void CreateEdges()
+		public void CreateEdges()
 		{
 			edges = new List<Edge>();
 			//Debug.Log(triangles.Count);
 			foreach (Triangle triangle in triangles)
 			{
+                triangle.edges.Clear();
+
 				for (int i = 0; i < 3; i++)
 				{
 					Edge preexistingEdge = edges.Find(edge =>
@@ -236,29 +238,19 @@ namespace CSG
 		/// <summary>
 		/// Converts the locations of the vertices of this model from the local space of the given transform to world space
 		/// </summary>
-		/// <param name="referenceFrame">The object to reference for coordinate space conversion</param>
-		public void ConvertToWorld(Matrix4x4 localToWorldMatrix)
+		public void ApplyTransformation(Matrix4x4 transformationMatrix)
 		{
-			vertices.ForEach(vertex => vertex.value = localToWorldMatrix.MultiplyPoint3x4(vertex.value));
+			vertices.ForEach(vertex => vertex.value = transformationMatrix.MultiplyPoint3x4(vertex.value));
 		}
 
 		public void ConvertToWorld()
 		{
-			ConvertToWorld(localToWorld);
-		}
-
-		/// <summary>
-		/// Converts the locations of the vertices of this model from world space to the local space of the given transform
-		/// </summary>
-		/// <param name="referenceFrame">The object to reference for coordinate space conversion</param>
-		public void ConvertToLocal(Matrix4x4 worldToLocalMatrix)
-		{
-			vertices.ForEach(vertex => vertex.value = worldToLocalMatrix.MultiplyPoint3x4(vertex.value));
+			ApplyTransformation(localToWorld);
 		}
 
 		public void ConvertToLocal()
 		{
-			ConvertToLocal(worldToLocal);
+			ApplyTransformation(worldToLocal);
 		}
 
 		/// <summary>
@@ -267,8 +259,22 @@ namespace CSG
 		/// <param name="other">The model to check for intersections</param>
 		/// <param name="error">The equality comparison error constant</param>
 		/// <returns>True if a contained vertex is found, false otherwise</returns>
-		public bool Intersects(Model other, float error)
+		public bool Intersects(Model other, float error, bool useEdgeFace = false)
 		{
+            if(useEdgeFace)
+            {
+                foreach(Edge edge in edges)
+                {
+                    foreach (Triangle triangle in other.triangles)
+                    {
+                        if(Raycast.LineSegmentToTriangle(edge.vertices[0].value, edge.vertices[1].value, triangle, error) != null)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
 			foreach (Vertex vertex in vertices)
 			{
 				if (vertex.ContainedBy(other, error))
