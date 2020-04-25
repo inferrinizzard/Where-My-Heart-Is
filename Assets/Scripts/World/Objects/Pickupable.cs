@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary> Handles the behavior of an object that can be picked up. </summary>
+[ExecuteInEditMode]
 public class Pickupable : InteractableObject
 {
 	[HideInInspector] public Transform oldParent;
@@ -12,6 +13,10 @@ public class Pickupable : InteractableObject
 	protected Quaternion initialRotation;
 	public bool dissolves = false;
 	Collider col;
+
+	[HideInInspector] public bool isEntangled = false;
+	[ConditionalHide("isEntangled", true), SerializeField, Header("Entangled Colliders")] Collider realCollider;
+	[ConditionalHide("isEntangled", true), SerializeField] Collider heartCollider;
 
 	void Awake() => prompt = "Press E to Pick Up";
 
@@ -23,6 +28,7 @@ public class Pickupable : InteractableObject
 
 	void Update()
 	{
+		isEntangled = hitboxObject is EntangledClippable;
 		if (active)
 		{
 			// If the object is being inspected, run Looking.

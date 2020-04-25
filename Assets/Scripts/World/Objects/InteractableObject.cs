@@ -37,4 +37,12 @@ public abstract class InteractableObject : MonoBehaviour
 	void OnMouseExit() => glowFunction = null;
 
 	void OnWillRenderObject() => glowFunction?.Invoke();
+
+	public static InteractableObject GetInAncestors(Transform t)
+	{
+		for (var current = t; current != World.Instance.transform; current = current.parent)
+			if (current.TryComponent<InteractableObject>(out var obj))
+				return obj;
+		return null;
+	}
 }

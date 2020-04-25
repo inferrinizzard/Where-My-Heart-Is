@@ -39,6 +39,11 @@ public static class Extensions
 	}
 
 	public static void Print(this MonoBehaviour @this, params object[] args) => UnityEngine.Debug.Log(string.Join(" ", args));
+	public static dynamic Log(this Object @this)
+	{
+		Debug.Log(@this);
+		return @this;
+	}
 	public static string AsString<T>(this IEnumerable<T> args) => $"[{string.Join(", ", args)}]";
 	public static string AsString<T>(this T[] args) => $"[{string.Join(", ", args)}]";
 
@@ -68,9 +73,4 @@ public static class Extensions
 	}
 
 	public static Matrix4x4 TRS(this Transform @this) => Matrix4x4.TRS(@this.position, @this.rotation, @this.localScale);
-	public static Vector3 PointwiseScale(this Vector3 @this, Vector3 v)
-	{
-		@this.Scale(v);
-		return @this;
-	}
 }

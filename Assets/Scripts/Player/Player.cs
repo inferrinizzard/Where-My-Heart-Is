@@ -121,8 +121,7 @@ public class Player : Singleton<Player>, IStateMachine
 		window.Invoke("CreateFoVMesh", 1);
 	}
 
-	public override void OnExitScene()
-	{ }
+	public override void OnExitScene() { }
 
 	public override void OnEnterScene()
 	{
@@ -355,5 +354,5 @@ public class Player : Singleton<Player>, IStateMachine
 		return Physics.SphereCast(playerCollider.transform.position, 0.2f, Vector3.down, out ray, playerHeight / 2 - 0.1f);
 	}
 
-	public InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
+	public InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) && hit.transform.root != transform ? InteractableObject.GetInAncestors(hit.transform) : null;
 }
