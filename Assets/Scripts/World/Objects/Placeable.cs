@@ -27,9 +27,11 @@ public class Placeable : Pickupable
 			canvas.manualTarget = "Bridge";
 			canvas.preview = preview;
 			introController.SetCanvas(canvas);
+			canvas.player = player;
+			canvas.Interact(); // TODO: temp
 			Destroy(this);
 		}
-		else if (Player.Instance.heldObject == this)
+		else if (player.heldObject == this)
 		{
 			birdAnim.StartNextCurve();
 		}

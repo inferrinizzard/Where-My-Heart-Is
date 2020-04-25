@@ -60,6 +60,7 @@ public class Window : MonoBehaviour
 
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds)
 	{
+		Player.Instance.VFX.ToggleWave(true);
 		float startTime = Time.realtimeSinceStartup;
 		float sqrMagCurrent = 0;
 		foreach (var(clippable, type) in world.clippables)
@@ -85,6 +86,7 @@ public class Window : MonoBehaviour
 				startTime = Time.realtimeSinceStartup;
 			}
 		}
+		Player.Instance.VFX.ToggleWave(false);
 
 		// foreach (ClippableObject clippable in world.GetHeartObjects().OrderBy(obj => (obj.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList())
 		// {
@@ -220,6 +222,7 @@ public class Window : MonoBehaviour
 	private Bounds GetSceneBounds()
 	{
 		var clippables = world.GetComponentsInChildren<ClippableObject>();
+		if (clippables.Length == 0) return GetComponentInChildren<MeshRenderer>().bounds;
 		return clippables.Aggregate(clippables[0].GetComponent<MeshCollider>().bounds, (bound, cur) => { bound.Encapsulate(cur.GetComponent<MeshCollider>().bounds); return bound; });
 	}
 }

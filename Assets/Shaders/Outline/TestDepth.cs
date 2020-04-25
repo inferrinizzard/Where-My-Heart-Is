@@ -13,7 +13,7 @@ public class TestDepth : MonoBehaviour
 	{
 		depthMat = depthMat ?? new Material(depthShader);
 		Camera cam = GetComponent<Camera>();
-		cam.depthTextureMode = cam.depthTextureMode | DepthTextureMode.DepthNormals;
+		cam.depthTextureMode = cam.depthTextureMode | DepthTextureMode.DepthNormals | DepthTextureMode.Depth;
 	}
 
 	// Update is called once per frame

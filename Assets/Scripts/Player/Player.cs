@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary> Handles player movement and player interaction </summary>
+/// <summary> Handles player behaviors. </summary>
 [System.Serializable]
 public class Player : Singleton<Player>, IStateMachine
 {
@@ -62,7 +62,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player jump force. </summary>
 	public float jumpForce = 7f;
 	/// <summary> Mouse sensitivity for camera rotation. </summary>
-	[SerializeField] float mouseSensitivity = 2f;
+	public static float mouseSensitivity = 2f;
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
 	public bool windowEnabled = true;
@@ -294,11 +294,11 @@ public class Player : Singleton<Player>, IStateMachine
 			Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
 
 			// Allow the player to get out of the mouse lock.
-			if (Input.GetKey(KeyCode.Escape))
+			/*if (Input.GetKey(KeyCode.Escape))
 			{
 				Cursor.lockState = CursorLockMode.None;
 				Cursor.visible = true;
-			}
+			}*/
 		}
 	}
 

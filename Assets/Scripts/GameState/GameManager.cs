@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// <summary> Constrols app macro and scene manipulations </summary>
 public class GameManager : Singleton<GameManager>
 {
-	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "OneCut", "ComplexGate", "HalfCut 1", "AutumnFinal" };
+	public readonly string[] levels = new string[] { "Intro", "Bridge", "Disappear", "SimpleGate", "Swap", "OneCut", "ComplexGate", "HalfCut", "AutumnFinal" };
 	public int sceneIndex = -1;
 	public bool duringLoad;
 
@@ -18,6 +18,7 @@ public class GameManager : Singleton<GameManager>
 	public DialogueSystem dialogue;
 	public Prompt prompt;
 	public Effects VFX;
+	public PauseMenu pause;
 
 	public override void Awake()
 	{
@@ -25,6 +26,7 @@ public class GameManager : Singleton<GameManager>
 		VFX = Player.Instance.GetComponentInChildren<Effects>();
 		dialogue = GetComponentInChildren<DialogueSystem>();
 		prompt = GetComponentInChildren<Prompt>();
+		pause = GetComponentInChildren<PauseMenu>();
 	}
 
 	void Start()
@@ -117,5 +119,10 @@ public class GameManager : Singleton<GameManager>
 		AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(name);
 		while (!asyncUnload.isDone)
 			yield return null;
+	}
+
+	public static void ReloadScene()
+	{
+		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 }
