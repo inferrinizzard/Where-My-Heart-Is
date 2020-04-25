@@ -4,21 +4,31 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+#if DEBUG
+[ExecuteInEditMode]
+#endif
 public class Effects : MonoBehaviour
 {
 	Fade fadeController;
+	[HideInInspector] public Wave waveController; // TODO: add wave controller?
 	bool outlineOn = true;
 	bool bloomOn = false;
 	bool dissolveOn = false;
 	[SerializeField] Material defaultGlowMat = default;
 
-	void Start()
+	[SerializeField, Range(0, 30)] float lightPower = 5;
+
+	void Awake()
 	{
+		Shader.SetGlobalFloat("_LightAttenBias", 30 - lightPower);
 		fadeController = GetComponent<Fade>();
+		waveController = GetComponent<Wave>();
 
 		ToggleMask(false);
-		ToggleEdgeOutline(outlineOn);
-		ToggleDissolve(dissolveOn);
+		ToggleEdgeOutline(false);//outlineOn
+        ToggleDissolve(dissolveOn);
+		ToggleBoil(true);
+		ToggleBird(true);
 	}
 
 	void Update()
@@ -39,6 +49,10 @@ public class Effects : MonoBehaviour
 			ToggleDissolve(dissolveOn = !dissolveOn);
 			print($"dissolve: {dissolveOn}");
 		}
+
+#if UNITY_EDITOR
+		Shader.SetGlobalFloat("_LightAttenBias", 30 - lightPower);
+#endif
 #endif
 	}
 
@@ -50,12 +64,16 @@ public class Effects : MonoBehaviour
 	/// <summary> toggles edge outline on and off </summary>
 	/// <param name="on"> Is edge outline on? </summary>
 	public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE");
-
 	public void ToggleBloom(bool on) => ToggleEffect(on, "BLOOM");
-
 	public void ToggleDissolve(bool on) => ToggleEffect(on, "DISSOLVE");
+	public void ToggleBoil(bool on) => ToggleEffect(on, "BOIL");
+	public void ToggleWave(bool on) => ToggleEffect(on, "WAVE");
+	public void ToggleBird(bool on) => ToggleEffect(on, "BIRD");
 
 	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
+
+	// public void SetWave(float distance) => waveController.waveDistance = distance;
+	public void SetWave(float distance) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", distance);
 
 	void ToggleEffect(bool on, string keyword)
 	{

@@ -8,8 +8,7 @@ using UnityEngine;
 [CustomEditor(typeof(EntangledClippable))]
 public class EntangledClippableGUI : Editor
 {
-	Object heartPrefab;
-	Object realPrefab;
+	Object heartPrefab, realPrefab;
 	EntangledClippable entangledObject;
 
 	private void OnEnable()
@@ -26,7 +25,9 @@ public class EntangledClippableGUI : Editor
 		heartPrefab = EditorGUILayout.ObjectField("Heart Prefab", heartPrefab, typeof(GameObject), true);
 		if (EditorGUI.EndChangeCheck())
 		{
-			entangledObject.OnRealChange((GameObject) heartPrefab);
+			entangledObject.OnHeartChange((GameObject) heartPrefab);
+			if (entangledObject.name.StartsWith("Empty"))
+				entangledObject.name = heartPrefab.name;
 		}
 
 		EditorGUI.BeginChangeCheck();
@@ -34,6 +35,8 @@ public class EntangledClippableGUI : Editor
 		if (EditorGUI.EndChangeCheck())
 		{
 			entangledObject.OnRealChange((GameObject) realPrefab);
+			if (entangledObject.name.StartsWith("Empty"))
+				entangledObject.name = realPrefab.name;
 		}
 
 	}
