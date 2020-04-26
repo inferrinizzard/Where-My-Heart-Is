@@ -25,7 +25,7 @@ public class Effects : MonoBehaviour
 		waveController = GetComponent<Wave>();
 
 		ToggleMask(false);
-		ToggleEdgeOutline(false);//outlineOn
+		ToggleEdgeOutline(true); //outlineOn
         ToggleDissolve(dissolveOn);
 		ToggleBoil(true);
 		ToggleBird(true);

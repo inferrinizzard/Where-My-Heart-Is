@@ -131,7 +131,7 @@ Shader "Mask/Merge"
 					float4 glow = tex2D(_GlowMap, i.uv);
 					// return glow;
 					if(glow.a == 0) {
-						int NumberOfIterations = 3;
+						int NumberOfIterations = 5;
 						
 						//split texel size into smaller words
 						float TX_x = _GlowMap_TexelSize.x;
@@ -192,7 +192,7 @@ Shader "Mask/Merge"
 					}
 
 					#if MASK
-					color = output;
+						color = output;
 					#endif
 					output = color;
 					/*if (outline > 0.8)
@@ -207,7 +207,7 @@ Shader "Mask/Merge"
 						
 
 						#if MASK
-						if(mask > .5) preOutline = 0; // TODO: heart world depth normal texture lookup;
+							if(mask > .5) preOutline = 0; // TODO: heart world depth normal texture lookup;
 						#endif
 
 						color = lerp(output, _DepthOutlineColour, outline);
