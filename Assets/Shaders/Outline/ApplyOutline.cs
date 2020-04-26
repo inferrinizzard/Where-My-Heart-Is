@@ -21,15 +21,13 @@ public class ApplyOutline : MonoBehaviour
 		cam.AddCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
 	}
 
+	public void OnEnable() => Cleanup();
+	public void OnDisable() => Cleanup();
 	private void Cleanup()
 	{
 		if (glowBuffer != null && cam)
 			cam.RemoveCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
 	}
-
-	public void OnDisable() => Cleanup();
-
-	public void OnEnable() => Cleanup();
 
 	void LateUpdate()
 	{
