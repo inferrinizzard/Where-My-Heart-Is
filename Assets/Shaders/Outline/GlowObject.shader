@@ -39,11 +39,12 @@ Shader "Outline/GlowObject"
 			}
 
 			float4 frag(v2f i) : COLOR {
+				return _Colour;
 				if(_Occlude == 0) { return _Colour; }
 				// decode depth texture info
 				float2 uv = i.screenPos.xy / i.screenPos.w; // normalized screen-space pos
 				float camDepth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, uv);
-				camDepth = Linear01Depth (camDepth); // converts z buffer value to depth value from 0..1
+				camDepth = Linear01Depth(camDepth); // converts z buffer value to depth value from 0..1
 
 				float diff = saturate(i.linearDepth - camDepth);
 				return diff < 0.001 ? _Colour : float4(0, 0, 0, 1);
