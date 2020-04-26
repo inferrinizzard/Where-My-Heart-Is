@@ -8,7 +8,7 @@ public class ApplyOutline : MonoBehaviour
 {
 	Camera cam;
 	public static CommandBuffer glowBuffer;
-	public static bool rebuild = false;
+	public static bool drawGlow = false;
 
 	int glowTemp = Shader.PropertyToID("_GlowTemp");
 
@@ -33,15 +33,19 @@ public class ApplyOutline : MonoBehaviour
 
 	void LateUpdate()
 	{
-		if (rebuild)
+		if (drawGlow)
 		{
 			glowBuffer.Clear();
 			glowBuffer.GetTemporaryRT(glowTemp, -1, -1, 24, FilterMode.Bilinear);
 			glowBuffer.SetRenderTarget(glowTemp);
 			glowBuffer.ClearRenderTarget(true, true, Color.clear);
-			rebuild = false;
+			drawGlow = false;
 		}
 	}
 
-	void OnPreCull() => glowBuffer.SetGlobalTexture("_GlowMap", glowTemp);
+	void OnPreCull()
+	{
+		if (drawGlow)
+			glowBuffer.SetGlobalTexture("_GlowMap", glowTemp);
+	}
 }

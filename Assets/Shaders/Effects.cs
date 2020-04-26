@@ -90,15 +90,17 @@ public class Effects : MonoBehaviour
 	int glowColourID = Shader.PropertyToID("_Colour");
 
 	public void SetTargetColour(Color? c) => targetColour = c ?? defaultGlowMat.GetColor("_Colour");
-	public void ResetCurrentGlow(Color? c) => currentGlow.SetColor(glowColourID, c ?? Color.black);
 
-	public void RenderGlowMap(Renderer[] renderers, Material mat = null, float baseTime = 10)
+	public void RenderGlowMap(Renderer[] renderers, Material mat = null, float baseTime = 2)
 	{
-		ApplyOutline.rebuild = true;
-		mat = mat ?? defaultGlowMat;
-
 		var currentColour = currentGlow.GetColor(glowColourID);
 		bool atTargetColour = currentColour.Equals(targetColour);
+		if (atTargetColour && currentColour.Equals(Color.black))
+			return;
+
+		ApplyOutline.drawGlow = true;
+		mat = mat ?? defaultGlowMat;
+
 		if (!atTargetColour)
 			currentGlow.SetColor(glowColourID, Color.Lerp(currentColour, targetColour, Time.deltaTime / baseTime));
 		foreach (Renderer r in renderers)
