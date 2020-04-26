@@ -31,6 +31,7 @@ public class Window : MonoBehaviour
 
     // state management
     private bool cutInProgress;
+    private bool mirrorCutApplied;
 
     public event Action OnBeginCut;
     public event Action<ClippableObject> OnClippableCut;
@@ -61,39 +62,45 @@ public class Window : MonoBehaviour
 	{
 		Player.Instance.VFX.ToggleWave(true);
 		float startTime = Time.realtimeSinceStartup;
-        Matrix4x4 reflectionMatrix = new Matrix4x4(
+        CSG.Model mirrorBoundModel = null;
+        Matrix4x4 reflectionMatrix = Matrix4x4.identity;
+
+        if (mirror && mirror.GetComponent<ClippableObject>().CachedModel.Intersects(boundModel, 0.0001f, true))
+        {
+            mirrorCutApplied = true;
+
+            reflectionMatrix = new Matrix4x4(
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(0),
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(1),
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(2),
             mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(3)
             );
 
-        if (mirror.GetComponent<ClippableObject>().CachedModel.Intersects(boundModel, 0.0001f, true))
-        {
             mirror.GetComponent<ClippableObject>().ClipWith(boundModel);
-            new CSG.Model(mirror.GetComponent<MeshFilter>().mesh).Draw(Color.cyan);
 
             Bounds mirrorBound;
-            CSG.Model mirrorBoundModel = mirror.GetComponent<Mirror>().CreateBound(out mirrorBound);
-            mirrorBoundModel.Draw(Color.green);
+            mirrorBoundModel = mirror.GetComponent<Mirror>().CreateBound(out mirrorBound);
+
+            foreach (EntangledClippable entangled in world.EntangledClippables)
+            {
+                entangled.ClipMirrored(this, mirrorBound, mirrorBoundModel, reflectionMatrix);
+            }
+
 
             foreach (ClippableObject clippable in world.heartWorldContainer.GetComponentsInChildren<ClippableObject>())
             {
-                if (IntersectsBounds(clippable, mirrorBound))
+                if (IntersectsBounds(clippable, mirrorBound, mirrorBoundModel) && !(clippable is Mirror))
                 {
                     clippable.GetComponent<ClippableObject>().IntersectMirrored(mirrorBoundModel, reflectionMatrix);
                 }
             }
-
-            foreach(EntangledClippable entangled in world.entangledClippables)
-            {
-                entangled.ClipMirrored(this, mirrorBound, mirrorBoundModel, reflectionMatrix, frameLength);
-            }
         }
+        else mirrorCutApplied = false;
 
-		foreach (ClippableObject clippable in world.clippables)
+
+        foreach (ClippableObject clippable in world.Clippables)
 		{
-			if (IntersectsBounds(clippable, bounds))
+			if (IntersectsBounds(clippable, bounds, fieldOfViewModel))
 			{
                 clippable.ClipWith(boundModel);
                 OnClippableCut?.Invoke(clippable);
@@ -107,12 +114,32 @@ public class Window : MonoBehaviour
 		}
 		Player.Instance.VFX.ToggleWave(false);
 
+        if(mirrorCutApplied)
+        {
+            //reflect csg model
+            mirrorBoundModel.ApplyTransformation(reflectionMatrix);
+
+            foreach (ClippableObject clippable in world.Clippables)
+            {
+                if (clippable.IntersectsBound(mirrorBoundModel))
+                {
+                    clippable.Subtract(mirrorBoundModel, false);
+                    OnClippableCut?.Invoke(clippable);
+                }
+
+                if (Time.realtimeSinceStartup - startTime > frameLength)
+                {
+                    yield return null;
+                    startTime = Time.realtimeSinceStartup;
+                }
+            }
+        }
 
         cutInProgress = false;
         OnCompleteCut?.Invoke();
     }
 
-	public bool IntersectsBounds(ClippableObject clippableObject, Bounds bounds)
+	public bool IntersectsBounds(ClippableObject clippableObject, Bounds bounds, CSG.Model boundsModel)
 	{
 		//return true;
 		// less expensive, less accurate intersection check
@@ -124,7 +151,7 @@ public class Window : MonoBehaviour
 		{
 			//Debug.Log(clippableObject.IntersectsBound(fieldOfViewModel));
 			// more expensive, more accurate intersection check
-			if (clippableObject.IntersectsBound(fieldOfViewModel))
+			if (clippableObject.IntersectsBound(boundsModel))
 			{
 				return true;
 			}
