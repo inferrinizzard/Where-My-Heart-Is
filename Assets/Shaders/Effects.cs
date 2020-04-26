@@ -26,9 +26,11 @@ public class Effects : MonoBehaviour
 
 		ToggleMask(false);
 		ToggleEdgeOutline(true); //outlineOn
-        ToggleDissolve(dissolveOn);
+		ToggleDissolve(dissolveOn);
 		ToggleBoil(true);
 		ToggleBird(true);
+
+		currentGlow = new MaterialPropertyBlock();
 	}
 
 	void Update()
@@ -83,11 +85,27 @@ public class Effects : MonoBehaviour
 			Shader.DisableKeyword(keyword);
 	}
 
-	public void RenderGlowMap(Renderer[] renderers, Material mat = null)
+	MaterialPropertyBlock currentGlow;
+	Color targetColour = Color.black;
+	int glowColourID = Shader.PropertyToID("_Colour");
+
+	public void SetTargetColour(Color? c) => targetColour = c ?? defaultGlowMat.GetColor("_Colour");
+	public void ResetCurrentGlow(Color? c) => currentGlow.SetColor(glowColourID, c ?? Color.black);
+
+	public void RenderGlowMap(Renderer[] renderers, Material mat = null, float baseTime = 10)
 	{
+		ApplyOutline.rebuild = true;
 		mat = mat ?? defaultGlowMat;
-		// mat.SetColor("_Colour", col);
+
+		var currentColour = currentGlow.GetColor(glowColourID);
+		bool atTargetColour = currentColour.Equals(targetColour);
+		if (!atTargetColour)
+			currentGlow.SetColor(glowColourID, Color.Lerp(currentColour, targetColour, Time.deltaTime / baseTime));
 		foreach (Renderer r in renderers)
+		{
+			if (!atTargetColour)
+				r.SetPropertyBlock(currentGlow);
 			ApplyOutline.glowBuffer.DrawRenderer(r, mat);
+		}
 	}
 }
