@@ -10,7 +10,7 @@ public class ApplyOutline : MonoBehaviour
 	public static CommandBuffer glowBuffer;
 	public static bool drawGlow = false;
 
-	int glowTemp = Shader.PropertyToID("_GlowTemp");
+	int glowTempID = Shader.PropertyToID("_GlowTemp"), glowMapID = Shader.PropertyToID("_GlowMap");
 
 	void Start()
 	{
@@ -19,6 +19,7 @@ public class ApplyOutline : MonoBehaviour
 		glowBuffer.name = "Glow Map Buffer";
 
 		cam.AddCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
+		ResetGlowBuffer();
 	}
 
 	private void Cleanup()
@@ -31,21 +32,28 @@ public class ApplyOutline : MonoBehaviour
 
 	public void OnEnable() => Cleanup();
 
+	void ResetGlowBuffer()
+	{
+		glowBuffer.Clear();
+		glowBuffer.GetTemporaryRT(glowTempID, -1, -1, 24, FilterMode.Bilinear);
+		glowBuffer.SetRenderTarget(glowTempID);
+		glowBuffer.ClearRenderTarget(true, true, Color.clear);
+	}
+
 	void LateUpdate()
 	{
 		if (drawGlow)
 		{
-			glowBuffer.Clear();
-			glowBuffer.GetTemporaryRT(glowTemp, -1, -1, 24, FilterMode.Bilinear);
-			glowBuffer.SetRenderTarget(glowTemp);
-			glowBuffer.ClearRenderTarget(true, true, Color.clear);
-			drawGlow = false;
+			ResetGlowBuffer();
 		}
 	}
 
 	void OnPreCull()
 	{
 		if (drawGlow)
-			glowBuffer.SetGlobalTexture("_GlowMap", glowTemp);
+		{
+			glowBuffer.SetGlobalTexture("_GlowMap", glowTempID);
+			drawGlow = false;
+		}
 	}
 }

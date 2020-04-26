@@ -28,6 +28,11 @@ public class OutlineObject : MonoBehaviour
 		outlineMat.name = $"[{name}] Outline";
 	}
 
-	void OnWillRenderObject() => GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
+	// void OnWillRenderObject() => GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
+	void OnWillRenderObject()
+	{
+		this.Print("owro", this);
+		GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
+	}
 
 }

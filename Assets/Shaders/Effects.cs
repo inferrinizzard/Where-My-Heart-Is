@@ -86,23 +86,29 @@ public class Effects : MonoBehaviour
 	}
 
 	MaterialPropertyBlock currentGlow;
+	[HideInInspector] public InteractableObject currentGlowObj;
 	Color targetColour = Color.black;
 	int glowColourID = Shader.PropertyToID("_Colour");
 
 	public void SetTargetColour(Color? c) => targetColour = c ?? defaultGlowMat.GetColor("_Colour");
 
-	public void RenderGlowMap(Renderer[] renderers, Material mat = null, float baseTime = 2)
+	public void RenderGlowMap(Renderer[] renderers, Material mat = null, bool lerp = false, float baseTime = 2)
 	{
-		var currentColour = currentGlow.GetColor(glowColourID);
-		bool atTargetColour = currentColour.Equals(targetColour);
-		if (atTargetColour && currentColour.Equals(Color.black))
-			return;
+		bool atTargetColour = true;
+		if (lerp)
+		{
+			var currentColour = currentGlow.GetColor(glowColourID);
+			atTargetColour = currentColour.Equals(targetColour);
+			if (atTargetColour && currentColour.Equals(Color.black))
+				return;
+
+			if (!atTargetColour)
+				currentGlow.SetColor(glowColourID, Color.Lerp(currentColour, targetColour, Time.deltaTime / baseTime));
+		}
 
 		ApplyOutline.drawGlow = true;
 		mat = mat ?? defaultGlowMat;
 
-		if (!atTargetColour)
-			currentGlow.SetColor(glowColourID, Color.Lerp(currentColour, targetColour, Time.deltaTime / baseTime));
 		foreach (Renderer r in renderers)
 		{
 			if (!atTargetColour)
