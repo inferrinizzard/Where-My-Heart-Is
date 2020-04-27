@@ -2,53 +2,59 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using BansheeGz.BGSpline.Components;
+using CurveTRS = BansheeGz.BGSpline.Components.BGCcTrs;
+using CurveCursor = BansheeGz.BGSpline.Components.BGCcCursor;
+// using CurveObject = BansheeGz.BGSpline.Components.BGCcCursorObjectTranslate;
 
 using UnityEngine;
 public class BirbAnimTester : MonoBehaviour
 {
-	// [SerializeField] private KeyCode idleKey = KeyCode.Alpha1;
-	// [SerializeField] private KeyCode flyKey = KeyCode.Alpha2;
-	[SerializeField] private BGCcCursor[] curves = default;
-	public List<PlayerTrigger> pathTriggers;
-	public float flySpeed;
+	[SerializeField] Transform curveHolder = default;
+	CurveCursor[] curves;
+	[SerializeField] Transform triggerHolder = default;
+	List<PlayerTrigger> pathTriggers;
+	[SerializeField] float flySpeed;
 	[FMODUnity.EventRef] public string FlapEvent;
 	[FMODUnity.EventRef] public string ChirpEvent;
 	private FMOD.Studio.EventInstance flapInstance;
 	private FMOD.Studio.EventInstance chirpInstance;
 	private Animator anim;
-	private int currCurve;
+	private int curveIndex = 0;
 
 	void Start()
 	{
-		currCurve = 0;
 		anim = GetComponent<Animator>();
-		curves[currCurve].GetComponent<BGCcTrs>().Speed = 0;
-		curves.ToList().ForEach(curve =>
+		if (triggerHolder)
+			pathTriggers = triggerHolder?.GetComponentsInChildren<PlayerTrigger>().Select(trigger => { trigger.OnPlayerEnterID += StartNextCurveID; return trigger; }).ToList();
+
+		curves = curveHolder.GetComponentsInChildren<CurveCursor>();
+		curves.Select((curve, i) =>
 		{
-			curve.GetComponent<BGCcTrs>().DistanceRatio = 0;
-			curve.GetComponent<BGCcTrs>().Speed = 0;
+			var trs = curve.GetComponent<CurveTRS>();
+			trs.DistanceRatio = 0;
+			trs.Speed = 0;
+			// trs.GetComponent<CurveObject>().objectToManipulate = null;
 			curve.DistanceRatio = 0;
+			return curve;
 		});
-		curves[currCurve].DistanceRatio = 0;
 
 		flapInstance = FMODUnity.RuntimeManager.CreateInstance(FlapEvent);
-		flapInstance.setParameterByName("Flying", 0);
 		chirpInstance = FMODUnity.RuntimeManager.CreateInstance(ChirpEvent);
-		FMODUnity.RuntimeManager.AttachInstanceToGameObject(flapInstance, transform, GetComponent<Rigidbody>());
-		FMODUnity.RuntimeManager.AttachInstanceToGameObject(chirpInstance, transform, GetComponent<Rigidbody>());
-		flapInstance.start();
-		chirpInstance.start();
-		pathTriggers.ForEach(trigger => trigger.OnPlayerEnterID += StartNextCurveID);
+		foreach (var i in new [] { flapInstance, chirpInstance })
+		{
+			FMODUnity.RuntimeManager.AttachInstanceToGameObject(i, transform, GetComponent<Rigidbody>());
+			i.start();
+		}
 
-		currCurve = -1;
+		flapInstance.setParameterByName("Flying", 0);
 
-		//StartNextCurve();
+		StartNextCurve();
+		//StartCoroutine(NextCurve());
 	}
 
 	void Update()
 	{
-		CheckCurvePoints();
+		// CheckCurvePoints();
 	}
 
 	private void OnDestroy()
@@ -57,30 +63,26 @@ public class BirbAnimTester : MonoBehaviour
 		chirpInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
 	}
 
-	private void CheckCurvePoints()
-	{
-		/*
-		        Debug.Log(currCurve);
-		        Debug.Log(curves[currCurve].DistanceRatio);*/
-		if (currCurve < curves.Length && currCurve != -1)
-		{
-			if (curves[currCurve].DistanceRatio > 0) { }
-			if (curves[currCurve].DistanceRatio > 0.999f)
-			{
-				anim.SetBool("IsFlying", false);
-				flapInstance.setParameterByName("Flying", 0);
+	// private void CheckCurvePoints()
+	// {
+	// 	/*
+	// 	        Debug.Log(curveIndex);
+	// 	        Debug.Log(curves[curveIndex].DistanceRatio);*/
+	// 	if (curveIndex < curves.Length)
+	// 	{
+	// 		if (curves[curveIndex].DistanceRatio > 0)
+	// 		{
+	// 			Debug.Log(curves[curveIndex].DistanceRatio);
+	// 		}
+	// 		if (curves[curveIndex].DistanceRatio > 0.999f)
+	// 		{
+	// 			anim.SetBool("IsFlying", false);
+	// 			flapInstance.setParameterByName("Flying", 0);
 
-				curves[currCurve].GetComponent<BGCcTrs>().Speed = 0;
-			}
-		}
-	}
-
-	public void StartNextCurve()
-	{
-		currCurve++;
-		curves[currCurve].enabled = true;
-		StartCoroutine(NextCurve());
-	}
+	// 			curves[curveIndex].GetComponent<CurveTRS>().Speed = 0;
+	// 		}
+	// 	}
+	// }
 
 	public void StartNextCurveID(PlayerTrigger trigger)
 	{
@@ -91,17 +93,46 @@ public class BirbAnimTester : MonoBehaviour
 		}
 	}
 
-	private IEnumerator NextCurve()
+	// public void StartNextCurve() => StartCoroutine(NextCurve());
+	public void StartNextCurve()
 	{
-		if (currCurve < curves.Length && currCurve != -1)
-		{
-			curves[currCurve].DistanceRatio = 0;
-			flapInstance.setParameterByName("Flying", 1);
+		var currentCurve = curves[curveIndex++];
+		var currentTRS = currentCurve.GetComponent<CurveTRS>();
+		currentCurve.enabled = true;
+		currentTRS.Speed = flySpeed;
+		flapInstance.setParameterByName("Flying", 1);
+		anim.SetBool("IsFlying", true);
+		Debug.Log(transform.position);
+	}
 
-			anim.SetBool("IsFlying", true);
-			yield return new WaitForSeconds(0.8f);
-			curves[currCurve].GetComponent<BGCcTrs>().Speed = flySpeed;
+	private IEnumerator NextCurve(float time = .8f)
+	{
+		var currentCurve = curves[curveIndex++];
+		var currentTRS = currentCurve.GetComponent<CurveTRS>();
+		currentCurve.enabled = true;
+		// currentTRS.GetComponent<CurveObject>().objectToManipulate = transform;
+		currentTRS.Speed = flySpeed;
+
+		flapInstance.setParameterByName("Flying", 1);
+		anim.SetBool("IsFlying", true);
+		Debug.Log(transform.position);
+
+		// yield return new WaitForSeconds(0.8f);
+
+		float start = Time.time;
+		bool inProgress = true;
+		while (inProgress)
+		{
+			float step = Time.time - start;
+			currentTRS.DistanceRatio = step / time;
+			Debug.Log(currentTRS.DistanceRatio);
+
+			if (step > time)
+				yield break;
 		}
+
+		// currentTRS.GetComponent<CurveObject>().objectToManipulate = null;
+		currentCurve.DistanceRatio = 1;
 	}
 
 	public void StopChirps()
