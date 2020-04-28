@@ -586,6 +586,7 @@ MonoBehaviour:
   entangledWorldContainer: {fileID: 7515926175239197052}
   heartClippables: []
   realClippables: []
+  mirrorClippables: []
 --- !u!4 &6354875879375548175
 Transform:
   m_ObjectHideFlags: 0
@@ -670,21 +671,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5407968008035840464, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: heartWindow
-      value: 
-      objectReference: {fileID: 3392024745494619991, guid: 3c18e665d2597bf4cb4283f9d16c0ef3,
-        type: 3}
-    - target: {fileID: 8854909899827168894, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: mirror
-      value: 
-      objectReference: {fileID: 7804663711007719336, guid: 3c18e665d2597bf4cb4283f9d16c0ef3,
-        type: 3}
-      propertyPath: heartWindow
-      value: 
-      objectReference: {fileID: 1498448412}
     - target: {fileID: 5407968007786445906, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: rampLength
@@ -692,19 +678,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5407968007786445906, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
-      propertyPath: openWindowMat
-      value: 
-      objectReference: {fileID: 2100000, guid: 64bcaeef2cec94f47b934d8e42e668ca, type: 2}
-    - target: {fileID: 5407968007786445906, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
       propertyPath: rampTimeOffset
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 5407968007786445906, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: rippleMat
-      value: 
-      objectReference: {fileID: 2100000, guid: 278fe1009c9cfb244860348123d43989, type: 2}
     - target: {fileID: 5407968007786445906, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: rippleLength
@@ -735,6 +711,12 @@ PrefabInstance:
       propertyPath: rampTarget
       value: 2.4
       objectReference: {fileID: 0}
+    - target: {fileID: 8854909899827168894, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: mirror
+      value: 
+      objectReference: {fileID: 7804663711007719336, guid: 3c18e665d2597bf4cb4283f9d16c0ef3,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce2e34029942daa4c845cd2ceec80c14, type: 3}
 --- !u!20 &7294522663246278167 stripped
