@@ -6,11 +6,11 @@ using UnityEngine;
 [System.Serializable]
 public class ApplyMask : MonoBehaviour
 {
-    ///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
-    public static RenderTexture mask;
+	///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
+	public static RenderTexture mask;
 
-    ///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
-    [HideInInspector] public Camera heartCam, maskCam, mainCam;
+	///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
+	[HideInInspector] public Camera heartCam, maskCam, mainCam;
 	///<summary> Shader that combines views </summary>
 	[SerializeField] Shader transition = default;
 	///<summary> Generated material for screen shader </summary>
@@ -44,13 +44,13 @@ public class ApplyMask : MonoBehaviour
 		// screenMat.SetColor("_DepthOutlineColour", Color.white);
 	}
 
-    public void CopyInto(ApplyMask target)
-    {
-        target.transition = this.transition;
-        target.screenMat = this.screenMat;
-        target.transitionMat = this.transitionMat;
-        target.dissolveTexture = this.dissolveTexture;
-    }
+	public void CopyInto(ApplyMask target)
+	{
+		target.transition = this.transition;
+		target.screenMat = this.screenMat;
+		target.transitionMat = this.transitionMat;
+		target.dissolveTexture = this.dissolveTexture;
+	}
 
 	public void CreateMask()
 	{
@@ -67,9 +67,9 @@ public class ApplyMask : MonoBehaviour
 		maskCam.cullingMask = 1 << LayerMask.NameToLayer("Mask");
 		maskCam.clearFlags = CameraClearFlags.SolidColor;
 		maskCam.backgroundColor = Color.clear;
-        maskCam.targetTexture = mask;
+		maskCam.targetTexture = mask;
 
-        maskCam.Render();
+		maskCam.Render();
 
 		var screen = RenderTexture.active;
 		RenderTexture.active = mask;
