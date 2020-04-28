@@ -369,6 +369,7 @@ GameObject:
   - component: {fileID: 887053059}
   - component: {fileID: 887053058}
   - component: {fileID: 887053062}
+  - component: {fileID: 887053057}
   m_Layer: 0
   m_Name: Curve 1
   m_TagString: Untagged
@@ -376,6 +377,43 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &887053057
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887053056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 535a3a5d00075854a98f71fdd486b248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHandles: 1
+  hidden: 0
+  parent: {fileID: 887053058}
+  ccName: 
+  useFixedUpdate: 1
+  speed: 0
+  overflowControl: 0
+  adjustByTotalLength: 0
+  speedField: {fileID: 0}
+  delay: 0
+  delayField: {fileID: 0}
+  pointReachedEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &887053058
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1015,6 +1053,11 @@ PrefabInstance:
       propertyPath: curveHolder
       value: 
       objectReference: {fileID: 801759395}
+    - target: {fileID: 5689164163903171203, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: flySpeed
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5689164163903171208, guid: ff4f26a49f96f644b91a6337df60e530,
         type: 3}
       propertyPath: EmissionModule.enabled
