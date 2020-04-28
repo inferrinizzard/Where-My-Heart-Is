@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,6 +7,7 @@ using FMOD;
 
 using UnityEngine;
 using UnityEngine.UI;
+
 using Debug = UnityEngine.Debug;
 
 /// <summary> Handles player behaviors. </summary>
@@ -76,6 +78,10 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Stores the rotation of the player. </summary>
 	[HideInInspector] public Vector3 rotation = Vector3.zero;
 	int _ViewDirID = Shader.PropertyToID("_ViewDir");
+
+	// events
+	public event Action OnOpenWindow;
+	public event Action OnApplyCut;
 
 	void Start()
 	{
@@ -332,6 +338,7 @@ public class Player : Singleton<Player>, IStateMachine
 		{
 			SetState(new Aiming(this));
 			StartCoroutine(hands.WaitAndAim());
+			OnOpenWindow?.Invoke();
 		}
 	}
 
@@ -341,13 +348,13 @@ public class Player : Singleton<Player>, IStateMachine
 		if (State is Aiming && windowEnabled && !heldObject)
 		{
 			// SetState(new Cut(this));
-			GetComponentInChildren<ApplyMask>().StartRipple();
 			window.ApplyCut();
 			hands.RevertAim();
 			audioController.PlaceWindow();
 			heartWindow.SetActive(false);
 			VFX.ToggleMask(false);
 			EndState();
+			OnApplyCut?.Invoke();
 		}
 	}
 	public bool IsGrounded()
