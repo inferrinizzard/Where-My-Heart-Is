@@ -29,8 +29,7 @@ public class Effects : MonoBehaviour
 		ToggleDissolve(dissolveOn);
 		ToggleBoil(true);
 		ToggleBird(true);
-
-		currentGlow = new MaterialPropertyBlock();
+		ToggleFog(false);
 	}
 
 	void Update()
@@ -71,6 +70,7 @@ public class Effects : MonoBehaviour
 	public void ToggleBoil(bool on) => ToggleEffect(on, "BOIL");
 	public void ToggleWave(bool on) => ToggleEffect(on, "WAVE");
 	public void ToggleBird(bool on) => ToggleEffect(on, "BIRD");
+	public void ToggleFog(bool on) => ToggleEffect(on, "FOG");
 
 	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
 
