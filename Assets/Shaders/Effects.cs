@@ -29,6 +29,7 @@ public class Effects : MonoBehaviour
         ToggleDissolve(dissolveOn);
 		ToggleBoil(true);
 		ToggleBird(true);
+        ToggleFog(false);
 	}
 
 	void Update()
@@ -69,8 +70,9 @@ public class Effects : MonoBehaviour
 	public void ToggleBoil(bool on) => ToggleEffect(on, "BOIL");
 	public void ToggleWave(bool on) => ToggleEffect(on, "WAVE");
 	public void ToggleBird(bool on) => ToggleEffect(on, "BIRD");
+	public void ToggleFog(bool on) => ToggleEffect(on, "FOG");
 
-	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
+    public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
 
 	// public void SetWave(float distance) => waveController.waveDistance = distance;
 	public void SetWave(float distance) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", distance);
