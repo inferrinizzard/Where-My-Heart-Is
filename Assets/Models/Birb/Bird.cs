@@ -8,7 +8,7 @@ using Curve = BansheeGz.BGSpline.Curve.BGCurve;
 // using CurveObject = BansheeGz.BGSpline.Components.BGCcCursorObjectTranslate;
 
 using UnityEngine;
-public class BirbAnimTester : MonoBehaviour
+public class Bird : MonoBehaviour
 {
 	[SerializeField] Transform curveHolder = default;
 	List<CurveCursor> cursors;
@@ -22,6 +22,7 @@ public class BirbAnimTester : MonoBehaviour
 	private FMOD.Studio.EventInstance chirpInstance;
 	private Animator anim;
 	private int curveIndex = -1;
+	bool flying = false;
 
 	void Start()
 	{
@@ -59,14 +60,19 @@ public class BirbAnimTester : MonoBehaviour
 		if (Input.GetMouseButtonDown(0))
 			StartNextCurve();
 
+		if (!flying)
+			anim.SetFloat("IdleBlend", Mathf.PingPong(Time.time, 1));
 		if (transform.position == curves[curveIndex].Points.Last().PositionWorld)
 			ReachedEnd();
 	}
 
 	void ReachedEnd()
 	{
+		flying = false;
 		flapInstance.setParameterByName("Flying", 0);
-		anim.SetBool("IsFlying", false);
+		anim.SetTrigger("Land");
+		StartCoroutine(DriveBlend("LandingBlend", .25f)); // TODO: do beforehand
+		anim.ResetTrigger("Takeoff");
 		// cursors[curveIndex - 1].GetComponent<CurveTRS>().Speed = 0;
 	}
 
@@ -87,13 +93,27 @@ public class BirbAnimTester : MonoBehaviour
 
 	public void StartNextCurve()
 	{
-		var currentCurve = cursors[++curveIndex];
-		var currentTRS = currentCurve.GetComponent<CurveTRS>();
-		currentCurve.enabled = true;
-		currentTRS.Speed = flySpeed;
-		flapInstance.setParameterByName("Flying", 1);
-		anim.SetBool("IsFlying", true);
-		Debug.Log(transform.position);
+		if (curveIndex < cursors.Count)
+		{
+			var currentCurve = cursors[++curveIndex];
+			var currentTRS = currentCurve.GetComponent<CurveTRS>();
+			currentCurve.enabled = true;
+			currentTRS.Speed = flySpeed;
+			flapInstance.setParameterByName("Flying", 1);
+			anim.SetTrigger("Takeoff");
+			StartCoroutine(DriveBlend("TakeoffBlend"));
+			Debug.Log(transform.position);
+			flying = true;
+		}
+	}
+
+	IEnumerator DriveBlend(string blend, float time = 1f) //TODO: add Ease support
+	{
+		for (float start = Time.time; Time.time - start < time;)
+		{
+			anim.SetFloat(blend, (Time.time - start) / time);
+			yield return null;
+		}
 	}
 
 	public void StopChirps()
