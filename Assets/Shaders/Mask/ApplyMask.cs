@@ -32,9 +32,6 @@ public class ApplyMask : MonoBehaviour
 
 	[Header("Ripple Behavior")]
 	public float rippleLength;
-
-	[Header("Ripple Behavior")]
-	public float rippleLength;
 	public float rippleTarget;
 	public AnimationCurve rippleCurve;
 
