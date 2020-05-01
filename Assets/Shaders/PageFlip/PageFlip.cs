@@ -22,7 +22,7 @@ public class PageFlip : MonoBehaviour
 
 	void Update()
 	{
-		page.SetVector("_BottomLeft", (GetComponent<Renderer>().bounds.min));
+		page.SetVector("_BottomLeft", GetComponent<Renderer>().bounds.min);
 	}
 
 	void AssignTexture(Texture tex) => texture = tex;

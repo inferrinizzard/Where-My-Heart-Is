@@ -645,10 +645,10 @@ Transform:
   m_GameObject: {fileID: 304311105}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 1}
-  m_LocalScale: {x: 0.20536622, y: 1, z: 0.11547013}
+  m_LocalScale: {x: 0.20536622, y: 1, z: 0.11547019}
   m_Children: []
-  m_Father: {fileID: 6068644800209152210}
-  m_RootOrder: 0
+  m_Father: {fileID: 1554706518}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &304311107
 MeshCollider:
@@ -1519,7 +1519,7 @@ Transform:
   m_LocalScale: {x: 1, y: 0.75, z: 1}
   m_Children: []
   m_Father: {fileID: 6068644800209152210}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &1053530070
 CapsuleCollider:
@@ -2612,7 +2612,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _A: 1
+    - _A: 8
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -2625,7 +2625,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Progress: 0
-    - _Rho: 1
+    - _Rho: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -2633,7 +2633,7 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _BottomLeft: {r: 3.8631687, g: 0.92264956, b: 0.99999994, a: 0}
+    - _BottomLeft: {r: 3.8631687, g: 0.92264956, b: 0.99999994, a: 2.0773504}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!1 &1802488439
@@ -3291,7 +3291,6 @@ Transform:
   m_LocalPosition: {x: 4.89, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 304311106}
   - {fileID: 1053530069}
   - {fileID: 1554706518}
   m_Father: {fileID: 0}
@@ -3514,7 +3513,7 @@ PrefabInstance:
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
