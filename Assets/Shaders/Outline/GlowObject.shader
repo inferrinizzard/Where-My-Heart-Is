@@ -1,7 +1,7 @@
 Shader "Outline/GlowObject"
 {
 	Properties {
-		_Colour ("Outline Colour", Color) = (1, 0, 0, 1)
+		[PerRendererData]	_Colour ("Outline Colour", Color) = (1, 0, 0, 1)
 		[MaterialToggle] _Occlude ("Occlusion on?", Int) = 1
 	}
 	SubShader {

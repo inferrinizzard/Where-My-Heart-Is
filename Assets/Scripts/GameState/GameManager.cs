@@ -97,6 +97,7 @@ public class GameManager : Singleton<GameManager>
 
 	public static void ReloadScene()
 	{
-		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Instance.sceneIndex--;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 }

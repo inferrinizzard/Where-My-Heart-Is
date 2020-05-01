@@ -3,7 +3,7 @@
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class DeathPlane : MonoBehaviour
+public class DiePlane : MonoBehaviour
 {
 #if UNITY_EDITOR
 	World world;

@@ -324,10 +324,7 @@ public class Player : Singleton<Player>, IStateMachine
 		// else if (looking) { SetState(new Inspect(this)); } //unused for now
 		else
 		{
-			if (heldObject.dissolves)
-				StartCoroutine(heldObject.DissolveOnDrop(1));
-			else
-				EndState();
+			EndState();
 		}
 	}
 

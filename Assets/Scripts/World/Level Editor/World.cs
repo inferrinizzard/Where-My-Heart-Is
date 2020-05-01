@@ -106,6 +106,20 @@ public class World : MonoBehaviour
 		Destroy(gameObject);
 	}*/
 
+    public void RemoveClippable(ClippableObject clippable)
+    {
+        if (clippable.worldType == ClippableObject.WorldType.Real)
+        {
+            realClippables.Remove(clippable);
+
+        }
+        else
+        {
+            heartClippables.Remove(clippable);
+        }
+        clippables.Remove(clippable);
+    }
+
 	private void ConfigureWorld(string layer, Transform worldContainer)
 	{
 		foreach (MeshFilter meshFilter in worldContainer.GetComponentsInChildren<MeshFilter>())
@@ -139,8 +153,11 @@ public class World : MonoBehaviour
 
 	public void ResetCut()
 	{
-		foreach (ClippableObject clippable in clippables)
+		foreach (ClippableObject clippable in heartClippables)
 			if (clippable.isClipped) clippable.Revert();
+
+        foreach (ClippableObject clippable in realClippables)
+            if (clippable.isClipped) clippable.Revert();
 
         foreach (EntangledClippable entangled in GetComponentsInChildren<EntangledClippable>())
             if (entangled.isClipped) entangled.Revert();
