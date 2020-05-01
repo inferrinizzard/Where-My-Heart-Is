@@ -13,7 +13,7 @@ public class LevelOrder : ScriptableObject
     public string getSceneName(int index)
     {
         Debug.Log(index);
-        Debug.Log(levels[index].scene.name);
-        return levels[index].scene.name;
+        Debug.Log(levels[index].getSceneName());
+        return levels[index].getSceneName();
     }
 }

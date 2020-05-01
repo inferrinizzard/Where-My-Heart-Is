@@ -34,8 +34,7 @@ public class CanvasObject : CollectableObject
 
 	protected override void CollectEndAction()
 	{
-		GameManager.Instance.ChangeLevel();
-		//StartCoroutine(Player.Instance.mask.PreTransition(preview, GameManager.Instance.levels[GameManager.Instance.sceneIndex + 1]));
+		StartCoroutine(Player.Instance.mask.PreTransition(preview));
 		// StartCoroutine(Effects.mask.PreTransition(preview, manualTarget == "" ? "Intro" : manualTarget));
 	}
 }

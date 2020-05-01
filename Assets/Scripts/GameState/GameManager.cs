@@ -66,7 +66,7 @@ public class GameManager : Singleton<GameManager>
 		bool inProgress = true;
 
 		Debug.Log(Player.Instance.mask.transitionMat);
-		Material transitionMat = Player.Instance.mask.transitionMat;
+		//Material transitionMat = Player.Instance.mask.transitionMat;
 		int _CutoffID = Shader.PropertyToID("_Cutoff");
 
 		while (inProgress)
@@ -74,7 +74,7 @@ public class GameManager : Singleton<GameManager>
 			yield return null;
 			float currentTime = Time.time - startTime;
 			float loadProgress = Mathf.Min(asyncLoad.progress / .9f, currentTime / minDuration);
-			transitionMat.SetFloat(_CutoffID, loadProgress * 2); // add curve here
+			//transitionMat.SetFloat(_CutoffID, loadProgress * 2); // add curve here
 
 			Player.Instance.TransitionUpdate();
 

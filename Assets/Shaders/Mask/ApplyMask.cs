@@ -120,7 +120,7 @@ public class ApplyMask : MonoBehaviour
 		UnityEngine.RenderTexture.active = rt;
 	}
 
-	public IEnumerator PreTransition(Texture2D preview, string scene)
+	public IEnumerator PreTransition(Texture2D preview)
 	{
 		yield return new WaitForEndOfFrame();
 		curSave = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);

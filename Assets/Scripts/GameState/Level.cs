@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -8,11 +9,16 @@ using UnityEngine.SceneManagement;
 public class Level : ScriptableObject
 {
     // scene
-    public SceneAsset scene;
+    public string sceneName;
 
     // string of dialogue
     public string dialogue;
 
     // level behaviors
     public List<LevelBehavior> behaviors;
+
+    public string getSceneName()
+    {
+        return sceneName;
+    }
 }
