@@ -19,8 +19,6 @@ namespace CSG
 		public static int faceIndex = -1;
 		public static int edgeLoopIndex = -1;
 
-		public static int earToDraw = -1;
-
         /// <summary>
         /// Generates the intersection of two shapes
         /// </summary>
@@ -30,7 +28,6 @@ namespace CSG
         public static Mesh Intersect(Model modelA, Model modelB, bool flipNormals = false, Matrix4x4? matrixOverride = null)
 		{
             Matrix4x4 conversionMatrix = matrixOverride == null ? modelA.worldToLocal : ((Matrix4x4)matrixOverride);
-            
 
 			return Intersect(modelA, modelB, flipNormals).ToMesh(conversionMatrix);
 		}
@@ -39,8 +36,28 @@ namespace CSG
         {
             modelA.IntersectWith(modelB); //generate all intersections
 
-            Model clippedA = ClipModelAToModelB(modelA, modelB, true, flipNormals);
-            Model clippedB = ClipModelAToModelB(modelB, modelA, true, flipNormals);
+            Model clippedA;
+            Model clippedB;
+
+            try
+            {
+                clippedA = ClipModelAToModelB(modelA, modelB, true, flipNormals);
+            }
+            catch
+            {
+                Debug.LogError("INTERSECTION ERROR: Failed to clip model A to model B, returning unclipped modelA");
+                return modelA;
+            }
+
+            try
+            {
+                clippedB = ClipModelAToModelB(modelB, modelA, true, flipNormals);
+            }
+            catch
+            {
+                Debug.LogError("INTERSECTION ERROR: Failed to clip model B to model A, returning clipped modelA without clipped modelB");
+                return clippedA;
+            }
 
             return Model.Combine(clippedA, clippedB);
         }
@@ -50,13 +67,32 @@ namespace CSG
 		/// </summary>
 		public static Mesh Subtract(Model modelA, Model modelB, bool normalOverride = true)
 		{
-
 			modelA.IntersectWith(modelB); //generate all intersections
 
-			Model clippedA = ClipModelAToModelB(modelA, modelB, false);
-			Model clippedB = ClipModelAToModelB(modelB, modelA, true, normalOverride);
+            Model clippedA;
+            Model clippedB;
 
-			Model result = Model.Combine(clippedA, clippedB);
+            try
+            {
+                clippedA = ClipModelAToModelB(modelA, modelB, false);
+            }
+            catch
+            {
+                Debug.LogError("SUBTRACTION ERROR: Failed to clip model A to model B, returning unclipped modelA");
+                return modelA.ToMesh(modelA.worldToLocal);
+            }
+
+            try
+            {
+                clippedB = ClipModelAToModelB(modelB, modelA, true, normalOverride);
+            }
+            catch
+            {
+                Debug.LogError("SUBTRACTION ERROR: Failed to clip model B to model A, returning clipped modelA without clipped modelB");
+                return clippedA.ToMesh(modelA.worldToLocal);
+            }
+
+            Model result = Model.Combine(clippedA, clippedB);
 			//result.ConvertToLocal(modelA.worldToLocal);
 
 			return result.ToMesh(modelA.worldToLocal);
@@ -145,26 +181,20 @@ namespace CSG
 				}
 			}
 			Model finalModel = new Model();
-            //Debug.Log(edgeLoops[foo].vertices.Count);
-            //edgeLoops[foo].Draw(Color.cyan, Color.cyan, Color.white);
             edgeLoops.ForEach(loop =>
 			{
-                if(loop.vertices.Count == 4)
-                {
-                    loop.Draw(Color.cyan, Color.cyan, Color.white);
-                }
 				try
 				{
 					if (loop.filled)
 					{
-						finalModel.AddTriangles(loop.TriangulateStrip());
+						finalModel.AddTriangles(loop.TriangulateEarMethod());
 					}
 
 					bool fillNested = !loop.filled;
 					EdgeLoop nestedLoop = loop.nestedLoop;
 					while (nestedLoop != null)
 					{
-						if (fillNested) finalModel.AddTriangles(nestedLoop.TriangulateStrip());
+						if (fillNested) finalModel.AddTriangles(nestedLoop.TriangulateEarMethod());
 						fillNested = !fillNested;
 						nestedLoop = nestedLoop.nestedLoop;
 					}
@@ -394,9 +424,6 @@ namespace CSG
 		/// <param name="intersections">The list of internal intersections that form the intermediate points in the created cuts</param>
 		private static void CreateCuts(Triangle triangle, Model bounds)
 		{
-            //Debug.Log(triangle.edges.Count);
-            //if (triangle.edges.Count == 0) new Triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]).Draw(Color.red);
-            //else triangle.Draw(Color.cyan);
             for (int i = 0; i < 3; i++)
 			{
 				//TODO do this somewhere where it won't get called multiple times on the same edges
@@ -411,8 +438,6 @@ namespace CSG
 					// if there's already a cut for this intersection, pass
 					if (intersection.vertex.cut != null)
 					{
-						//Debug.LogWarning("Vertex: " + intersection.vertex + " already has cut, passing on finding it again");
-						//intersection.vertex.Draw(0.05f, Vector3.left, (Color.red / 2) + (Color.yellow / 2));
 						continue;
 					}
 
