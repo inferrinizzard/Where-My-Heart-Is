@@ -48,9 +48,11 @@ public class Pickupable : InteractableObject
 			PickUp();
 		else if (player.looking)
 			player.looking = false;
-		else
+		else if(!dissolves)
 			PutDown();
-	}
+        else
+            StartCoroutine(DissolveOnDrop());
+    }
 
 	public void PickUp()
 	{
@@ -64,13 +66,8 @@ public class Pickupable : InteractableObject
 
 	public void PutDown()
 	{
-		if (this.TryComponent(out ClippableObject clippable) &&
-			!clippable.IntersectsBound(player.window.fieldOfViewModel) &&
-			clippable.uncutCopy)
-		{
-			transform.position = initialPosition;
-			transform.rotation = initialRotation;
-		}
+		transform.position = initialPosition;
+		transform.rotation = initialRotation;
 
 		transform.parent = oldParent;
 	}
@@ -97,8 +94,9 @@ public class Pickupable : InteractableObject
 		mat.DisableKeyword("DISSOLVE_MANUAL");
 		mat.SetFloat(ManualDissolveID, 1);
 
-		Interact();
-		col.enabled = true;
+        PutDown();
+
+        col.enabled = true;
 		active = false;
 	}
 }
