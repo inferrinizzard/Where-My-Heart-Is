@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class LevelBehavior : MonoBehaviour
+public abstract class LevelBehaviour : ScriptableObject
 {
     public virtual void onLevelLoad() { }
     public virtual void onLevelUnload() { }

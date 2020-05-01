@@ -9,8 +9,6 @@ using UnityEngine.UI;
 /// <summary> Constrols app macro and scene manipulations </summary>
 public class GameManager : Singleton<GameManager>
 {
-	//public readonly string[] levels = new string[] { "Intro", "BridgeRedo", "SimpleGate", "OneCutRedo", "ComplexGate", "Pushable", "BoxHalfCut", "End" };
-	public int sceneIndex = 0;
 	public bool duringLoad;
 	public DialogueSystem dialogue;
 	public Prompt prompt;
@@ -29,10 +27,11 @@ public class GameManager : Singleton<GameManager>
 
 	void Start()
 	{
-		//sceneIndex = levels.ToList().FindIndex(name => name == SceneManager.GetActiveScene().name);
 		World.Instance.name += $" [{SceneManager.GetActiveScene().name}]";
 		SceneManager.sceneLoaded += new UnityEngine.Events.UnityAction<Scene, LoadSceneMode>((scene, _) => OnEnterScene());
 		// SceneManager.activeSceneChanged += new UnityEngine.Events.UnityAction<Scene, Scene>((_, __) => this.Print("ActiveSceneChanged", SceneManager.GetActiveScene().name));
+
+		levelOrder.Start();
 	}
 
 	/// <summary> Closes the Application </summary>
@@ -44,8 +43,9 @@ public class GameManager : Singleton<GameManager>
 
 	public void ChangeLevel()
 	{
-		sceneIndex++;
-		Transition(levelOrder.getSceneName(sceneIndex));
+		levelOrder.End();
+		levelOrder.NextScene();
+		Transition(levelOrder.GetSceneName());
 	}
 
 	/// <summary> Starts Coroutine to load scene async  </summary>
@@ -65,8 +65,7 @@ public class GameManager : Singleton<GameManager>
 		float startTime = Time.time;
 		bool inProgress = true;
 
-		Debug.Log(Player.Instance.mask.transitionMat);
-		//Material transitionMat = Player.Instance.mask.transitionMat;
+		Material transitionMat = Player.Instance.mask.transitionMat;
 		int _CutoffID = Shader.PropertyToID("_Cutoff");
 
 		while (inProgress)
@@ -74,7 +73,7 @@ public class GameManager : Singleton<GameManager>
 			yield return null;
 			float currentTime = Time.time - startTime;
 			float loadProgress = Mathf.Min(asyncLoad.progress / .9f, currentTime / minDuration);
-			//transitionMat.SetFloat(_CutoffID, loadProgress * 2); // add curve here
+			transitionMat.SetFloat(_CutoffID, loadProgress * 2); // add curve here
 
 			Player.Instance.TransitionUpdate();
 
@@ -90,6 +89,7 @@ public class GameManager : Singleton<GameManager>
 	{
 		//World.Instance.name += $"[{levels[++sceneIndex]}]";
 		Player.Instance.OnEnterScene();
+		levelOrder.OnEnterScene();
 	}
 
 	/// <summary> Unloads scene asynchronously </summary>
