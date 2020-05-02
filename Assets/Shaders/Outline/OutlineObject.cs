@@ -31,7 +31,6 @@ public class OutlineObject : MonoBehaviour
 	// void OnWillRenderObject() => GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
 	void OnWillRenderObject()
 	{
-		this.Print("owro", this);
 		GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
 	}
 

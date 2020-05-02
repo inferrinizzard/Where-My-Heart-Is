@@ -31,8 +31,11 @@ public class Effects : MonoBehaviour
 		ToggleBird(true);
 
 		currentGlow = new MaterialPropertyBlock();
+		glowMat = new Material(Shader.Find("Outline/GlowObject"));
+		glowMat.color = Color.black;
 	}
 
+	#region toggles
 	void Update()
 	{
 #if DEBUG // debug toggles
@@ -84,11 +87,15 @@ public class Effects : MonoBehaviour
 		else
 			Shader.DisableKeyword(keyword);
 	}
+	#endregion
 
+	[SerializeField] OutlineColours glowColours;
+	Material glowMat;
 	MaterialPropertyBlock currentGlow;
 	[HideInInspector] public InteractableObject currentGlowObj;
 	Color targetColour = Color.black;
 	int glowColourID = Shader.PropertyToID("_Colour");
+	Coroutine glowRoutine;
 
 	public void SetTargetColour(Color? c) => targetColour = c ?? defaultGlowMat.GetColor("_Colour");
 
@@ -115,5 +122,38 @@ public class Effects : MonoBehaviour
 				r.SetPropertyBlock(currentGlow);
 			ApplyOutline.glowBuffer.DrawRenderer(r, mat);
 		}
+	}
+
+	public void SetGlow(InteractableObject obj)
+	{
+		targetColour = glowColours[obj];
+		if (glowRoutine != null)
+			StopCoroutine(glowRoutine);
+		if (obj)
+		{
+			glowRoutine = StartCoroutine(RenderGlowLerp(obj.renderers));
+			currentGlowObj = obj;
+		}
+		else
+			glowRoutine = StartCoroutine(RenderGlowLerp(currentGlowObj.renderers, off : true));
+		Debug.Log(obj);
+	}
+
+	IEnumerator RenderGlowLerp(Renderer[] renderers, float time = 2, bool off = false)
+	{
+		for (float step = time; step > 0; step -= Time.deltaTime)
+		{
+			yield return null;
+
+			glowMat.color = Color.Lerp(glowMat.color, targetColour, Time.deltaTime * time);
+
+			// foreach (Renderer r in renderers)
+			// 	ApplyOutline.glowBuffer.DrawRenderer(r, glowMat);
+
+			if (glowMat.color.Equals(targetColour))
+				yield break;
+		}
+		if (off)
+			currentGlowObj = null;
 	}
 }
