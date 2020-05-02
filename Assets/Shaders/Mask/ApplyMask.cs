@@ -6,6 +6,9 @@ using UnityEngine;
 [System.Serializable]
 public class ApplyMask : MonoBehaviour
 {
+    public Shader testShader;
+    public Material blackSkybox;
+
 	///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
 	//public static RenderTexture mask;
 	[Header("Image Effect Materials")]
@@ -16,7 +19,7 @@ public class ApplyMask : MonoBehaviour
 	///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
 	[HideInInspector] public Camera heartCam, maskCam, mainCam;
 
-	[SerializeField] Shader transition = default;
+	[SerializeField] Shader transition = default, depthReplacement = default;
 
 	[HideInInspector] public Material transitionMat;
 
@@ -36,9 +39,12 @@ public class ApplyMask : MonoBehaviour
 	public AnimationCurve rippleCurve;
 
 	[HideInInspector] public RenderTexture mask;
+	public RenderTexture depth;
+    private RenderTexture depthBuffer;
 	private Texture2D mask2D;
+	private Texture2D depth2D;
 
-	private bool rippleInProgress;
+    private bool rippleInProgress;
 	private float rippleStartTime;
 
 	void Start()
@@ -56,8 +62,16 @@ public class ApplyMask : MonoBehaviour
 
 		Player.Instance.OnApplyCut += StartRipple;
 
-		CreateMask();
-	}
+        mask = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
+        mask.name = "Internal Mask";
+        mask2D = new Texture2D(Screen.width, Screen.height);
+        CreateMask();
+
+        depth = new RenderTexture(Screen.width/4, Screen.height/4, 16, RenderTextureFormat.Default);
+        depth2D = new Texture2D(Screen.width/4, Screen.height/4);
+
+        Shader.SetGlobalFloat("_ScreenXToYRatio", Screen.width/Screen.height);
+    }
 
 	public void CopyInto(ApplyMask target)
 	{
@@ -75,9 +89,6 @@ public class ApplyMask : MonoBehaviour
 
 	public void CreateMask()
 	{
-		mask = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default); //RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
-		mask.name = "Internal Mask";
-
 		// spawn temp mask cam and configure transform
 		maskCam = new GameObject("Mask Cam").AddComponent<Camera>();
 		//(maskCam.transform.position, maskCam.transform.eulerAngles) = (Vector3.zero, Vector3.zero);
@@ -105,7 +116,8 @@ public class ApplyMask : MonoBehaviour
 
 	void OnRenderImage(RenderTexture source, RenderTexture dest)
 	{
-		if (transitionMat == null)
+
+        if (transitionMat == null)
 		{ // pass both cameras to screen per render
 			screenMat.SetTexture(_HeartID, heart);
 
@@ -135,7 +147,10 @@ public class ApplyMask : MonoBehaviour
 
 	void OnPreRender()
 	{
-		if (rippleInProgress)
+        // render depth buffer to sample from
+        RenderDepth();
+
+        if (rippleInProgress)
 		{
 			//float t = () / rippleLength;
 			if (Time.time - rippleStartTime < rippleLength)
@@ -152,7 +167,40 @@ public class ApplyMask : MonoBehaviour
 		}
 	}
 
-	public void SetMask(RenderTexture nextMask)
+    public void RenderDepth()
+    {
+        // spawn temp mask cam and configure transform
+        Camera depthCam = new GameObject("Depth Cam").AddComponent<Camera>();
+        //(maskCam.transform.position, maskCam.transform.eulerAngles) = (Vector3.zero, Vector3.zero);
+        depthCam.transform.parent = transform;
+        depthCam.CopyFrom(GetComponent<Camera>());
+        (depthCam.transform.localPosition, depthCam.transform.localEulerAngles) = (Vector3.zero, Vector3.zero);
+        depthCam.enabled = false;
+
+        depthCam.backgroundColor = Color.black;
+        depthCam.clearFlags = CameraClearFlags.SolidColor;
+        depthCam.clearFlags = CameraClearFlags.Skybox;
+        depthCam.targetTexture = depth;
+        depthCam.gameObject.AddComponent<Skybox>().material = blackSkybox;
+        depthCam.SetReplacementShader(depthReplacement, "");
+        //depthCam.RenderWithShader(depthReplacement, "");
+        depthCam.Render();
+        RenderTexture screen = RenderTexture.active;
+        RenderTexture.active = depth;
+
+        // copy to Texture2D and pass to shader
+        depth2D.ReadPixels(new Rect(0, 0, depth.width, depth.height), 0, 0);
+        depth2D.Apply();
+        Shader.SetGlobalTexture("_DepthColor", depth2D);
+        RenderTexture.active = screen;
+
+        // remove temp cam
+        depthCam.targetTexture = null;
+        Destroy(depthCam.gameObject);
+        //RenderTexture.ReleaseTemporary(mask);
+    }
+
+    public void SetMask(RenderTexture nextMask)
 	{
 		RenderTexture screen = RenderTexture.active;
 		RenderTexture.active = nextMask;
