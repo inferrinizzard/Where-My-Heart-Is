@@ -34,7 +34,7 @@ public class LevelOrder : ScriptableObject
 
     public string GetSceneName()
     {
-        return currentLevel.getSceneName();
+        return currentLevel.GetSceneName();
     }
 
     public void OnEnterScene()

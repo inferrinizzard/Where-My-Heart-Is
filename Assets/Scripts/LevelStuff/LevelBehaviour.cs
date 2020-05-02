@@ -4,6 +4,6 @@ using UnityEngine;
 
 public abstract class LevelBehaviour : ScriptableObject
 {
-    public virtual void onLevelLoad() { }
-    public virtual void onLevelUnload() { }
+    public virtual void OnLevelLoad() { }
+    public virtual void OnLevelUnload() { }
 }

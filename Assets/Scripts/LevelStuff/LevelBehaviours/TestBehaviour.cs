@@ -5,16 +5,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TestBehaviour", menuName = "Levels/Behaviours/TestBehaviour")]
 public class TestBehaviour : LevelBehaviour
 {
-    public override void onLevelLoad()
+    public override void OnLevelLoad()
     {
-        base.onLevelLoad();
+        base.OnLevelLoad();
 
         Debug.Log("i will do the laundry eventually");
     }
 
-    public override void onLevelUnload()
+    public override void OnLevelUnload()
     {
-        base.onLevelUnload();
+        base.OnLevelUnload();
 
         Debug.Log("i want pizza hut stuffed crust please");
     }

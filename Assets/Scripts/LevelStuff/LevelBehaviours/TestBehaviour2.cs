@@ -5,15 +5,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TestBehaviour2", menuName = "Levels/Behaviours/TestBehaviour2")]
 public class TestBehaviour2 : LevelBehaviour
 {
-    public override void onLevelLoad()
+    public override void OnLevelLoad()
     {
-        base.onLevelLoad();
+        base.OnLevelLoad();
         Debug.Log("we get those dubs bois");
     }
 
-    public override void onLevelUnload()
+    public override void OnLevelUnload()
     {
-        base.onLevelUnload();
+        base.OnLevelUnload();
         Debug.Log("imagine having a tail amirite");
     }
 }

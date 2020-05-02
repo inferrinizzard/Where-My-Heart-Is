@@ -17,30 +17,24 @@ public class Level : ScriptableObject
     // level behaviors
     public List<LevelBehaviour> behaviours;
 
-    public string getSceneName()
+    public string GetSceneName()
     {
         return sceneName.name;
     }
 
     public void StartBehaviors()
     {
-        if (behaviours.Count > 0)
+        foreach(LevelBehaviour behavior in behaviours)
         {
-            foreach(LevelBehaviour behavior in behaviours)
-            {
-                behavior.onLevelLoad();
-            }
+            behavior.OnLevelLoad();
         }
     }
 
     public void EndBehaviours()
     {
-        if(behaviours.Count > 0)
+        foreach (LevelBehaviour behaviour in behaviours)
         {
-            foreach (LevelBehaviour behaviour in behaviours)
-            {
-                behaviour.onLevelUnload();
-            }
+            behaviour.OnLevelUnload();
         }
     }
 
