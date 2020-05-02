@@ -23,6 +23,10 @@ Shader "Mask/Merge"
 		_WaveTrail ("Length of the trail", Range(0,5)) = 1
 		_WaveColour ("Colour", Color) = (1, 1, 1, 1)
 
+		[Header(Fog)]
+		_FogExponent("Fog distance exponent", float) = 4
+		_FogColor("Fog color", color) = (1, 1, 1, 1)
+
 		_Background ("Texture", 2D) = "white" {}
 	}
 	SubShader {
@@ -45,6 +49,7 @@ Shader "Mask/Merge"
 			#pragma multi_compile __ BOIL
 			#pragma multi_compile __ WAVE
 			#pragma multi_compile __ BIRD
+			#pragma multi_compile __ FOG
 			// #pragma multi_compile __ BLOOM
 
 			#include "UnityCG.cginc"
@@ -80,6 +85,9 @@ Shader "Mask/Merge"
 
 			sampler2D _BirdMask;
 			sampler2D _Background;
+
+			float _FogExponent;
+			float4 _FogColor;
 
 			void Compare(inout float depthOutline, inout float normalOutline, float baseDepth, float3 baseNormal, float2 uv, float2 offset) {
 				//read neighbor pixel
@@ -122,7 +130,8 @@ Shader "Mask/Merge"
 				float4 output;
 				#if MASK
 					float mask = tex2D(_Mask, i.uv).r;
-					output = mask > .5 ? tex2D(_Heart, i.uv) : tex2D(_MainTex, i.uv);
+					output = mask > .5 ? mask * tex2D(_Heart, i.uv) + (1 - mask) * tex2D(_MainTex, i.uv) : tex2D(_MainTex, i.uv);
+					//output = mask * tex2D(_Heart, i.uv) + (1 - mask) * tex2D(_MainTex, i.uv);
 				#else
 					output = tex2D(_MainTex, i.uv);
 				#endif
@@ -131,7 +140,7 @@ Shader "Mask/Merge"
 					float4 glow = tex2D(_GlowMap, i.uv);
 					// return glow;
 					if(glow.a == 0) {
-						int NumberOfIterations = 3;
+						int NumberOfIterations = 5;
 						
 						//split texel size into smaller words
 						float TX_x = _GlowMap_TexelSize.x;
@@ -192,7 +201,7 @@ Shader "Mask/Merge"
 					}
 
 					#if MASK
-					color = output;
+						color = output;
 					#endif
 					output = color;
 					/*if (outline > 0.8)
@@ -207,7 +216,7 @@ Shader "Mask/Merge"
 						
 
 						#if MASK
-						if(mask > .5) preOutline = 0; // TODO: heart world depth normal texture lookup;
+							if(mask > .5) preOutline = 0; // TODO: heart world depth normal texture lookup;
 						#endif
 
 						color = lerp(output, _DepthOutlineColour, outline);
@@ -237,6 +246,13 @@ Shader "Mask/Merge"
 					// 		return float4(tex2D(_Background, i.uv + float2(_Time.x, _Time.x)).rgb, birdMask.b);
 				// 	}
 				// #endif
+
+				#if FOG
+					float fogStrength = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
+					fogStrength = 1 - fogStrength;
+					fogStrength = saturate(pow(fogStrength, _FogExponent));
+					output = (1 - fogStrength) * output + fogStrength * _FogColor;
+				#endif
 
 				return output;
 			}

@@ -6,24 +6,38 @@ using UnityEngine;
 [System.Serializable]
 public class ApplyMask : MonoBehaviour
 {
-    ///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
-    public static RenderTexture mask;
-
-    ///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
-    [HideInInspector] public Camera heartCam, maskCam, mainCam;
-	///<summary> Shader that combines views </summary>
-	[SerializeField] Shader transition = default;
-	///<summary> Generated material for screen shader </summary>
+	///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
+	//public static RenderTexture mask;
+	[Header("Image Effect Materials")]
+	public Material openWindowMat;
+	public Material rippleMat;
 	public Material screenMat;
+
+	///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
+	[HideInInspector] public Camera heartCam, maskCam, mainCam;
+
+	[SerializeField] Shader transition = default;
+
 	[HideInInspector] public Material transitionMat;
+
 	///<summary> Generated RenderTexture for Heart World </summary>
-	public RenderTexture heart;
+	[HideInInspector] public RenderTexture heart;
+
+	[Header("Image Effect Source Textures")]
 	[SerializeField] Texture2D dissolveTexture = default;
-	[SerializeField] Texture2D hatchTexture = default;
 	[SerializeField] Texture2D birdBackground = default;
-	Texture2D persistentMask;
+
 	Texture2D curSave;
 	int _HeartID;
+
+	[Header("Ripple Behavior")]
+	public float rippleLength;
+
+	[HideInInspector] public RenderTexture mask;
+	private Texture2D mask2D;
+
+	private bool rippleInProgress;
+	private float rippleStartTime;
 
 	void Start()
 	{
@@ -38,52 +52,53 @@ public class ApplyMask : MonoBehaviour
 		heart.name = "Heart World";
 		heartCam.targetTexture = heart;
 
+		Player.Instance.OnApplyCut += StartRipple;
+
 		CreateMask();
-		//screenMat.SetTexture("_HatchTex", hatchTexture);
-		//screenMat.SetTexture("_Background", birdBackground);
-		// screenMat.SetColor("_DepthOutlineColour", Color.white);
 	}
 
-    public void CopyInto(ApplyMask target)
-    {
-        target.transition = this.transition;
-        target.screenMat = this.screenMat;
-        target.transitionMat = this.transitionMat;
-        target.dissolveTexture = this.dissolveTexture;
-    }
+	public void CopyInto(ApplyMask target)
+	{
+		target.transition = this.transition;
+		target.screenMat = this.screenMat;
+		target.transitionMat = this.transitionMat;
+		target.dissolveTexture = this.dissolveTexture;
+	}
+
+	public void StartRipple()
+	{
+		rippleInProgress = true;
+		rippleStartTime = Time.time;
+	}
 
 	public void CreateMask()
 	{
-		var mask = RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
+		mask = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default); //RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
 		mask.name = "Internal Mask";
 
 		// spawn temp mask cam and configure transform
 		maskCam = new GameObject("Mask Cam").AddComponent<Camera>();
-		(maskCam.transform.position, maskCam.transform.eulerAngles) = (Vector3.zero, Vector3.zero);
+		//(maskCam.transform.position, maskCam.transform.eulerAngles) = (Vector3.zero, Vector3.zero);
 		maskCam.transform.parent = transform;
 		(maskCam.transform.localPosition, maskCam.transform.localEulerAngles) = (Vector3.zero, Vector3.zero);
+		maskCam.enabled = false;
 
 		// configure mask Camera
 		maskCam.cullingMask = 1 << LayerMask.NameToLayer("Mask");
 		maskCam.clearFlags = CameraClearFlags.SolidColor;
 		maskCam.backgroundColor = Color.clear;
-        maskCam.targetTexture = mask;
+		maskCam.targetTexture = mask;
 
-        maskCam.Render();
+		maskCam.Render();
 
-		var screen = RenderTexture.active;
-		RenderTexture.active = mask;
+		mask2D = new Texture2D(Screen.width, Screen.height);
 
-		// copy to Texture2D and pass to shader
-		var mask2D = new Texture2D(mask.width, mask.height);
-		mask2D.ReadPixels(new Rect(0, 0, mask.width, mask.height), 0, 0);
-		mask2D.Apply();
-		Shader.SetGlobalTexture("_Mask", persistentMask = mask2D);
-		RenderTexture.active = screen;
+		SetMask(mask);
 
 		// remove temp cam
+		maskCam.targetTexture = null;
 		Destroy(maskCam.gameObject);
-		RenderTexture.ReleaseTemporary(mask);
+		//RenderTexture.ReleaseTemporary(mask);
 	}
 
 	void OnRenderImage(RenderTexture source, RenderTexture dest)
@@ -91,13 +106,18 @@ public class ApplyMask : MonoBehaviour
 		if (transitionMat == null)
 		{ // pass both cameras to screen per render
 			screenMat.SetTexture(_HeartID, heart);
-			Graphics.Blit(source, dest, screenMat);
-			// source.DiscardContents();
-			// heart.DiscardContents();
-			// source.Release();
-			// heart.Release();
-			// ClearRT(heart, heartCam);
-			// ClearRT(source, mainCam);
+
+			if (rippleInProgress == true)
+			{
+				RenderTexture temp = RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
+				Graphics.Blit(source, temp, screenMat);
+				Graphics.Blit(temp, dest, rippleMat);
+				RenderTexture.ReleaseTemporary(temp);
+			}
+			else
+			{
+				Graphics.Blit(source, dest, screenMat);
+			}
 		}
 		else
 		{
@@ -107,8 +127,33 @@ public class ApplyMask : MonoBehaviour
 
 	void OnPreRender()
 	{
-		// GL.ClearWithSkybox(true, heartCam);
-		// GL.ClearWithSkybox(true, mainCam);
+		if (rippleInProgress)
+		{
+			float t = (Time.time - rippleStartTime) / rippleLength;
+			if (t < 1.1)
+			{
+				if (t > 0)
+				{
+					rippleMat.SetFloat("_Offset", Mathf.Lerp(0, 10, t));
+				}
+			}
+			else
+			{
+				rippleInProgress = false;
+			}
+		}
+	}
+
+	public void SetMask(RenderTexture nextMask)
+	{
+		RenderTexture screen = RenderTexture.active;
+		RenderTexture.active = nextMask;
+
+		// copy to Texture2D and pass to shader
+		mask2D.ReadPixels(new Rect(0, 0, nextMask.width, nextMask.height), 0, 0);
+		mask2D.Apply();
+		Shader.SetGlobalTexture("_Mask", mask2D);
+		RenderTexture.active = screen;
 	}
 
 	void ClearRT(RenderTexture r, Camera cam)

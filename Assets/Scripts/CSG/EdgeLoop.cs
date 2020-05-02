@@ -52,7 +52,7 @@ namespace CSG
 		/// Currently unreliable.
 		/// </summary>
 		/// <returns>The created triangles</returns>
-		public List<Triangle> TriangulateEarMethod(int earToDraw)
+		public List<Triangle> TriangulateEarMethod()
 		{
 			vertices.ForEach(vertex => vertex.Draw(0.5f, new Vector3(Random.value, Random.value, 1).normalized, Color.magenta));
 			List<Triangle> triangles = new List<Triangle>();
@@ -63,11 +63,10 @@ namespace CSG
 			int i = 0;
 			while (currentVertices.Count > 3)
 			{
-				Debug.Log(currentVertices.Count);
 				i++;
 				if (i > 100)
 				{
-					triangles.ForEach(triangle => triangle.Draw(Color.green));
+					//triangles.ForEach(triangle => triangle.Draw(Color.green));
 					currentVertices.ForEach(vertex =>
 					{
 						Debug.Log(vertex);
@@ -93,24 +92,45 @@ namespace CSG
 		/// <returns>The triangle created from the ear, or null if no ear candidates are found</returns>
 		private Triangle CreateNextEar(List<Vertex> currentVertices)
 		{
-			for (int i = 0; i < currentVertices.Count; i++)
-			{
-				Vector3 a = currentVertices[i].value - currentVertices[(i + 1) % currentVertices.Count].value;
-				Vector3 b = currentVertices[(i + 2) % currentVertices.Count].value - currentVertices[(i + 1) % currentVertices.Count].value;
+            Vector3 normal = GetNormal();
 
-				//TODO
-				/*if (SignedAngle(a, b) > 0)
-				{
-				    Triangle resultingTriangle = new Triangle(currentVertices[i], currentVertices[(i + 1) % currentVertices.Count], currentVertices[(i + 2) % currentVertices.Count]);
-				    if (!TriangleContainsAny(vertices, resultingTriangle))
-				    {
-				        currentVertices.RemoveAt((i + 1) % currentVertices.Count);
-				        return resultingTriangle;
-				    }
-				}*/
-			}
+            int bestIndex = 0;
+			Vector3 a = currentVertices[0].value - currentVertices[(1) % currentVertices.Count].value;
+			Vector3 b = currentVertices[(2) % currentVertices.Count].value - currentVertices[(1) % currentVertices.Count].value;
+            float bestAngle = Vector3.SignedAngle(a, b, normal);
+            float currentAngle;
+            for (int i = 1; i < currentVertices.Count; i++)
+            {
+                a = currentVertices[i].value - currentVertices[(i + 1) % currentVertices.Count].value;
+                b = currentVertices[(i + 2) % currentVertices.Count].value - currentVertices[(i + 1) % currentVertices.Count].value;
+                currentAngle = Vector3.SignedAngle(a, b, normal);
+                if (currentAngle > 0 && currentAngle < bestAngle)
+                {
+                    bestAngle = currentAngle;
+                    bestIndex = i;
+                }
+            }
 
-			return null;
+            Triangle resultingTriangle = new Triangle(currentVertices[bestIndex], currentVertices[(bestIndex + 1) % currentVertices.Count], currentVertices[(bestIndex + 2) % currentVertices.Count]);
+            currentVertices.RemoveAt((bestIndex + 1) % currentVertices.Count);
+            return resultingTriangle;
+
+            //for (int i = 0; i < currentVertices.Count; i++)
+            //{
+
+            //TODO
+            /*if (SignedAngle(a, b) > 0)
+            {
+                Triangle resultingTriangle = new Triangle(currentVertices[i], currentVertices[(i + 1) % currentVertices.Count], currentVertices[(i + 2) % currentVertices.Count]);
+                if (!TriangleContainsAny(vertices, resultingTriangle))
+                {
+                    currentVertices.RemoveAt((i + 1) % currentVertices.Count);
+                    return resultingTriangle;
+                }
+            }*/
+            //}
+
+            return null;
 		}
 
 		/// <summary>

@@ -25,10 +25,11 @@ public class Effects : MonoBehaviour
 		waveController = GetComponent<Wave>();
 
 		ToggleMask(false);
-		ToggleEdgeOutline(false);//outlineOn
-        ToggleDissolve(dissolveOn);
+		ToggleEdgeOutline(true); //outlineOn
+		ToggleDissolve(dissolveOn);
 		ToggleBoil(true);
 		ToggleBird(true);
+		ToggleFog(false);
 	}
 
 	void Update()
@@ -69,6 +70,7 @@ public class Effects : MonoBehaviour
 	public void ToggleBoil(bool on) => ToggleEffect(on, "BOIL");
 	public void ToggleWave(bool on) => ToggleEffect(on, "WAVE");
 	public void ToggleBird(bool on) => ToggleEffect(on, "BIRD");
+	public void ToggleFog(bool on) => ToggleEffect(on, "FOG");
 
 	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
 
@@ -83,11 +85,35 @@ public class Effects : MonoBehaviour
 			Shader.DisableKeyword(keyword);
 	}
 
-	public void RenderGlowMap(Renderer[] renderers, Material mat = null)
+	MaterialPropertyBlock currentGlow;
+	[HideInInspector] public InteractableObject currentGlowObj;
+	Color targetColour = Color.black;
+	int glowColourID = Shader.PropertyToID("_Colour");
+
+	public void SetTargetColour(Color? c) => targetColour = c ?? defaultGlowMat.GetColor("_Colour");
+
+	public void RenderGlowMap(Renderer[] renderers, Material mat = null, bool lerp = false, float baseTime = 2)
 	{
+		bool atTargetColour = true;
+		if (lerp)
+		{
+			var currentColour = currentGlow.GetColor(glowColourID);
+			atTargetColour = currentColour.Equals(targetColour);
+			if (atTargetColour && currentColour.Equals(Color.black))
+				return;
+
+			if (!atTargetColour)
+				currentGlow.SetColor(glowColourID, Color.Lerp(currentColour, targetColour, Time.deltaTime / baseTime));
+		}
+
+		ApplyOutline.drawGlow = true;
 		mat = mat ?? defaultGlowMat;
-		// mat.SetColor("_Colour", col);
+
 		foreach (Renderer r in renderers)
+		{
+			if (!atTargetColour)
+				r.SetPropertyBlock(currentGlow);
 			ApplyOutline.glowBuffer.DrawRenderer(r, mat);
+		}
 	}
 }
