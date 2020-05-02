@@ -51,7 +51,7 @@ Shader "Transition/PageFlip"
 
 				// o.vertex = UnityObjectToClipPos(vertex);
 				o.vertex = UnityObjectToClipPos(vertex3 + bottomLeft - float3(0, 0, _A * 2));
-				o.uv = v.texcoord;
+				o.uv = 1 - v.texcoord;
 				return o;
 			}
 

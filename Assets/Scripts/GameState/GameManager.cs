@@ -60,7 +60,7 @@ public class GameManager : Singleton<GameManager>
 		float startTime = Time.time;
 		bool inProgress = true;
 
-		Material transitionMat = Player.Instance.mask.transitionMat;
+		// Material transitionMat = Player.Instance.mask.transitionMat;
 		int _CutoffID = Shader.PropertyToID("_Cutoff");
 
 		while (inProgress)
@@ -68,7 +68,7 @@ public class GameManager : Singleton<GameManager>
 			yield return null;
 			float currentTime = Time.time - startTime;
 			float loadProgress = Mathf.Min(asyncLoad.progress / .9f, currentTime / minDuration);
-			transitionMat.SetFloat(_CutoffID, loadProgress * 2); // add curve here
+			// transitionMat.SetFloat(_CutoffID, loadProgress * 2); // add curve here
 
 			Player.Instance.TransitionUpdate();
 
@@ -76,7 +76,7 @@ public class GameManager : Singleton<GameManager>
 				inProgress = false;
 		}
 		asyncLoad.allowSceneActivation = true;
-		Player.Instance.mask.transitionMat = null;
+		// Player.Instance.mask.transitionMat = null;
 		instance.duringLoad = false;
 	}
 
@@ -97,7 +97,7 @@ public class GameManager : Singleton<GameManager>
 
 	public static void ReloadScene()
 	{
-        Instance.sceneIndex--;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		Instance.sceneIndex--;
+		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 }
