@@ -6,13 +6,13 @@ using UnityEngine;
 // [ExecuteInEditMode]
 public class PageFlip : MonoBehaviour
 {
-	(Renderer, Material) Init()
+	void Start()
 	{
+		gameObject.SetActive(true);
 		var cam = transform.parent.GetComponent<Camera>();
 		var delta = (cam.ViewportToWorldPoint(Vector3.one) - cam.ViewportToWorldPoint(Vector3.forward)) / 10;
 		transform.localScale = new Vector3(delta.x, 1, delta.y);
-
-		return (GetComponent<Renderer>(), GetComponent<Renderer>().sharedMaterial);
+		gameObject.SetActive(false);
 	}
 
 	public IEnumerator Flip(Texture texture, float time = 3f)
@@ -20,12 +20,16 @@ public class PageFlip : MonoBehaviour
 		int posID = Shader.PropertyToID("_BottomLeft");
 		int thetaID = Shader.PropertyToID("_Theta"), rhoID = Shader.PropertyToID("_Rho");
 
-		var(renderer, page) = Init();
+		var renderer = GetComponent<Renderer>();
+		var page = renderer.sharedMaterial;
 		page.SetFloat(thetaID, 1);
 		page.SetFloat(rhoID, 0);
 
 		page.mainTexture = texture;
 		gameObject.SetActive(true);
+
+		Player.Instance.transform.rotation = Quaternion.identity;
+		Player.Instance.cam.transform.rotation = Quaternion.identity;
 
 		for (var(start, step) = (Time.time, 0f); step < time; step = Time.time - start)
 		{

@@ -49,7 +49,7 @@ public class GameManager : Singleton<GameManager>
 
 	/// <summary> Loads scene asynchronously, will transition when ready </summary>
 	/// <param name="scene"> Name of scene to load  </param>
-	static IEnumerator LoadScene(string name, float minDuration = 3)
+	public static IEnumerator LoadScene(string name, float minDuration = 3)
 	{
 		instance.duringLoad = true;
 		Player.Instance.OnExitScene();

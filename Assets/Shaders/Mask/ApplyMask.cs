@@ -171,13 +171,14 @@ public class ApplyMask : MonoBehaviour
 		curSave.Apply();
 
 		var pageFlip = StartCoroutine(Player.Instance.GetComponentInChildren<PageFlip>(true).Flip(curSave));
-		GameManager.Instance.ChangeLevel(scene);
+		var load = StartCoroutine(GameManager.LoadScene(scene));
 
 		// transitionMat = new Material(transition);
 		// transitionMat.SetTexture("_BackgroundTex", preview);
 		// transitionMat.SetTexture("_TransitionTex", dissolveTexture);
 
 		yield return pageFlip;
+		yield return load;
 		GameManager.Instance.pause.gameplayUI.SetActive(true);
 	}
 }
