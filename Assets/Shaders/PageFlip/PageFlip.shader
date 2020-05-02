@@ -4,9 +4,8 @@ Shader "Transition/PageFlip"
 {
 	Properties {
 		_MainTex ("Texture", 2D) = "white" {}
-		_Progress ("Progress", float) = 0
 		_A ("Apex", Range(0, 10)) = 1
-		_Rho ("Rho", Range(-1, 1)) = 1
+		_Rho ("Rho", Range(0, 1)) = 1
 		_Theta ("Theta", Range(0, 1)) = 1
 		_BottomLeft ("Corner", Vector) = (0, 0, 0)
 	}
@@ -25,7 +24,7 @@ Shader "Transition/PageFlip"
 			float3 _BottomLeft;
 
 			static const float half_PI = 3.141592653589793238462 / 2;
-			static const float pi = 3.141592653589793238462;
+			static const float tau = 6.283185307179586476924;
 
 			struct v2f {
 				float2 uv : TEXCOORD0;
@@ -38,7 +37,7 @@ Shader "Transition/PageFlip"
 				float3 vertex = v.vertex;
 
 				float theta = _Theta * half_PI;
-				float rho = _Rho * pi;
+				float rho = _Rho * tau;
 
 				float2 lateral = (vertex.xz - bottomLeft.xz) ;
 
