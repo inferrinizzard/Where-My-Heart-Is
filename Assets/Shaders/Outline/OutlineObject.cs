@@ -5,14 +5,11 @@ using UnityEngine;
 
 public class OutlineObject : MonoBehaviour
 {
-	[SerializeField] Shader outlineShader = default;
 	// <summary> If the outline cares about occlusion (probably only canvas is false) </summary>
 	[SerializeField] bool depthCheck = true;
 	// <summary> Glow outline colour </summary>
 	[SerializeField] Color outlineColour = Color.blue;
-	Material outlineMat;
-	public Material Colour { get => outlineMat; }
-
+	public Material outlineMat;
 	Renderer[] renderers;
 
 	void Start()
@@ -22,8 +19,8 @@ public class OutlineObject : MonoBehaviour
 
 	void OnEnable()
 	{
-		outlineMat = new Material(outlineShader);
-		outlineMat.SetColor("_Colour", outlineColour);
+		outlineMat = new Material(Shader.Find("Outline/GlowObject"));
+		outlineMat.color = outlineColour;
 		outlineMat.SetInt("_Occlude", depthCheck ? 1 : 0);
 		outlineMat.name = $"[{name}] Outline";
 	}
@@ -31,6 +28,7 @@ public class OutlineObject : MonoBehaviour
 	// void OnWillRenderObject() => GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
 	void OnWillRenderObject()
 	{
+		Debug.Log(this);
 		GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
 	}
 

@@ -136,7 +136,7 @@ public class Effects : MonoBehaviour
 			currentGlowObj = obj;
 		}
 		else
-			glowRoutine = StartCoroutine(RenderGlowLerp(currentGlowObj.renderers, off : true));
+			glowRoutine = StartCoroutine(RenderGlowLerp(currentGlowObj?.renderers, off : true));
 		// Debug.Log(obj);
 	}
 
