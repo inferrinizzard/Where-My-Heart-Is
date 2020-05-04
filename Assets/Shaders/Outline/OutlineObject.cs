@@ -9,13 +9,10 @@ public class OutlineObject : MonoBehaviour
 	[SerializeField] bool depthCheck = true;
 	// <summary> Glow outline colour </summary>
 	[SerializeField] Color outlineColour = Color.blue;
-	public Material outlineMat;
+	Material outlineMat;
 	Renderer[] renderers;
 
-	void Start()
-	{
-		renderers = GetComponentsInChildren<Renderer>();
-	}
+	void Start() => renderers = GetComponentsInChildren<Renderer>();
 
 	void OnEnable()
 	{
@@ -25,11 +22,9 @@ public class OutlineObject : MonoBehaviour
 		outlineMat.name = $"[{name}] Outline";
 	}
 
-	// void OnWillRenderObject() => GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
 	void OnWillRenderObject()
 	{
-		// TODO: check which world and if cut?
-		GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
+		if (Camera.current == Player.Instance.cam || Player.Instance.VFX.maskOn)
+			GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
 	}
-
 }

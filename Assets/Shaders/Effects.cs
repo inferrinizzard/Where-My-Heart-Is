@@ -15,8 +15,9 @@ public class Effects : MonoBehaviour
 	bool bloomOn = false;
 	bool dissolveOn = false;
 	[SerializeField] Material defaultGlowMat = default;
-
 	[SerializeField, Range(0, 30)] float lightPower = 5;
+
+	public bool maskOn = false;
 
 	void Awake()
 	{
@@ -24,7 +25,7 @@ public class Effects : MonoBehaviour
 		fadeController = GetComponent<Fade>();
 		waveController = GetComponent<Wave>();
 
-		ToggleMask(false);
+		ToggleMask(maskOn);
 		ToggleEdgeOutline(true); //outlineOn
 		ToggleDissolve(dissolveOn);
 		ToggleBoil(true);
@@ -63,7 +64,7 @@ public class Effects : MonoBehaviour
 	/// <summary> toggles mask on and off </summary>
 	/// <param name="on"> Is mask on? </summary>
 	// public void ToggleMask(bool on) => mask.enabled = on;
-	public void ToggleMask(bool on) => ToggleEffect(on, "MASK");
+	public void ToggleMask(bool on) => ToggleEffect(maskOn = on, "MASK");
 
 	/// <summary> toggles edge outline on and off </summary>
 	/// <param name="on"> Is edge outline on? </summary>

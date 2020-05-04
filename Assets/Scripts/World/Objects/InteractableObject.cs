@@ -29,23 +29,8 @@ public abstract class InteractableObject : MonoBehaviour
 	void OnMouseEnter()
 	{
 		if (!player.heldObject && !this.TryComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
-		{
 			GameManager.Instance.VFX.SetGlow(this);
-			// GameManager.Instance.VFX.currentGlowObj = this;
-			// GameManager.Instance.VFX.SetTargetColour(null);
-		}
 	}
 
-	void OnMouseExit()
-	{
-		GameManager.Instance.VFX.SetGlow(null);
-		// GameManager.Instance.VFX.currentGlowObj = null;
-		// GameManager.Instance.VFX.SetTargetColour(Color.black);
-	}
-
-	void OnWillRenderObject()
-	{
-		// if (GameManager.Instance.VFX.currentGlowObj == this)
-		// 	GameManager.Instance.VFX.RenderGlowMap(renderers);
-	}
+	void OnMouseExit() => GameManager.Instance.VFX.SetGlow(null);
 }
