@@ -139,7 +139,7 @@ public class Effects : MonoBehaviour
 			foreach (Renderer r in renderers)
 				ApplyOutline.glowBuffer.DrawRenderer(r, glowMat);
 
-			if (glowMat.color.Equals(targetColour))
+			if (glowMat.color.Equals(targetColour) || renderers.Length == 0)
 				yield break;
 		}
 		if (off)

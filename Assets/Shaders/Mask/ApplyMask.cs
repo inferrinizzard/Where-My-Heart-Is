@@ -153,7 +153,7 @@ public class ApplyMask : MonoBehaviour
 			r.enabled = false;
 
 		var pageFlip = StartCoroutine(Player.Instance.GetComponentInChildren<PageFlip>(true).Flip(curSave));
-		var load = StartCoroutine(GameManager.LoadScene(scene));
+		var load = StartCoroutine(GameManager.Instance.ChangeLevelManual());
 
 		yield return pageFlip;
 		yield return load;
