@@ -9,7 +9,6 @@ public class ApplyMask : MonoBehaviour
 	///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
 	//public static RenderTexture mask;
 	[Header("Image Effect Materials")]
-	public Material openWindowMat;
 	public Material rippleMat;
 	public Material screenMat;
 
