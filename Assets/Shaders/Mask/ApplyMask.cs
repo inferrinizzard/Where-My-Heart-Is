@@ -14,11 +14,6 @@ public class ApplyMask : MonoBehaviour
 
 	///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
 	[HideInInspector] public Camera heartCam, maskCam, mainCam;
-
-	[SerializeField] Shader transition = default;
-
-	[HideInInspector] public Material transitionMat;
-
 	///<summary> Generated RenderTexture for Heart World </summary>
 	[HideInInspector] public RenderTexture heart;
 
@@ -60,9 +55,7 @@ public class ApplyMask : MonoBehaviour
 
 	public void CopyInto(ApplyMask target)
 	{
-		target.transition = this.transition;
 		target.screenMat = this.screenMat;
-		target.transitionMat = this.transitionMat;
 		target.dissolveTexture = this.dissolveTexture;
 	}
 
@@ -104,26 +97,7 @@ public class ApplyMask : MonoBehaviour
 
 	void OnRenderImage(RenderTexture source, RenderTexture dest)
 	{
-		if (transitionMat == null)
-		{ // pass both cameras to screen per render
-			screenMat.SetTexture(_HeartID, heart);
-
-			if (rippleInProgress == true)
-			{
-				RenderTexture temp = RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
-				Graphics.Blit(source, temp, screenMat);
-				Graphics.Blit(temp, dest, rippleMat);
-				RenderTexture.ReleaseTemporary(temp);
-			}
-			else
-			{
-				Graphics.Blit(source, dest, screenMat);
-			}
-		}
-		else
-		{
-			Graphics.Blit(curSave, dest, transitionMat);
-		}
+		Graphics.Blit(source, dest, screenMat);
 	}
 
 	void OnPreRender()
@@ -166,15 +140,22 @@ public class ApplyMask : MonoBehaviour
 		UnityEngine.RenderTexture.active = rt;
 	}
 
-	public IEnumerator PreTransition(Texture2D preview)
+	public IEnumerator PreTransition()
 	{
+		GameManager.Instance.pause.gameObject.SetActive(false); // TODO: not gameobject but just gameplayUI
 		yield return new WaitForEndOfFrame();
+
 		curSave = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
 		curSave.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
 		curSave.Apply();
-		transitionMat = new Material(transition);
-		transitionMat.SetTexture("_BackgroundTex", preview);
-		transitionMat.SetTexture("_TransitionTex", dissolveTexture);
-		GameManager.Instance.ChangeLevel();
+
+		foreach (var r in World.Instance.GetComponentsInChildren<Renderer>()) // TODO: better?
+			r.enabled = false;
+
+		var pageFlip = StartCoroutine(Player.Instance.GetComponentInChildren<PageFlip>(true).Flip(curSave));
+		var load = StartCoroutine(GameManager.LoadScene(scene));
+
+		yield return pageFlip;
+		yield return load;
 	}
 }

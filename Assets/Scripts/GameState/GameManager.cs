@@ -15,6 +15,7 @@ public class GameManager : Singleton<GameManager>
 	public Effects VFX;
 	public PauseMenu pause;
 	public LevelOrder levelOrder;
+	public float transitionTime = 3f;
 
 	public override void Awake()
 	{
@@ -54,7 +55,7 @@ public class GameManager : Singleton<GameManager>
 
 	/// <summary> Loads scene asynchronously, will transition when ready </summary>
 	/// <param name="scene"> Name of scene to load  </param>
-	static IEnumerator LoadScene(string name, float minDuration = 3)
+	public static IEnumerator LoadScene(string name)
 	{
 		instance.duringLoad = true;
 		Player.Instance.OnExitScene();
@@ -65,28 +66,26 @@ public class GameManager : Singleton<GameManager>
 		float startTime = Time.time;
 		bool inProgress = true;
 
-		Material transitionMat = Player.Instance.mask.transitionMat;
 		int _CutoffID = Shader.PropertyToID("_Cutoff");
 
 		while (inProgress)
 		{
 			yield return null;
 			float currentTime = Time.time - startTime;
-			float loadProgress = Mathf.Min(asyncLoad.progress / .9f, currentTime / minDuration);
-			transitionMat.SetFloat(_CutoffID, loadProgress * 2); // add curve here
+			float loadProgress = Mathf.Min(asyncLoad.progress / .9f, currentTime / instance.transitionTime);
 
 			Player.Instance.TransitionUpdate();
 
-			if (asyncLoad.progress >= .9f && currentTime > minDuration)
+			if (asyncLoad.progress >= .9f && currentTime > instance.transitionTime)
 				inProgress = false;
 		}
 		asyncLoad.allowSceneActivation = true;
-		Player.Instance.mask.transitionMat = null;
 		instance.duringLoad = false;
 	}
 
 	public override void OnEnterScene()
 	{
+		instance.pause.gameObject.SetActive(true); // TODO: not pause but just gameplayUI
 		//World.Instance.name += $"[{levels[++sceneIndex]}]";
 		Player.Instance.OnEnterScene();
 		levelOrder.OnEnterScene();

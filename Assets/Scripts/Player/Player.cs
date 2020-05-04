@@ -83,6 +83,12 @@ public class Player : Singleton<Player>, IStateMachine
 	public event Action OnOpenWindow;
 	public event Action OnApplyCut;
 
+	public override void Awake()
+	{
+		base.Awake();
+		GetComponentInChildren<PageFlip>(true).Init();
+	}
+
 	void Start()
 	{
 		playerCollider = GetComponentInChildren<CapsuleCollider>();
