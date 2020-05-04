@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4576579170401598532}
   - component: {fileID: 5757688750421981512}
   - component: {fileID: 6582717167106706068}
-  - component: {fileID: 7700330678562550804}
+  - component: {fileID: 5972738191412289277}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: Untagged
@@ -107,7 +107,59 @@ MonoBehaviour:
   heart: {fileID: 0}
   dissolveTexture: {fileID: 2800000, guid: 27652fb6e8e6045458cfd167c5531c0b, type: 3}
   birdBackground: {fileID: 2800000, guid: a6384195e0fac384787f84c42c3a9893, type: 3}
-  rippleLength: 0
+  rippleLength: 1
+  rippleTarget: 3
+  rippleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.04438641
+      value: 0.03742288
+      inSlope: -0.044410814
+      outSlope: -0.044410814
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.085760295
+      value: 0.0050329566
+      inSlope: 0.33667907
+      outSlope: 0.33667907
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.49637407
+      value: 0.42967612
+      inSlope: 3.4907556
+      outSlope: 3.4907556
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.05375744
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   mask: {fileID: 0}
 --- !u!114 &3177498603613522797
 MonoBehaviour:
@@ -121,7 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 304ef6b5992505b42a4a639d031357e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waveController: {fileID: 0}
+  waveController: {fileID: 5757688750421981512}
   defaultGlowMat: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
   lightPower: 5
   currentGlowObj: {fileID: 0}
@@ -173,7 +225,7 @@ Skybox:
   m_GameObject: {fileID: 3177498603613522795}
   m_Enabled: 1
   m_CustomSkybox: {fileID: 2100000, guid: 4ae888627536169469f26c3be32b0069, type: 2}
---- !u!114 &7700330678562550804
+--- !u!114 &5972738191412289277
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -186,12 +238,72 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   openMat: {fileID: 2100000, guid: 64bcaeef2cec94f47b934d8e42e668ca, type: 2}
-  rampLength: 1.5
+  rampLength: 1
   rampTimeOffset: 0.2
   rampTarget: 2
+  rampCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2.0963225
+      outSlope: 2.0963225
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.07517548
+      value: 0.15759206
+      inSlope: -1.9630468
+      outSlope: -1.9630468
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.043009784
+    - serializedVersion: 3
+      time: 0.45400172
+      value: 0.19559658
+      inSlope: 2.0801425
+      outSlope: 2.0801425
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.68635625
+      value: 0.64866424
+      inSlope: 0.6678465
+      outSlope: 0.6678465
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.78313667
+      value: 0.9662814
+      inSlope: 2.1864393
+      outSlope: 2.1864393
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.20090438
+      outWeight: 0.019738255
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.15548311
+      outSlope: 0.15548311
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   breathMax: 2.5
-  breathMin: 1.8
-  breathRate: 1
+  breathMin: 1.9
+  breathRate: 0.2
   scrollRate: 0.001
   rampResult: {fileID: 0}
 --- !u!1 &3177498604957221190
@@ -299,16 +411,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3177498603613522796}
     m_Modifications:
-    - target: {fileID: 2182867183277312573, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: m_Name
-      value: Magic Window
-      objectReference: {fileID: 0}
-    - target: {fileID: 2182867183277312573, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: m_TagString
-      value: Pickupable
-      objectReference: {fileID: 0}
     - target: {fileID: 2182867183277312569, guid: 363b9a74c27aeba43ab8c35665f02ff7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -359,19 +461,49 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2182867183277312573, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: m_Name
+      value: Magic Window
+      objectReference: {fileID: 0}
+    - target: {fileID: 2182867183277312573, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: m_TagString
+      value: Pickupable
+      objectReference: {fileID: 0}
     - target: {fileID: 2182867183277312575, guid: 363b9a74c27aeba43ab8c35665f02ff7,
         type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7884385905051823265, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8454981882681934524, guid: 363b9a74c27aeba43ab8c35665f02ff7,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: limitTo
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: limitTo
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: limitTo
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: limitTo
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7884385905051823265, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8454981881868834941, guid: 363b9a74c27aeba43ab8c35665f02ff7,
@@ -383,26 +515,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: limitTo
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: limitTo
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: limitTo
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: limitTo
-      value: -1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2182867183277312572, guid: 363b9a74c27aeba43ab8c35665f02ff7, type: 3}
@@ -426,11 +538,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3177498603613522796}
     m_Modifications:
-    - target: {fileID: 670550455639107771, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
-        type: 3}
-      propertyPath: m_Name
-      value: Hands
-      objectReference: {fileID: 0}
     - target: {fileID: 4545574372278966952, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -485,6 +592,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 80.96
+      objectReference: {fileID: 0}
+    - target: {fileID: 670550455639107771, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
+        type: 3}
+      propertyPath: m_Name
+      value: Hands
       objectReference: {fileID: 0}
     - target: {fileID: 1382892172470704661, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
         type: 3}
