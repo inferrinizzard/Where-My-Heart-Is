@@ -45,7 +45,7 @@ public abstract class InteractableObject : MonoBehaviour
 
 	void OnWillRenderObject()
 	{
-		if (GameManager.Instance.VFX.currentGlowObj == this)
-			GameManager.Instance.VFX.RenderGlowMap(renderers);
+		// if (GameManager.Instance.VFX.currentGlowObj == this)
+		// 	GameManager.Instance.VFX.RenderGlowMap(renderers);
 	}
 }

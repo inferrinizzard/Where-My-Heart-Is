@@ -17,8 +17,6 @@ public class OutlineColours : ScriptableObject
 			if (I is null)
 				return Empty;
 
-			Debug.Log(I);
-
 			var type = I.GetType();
 			switch (type)
 			{

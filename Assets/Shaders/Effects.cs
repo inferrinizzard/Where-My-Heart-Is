@@ -30,7 +30,6 @@ public class Effects : MonoBehaviour
 		ToggleBoil(true);
 		ToggleBird(true);
 
-		currentGlow = new MaterialPropertyBlock();
 		glowMat = new Material(Shader.Find("Outline/GlowObject"));
 		glowMat.color = Color.black;
 	}
@@ -92,34 +91,10 @@ public class Effects : MonoBehaviour
 
 	[SerializeField] OutlineColours glowColours;
 	Material glowMat;
-	MaterialPropertyBlock currentGlow;
 	[HideInInspector] public InteractableObject currentGlowObj;
 	Color targetColour = Color.black;
 	int glowColourID = Shader.PropertyToID("_Colour");
 	Coroutine glowRoutine;
-
-	public void SetTargetColour(Color? c) => targetColour = c ?? defaultGlowMat.GetColor("_Colour");
-
-	public void RenderGlowMap(Renderer[] renderers, float baseTime = 2)
-	{
-		bool atTargetColour = true;
-		var currentColour = currentGlow.GetColor(glowColourID);
-		atTargetColour = currentColour.Equals(targetColour);
-		if (atTargetColour && currentColour.Equals(Color.black))
-			return;
-
-		if (!atTargetColour)
-			currentGlow.SetColor(glowColourID, Color.Lerp(currentColour, targetColour, Time.deltaTime / baseTime));
-
-		ApplyOutline.drawGlow = true;
-
-		foreach (Renderer r in renderers)
-		{
-			if (!atTargetColour)
-				r.SetPropertyBlock(currentGlow);
-			ApplyOutline.glowBuffer.DrawRenderer(r, defaultGlowMat);
-		}
-	}
 
 	public void RenderGlowMap(Renderer[] renderers, Material mat)
 	{
@@ -135,12 +110,12 @@ public class Effects : MonoBehaviour
 			StopCoroutine(glowRoutine);
 		if (obj)
 		{
+			ApplyOutline.drawGlow = true;
 			glowRoutine = StartCoroutine(RenderGlowLerp(obj.renderers));
 			currentGlowObj = obj;
 		}
 		else
 			glowRoutine = StartCoroutine(RenderGlowLerp(currentGlowObj?.renderers, off : true));
-		// Debug.Log(obj);
 	}
 
 	IEnumerator RenderGlowLerp(Renderer[] renderers, float time = 2, bool off = false)
@@ -151,8 +126,8 @@ public class Effects : MonoBehaviour
 
 			glowMat.color = Color.Lerp(glowMat.color, targetColour, Time.deltaTime * time);
 
-			// foreach (Renderer r in renderers)
-			// 	ApplyOutline.glowBuffer.DrawRenderer(r, glowMat);
+			foreach (Renderer r in renderers)
+				ApplyOutline.glowBuffer.DrawRenderer(r, glowMat);
 
 			if (glowMat.color.Equals(targetColour))
 				yield break;

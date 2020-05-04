@@ -16,22 +16,15 @@ Shader "Outline/GlowObject"
 			fixed4 _Color;
 			float _Occlude;
 
-			struct appdata {
-				float4 vertex : POSITION;
-				float3 texCoord : TEXCOORD0;
-			};
-
 			struct v2f {
 				float4 pos : SV_POSITION;
-				float3 texCoord : TEXCOORD0;
 				float linearDepth : TEXCOORD1;
 				float4 screenPos : TEXCOORD2;
 			};
 
-			v2f vert(appdata v) {
+			v2f vert(appdata_base v) {
 				v2f o;
 				o.pos = UnityObjectToClipPos(v.vertex);
-				o.texCoord = v.texCoord;
 				
 				o.screenPos = ComputeScreenPos(o.pos);
 				o.linearDepth = -(UnityObjectToViewPos(v.vertex).z * _ProjectionParams.w);
