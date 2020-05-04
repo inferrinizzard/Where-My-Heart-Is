@@ -80,6 +80,7 @@ public class GameManager : Singleton<GameManager>
 
 	public override void OnEnterScene()
 	{
+		instance.pause.gameObject.SetActive(true); // TODO: not pause but just gameplayUI
 		World.Instance.name += $"[{levels[++sceneIndex]}]";
 		Player.Instance.OnEnterScene();
 	}
