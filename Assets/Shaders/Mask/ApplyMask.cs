@@ -56,7 +56,6 @@ public class ApplyMask : MonoBehaviour
 
 	public void CopyInto(ApplyMask target)
 	{
-		// target.transition = this.transition;
 		target.screenMat = this.screenMat;
 		target.dissolveTexture = this.dissolveTexture;
 	}
@@ -99,26 +98,7 @@ public class ApplyMask : MonoBehaviour
 
 	void OnRenderImage(RenderTexture source, RenderTexture dest)
 	{
-		// if (transitionMat == null)
-		// { // pass both cameras to screen per render
-		// screenMat.SetTexture(_HeartID, heart);
-
-		// if (rippleInProgress == true)
-		// {
-		// 	RenderTexture temp = RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
-		// 	Graphics.Blit(source, temp, screenMat);
-		// 	Graphics.Blit(temp, dest, rippleMat);
-		// 	RenderTexture.ReleaseTemporary(temp);
-		// }
-		// else
-		// {
 		Graphics.Blit(source, dest, screenMat);
-		// }
-		// }
-		// else
-		// {
-		// 	Graphics.Blit(curSave, dest, transitionMat);
-		// }
 	}
 
 	void OnPreRender()
@@ -172,10 +152,6 @@ public class ApplyMask : MonoBehaviour
 
 		var pageFlip = StartCoroutine(Player.Instance.GetComponentInChildren<PageFlip>(true).Flip(curSave));
 		var load = StartCoroutine(GameManager.LoadScene(scene));
-
-		// transitionMat = new Material(transition);
-		// transitionMat.SetTexture("_BackgroundTex", preview);
-		// transitionMat.SetTexture("_TransitionTex", dissolveTexture);
 
 		yield return pageFlip;
 		yield return load;
