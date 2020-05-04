@@ -41,6 +41,7 @@ public class AudioMaster : Singleton<AudioMaster>
 
 	public void StartIntroTheme()
 	{
+        Debug.Log("mmmm");
 		musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
 		musicInstance = FMODUnity.RuntimeManager.CreateInstance(IntroMusicEvent);
 		musicInstance.start();

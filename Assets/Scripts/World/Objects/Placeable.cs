@@ -13,7 +13,6 @@ public class Placeable : Pickupable
 
 	public override void Interact()
 	{
-		base.Interact();
 
 		if (PlaceConditionsMet())
 		{
@@ -35,7 +34,12 @@ public class Placeable : Pickupable
 		{
 			birdAnim.StartNextCurve();
 		}
-	}
+
+        if(!PlaceConditionsMet())
+        {
+            base.Interact();
+        }
+    }
 
 	public bool PlaceConditionsMet()
 	{
