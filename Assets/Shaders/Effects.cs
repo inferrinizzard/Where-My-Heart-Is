@@ -15,8 +15,9 @@ public class Effects : MonoBehaviour
 	bool bloomOn = false;
 	bool dissolveOn = false;
 	[SerializeField] Material defaultGlowMat = default;
-
 	[SerializeField, Range(0, 30)] float lightPower = 5;
+
+	public bool maskOn = false;
 
 	void Awake()
 	{
@@ -24,23 +25,26 @@ public class Effects : MonoBehaviour
 		fadeController = GetComponent<Fade>();
 		waveController = GetComponent<Wave>();
 
-        ToggleMask(false);
 		ToggleWave(false);
+		ToggleMask(maskOn);
 		ToggleEdgeOutline(true); //outlineOn
 		ToggleDissolve(dissolveOn);
 		ToggleBoil(true);
 		ToggleBird(true);
-		ToggleFog(false);
+
+		glowMat = new Material(Shader.Find("Outline/GlowObject"));
+		glowMat.color = Color.black;
 	}
 
-    public void SubcribeToCutEvents(Window window)
-    {
-        window.OnClippableCut += SetWave;
-        window.OnBeginCut += () => ToggleWave(true);
-        window.OnCompleteCut += () => ToggleWave(false);
-    }
+	public void SubcribeToCutEvents(Window window)
+	{
+		window.OnClippableCut += SetWave;
+		window.OnBeginCut += () => ToggleWave(true);
+		window.OnCompleteCut += () => ToggleWave(false);
+	}
 
-    void Update()
+	#region toggles
+	void Update()
 	{
 #if DEBUG // debug toggles
 		if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -68,7 +72,7 @@ public class Effects : MonoBehaviour
 	/// <summary> toggles mask on and off </summary>
 	/// <param name="on"> Is mask on? </summary>
 	// public void ToggleMask(bool on) => mask.enabled = on;
-	public void ToggleMask(bool on) => ToggleEffect(on, "MASK");
+	public void ToggleMask(bool on) => ToggleEffect(maskOn = on, "MASK");
 
 	/// <summary> toggles edge outline on and off </summary>
 	/// <param name="on"> Is edge outline on? </summary>
@@ -82,7 +86,6 @@ public class Effects : MonoBehaviour
 
 	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
 
-
 	// public void SetWave(float distance) => waveController.waveDistance = distance;
 	public void SetWave(float distance) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", distance);
 	public void SetWave(ClippableObject clippable) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", (clippable.transform.position - transform.position).magnitude);
@@ -94,36 +97,52 @@ public class Effects : MonoBehaviour
 		else
 			Shader.DisableKeyword(keyword);
 	}
+	#endregion
 
-	MaterialPropertyBlock currentGlow;
+	[SerializeField] OutlineColours glowColours;
+	Material glowMat;
 	[HideInInspector] public InteractableObject currentGlowObj;
 	Color targetColour = Color.black;
 	int glowColourID = Shader.PropertyToID("_Colour");
+	Coroutine glowRoutine;
 
-	public void SetTargetColour(Color? c) => targetColour = c ?? defaultGlowMat.GetColor("_Colour");
-
-	public void RenderGlowMap(Renderer[] renderers, Material mat = null, bool lerp = false, float baseTime = 2)
+	public void RenderGlowMap(Renderer[] renderers, Material mat)
 	{
-		bool atTargetColour = true;
-		if (lerp)
-		{
-			var currentColour = currentGlow.GetColor(glowColourID);
-			atTargetColour = currentColour.Equals(targetColour);
-			if (atTargetColour && currentColour.Equals(Color.black))
-				return;
-
-			if (!atTargetColour)
-				currentGlow.SetColor(glowColourID, Color.Lerp(currentColour, targetColour, Time.deltaTime / baseTime));
-		}
-
 		ApplyOutline.drawGlow = true;
-		mat = mat ?? defaultGlowMat;
-
 		foreach (Renderer r in renderers)
-		{
-			if (!atTargetColour)
-				r.SetPropertyBlock(currentGlow);
 			ApplyOutline.glowBuffer.DrawRenderer(r, mat);
+	}
+
+	public void SetGlow(InteractableObject obj)
+	{
+		targetColour = glowColours[obj];
+		if (glowRoutine != null)
+			StopCoroutine(glowRoutine);
+		if (obj)
+		{
+			ApplyOutline.drawGlow = true;
+			glowRoutine = StartCoroutine(RenderGlowLerp(obj.renderers));
+			currentGlowObj = obj;
 		}
+		else
+			glowRoutine = StartCoroutine(RenderGlowLerp(currentGlowObj?.renderers, off : true));
+	}
+
+	IEnumerator RenderGlowLerp(Renderer[] renderers, float time = 2, bool off = false)
+	{
+		for (float step = time; step > 0; step -= Time.deltaTime)
+		{
+			yield return null;
+
+			glowMat.color = Color.Lerp(glowMat.color, targetColour, Time.deltaTime * time);
+
+			foreach (Renderer r in renderers)
+				ApplyOutline.glowBuffer.DrawRenderer(r, glowMat);
+
+			if (glowMat.color.Equals(targetColour))
+				yield break;
+		}
+		if (off)
+			currentGlowObj = null;
 	}
 }

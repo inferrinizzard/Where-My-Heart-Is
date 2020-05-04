@@ -1,4 +1,4 @@
-﻿Shader "Outline/Depth"
+﻿Shader "Outline/Boil"
 {
 	Properties {
 		[HideInInspector] _MainTex ("Texture", 2D) = "white" {}
