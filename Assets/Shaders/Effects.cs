@@ -24,7 +24,7 @@ public class Effects : MonoBehaviour
 		fadeController = GetComponent<Fade>();
 		waveController = GetComponent<Wave>();
 
-		ToggleMask(false);
+        ToggleMask(false);
 		ToggleWave(false);
 		ToggleEdgeOutline(true); //outlineOn
 		ToggleDissolve(dissolveOn);
@@ -33,7 +33,14 @@ public class Effects : MonoBehaviour
 		ToggleFog(false);
 	}
 
-	void Update()
+    public void SubcribeToCutEvents(Window window)
+    {
+        window.OnClippableCut += SetWave;
+        window.OnBeginCut += () => ToggleWave(true);
+        window.OnCompleteCut += () => ToggleWave(false);
+    }
+
+    void Update()
 	{
 #if DEBUG // debug toggles
 		if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -75,8 +82,10 @@ public class Effects : MonoBehaviour
 
 	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
 
+
 	// public void SetWave(float distance) => waveController.waveDistance = distance;
 	public void SetWave(float distance) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", distance);
+	public void SetWave(ClippableObject clippable) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", (clippable.transform.position - transform.position).magnitude);
 
 	void ToggleEffect(bool on, string keyword)
 	{

@@ -60,7 +60,6 @@ public class Window : MonoBehaviour
 
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds, CSG.Model boundModel)
 	{
-		Player.Instance.VFX.ToggleWave(true);
 		float startTime = Time.realtimeSinceStartup;
 		CSG.Model mirrorBoundModel = null;
 		Matrix4x4 reflectionMatrix = Matrix4x4.identity;
@@ -102,7 +101,6 @@ public class Window : MonoBehaviour
 			{
 				clippable.ClipWith(boundModel);
 				OnClippableCut?.Invoke(clippable);
-				Player.Instance.VFX.SetWave((clippable.transform.position - transform.position).magnitude);
 			}
 
 			if (Time.realtimeSinceStartup - startTime > frameLength)
@@ -111,7 +109,6 @@ public class Window : MonoBehaviour
 				startTime = Time.realtimeSinceStartup;
 			}
 		}
-		Player.Instance.VFX.ToggleWave(false);
 
 		if (mirrorCutApplied)
 		{

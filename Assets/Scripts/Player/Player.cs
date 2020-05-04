@@ -95,6 +95,8 @@ public class Player : Singleton<Player>, IStateMachine
 		hands = GetComponentInChildren<Hands>();
 		prompt = GameManager.Instance.prompt;
 
+        VFX.SubcribeToCutEvents(window);
+
 		playerHeight = playerCollider.height;
 
 		// Creates an empty game object at the position where a held object should be.
