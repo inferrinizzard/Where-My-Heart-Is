@@ -6,7 +6,7 @@ using UnityEngine;
 // [ExecuteInEditMode]
 public class PageFlip : MonoBehaviour
 {
-	void Start()
+	public void Init()
 	{
 		gameObject.SetActive(true);
 		var cam = transform.parent.GetComponent<Camera>();
@@ -15,7 +15,7 @@ public class PageFlip : MonoBehaviour
 		gameObject.SetActive(false);
 	}
 
-	public IEnumerator Flip(Texture texture, float time = 3f)
+	public IEnumerator Flip(Texture texture)
 	{
 		int posID = Shader.PropertyToID("_BottomLeft");
 		int thetaID = Shader.PropertyToID("_Theta"), rhoID = Shader.PropertyToID("_Rho");
@@ -27,6 +27,7 @@ public class PageFlip : MonoBehaviour
 
 		page.mainTexture = texture;
 		gameObject.SetActive(true);
+		float time = GameManager.Instance.transitionTime;
 
 		Player.Instance.transform.rotation = Quaternion.identity;
 		Player.Instance.cam.transform.rotation = Quaternion.identity;
