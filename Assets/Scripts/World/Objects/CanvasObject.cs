@@ -17,7 +17,6 @@ public class CanvasObject : CollectableObject
 		OnInteract?.Invoke();
 		//prevent move/rotate here
 		float targetAngle = (player.rotation.y % 360f) - transform.rotation.y;
-		Debug.Log(targetAngle);
 
 		if(targetAngle > 180)
 		{
@@ -35,7 +34,7 @@ public class CanvasObject : CollectableObject
 
 	protected override void CollectEndAction()
 	{
-		StartCoroutine(Player.Instance.mask.PreTransition(preview, GameManager.Instance.levels[GameManager.Instance.sceneIndex + 1]));
+		StartCoroutine(Player.Instance.mask.PreTransition(preview));
 		// StartCoroutine(Effects.mask.PreTransition(preview, manualTarget == "" ? "Intro" : manualTarget));
 	}
 }
