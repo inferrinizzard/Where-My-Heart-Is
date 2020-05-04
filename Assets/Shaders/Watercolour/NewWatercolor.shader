@@ -99,24 +99,13 @@
 					closest = min(sampled.b, closest);
 					totalHue += sampled.g;
 				}
-
-				multiplier = multiplier/3;
-				float moreClosest = 0;
-				for (int i = 0; i < 4; i++)
-				{
-					sampled = tex2D(_DepthColor, saturate(screenCoords + (dirs[i] * directionA) * multiplier));
-					moreClosest = max(sampled.b, closest);
-					//moreClosest += sampled.b;
-				}
-				//moreClosest = moreClosest / 4;
-				moreClosest = abs(moreClosest - depthColor.b);
 				
 				float watercolorIntensity = _WatercolorStrength * (abs(closest - depthColor.b) * abs(totalDepth / 4)) + noiseSample * IN.screenPos.z / IN.screenPos.w;
 				//float watercolorIntensity = _WatercolorStrength * (abs(closest - depthColor.b) + abs((totalDepth / 4) - depthColor.b));
 				//watercolorIntensity += ;
 
 				//return float4(tex2D(_Palette, float2(min(_ColorX + watercolorIntensity, 1), (_ColorY + (totalHue / 4)) / 2)).rgb, 1);
-				return float4(lerp(tex2D(_Palette, float2(min(_ColorX + watercolorIntensity, 1), _ColorY)).rgb, float3(0, 0, 0), moreClosest) , 1);
+				return float4(tex2D(_Palette, float2(min(_ColorX + watercolorIntensity, 1), _ColorY)).rgb , 1);
 				//return float4(float3(1, 1, 1) * (abs(closest - depthColor.b) * abs(totalDepth/8)), 1);
 			}
 		ENDCG

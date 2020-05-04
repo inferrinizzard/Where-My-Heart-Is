@@ -148,11 +148,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 162a7fe1a33786a4ebc31132733adefe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  world: {fileID: 0}
-  cam: {fileID: 0}
   fieldOfViewSource: {fileID: 6145140127035620908}
   fieldOfView: {fileID: 2766900623958999665}
+  mirror: {fileID: 0}
   framerateTarget: 80
+  world: {fileID: 0}
+  cam: {fileID: 0}
+  fovDistance: 0
+  cutStartTime: 0
 --- !u!1 &5977050091189475331
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,11 +256,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5407968008035840465}
     m_Modifications:
-    - target: {fileID: 3177498603613522795, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
-        type: 3}
-      propertyPath: m_Name
-      value: Main Camera
-      objectReference: {fileID: 0}
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -323,6 +321,16 @@ PrefabInstance:
       propertyPath: waveController
       value: 
       objectReference: {fileID: 2950740718295748212}
+    - target: {fileID: 3177498603613522798, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
+        type: 3}
+      propertyPath: blackSkybox
+      value: 
+      objectReference: {fileID: 2100000, guid: 98ac7e6857ccc324bb7a5f2ae44fcbc5, type: 2}
+    - target: {fileID: 3177498603613522798, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
+        type: 3}
+      propertyPath: depthReplacement
+      value: 
+      objectReference: {fileID: 4800000, guid: e48a755c1efe3e642ac22944a77d2598, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 31ce0a8a718ba094b9f6c937e3c9676c, type: 3}
 --- !u!4 &5407968007786445904 stripped
