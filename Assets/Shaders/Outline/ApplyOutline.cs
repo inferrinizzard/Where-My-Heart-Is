@@ -41,16 +41,14 @@ public class ApplyOutline : MonoBehaviour
 	void LateUpdate()
 	{
 		if (drawGlow)
-		{
 			ResetGlowBuffer();
-		}
 	}
 
 	void OnPreCull()
 	{
 		if (drawGlow)
 		{
-			glowBuffer.SetGlobalTexture("_GlowMap", glowTempID);
+			glowBuffer.SetGlobalTexture(glowMapID, glowTempID);
 			drawGlow = false;
 		}
 	}

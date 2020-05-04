@@ -28,7 +28,7 @@ public class OutlineObject : MonoBehaviour
 	// void OnWillRenderObject() => GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
 	void OnWillRenderObject()
 	{
-		Debug.Log(this);
+		// TODO: check which world and if cut?
 		GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
 	}
 

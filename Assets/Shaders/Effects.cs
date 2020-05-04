@@ -100,29 +100,32 @@ public class Effects : MonoBehaviour
 
 	public void SetTargetColour(Color? c) => targetColour = c ?? defaultGlowMat.GetColor("_Colour");
 
-	public void RenderGlowMap(Renderer[] renderers, Material mat = null, bool lerp = false, float baseTime = 2)
+	public void RenderGlowMap(Renderer[] renderers, float baseTime = 2)
 	{
 		bool atTargetColour = true;
-		if (lerp)
-		{
-			var currentColour = currentGlow.GetColor(glowColourID);
-			atTargetColour = currentColour.Equals(targetColour);
-			if (atTargetColour && currentColour.Equals(Color.black))
-				return;
+		var currentColour = currentGlow.GetColor(glowColourID);
+		atTargetColour = currentColour.Equals(targetColour);
+		if (atTargetColour && currentColour.Equals(Color.black))
+			return;
 
-			if (!atTargetColour)
-				currentGlow.SetColor(glowColourID, Color.Lerp(currentColour, targetColour, Time.deltaTime / baseTime));
-		}
+		if (!atTargetColour)
+			currentGlow.SetColor(glowColourID, Color.Lerp(currentColour, targetColour, Time.deltaTime / baseTime));
 
 		ApplyOutline.drawGlow = true;
-		mat = mat ?? defaultGlowMat;
 
 		foreach (Renderer r in renderers)
 		{
 			if (!atTargetColour)
 				r.SetPropertyBlock(currentGlow);
-			ApplyOutline.glowBuffer.DrawRenderer(r, mat);
+			ApplyOutline.glowBuffer.DrawRenderer(r, defaultGlowMat);
 		}
+	}
+
+	public void RenderGlowMap(Renderer[] renderers, Material mat)
+	{
+		ApplyOutline.drawGlow = true;
+		foreach (Renderer r in renderers)
+			ApplyOutline.glowBuffer.DrawRenderer(r, mat);
 	}
 
 	public void SetGlow(InteractableObject obj)
