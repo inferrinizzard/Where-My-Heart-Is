@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class PauseMenu : MonoBehaviour
 {
     /// <summary> Whether the game is paused or not. </summary>
-    public static bool GameIsPaused = false;
+    public bool GameIsPaused = false;
 
     /// <summary> Local instance of pause menu canvas objects. </summary>
     public GameObject pauseMenuUI;
@@ -16,9 +16,12 @@ public class PauseMenu : MonoBehaviour
     public GameObject optionsMenuUI;
     /// <summary> Local instance of crosshair object. </summary>
     public GameObject gameplayUI;
+    /// <summary> Local instance of keysetter object. </summary>
+    public KeySetter keySetter;
 
     void Start()
     {
+        keySetter = GetComponentInChildren<KeySetter>();
         InputManager.OnPauseKeyDown += PauseAction;
         Resume(); // When the game starts, make sure we aren't paused.
     }
@@ -32,13 +35,20 @@ public class PauseMenu : MonoBehaviour
     /// <summary> Resumes the game. </summary>
     public void Resume()
     {
-        pauseMenuUI.SetActive(false);
-        optionsMenuUI.SetActive(false);
-        gameplayUI.SetActive(true);
-        Time.timeScale = 1f;
-        GameIsPaused = false;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if(!keySetter.wasLookingForKey)
+        {
+            pauseMenuUI.SetActive(false);
+            optionsMenuUI.SetActive(false);
+            gameplayUI.SetActive(true);
+            Time.timeScale = 1f;
+            GameIsPaused = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else
+        {
+            keySetter.wasLookingForKey = false;
+        }
     }
 
     /// <summary> Pauses the game. </summary>

@@ -342,7 +342,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (State is Aiming && windowEnabled && !heldObject)
+		if (State is Aiming && windowEnabled && !heldObject && GameManager.instance.pause.GameIsPaused)
 		{
 			// SetState(new Cut(this));
 			window.ApplyCut();

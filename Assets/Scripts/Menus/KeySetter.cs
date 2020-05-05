@@ -11,6 +11,8 @@ public class KeySetter : MonoBehaviour
 	bool lookingForKey;
 	int changingControl;
 
+	public bool wasLookingForKey = false;
+
 	public GameObject jumpButton;
 	public GameObject interactButton;
 	public Slider sensitivitySlider;
@@ -38,11 +40,9 @@ public class KeySetter : MonoBehaviour
 				switch (changingControl)
 				{
 					case (int) Controls.Jump:
-						InputManager.jumpKey = inputKey;
 						jumpButton.GetComponent<Text>().text = "press any key";
 						break;
 					case (int) Controls.Interact:
-						InputManager.interactKey = inputKey;
 						interactButton.GetComponent<Text>().text = "press any key";
 						break;
 					default:
@@ -62,12 +62,12 @@ public class KeySetter : MonoBehaviour
 			switch (changingControl)
 			{
 				case (int) Controls.Jump:
-					InputManager.jumpKey = inputKey;
-					jumpButton.GetComponent<Text>().text = inputKey.ToString();
+					if (inputKey != KeyCode.Escape) InputManager.jumpKey = inputKey; else wasLookingForKey = true;
+					jumpButton.GetComponent<Text>().text = InputManager.jumpKey.ToString();
 					break;
 				case (int) Controls.Interact:
-					InputManager.interactKey = inputKey;
-					interactButton.GetComponent<Text>().text = inputKey.ToString();
+					if (inputKey != KeyCode.Escape) InputManager.interactKey = inputKey; else wasLookingForKey = true;
+					interactButton.GetComponent<Text>().text = InputManager.interactKey.ToString();
 					break;
 				default:
 					Debug.Log("error assigning key");
