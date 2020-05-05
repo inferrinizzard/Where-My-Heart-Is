@@ -17,10 +17,6 @@ public class ApplyMask : MonoBehaviour
 	///<summary> Generated RenderTexture for Heart World </summary>
 	[HideInInspector] public RenderTexture heart;
 
-	[Header("Image Effect Source Textures")]
-	[SerializeField] Texture2D dissolveTexture = default;
-	[SerializeField] Texture2D birdBackground = default;
-
 	Texture2D curSave;
 	int _HeartID;
 
@@ -56,7 +52,6 @@ public class ApplyMask : MonoBehaviour
 	public void CopyInto(ApplyMask target)
 	{
 		target.screenMat = this.screenMat;
-		target.dissolveTexture = this.dissolveTexture;
 	}
 
 	public void StartRipple()
@@ -97,7 +92,17 @@ public class ApplyMask : MonoBehaviour
 
 	void OnRenderImage(RenderTexture source, RenderTexture dest)
 	{
-		Graphics.Blit(source, dest, screenMat);
+		screenMat.SetTexture(_HeartID, heart);
+
+		if (rippleInProgress == true)
+		{
+			RenderTexture temp = RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
+			Graphics.Blit(source, temp, screenMat);
+			Graphics.Blit(temp, dest, rippleMat);
+			RenderTexture.ReleaseTemporary(temp);
+		}
+		else
+			Graphics.Blit(source, dest, screenMat);
 	}
 
 	void OnPreRender()

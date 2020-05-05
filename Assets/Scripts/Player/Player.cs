@@ -62,7 +62,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player move speed. </summary>
 	[SerializeField] float speed = 5f;
 	/// <summary> Player gravity variable. </summary>
-	[SerializeField] float gravity = 25f;
+	// [SerializeField] float gravity = 25f;
 	/// <summary> Player jump force. </summary>
 	[SerializeField] float jumpForce = 7f;
 	/// <summary> Mouse sensitivity for camera rotation. </summary>
@@ -70,7 +70,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
 	public bool windowEnabled = true;
-	[SerializeField] float fadeDuration;
+	[SerializeField] float fadeDuration = 1;
 
 	// [Header("Camera Variables")]
 	/// <summary> Bounds angle the player can look upward. </summary>
@@ -101,7 +101,7 @@ public class Player : Singleton<Player>, IStateMachine
 		hands = GetComponentInChildren<Hands>();
 		prompt = GameManager.Instance.prompt;
 
-        VFX.SubcribeToCutEvents(window);
+		VFX.SubcribeToCutEvents(window);
 
 		playerHeight = playerCollider.height;
 

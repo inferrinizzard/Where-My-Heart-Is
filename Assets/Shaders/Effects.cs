@@ -14,10 +14,8 @@ public class Effects : MonoBehaviour
 	bool outlineOn = true;
 	bool bloomOn = false;
 	bool dissolveOn = false;
-	[SerializeField] Material defaultGlowMat = default;
 	[SerializeField, Range(0, 30)] float lightPower = 5;
-
-	public bool maskOn = false;
+	[HideInInspector] public bool maskOn = false;
 
 	void Awake()
 	{
@@ -99,7 +97,7 @@ public class Effects : MonoBehaviour
 	}
 	#endregion
 
-	[SerializeField] OutlineColours glowColours;
+	[SerializeField] OutlineColours glowColours = default;
 	Material glowMat;
 	[HideInInspector] public InteractableObject currentGlowObj;
 	Color targetColour = Color.black;
