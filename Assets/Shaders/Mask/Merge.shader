@@ -2,9 +2,10 @@ Shader "Mask/Merge"
 {
 	Properties
 	{
-		_MainTex ("Real", 2D) = "white" {} // Real 
+		[HideInInspector] _MainTex ("Real", 2D) = "white" {} // Real 
 
-		_Intensity("Intensity", float) = 2
+		[Header(Glow)]
+		_Intensity("Glow Intensity", float) = 2
 
 		[Header(Boil)]
 		_HatchTex ("Hatch Texture", 2D) = "white" {}
@@ -24,10 +25,10 @@ Shader "Mask/Merge"
 		_WaveColour ("Colour", Color) = (1, 1, 1, 1)
 
 		[Header(Fog)]
-		_FogExponent("Fog distance exponent", float) = 4
-		_FogColor("Fog color", color) = (1, 1, 1, 1)
+		_FogExponent("Fog Distance Exponent", float) = 4
+		_FogColor("Fog Color", Color) = (1, 1, 1, 1)
 
-		_Background ("Texture", 2D) = "white" {}
+		_BirdBackground ("Bird Background", 2D) = "white" {}
 	}
 	SubShader {
 		Tags { "Queue" = "Transparent" }
@@ -84,7 +85,7 @@ Shader "Mask/Merge"
 			float4 _WaveColour;
 
 			sampler2D _BirdMask;
-			sampler2D _Background;
+			sampler2D _BirdBackground;
 
 			float _FogExponent;
 			float4 _FogColor;
@@ -111,11 +112,11 @@ Shader "Mask/Merge"
 				return result;
 			}
 
-			bool rgbEquals(fixed4 a, fixed4 b){
+			bool rgbEquals(fixed4 a, fixed4 b, fixed epsilon = 0.1){
 				// return a.r == b.r && a.g == b.g && a.b == b.b;
-				if(abs(a.r - b.r) > .1) return false;
-				if(abs(a.g - b.g) > .1) return false;
-				if(abs(a.b - b.b) > .1) return false;
+				if(abs(a.r - b.r) > epsilon) return false;
+				if(abs(a.g - b.g) > epsilon) return false;
+				if(abs(a.b - b.b) > epsilon) return false;
 				return true;
 			}
 
@@ -191,38 +192,22 @@ Shader "Mask/Merge"
 					normalDifference = pow(normalDifference, _NormalBias);
 
 					float outline = normalDifference + depthDifference * 2;
-					//float4 color = lerp(output, _DepthOutlineColour, outline);
 					float4 color = lerp(output, _DepthOutlineColour, outline);
-					if (outline > 0.1)
-					{
-						float4 hatchColor = tex2D(_HatchTex, modUV(i.uv * _HatchSize, row, col, _HatchSize));
-						color = lerp(color, output, 1 - hatchColor.r);// subtract back to non-outline based on brightness of hatch
-						color = hatchColor;
-					}
-
-					#if MASK
-						color = output;
-					#endif
-					output = color;
-					/*if (outline > 0.8)
-					{
-						color = _DepthOutlineColour;
-					}
-					//output = color;
+					// if (outline > 0.1)
+					// {
+						// 	float4 hatchColor = tex2D(_HatchTex, modUV(i.uv * _HatchSize, row, col, _HatchSize));
+						// 	color = lerp(color, output, 1 - hatchColor.r);// subtract back to non-outline based on brightness of hatch
+						// 	color = hatchColor;
+					// }
 
 					if(!rgbEquals(output, color)) { 
-						float4 preOutline = color * tex2D(_HatchTex, modUV(i.uv * _HatchSize, row, col, _HatchSize));
-						float4 hatchColor = tex2D(_HatchTex, modUV(i.uv * _HatchSize, row, col, _HatchSize));
-						
-
+						float4 preOutline = tex2D(_HatchTex, modUV(i.uv * _HatchSize, row, col, _HatchSize));
+						preOutline = lerp(color, output, 1 - preOutline.r);
 						#if MASK
 							if(mask > .5) preOutline = 0; // TODO: heart world depth normal texture lookup;
 						#endif
-
-						color = lerp(output, _DepthOutlineColour, outline);
-						//output = float4(output.r + color.r * hatchColor.r, output.g + color.g * hatchColor.r, output.b + color.b * hatchColor.r, output.a);
-						//output += preOutline;
-					}*/
+						output += preOutline;
+					}
 				#endif
 
 				#if WAVE
@@ -241,9 +226,9 @@ Shader "Mask/Merge"
 				// 	float4 birdMask =  tex2D(_BirdMask, i.uv);
 				// 	if(birdMask.r > 0 || birdMask.g > 0 || birdMask.b > 0) {
 					// 		#if MASK
-					// 			if(mask > .5)  return 1 - float4(tex2D(_Background, i.uv + float2(_Time.x, _Time.x)).rgb, birdMask.b);
+					// 			if(mask > .5)  return 1 - float4(tex2D(_BirdBackground, i.uv + float2(_Time.x, _Time.x)).rgb, birdMask.b);
 					// 		#endif
-					// 		return float4(tex2D(_Background, i.uv + float2(_Time.x, _Time.x)).rgb, birdMask.b);
+					// 		return float4(tex2D(_BirdBackground, i.uv + float2(_Time.x, _Time.x)).rgb, birdMask.b);
 				// 	}
 				// #endif
 

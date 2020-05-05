@@ -6,7 +6,7 @@ using UnityEngine;
 public class Wave : MonoBehaviour
 {
 	// [SerializeField] Shader waveShader = default;
-	[SerializeField] Color waveColour = default;
+	// [SerializeField] Color waveColour = default;
 	[HideInInspector] public float waveDistance = 0;
 	// Material waveMat;
 

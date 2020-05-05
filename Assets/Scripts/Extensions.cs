@@ -67,6 +67,14 @@ public static class Extensions
 		Debug.DrawLine(pos + rot * new Vector3(-size / 2, size / 2, -size / 2), pos + rot * new Vector3(-size / 2, -size / 2, -size / 2), colour, duration, depthCheck);
 	}
 
+	public static T GetComponentInParent<T>(this Transform @this) where T : Component
+	{
+		for (Transform current = @this.parent; current != null; current = current.parent)
+			if (current.TryGetComponent(out T component))
+				return component;
+		return null;
+	}
+
 	public static Matrix4x4 TRS(this Transform @this) => Matrix4x4.TRS(@this.position, @this.rotation, @this.localScale);
 	public static Vector3 PointwiseScale(this Vector3 @this, Vector3 v)
 	{

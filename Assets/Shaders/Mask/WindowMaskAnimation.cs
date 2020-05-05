@@ -1,83 +1,88 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class WindowMaskAnimation : MonoBehaviour
 {
-    [Header("Open Window Material")]
-    public Material openMat;
+	Material openMat;
 
-    [Header("Open Window Behavior")]
-    public float rampLength;
-    public float rampTimeOffset;
-    public float rampTarget;
+	[Header("Open Window Behavior")]
+	public float rampLength;
+	public float rampTimeOffset;
+	public float rampTarget;
+	public AnimationCurve rampCurve;
 
-    [Header("Breath Effect Behavior")]
-    public float breathMax;
-    public float breathMin;
-    public float breathRate;
-    private bool breathIn;
+	[Header("Breath Effect Behavior")]
+	public float breathMax;
+	public float breathMin;
+	public float breathRate;
+	private bool breathIn;
 
-    [Header("Misc")]
-    public float scrollRate;
+	[Header("Misc")]
+	public float scrollRate;
 
-    private bool openingWindow;
-    private float currentBreath;
-    private float rampStartTime;
+	private bool openingWindow;
+	private float currentBreath;
+	private float rampStartTime;
 
-    private ApplyMask applyMask;
-    [HideInInspector] public RenderTexture rampResult;
+	private ApplyMask applyMask;
+	[HideInInspector] public RenderTexture rampResult;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        rampResult = new RenderTexture(Screen.width, Screen.height, 8, RenderTextureFormat.Default);
-        breathIn = false;
-        applyMask = GetComponent<ApplyMask>();
-        Player.Instance.OnOpenWindow += BeginAnimation;
-    }
+	int cutoffID = Shader.PropertyToID("_Cutoff"), rampTexID = Shader.PropertyToID("_RampTex");
 
-    private void BeginAnimation()
-    {
-        openingWindow = true;
-        rampStartTime = Time.time + rampTimeOffset;
-        openMat.SetTextureOffset("_RampTex", new Vector2(Random.value, Random.value));
-    }
+	void Start()
+	{
+		openMat = new Material(Shader.Find("Mask/OpenWindowRamp"));
+		openMat.SetTexture(rampTexID, Resources.Load<Texture>("Illustration3"));
+		rampResult = new RenderTexture(Screen.width, Screen.height, 8, RenderTextureFormat.Default);
+		breathIn = false;
+		applyMask = GetComponent<ApplyMask>();
+		Player.Instance.OnOpenWindow += BeginAnimation;
+	}
 
+	private void BeginAnimation()
+	{
+		openingWindow = true;
+		rampStartTime = Time.time + rampTimeOffset;
+		openMat.SetTextureOffset(rampTexID, new Vector2(Random.value, Random.value));
+	}
 
-    private void OnPreRender()
-    {
-        if (openingWindow)
-        {
-            float t = (Time.time - rampStartTime) / rampLength;
-            if (t < 1.1)
-            {
-                if (t > 0)
-                {
-                    openMat.SetFloat("_Cutoff", Mathf.Lerp(0, rampTarget, t));
-                    Graphics.Blit(applyMask.mask, rampResult, openMat);
-                    applyMask.SetMask(rampResult);
-                }
-            }
-            else
-            {
-                openingWindow = false;
-                currentBreath = Mathf.Lerp(0, rampTarget, t);
-            }
-        }
-        else
-        {
-            currentBreath = Mathf.Lerp(currentBreath, (breathIn ? breathMax : breathMin), breathRate * Time.deltaTime);
-            if (Mathf.Abs(currentBreath - (breathIn ? breathMax : breathMin)) < 0.1)
-            {
-                breathIn = !breathIn;
-            }
+	private void OnPreRender()
+	{
+		if (openingWindow)
+		{
+			if (Time.time - rampStartTime < rampLength)
+			{
+				if (Time.time - rampStartTime > 0)
+				{
 
-            openMat.SetTextureOffset("_RampTex", openMat.GetTextureOffset("_RampTex") + Vector2.right * scrollRate * Time.deltaTime);
+					//openMat.SetFloat(cutoffID, ConcreteEaseMethods.QuadEaseOut(Time.time - rampStartTime, 0, rampTarget, rampLength));
+					openMat.SetFloat(cutoffID, rampCurve.Evaluate(Time.time - rampStartTime / rampLength) * rampTarget);
+					Graphics.Blit(applyMask.mask, rampResult, openMat);
+					applyMask.SetMask(rampResult);
+				}
+			}
+			else
+			{
+				openingWindow = false;
+				//currentBreath = ConcreteEaseMethods.QuadEaseOut(Time.time - rampStartTime, 0, rampTarget, rampLength);
+				currentBreath = rampCurve.Evaluate(Time.time - rampStartTime / rampLength) * rampTarget;
+			}
+		}
+		else
+		{
+			currentBreath = Mathf.Lerp(currentBreath, (breathIn ? breathMax : breathMin), breathRate * Time.deltaTime);
+			if (Mathf.Abs(currentBreath - (breathIn ? breathMax : breathMin)) < 0.1)
+			{
+				breathIn = !breathIn;
+			}
 
-            openMat.SetFloat("_Cutoff", currentBreath);
-            Graphics.Blit(applyMask.mask, rampResult, openMat);
-            applyMask.SetMask(rampResult);
-        }
-    }
+			openMat.SetTextureOffset(rampTexID, openMat.GetTextureOffset(rampTexID) + Vector2.right * scrollRate * Time.deltaTime);
+
+			openMat.SetFloat(cutoffID, currentBreath);
+			Graphics.Blit(applyMask.mask, rampResult, openMat);
+			applyMask.SetMask(rampResult);
+		}
+	}
 }

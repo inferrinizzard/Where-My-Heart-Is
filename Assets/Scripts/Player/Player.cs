@@ -62,7 +62,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player move speed. </summary>
 	[SerializeField] float speed = 5f;
 	/// <summary> Player gravity variable. </summary>
-	[SerializeField] float gravity = 25f;
+	// [SerializeField] float gravity = 25f;
 	/// <summary> Player jump force. </summary>
 	[SerializeField] float jumpForce = 7f;
 	/// <summary> Mouse sensitivity for camera rotation. </summary>
@@ -70,7 +70,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
 	public bool windowEnabled = true;
-	[SerializeField] float fadeDuration;
+	[SerializeField] float fadeDuration = 1;
 
 	// [Header("Camera Variables")]
 	/// <summary> Bounds angle the player can look upward. </summary>
@@ -83,6 +83,12 @@ public class Player : Singleton<Player>, IStateMachine
 	public event Action OnOpenWindow;
 	public event Action OnApplyCut;
 
+	public override void Awake()
+	{
+		base.Awake();
+		GetComponentInChildren<PageFlip>(true).Init();
+	}
+
 	void Start()
 	{
 		playerCollider = GetComponentInChildren<CapsuleCollider>();
@@ -94,6 +100,8 @@ public class Player : Singleton<Player>, IStateMachine
 		audioController = GetComponent<PlayerAudio>();
 		hands = GetComponentInChildren<Hands>();
 		prompt = GameManager.Instance.prompt;
+
+		VFX.SubcribeToCutEvents(window);
 
 		playerHeight = playerCollider.height;
 
@@ -360,5 +368,5 @@ public class Player : Singleton<Player>, IStateMachine
 		return Physics.SphereCast(playerCollider.transform.position, 0.2f, Vector3.down, out ray, playerHeight / 2 - 0.1f);
 	}
 
-	public InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
+	public InteractableObject RaycastInteractable() => Physics.SphereCast(cam.transform.position, .25f, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }
