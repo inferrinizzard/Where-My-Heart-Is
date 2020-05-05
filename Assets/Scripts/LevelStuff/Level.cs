@@ -1,41 +1,39 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 [CreateAssetMenu(fileName = "Level", menuName = "Levels/Level", order = 2)]
 public class Level : ScriptableObject
 {
-    // scene
-    public SceneAsset sceneName;
+	// string of dialogue
+	public string dialogue;
 
-    // string of dialogue
-    public string dialogue;
+	// level behaviors
+	public List<LevelBehaviour> behaviours;
 
-    // level behaviors
-    public List<LevelBehaviour> behaviours;
+	public string name;
+	// scene
+#if UNITY_EDITOR
+	public UnityEditor.SceneAsset scene;
 
-    public string GetSceneName()
-    {
-        return sceneName.name;
-    }
+	void OnValidate() => name = scene?.name;
+#endif
 
-    public void StartBehaviors()
-    {
-        foreach(LevelBehaviour behavior in behaviours)
-        {
-            behavior.OnLevelLoad();
-        }
-    }
+	public string GetSceneName() => name;
 
-    public void EndBehaviours()
-    {
-        foreach (LevelBehaviour behaviour in behaviours)
-        {
-            behaviour.OnLevelUnload();
-        }
-    }
+	public void StartBehaviors()
+	{
+		foreach (LevelBehaviour behavior in behaviours)
+			behavior.OnLevelLoad();
+	}
+
+	public void EndBehaviours()
+	{
+		foreach (LevelBehaviour behaviour in behaviours)
+			behaviour.OnLevelUnload();
+	}
 
 }

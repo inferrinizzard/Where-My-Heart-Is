@@ -5,6 +5,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class LevelInABox : MonoBehaviour
 {
+#if UNITY_EDITOR
 	void OnEnable()
 	{
 		PrefabUtility.UnpackPrefabInstance(gameObject, PrefabUnpackMode.OutermostRoot, InteractionMode.UserAction);
@@ -16,4 +17,5 @@ public class LevelInABox : MonoBehaviour
 		if (transform.childCount == 0)
 			DestroyImmediate(gameObject);
 	}
+#endif
 }
