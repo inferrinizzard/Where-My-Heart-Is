@@ -121,7 +121,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 5561349426305759274, guid: 07ea413a10ffca146ac4bfec001160f9, type: 3}
+  - {fileID: 2100000, guid: 345e43aa80ab58540b390458bbd5d368, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -234,7 +234,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 5561349426305759274, guid: 618530b4658b1184ca1b560556661621, type: 3}
+  - {fileID: 2100000, guid: 9024ebf89c51c3a4dbd8ab1441f41d09, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -302,6 +302,7 @@ MonoBehaviour:
   player: {fileID: 0}
   active: 0
   prompt: Press E to Interact
+  renderers: []
 --- !u!114 &2564567834802567458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -314,7 +315,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43ddf123199201b4180c2144089a2d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
   depthCheck: 0
   outlineColour: {r: 0, g: 0, b: 1, a: 1}
 --- !u!1 &2564567835241987657
@@ -471,7 +471,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 5561349426305759274, guid: 07ea413a10ffca146ac4bfec001160f9, type: 3}
+  - {fileID: 2100000, guid: 345e43aa80ab58540b390458bbd5d368, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -615,7 +615,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 5561349426305759274, guid: 618530b4658b1184ca1b560556661621, type: 3}
+  - {fileID: 2100000, guid: 9024ebf89c51c3a4dbd8ab1441f41d09, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -683,6 +683,7 @@ MonoBehaviour:
   player: {fileID: 0}
   active: 0
   prompt: Press E to Interact
+  renderers: []
 --- !u!114 &2564567836063532868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -695,7 +696,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43ddf123199201b4180c2144089a2d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
   depthCheck: 0
   outlineColour: {r: 0, g: 0, b: 1, a: 1}
 --- !u!1 &2564567836120436768
@@ -723,8 +723,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2564567836120436768}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.39, z: -4.66}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
   m_Children:
   - {fileID: 2564567835808789347}
   - {fileID: 2564567835263876028}
