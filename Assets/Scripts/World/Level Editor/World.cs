@@ -12,7 +12,7 @@ public class World : MonoBehaviour
 	public Transform realWorldContainer;
 	public Transform entangledWorldContainer;
 
-	public List<ClippableObject> heartClippables, realClippables;
+	public List<ClippableObject> heartClippables, realClippables, mirrorClippables;
 
     [HideInInspector] public List<EntangledClippable> EntangledClippables
     {
@@ -51,8 +51,12 @@ public class World : MonoBehaviour
 		ConfigureWorld("Heart", heartWorldContainer);
 		ConfigureWorld("Real", realWorldContainer);
 
-		heartClippables = heartWorldContainer.GetComponentsInChildren<ClippableObject>().ToList();
-		realClippables = realWorldContainer.GetComponentsInChildren<ClippableObject>().ToList();
+		heartClippables = heartWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => !(clippable is Mirror)).ToList();
+		realClippables = realWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => !(clippable is Mirror)).ToList();
+
+        // get the mirror. Futureproofed in case we have more than one mirror or mirrors in both worlds
+        mirrorClippables = realWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => clippable is Mirror).ToList();
+        mirrorClippables.AddRange(heartWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => clippable is Mirror).ToList());
 
         entangledClippables = entangledWorldContainer.GetComponentsInChildren<EntangledClippable>().ToList();
         foreach (EntangledClippable entangled in entangledClippables)
@@ -137,8 +141,12 @@ public class World : MonoBehaviour
 	{
 		foreach (ClippableObject clippable in clippables)
 			if (clippable.isClipped) clippable.Revert();
+
         foreach (EntangledClippable entangled in GetComponentsInChildren<EntangledClippable>())
             if (entangled.isClipped) entangled.Revert();
+
+        foreach (Mirror mirror in mirrorClippables)
+            if (mirror.isClipped) mirror.Revert();
 
 		// foreach (Transform child in heartWorldContainer)
 		// 	foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
