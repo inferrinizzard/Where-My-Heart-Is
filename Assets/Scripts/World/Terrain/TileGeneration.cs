@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Generate tiles around the player
+/// Generate tiles with trees and occasional door around the player
 /// </summary>
 public class TileGeneration : MonoBehaviour
 {
     public GameObject player;
     public GameObject door;
 
-    static int timesGenerated = 0;
-
-    //Vector3 startPos = Vector3.zero;
     List<GameObject> myTrees = new List<GameObject>();
     List<GameObject> myDoors = new List<GameObject>();
+
+    [SerializeField] private int spawnDist = 50; // Spawn door after 50 steps
+    [SerializeField] private int stepsTaken = 149;
 
     [SerializeField] NoiseMapGeneration noiseMapGeneration; // Get script
     [SerializeField] private MeshRenderer tileRenderer; // Show height map of each vertex
@@ -59,41 +59,55 @@ public class TileGeneration : MonoBehaviour
             {
                 //   Debug.Log("perlin noise: " + Mathf.PerlinNoise((meshVertices[v].x + 5) / 10, (meshVertices[v].z + 5) / 10) * 10);
                 GameObject newTree = TreePool.GetTree();
+                float treeScale = Random.Range(0.0f, 0.1f);
                 if (newTree != null && Random.Range(0.0f, 1.0f) < 0.05)
                 {
                     Vector3 treePos = new Vector3(meshVertices[v].x + this.gameObject.transform.position.x,
-                                                    meshVertices[v].y + 2.3f,
+                                                    meshVertices[v].y + 2.5f,
                                                     meshVertices[v].z + this.gameObject.transform.position.z);
                     newTree.transform.position = treePos;
+                    newTree.transform.localScale += new Vector3(treeScale, treeScale, treeScale);
                     newTree.SetActive(true);
                     myTrees.Add(newTree);
                 }
-
-                // Spawn one door when it exists in the pool and respawns when player starts moving 
-                GameObject newDoor = DoorPool.GetDoor();
-                if (newDoor != null && timesGenerated > 200 && timesGenerated % 3 ==0 )
-                {
-                    Vector3 doorPos = (player.transform.forward*20) + new Vector3(player.transform.position.x,
-                                                    meshVertices[v].y - 0.5f,
-                                                    player.transform.position.z);
-                    newDoor.transform.position = doorPos;
-                    newDoor.transform.rotation = Quaternion.LookRotation(player.transform.forward);
-                    newDoor.SetActive(true);
-                    myDoors.Add(newDoor);
-                   // Debug.Log("player door dist: " + Vector3.Distance(myDoors[0].transform.position, player.transform.position));
-                }
-                
             }
         }
-
-        timesGenerated++;
-       // Debug.Log("total tiles generated " + timesGenerated);
 
         // Update the tile mesh vertices according to the height map
         UpdateMeshVertices(heightMap);
     }
 
+    private void Update()
+    {
+        // Spawn one door when it exists in the pool and respawns when player moves a certain distance
+        GameObject newDoor = DoorPool.GetDoor();
+        if (newDoor != null && (int)Vector3.Distance(Vector3.zero, player.transform.position) > stepsTaken && (int)Vector3.Distance(Vector3.zero, player.transform.position) % spawnDist == 0)
+        {
+            Vector3 doorPos = (player.transform.forward * 20) + new Vector3(player.transform.position.x,
+                                            0.6f,
+                                            player.transform.position.z);
+            newDoor.transform.position = doorPos;
+            newDoor.transform.rotation = Quaternion.LookRotation(player.transform.forward);
+            newDoor.SetActive(true);
+            myDoors.Add(newDoor);
+            // Debug.Log("player door dist: " + Vector3.Distance(myDoors[0].transform.position, player.transform.position));
+        }
 
+        // Clear door when player position is far enough
+        if((int)Vector3.Distance(Vector3.zero, player.transform.position) % (spawnDist*2) == 0)
+        {
+            for (int i = 0; i < myDoors.Count; i++)
+            {
+                if (myDoors[i] != null)
+                {
+                    myDoors[i].SetActive(false);
+                }
+            }
+            myDoors.Clear();
+        }
+
+        Debug.Log((int)Vector3.Distance(Vector3.zero, player.transform.position));
+    }
     // Clear trees and doors when tiles are destoryed
     void OnDestroy()
     {
@@ -103,18 +117,9 @@ public class TileGeneration : MonoBehaviour
                 myTrees[i].SetActive(false);
         }
 
-        for (int i = 0; i < myDoors.Count; i++)
-        {
-            //  Debug.Log("door clear condition: " + Mathf.Abs(Vector3.Distance(myDoors[i].transform.position, player.transform.position)));
-            // if (myDoors[i] != null && Mathf.Abs(Vector3.Distance(myDoors[i].transform.position, player.transform.position)) > 25.0f)
-            if (myDoors[i] != null)
-            {
-                myDoors[i].SetActive(false);
-            }
-        }
-
+ 
         myTrees.Clear();
-        myDoors.Clear();
+   
 
     }
     // Changes plane mesh vertices according to the height map

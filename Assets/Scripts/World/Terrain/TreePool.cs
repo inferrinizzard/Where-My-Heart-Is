@@ -8,7 +8,7 @@ using UnityEngine;
 /// <returns> Tree if available, null if all trees are unavailable </returns>
 public class TreePool : MonoBehaviour
 {
-    static int numTrees = 1000;
+    static int numTrees = 500;
     public GameObject firstTreePrefab;
     public GameObject secondTreePrefab;
     static GameObject[] trees;
