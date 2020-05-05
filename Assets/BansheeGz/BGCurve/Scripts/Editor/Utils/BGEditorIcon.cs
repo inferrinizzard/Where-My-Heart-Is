@@ -39,6 +39,7 @@ namespace BansheeGz.BGSpline.Editor
 			get
 			{
 				if (texture != null) return texture;
+
 				var data = Data;
 				if (data == null) throw new Exception("Can not access data stream to load resource: stream is null");
 				if (data.Length < Offset + Length) throw new Exception("Can not read resource from stream: not enough data: " + data.Length + "<" + (Offset + Length));

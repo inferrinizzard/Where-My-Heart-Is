@@ -108,6 +108,7 @@ namespace CSG
 			internalIntersections.Clear();
 		}
 
+
 		public override string ToString() => $"{base.ToString()}::{string.Join("::", vertices.Select(v=>v.value.ToString("F4")))}";
 
 		public void Draw(Color color)

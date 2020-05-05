@@ -67,6 +67,7 @@ public class InputManager : MonoBehaviour
 	/// <summary> Alt Aim Key is let go. </summary>
 	public static event Action OnAltAimKeyUp;
 
+
 	//Pause Menu Key Actions
 	/// <summary> Pause Key is initially pressed down. </summary>
 	public static event Action OnPauseKeyDown;

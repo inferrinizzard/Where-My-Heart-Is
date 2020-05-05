@@ -8,33 +8,48 @@ public class ApplyOutline : MonoBehaviour
 {
 	Camera cam;
 	public static CommandBuffer glowBuffer;
+	public static bool drawGlow = false;
 
-	int glowTemp = Shader.PropertyToID("_GlowTemp");
+	int glowTempID = Shader.PropertyToID("_GlowTemp"), glowMapID = Shader.PropertyToID("_GlowMap");
 
 	void Start()
 	{
 		cam = GetComponent<Camera>();
 		glowBuffer = new CommandBuffer();
-		glowBuffer.GetTemporaryRT(glowTemp, -1, -1, 24, FilterMode.Bilinear);
-		glowBuffer.SetRenderTarget(glowTemp);
-		glowBuffer.ClearRenderTarget(true, true, Color.clear);
-		glowBuffer.SetGlobalTexture("_GlowMap", glowTemp);
 		glowBuffer.name = "Glow Map Buffer";
 
 		cam.AddCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
+		ResetGlowBuffer();
 	}
 
+	public void OnEnable() => Cleanup();
+	public void OnDisable() => Cleanup();
 	private void Cleanup()
 	{
 		if (glowBuffer != null && cam)
 			cam.RemoveCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
 	}
 
-	public void OnDisable() => Cleanup();
+	void ResetGlowBuffer()
+	{
+		glowBuffer.Clear();
+		glowBuffer.GetTemporaryRT(glowTempID, -1, -1, 24, FilterMode.Bilinear);
+		glowBuffer.SetRenderTarget(glowTempID);
+		glowBuffer.ClearRenderTarget(true, true, Color.clear);
+	}
 
-	public void OnEnable() => Cleanup();
+	void LateUpdate()
+	{
+		if (drawGlow)
+			ResetGlowBuffer();
+	}
 
-	void LateUpdate() => glowBuffer.ClearRenderTarget(true, true, Color.clear);
-
-	void OnPreCull() => glowBuffer.SetGlobalTexture("_GlowMap", glowTemp);
+	void OnPreCull()
+	{
+		if (drawGlow)
+		{
+			glowBuffer.SetGlobalTexture(glowMapID, glowTempID);
+			drawGlow = false;
+		}
+	}
 }

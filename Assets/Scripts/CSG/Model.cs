@@ -99,7 +99,7 @@ namespace CSG
 			//Debug.Log(triangles.Count);
 			foreach (Triangle triangle in triangles)
 			{
-				triangle.edges.Clear();
+                triangle.edges.Clear();
 
 				for (int i = 0; i < 3; i++)
 				{
@@ -261,19 +261,19 @@ namespace CSG
 		/// <returns>True if a contained vertex is found, false otherwise</returns>
 		public bool Intersects(Model other, float error, bool useEdgeFace = false)
 		{
-			if (useEdgeFace)
-			{
-				foreach (Edge edge in edges)
-				{
-					foreach (Triangle triangle in other.triangles)
-					{
-						if (Raycast.LineSegmentToTriangle(edge.vertices[0].value, edge.vertices[1].value, triangle, error) != null)
-						{
-							return true;
-						}
-					}
-				}
-			}
+            if(useEdgeFace)
+            {
+                foreach(Edge edge in edges)
+                {
+                    foreach (Triangle triangle in other.triangles)
+                    {
+                        if(Raycast.LineSegmentToTriangle(edge.vertices[0].value, edge.vertices[1].value, triangle, error) != null)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
 
 			foreach (Vertex vertex in vertices)
 			{

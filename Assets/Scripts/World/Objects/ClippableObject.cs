@@ -39,7 +39,7 @@ public class ClippableObject : MonoBehaviour
 
     private CSG.Model stagedModel;
 
-	void Awake()
+	protected void Awake()
 	{
 		isClipped = false;
 
@@ -48,6 +48,7 @@ public class ClippableObject : MonoBehaviour
 		if (!this.TryComponent<MeshCollider>())
 			gameObject.AddComponent<MeshCollider>();
 		initialMesh = meshFilter.mesh;
+
 		oldLayer = gameObject.layer;
 	}
 
@@ -87,10 +88,10 @@ public class ClippableObject : MonoBehaviour
 			col.sharedMesh = meshFilter.mesh;
 	}
 
-    public void Subtract(CSG.Model other)
+    public void Subtract(CSG.Model other, bool normalOverride = true)
     {
         if (!volumeless)
-            meshFilter.mesh = CSG.Operations.Subtract(CachedModel, other);
+            meshFilter.mesh = CSG.Operations.Subtract(CachedModel, other, normalOverride);
         else
             meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other, false, false, null);
 
@@ -167,4 +168,10 @@ public class ClippableObject : MonoBehaviour
 		if (this.TryComponent(out MeshCollider col))
 			col.sharedMesh = meshFilter.mesh;
 	}
+
+    private void OnDestroy()
+    {
+        World.Instance.RemoveClippable(this);
+        
+    }
 }

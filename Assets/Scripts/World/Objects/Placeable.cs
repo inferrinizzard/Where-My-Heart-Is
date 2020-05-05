@@ -9,11 +9,9 @@ public class Placeable : Pickupable
 	public GameObject placeTarget;
 	public BirbAnimTester birdAnim;
 	public IntroController introController;
-	public Texture2D preview;
 
 	public override void Interact()
 	{
-		base.Interact();
 
 		if (PlaceConditionsMet())
 		{
@@ -24,8 +22,6 @@ public class Placeable : Pickupable
 			transform.localScale = Vector3.one;
 
 			CanvasObject canvas = gameObject.AddComponent<CanvasObject>();
-			canvas.manualTarget = "Bridge";
-			canvas.preview = preview;
 			introController.SetCanvas(canvas);
 			canvas.player = player;
 			canvas.Interact(); // TODO: temp
@@ -34,6 +30,11 @@ public class Placeable : Pickupable
 		else if (player.heldObject == this)
 		{
 			birdAnim.StartNextCurve();
+		}
+
+		if (!PlaceConditionsMet())
+		{
+			base.Interact();
 		}
 	}
 
