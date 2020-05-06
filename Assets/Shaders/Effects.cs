@@ -1,4 +1,4 @@
-#define DEBUG
+// #define DEBUG
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,9 +14,8 @@ public class Effects : MonoBehaviour
 	bool outlineOn = true;
 	bool bloomOn = false;
 	bool dissolveOn = false;
-	[SerializeField] Material defaultGlowMat = default;
-
 	[SerializeField, Range(0, 30)] float lightPower = 5;
+	[HideInInspector] public bool maskOn = false;
 
 	void Awake()
 	{
@@ -24,13 +23,25 @@ public class Effects : MonoBehaviour
 		fadeController = GetComponent<Fade>();
 		waveController = GetComponent<Wave>();
 
-		ToggleMask(false);
-		ToggleEdgeOutline(false);//outlineOn
-        ToggleDissolve(dissolveOn);
+		ToggleWave(false);
+		ToggleMask(maskOn);
+		ToggleEdgeOutline(true); //outlineOn
+		ToggleDissolve(dissolveOn);
 		ToggleBoil(true);
 		ToggleBird(true);
+
+		glowMat = new Material(Shader.Find("Outline/GlowObject"));
+		glowMat.color = Color.black;
 	}
 
+	public void SubcribeToCutEvents(Window window)
+	{
+		window.OnClippableCut += SetWave;
+		window.OnBeginCut += () => ToggleWave(true);
+		window.OnCompleteCut += () => ToggleWave(false);
+	}
+
+	#region toggles
 	void Update()
 	{
 #if DEBUG // debug toggles
@@ -59,7 +70,7 @@ public class Effects : MonoBehaviour
 	/// <summary> toggles mask on and off </summary>
 	/// <param name="on"> Is mask on? </summary>
 	// public void ToggleMask(bool on) => mask.enabled = on;
-	public void ToggleMask(bool on) => ToggleEffect(on, "MASK");
+	public void ToggleMask(bool on) => ToggleEffect(maskOn = on, "MASK");
 
 	/// <summary> toggles edge outline on and off </summary>
 	/// <param name="on"> Is edge outline on? </summary>
@@ -69,11 +80,13 @@ public class Effects : MonoBehaviour
 	public void ToggleBoil(bool on) => ToggleEffect(on, "BOIL");
 	public void ToggleWave(bool on) => ToggleEffect(on, "WAVE");
 	public void ToggleBird(bool on) => ToggleEffect(on, "BIRD");
+	public void ToggleFog(bool on) => ToggleEffect(on, "FOG");
 
 	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
 
 	// public void SetWave(float distance) => waveController.waveDistance = distance;
 	public void SetWave(float distance) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", distance);
+	public void SetWave(ClippableObject clippable) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", (clippable.transform.position - transform.position).magnitude);
 
 	void ToggleEffect(bool on, string keyword)
 	{
@@ -82,12 +95,52 @@ public class Effects : MonoBehaviour
 		else
 			Shader.DisableKeyword(keyword);
 	}
+	#endregion
 
-	public void RenderGlowMap(Renderer[] renderers, Material mat = null)
+	[SerializeField] OutlineColours glowColours = default;
+	Material glowMat;
+	[HideInInspector] public InteractableObject currentGlowObj;
+	Color targetColour = Color.black;
+	int glowColourID = Shader.PropertyToID("_Colour");
+	Coroutine glowRoutine;
+
+	public void RenderGlowMap(Renderer[] renderers, Material mat)
 	{
-		mat = mat ?? defaultGlowMat;
-		// mat.SetColor("_Colour", col);
+		ApplyOutline.drawGlow = true;
 		foreach (Renderer r in renderers)
 			ApplyOutline.glowBuffer.DrawRenderer(r, mat);
+	}
+
+	public void SetGlow(InteractableObject obj)
+	{
+		targetColour = glowColours[obj];
+		if (glowRoutine != null)
+			StopCoroutine(glowRoutine);
+		if (obj)
+		{
+			ApplyOutline.drawGlow = true;
+			glowRoutine = StartCoroutine(RenderGlowLerp(obj.renderers));
+			currentGlowObj = obj;
+		}
+		else
+			glowRoutine = StartCoroutine(RenderGlowLerp(currentGlowObj?.renderers, off : true));
+	}
+
+	IEnumerator RenderGlowLerp(Renderer[] renderers, float time = 2, bool off = false)
+	{
+		for (float step = time; step > 0; step -= Time.deltaTime)
+		{
+			yield return null;
+
+			glowMat.color = Color.Lerp(glowMat.color, targetColour, Time.deltaTime * time);
+
+			foreach (Renderer r in renderers)
+				ApplyOutline.glowBuffer.DrawRenderer(r, glowMat);
+
+			if (glowMat.color.Equals(targetColour) || renderers.Length == 0)
+				yield break;
+		}
+		if (off)
+			currentGlowObj = null;
 	}
 }

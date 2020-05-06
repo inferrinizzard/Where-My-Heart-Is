@@ -4,7 +4,6 @@ using UnityEngine;
 public class SpawnPoint : MonoBehaviour
 {
 #if UNITY_EDITOR
-
 	Transform player, cam;
 
 	void OnEnable()

@@ -168,4 +168,10 @@ public class ClippableObject : MonoBehaviour
 		if (this.TryComponent(out MeshCollider col))
 			col.sharedMesh = meshFilter.mesh;
 	}
+
+    private void OnDestroy()
+    {
+        World.Instance.RemoveClippable(this);
+        
+    }
 }

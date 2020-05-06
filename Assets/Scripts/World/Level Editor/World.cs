@@ -12,7 +12,7 @@ public class World : MonoBehaviour
 	public Transform realWorldContainer;
 	public Transform entangledWorldContainer;
 
-	public List<ClippableObject> heartClippables, realClippables;
+	public List<ClippableObject> heartClippables, realClippables, mirrorClippables;
 
     [HideInInspector] public List<EntangledClippable> EntangledClippables
     {
@@ -51,8 +51,12 @@ public class World : MonoBehaviour
 		ConfigureWorld("Heart", heartWorldContainer);
 		ConfigureWorld("Real", realWorldContainer);
 
-		heartClippables = heartWorldContainer.GetComponentsInChildren<ClippableObject>().ToList();
-		realClippables = realWorldContainer.GetComponentsInChildren<ClippableObject>().ToList();
+		heartClippables = heartWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => !(clippable is Mirror)).ToList();
+		realClippables = realWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => !(clippable is Mirror)).ToList();
+
+        // get the mirror. Futureproofed in case we have more than one mirror or mirrors in both worlds
+        mirrorClippables = realWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => clippable is Mirror).ToList();
+        mirrorClippables.AddRange(heartWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => clippable is Mirror).ToList());
 
         entangledClippables = entangledWorldContainer.GetComponentsInChildren<EntangledClippable>().ToList();
         foreach (EntangledClippable entangled in entangledClippables)
@@ -102,6 +106,20 @@ public class World : MonoBehaviour
 		Destroy(gameObject);
 	}*/
 
+    public void RemoveClippable(ClippableObject clippable)
+    {
+        if (clippable.worldType == ClippableObject.WorldType.Real)
+        {
+            realClippables.Remove(clippable);
+
+        }
+        else
+        {
+            heartClippables.Remove(clippable);
+        }
+        clippables.Remove(clippable);
+    }
+
 	private void ConfigureWorld(string layer, Transform worldContainer)
 	{
 		foreach (MeshFilter meshFilter in worldContainer.GetComponentsInChildren<MeshFilter>())
@@ -135,10 +153,17 @@ public class World : MonoBehaviour
 
 	public void ResetCut()
 	{
-		foreach (ClippableObject clippable in clippables)
+		foreach (ClippableObject clippable in heartClippables)
 			if (clippable.isClipped) clippable.Revert();
+
+        foreach (ClippableObject clippable in realClippables)
+            if (clippable.isClipped) clippable.Revert();
+
         foreach (EntangledClippable entangled in GetComponentsInChildren<EntangledClippable>())
             if (entangled.isClipped) entangled.Revert();
+
+        foreach (Mirror mirror in mirrorClippables)
+            if (mirror.isClipped) mirror.Revert();
 
 		// foreach (Transform child in heartWorldContainer)
 		// 	foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())

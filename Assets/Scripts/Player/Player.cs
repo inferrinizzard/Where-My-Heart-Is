@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,6 +7,7 @@ using FMOD;
 
 using UnityEngine;
 using UnityEngine.UI;
+
 using Debug = UnityEngine.Debug;
 
 /// <summary> Handles player behaviors. </summary>
@@ -60,7 +62,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player move speed. </summary>
 	[SerializeField] float speed = 5f;
 	/// <summary> Player gravity variable. </summary>
-	[SerializeField] float gravity = 25f;
+	// [SerializeField] float gravity = 25f;
 	/// <summary> Player jump force. </summary>
 	[SerializeField] float jumpForce = 7f;
 	/// <summary> Mouse sensitivity for camera rotation. </summary>
@@ -68,7 +70,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
 	public bool windowEnabled = true;
-	[SerializeField] float fadeDuration;
+	[SerializeField] float fadeDuration = 1;
 
 	// [Header("Camera Variables")]
 	/// <summary> Bounds angle the player can look upward. </summary>
@@ -76,6 +78,16 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Stores the rotation of the player. </summary>
 	[HideInInspector] public Vector3 rotation = Vector3.zero;
 	int _ViewDirID = Shader.PropertyToID("_ViewDir");
+
+	// events
+	public event Action OnOpenWindow;
+	public event Action OnApplyCut;
+
+	public override void Awake()
+	{
+		base.Awake();
+		GetComponentInChildren<PageFlip>(true).Init();
+	}
 
 	void Start()
 	{
@@ -88,6 +100,8 @@ public class Player : Singleton<Player>, IStateMachine
 		audioController = GetComponent<PlayerAudio>();
 		hands = GetComponentInChildren<Hands>();
 		prompt = GameManager.Instance.prompt;
+
+		VFX.SubcribeToCutEvents(window);
 
 		playerHeight = playerCollider.height;
 
@@ -318,10 +332,7 @@ public class Player : Singleton<Player>, IStateMachine
 		// else if (looking) { SetState(new Inspect(this)); } //unused for now
 		else
 		{
-			if (heldObject.dissolves)
-				StartCoroutine(heldObject.DissolveOnDrop(1));
-			else
-				EndState();
+			EndState();
 		}
 	}
 
@@ -332,6 +343,7 @@ public class Player : Singleton<Player>, IStateMachine
 		{
 			SetState(new Aiming(this));
 			StartCoroutine(hands.WaitAndAim());
+			OnOpenWindow?.Invoke();
 		}
 	}
 
@@ -340,12 +352,14 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (State is Aiming && windowEnabled && !heldObject)
 		{
+			// SetState(new Cut(this));
 			window.ApplyCut();
 			hands.RevertAim();
 			audioController.PlaceWindow();
 			heartWindow.SetActive(false);
 			VFX.ToggleMask(false);
 			EndState();
+			OnApplyCut?.Invoke();
 		}
 	}
 	public bool IsGrounded()
@@ -354,5 +368,5 @@ public class Player : Singleton<Player>, IStateMachine
 		return Physics.SphereCast(playerCollider.transform.position, 0.2f, Vector3.down, out ray, playerHeight / 2 - 0.1f);
 	}
 
-	public InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) && hit.transform.root != transform ? InteractableObject.GetInAncestors(hit.transform) : null;
+	public InteractableObject RaycastInteractable() => Physics.SphereCast(cam.transform.position, .25f, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }
