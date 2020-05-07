@@ -143,7 +143,7 @@ public class Window : MonoBehaviour
 		//Debug.Log(clippableObject.GetComponent<MeshFilter>().mesh.bounds.extents);
 		//Debug.Log(bounds.min + " :: " + bounds.max);
 		//Debug.Log(clippableObject.GetComponent<MeshCollider>().bounds.min + " :: " + clippableObject.GetComponent<MeshCollider>().bounds.max);
-		if (bounds.Intersects(clippableObject.GetComponent<MeshCollider>().bounds)) //true || 
+		if (bounds.Intersects(clippableObject.GetComponent<MeshCollider>().bounds)) //true ||
 		{
 			//Debug.Log(clippableObject.IntersectsBound(fieldOfViewModel));
 			// more expensive, more accurate intersection check
