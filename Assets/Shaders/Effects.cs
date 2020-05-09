@@ -29,6 +29,7 @@ public class Effects : MonoBehaviour
 		ToggleDissolve(dissolveOn);
 		ToggleBoil(true);
 		ToggleBird(true);
+		ToggleFog(false);
 
 		glowMat = new Material(Shader.Find("Outline/GlowObject"));
 		glowMat.color = Color.black;

@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 19083736}
   - component: {fileID: 19083735}
   m_Layer: 0
-  m_Name: BGCurve
+  m_Name: Curve 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -253,12 +253,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 19083732}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 5.08, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_Father: {fileID: 801759395}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &19083735
 MonoBehaviour:
@@ -281,9 +281,9 @@ MonoBehaviour:
   handlesColor: {r: 1, g: 1, b: 1, a: 1}
   objectToManipulate: {fileID: 5006512736331610157}
   cursorChangeMode: 0
-  speed: 5
+  speed: 0
   speedField: {fileID: 0}
-  useFixedUpdate: 0
+  useFixedUpdate: 1
   overflowControl: 2
   moveObject: 1
   rotateObject: 1
@@ -324,6 +324,38 @@ MonoBehaviour:
   spheresScale: 1
   spheresColor: {r: 1, g: 1, b: 1, a: 1}
   spheresCount: 100
+--- !u!1 &801759394
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 801759395}
+  m_Layer: 0
+  m_Name: Bird Curves
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &801759395
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 801759394}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 887053061}
+  - {fileID: 19083734}
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &887053056
 GameObject:
   m_ObjectHideFlags: 0
@@ -337,13 +369,51 @@ GameObject:
   - component: {fileID: 887053059}
   - component: {fileID: 887053058}
   - component: {fileID: 887053062}
+  - component: {fileID: 887053057}
   m_Layer: 0
-  m_Name: BGCurve
+  m_Name: Curve 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &887053057
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887053056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 535a3a5d00075854a98f71fdd486b248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showHandles: 1
+  hidden: 0
+  parent: {fileID: 887053058}
+  ccName: 
+  useFixedUpdate: 1
+  speed: 0
+  overflowControl: 0
+  adjustByTotalLength: 0
+  speedField: {fileID: 0}
+  delay: 0
+  delayField: {fileID: 0}
+  pointReachedEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &887053058
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -365,9 +435,9 @@ MonoBehaviour:
   handlesColor: {r: 1, g: 1, b: 1, a: 1}
   objectToManipulate: {fileID: 5006512736331610157}
   cursorChangeMode: 0
-  speed: 7
+  speed: 0
   speedField: {fileID: 0}
-  useFixedUpdate: 0
+  useFixedUpdate: 1
   overflowControl: 2
   moveObject: 1
   rotateObject: 1
@@ -565,12 +635,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 887053056}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 5.08, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_Father: {fileID: 801759395}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &887053062
 MonoBehaviour:
@@ -796,7 +866,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 304ef6b5992505b42a4a639d031357e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waveController: {fileID: 0}
   defaultGlowMat: {fileID: 2100000, guid: 30bc59854c5535f4494b3eeedaacafce, type: 2}
+  lightPower: 5
 --- !u!1 &1468732773
 GameObject:
   m_ObjectHideFlags: 0
@@ -909,37 +981,37 @@ PrefabInstance:
     - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.0740156
+      value: 2.6507158
       objectReference: {fileID: 0}
     - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.070287704
+      value: 0.03483486
       objectReference: {fileID: 0}
     - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.9870763
+      value: 3.118445
       objectReference: {fileID: 0}
     - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.24636427
+      value: -0.41177875
       objectReference: {fileID: 0}
     - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.73375756
+      value: -0.47235894
       objectReference: {fileID: 0}
     - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.33739302
+      value: -0.26546848
       objectReference: {fileID: 0}
     - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.53578955
+      value: 0.7326949
       objectReference: {fileID: 0}
     - target: {fileID: 831279602058125420, guid: ff4f26a49f96f644b91a6337df60e530,
         type: 3}
@@ -976,23 +1048,15 @@ PrefabInstance:
       propertyPath: curves.Array.data[1]
       value: 
       objectReference: {fileID: 19083735}
+    - target: {fileID: 5689164163903171203, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: curveHolder
+      value: 
+      objectReference: {fileID: 801759395}
+    - target: {fileID: 5689164163903171208, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: EmissionModule.enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff4f26a49f96f644b91a6337df60e530, type: 3}
---- !u!1 &8296172668195260990 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4454646879193731711, guid: ff4f26a49f96f644b91a6337df60e530,
-    type: 3}
-  m_PrefabInstance: {fileID: 5689164163615578177}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &8296172668195260991
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8296172668195260990}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d4404fc0b101fe45a6672f8ab17a94a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
