@@ -46,14 +46,14 @@ public class GameManager : Singleton<GameManager>
 	{
 		levelOrder.End();
 		levelOrder.NextScene();
-		Transition(levelOrder.GetSceneName());
+		Transition(levelOrder.Name);
 	}
 
 	public IEnumerator ChangeLevelManual()
 	{
 		levelOrder.End();
 		levelOrder.NextScene();
-		return LoadScene(levelOrder.GetSceneName());
+		return LoadScene(levelOrder.Name);
 	}
 
 	/// <summary> Starts Coroutine to load scene async  </summary>

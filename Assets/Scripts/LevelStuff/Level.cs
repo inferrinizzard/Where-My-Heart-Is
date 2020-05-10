@@ -10,19 +10,18 @@ public class Level : ScriptableObject
 {
 	// string of dialogue
 	public string dialogue;
-
 	// level behaviors
 	public List<LevelBehaviour> behaviours;
+	public string levelName;
 
-	public string name;
-	// scene
 #if UNITY_EDITOR
+	// scene
 	public UnityEditor.SceneAsset scene;
 
-	void OnValidate() => name = scene?.name;
+	void OnValidate() => levelName = scene?.name;
 #endif
 
-	public string GetSceneName() => name;
+	public string Name { get => levelName; }
 
 	public void StartBehaviors()
 	{
