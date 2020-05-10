@@ -1,32 +1,34 @@
 sampler2D _GlowMap;
 float4 _GlowMap_TexelSize;
-float _Intensity;
-float _Radius;
+float _GlowIntensity;
+// float _Radius;
 
 int CalculateGlow(inout float4 output, float2 uv, float mask) {
 	float4 glow = tex2D(_GlowMap, uv);
-	// return glow;
 	if(glow.a == 0) {
-		//split texel size into smaller words
-		float TX_x = _GlowMap_TexelSize.x;
-		float TX_y = _GlowMap_TexelSize.y;
+		float TX_x = _GlowMap_TexelSize.x, TX_y = _GlowMap_TexelSize.y;
+		float4 sumColour = float4(0, 0, 0, 0);
 		
-		//and a final intensity that increments based on surrounding intensities.
-		float4 ColorIntensityInRadius = float4(0, 0, 0, 0);
-		
-		for(int k = 0; k < _Radius; k++) {
-			for(int j = 0; j < _Radius; j++) {
-				//increase our output color by the pixels in the area
-				ColorIntensityInRadius += tex2D(_GlowMap, uv.xy + 
-				float2((k - _Radius / 2) * TX_x, (j - _Radius / 2) * TX_y));
+		int r = 5;
+		for(int k = 0; k < r; k++) {
+			for(int j = 0; j < r; j++) {
+				sumColour += tex2D(_GlowMap, uv + float2((k - r / 2) * TX_x, (j - r / 2) * TX_y));
 			}
 		}
 
-		#if MASK
-			if(mask > .5 && ColorIntensityInRadius.a > 0) return ColorIntensityInRadius * _Intensity; 
+		float4 glowOutput = sumColour * _GlowIntensity;
+		#if mask
+			if(mask > .5 && sumColour.a > 0)  glowOutput = float4(1 - glowOutput.xyz, glowOutput.a);
 		#endif
 
-		output += ColorIntensityInRadius * _Intensity;
+		// #if MASK
+		// 	if(mask > .5 && sumColour.a > 0) {
+			// 		output = sumColour * _GlowIntensity;
+			// 		return 1;
+		// 	}
+		// #endif
+
+		output += glowOutput;
 	}
 
 	return 0;

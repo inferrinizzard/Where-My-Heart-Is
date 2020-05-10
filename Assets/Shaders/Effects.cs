@@ -11,7 +11,6 @@ public class Effects : MonoBehaviour
 {
 	Fade fadeController;
 	[HideInInspector] public Wave waveController; // TODO: add wave controller?
-	bool outlineOn = true;
 	bool bloomOn = false;
 	bool dissolveOn = false;
 	[SerializeField, Range(0, 30)] float lightPower = 5;
@@ -25,7 +24,7 @@ public class Effects : MonoBehaviour
 
 		ToggleWave(false);
 		ToggleMask(maskOn);
-		ToggleEdgeOutline(true); //outlineOn
+		// ToggleEdgeOutline(true);
 		ToggleDissolve(dissolveOn);
 		ToggleBoil(true);
 		ToggleBird(true);
@@ -46,11 +45,11 @@ public class Effects : MonoBehaviour
 	void Update()
 	{
 #if DEBUG // debug toggles
-		if (Input.GetKeyDown(KeyCode.Alpha2))
-		{
-			ToggleEdgeOutline(outlineOn = !outlineOn);
-			print($"edge: {outlineOn}");
-		}
+		// if (Input.GetKeyDown(KeyCode.Alpha2))
+		// {
+		// 	ToggleEdgeOutline(outlineOn = !outlineOn);
+		// 	print($"edge: {outlineOn}");
+		// }
 		if (Input.GetKeyDown(KeyCode.Alpha3))
 		{
 			ToggleBloom(bloomOn = !bloomOn);
@@ -75,7 +74,7 @@ public class Effects : MonoBehaviour
 
 	/// <summary> toggles edge outline on and off </summary>
 	/// <param name="on"> Is edge outline on? </summary>
-	public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE");
+	// public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE");
 	public void ToggleBloom(bool on) => ToggleEffect(on, "BLOOM");
 	public void ToggleDissolve(bool on) => ToggleEffect(on, "DISSOLVE");
 	public void ToggleBoil(bool on) => ToggleEffect(on, "BOIL");

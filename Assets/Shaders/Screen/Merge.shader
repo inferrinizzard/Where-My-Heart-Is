@@ -5,8 +5,8 @@ Shader "Screen/Main"
 		[HideInInspector] _MainTex ("Real", 2D) = "white" {} // Real 
 
 		[Header(Glow)]
-		_Radius("Glow Width", float) = 5
-		_Intensity("Glow Intensity", float) = 2
+		// _Radius("Glow Width", float) = 5
+		_GlowIntensity("Glow Intensity", float) = 2
 
 		[Header(Boil)]
 		_HatchTex ("Hatch Texture", 2D) = "white" {}
@@ -47,7 +47,7 @@ Shader "Screen/Main"
 			#pragma fragment frag
 
 			#pragma multi_compile __ MASK
-			#pragma multi_compile __ OUTLINE
+			// #pragma multi_compile __ OUTLINE
 			#pragma multi_compile __ BOIL
 			#pragma multi_compile __ WAVE
 			#pragma multi_compile __ BIRD
@@ -87,8 +87,8 @@ Shader "Screen/Main"
 				#endif
 
 				// #if OUTLINE
-				// 	exit = CalculateGlow(output, i.uv, mask);
-				// 	if(exit) return output;
+				exit = CalculateGlow(output, i.uv, mask);
+				if(exit) return output;
 				// #endif
 
 				#if BOIL
@@ -97,7 +97,7 @@ Shader "Screen/Main"
 				#endif
 
 				#if WAVE
-					exit = CalculateWave(output, i.uv, mask);
+					exit = CalculateWave(output, i.uv, mask); //does not like new watercolour
 					if(exit) return output;
 				#endif
 
