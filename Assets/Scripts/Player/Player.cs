@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using CSG;
 using FMOD;
-
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -236,15 +236,17 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
 	private void Move()
 	{
-		Vector3 targetVelocity = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-		targetVelocity = transform.TransformDirection(targetVelocity);
-		targetVelocity *= speed;
+		Vector3 moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+		moveDirection = Vector3.ClampMagnitude(moveDirection, 1f);
+		moveDirection = transform.TransformDirection(moveDirection);
+		Vector3 targetVelocity = moveDirection * speed;
 
 		Vector3 velocity = body.velocity;
 		Vector3 velocityChange = (targetVelocity - velocity);
 		velocityChange.x = Mathf.Clamp(velocityChange.x, -10f, 10f);
 		velocityChange.z = Mathf.Clamp(velocityChange.z, -10f, 10f);
 		velocityChange.y = 0;
+
 		body.AddForce(velocityChange, ForceMode.VelocityChange);
 	}
 
