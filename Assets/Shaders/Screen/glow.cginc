@@ -17,8 +17,10 @@ int CalculateGlow(inout float4 output, float2 uv, float mask) {
 		}
 
 		float4 glowOutput = sumColour * _GlowIntensity;
-		#if mask
-			if(mask > .5 && sumColour.a > 0)  glowOutput = float4(1 - glowOutput.xyz, glowOutput.a);
+		#if MASK
+			if(sumColour.a > 0) {
+				if(mask > .5) glowOutput = float4(1 - glowOutput.xyz, glowOutput.a);
+			}
 		#endif
 
 		// #if MASK

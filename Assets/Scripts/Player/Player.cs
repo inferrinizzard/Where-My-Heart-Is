@@ -25,8 +25,6 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public CapsuleCollider playerCollider;
 	/// <summary> Reference to player Camera. </summary>
 	[HideInInspector] public Camera cam;
-	/// <summary> Reference to FX Controller. </summary>
-	[HideInInspector] public Effects VFX;
 	/// <summary> Empty GameObject for where to put a Pickupable object. </summary>
 	[HideInInspector] public Transform heldObjectLocation;
 	/// <summary> Reference to a Pickupable object that has been picked up. </summary>
@@ -94,14 +92,13 @@ public class Player : Singleton<Player>, IStateMachine
 		playerCollider = GetComponentInChildren<CapsuleCollider>();
 		body = GetComponent<Rigidbody>();
 		cam = GetComponentInChildren<Camera>();
-		VFX = cam.GetComponent<Effects>();
 		window = GetComponent<Window>();
 		mask = GetComponentInChildren<ApplyMask>();
 		audioController = GetComponent<PlayerAudio>();
 		hands = GetComponentInChildren<Hands>();
 		prompt = GameManager.Instance.prompt;
 
-		VFX.SubcribeToCutEvents(window);
+		Effects.Instance.SubcribeToCutEvents(window);
 
 		playerHeight = playerCollider.height;
 
@@ -112,7 +109,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
 		Cursor.visible = false;
-		VFX.StartFade(true, fadeDuration);
+		Effects.Instance.StartFade(true, fadeDuration);
 
 		Initialize();
 	}
@@ -131,7 +128,7 @@ public class Player : Singleton<Player>, IStateMachine
 		looking = false;
 		window.world = World.Instance;
 		window.cam = cam;
-		VFX.ToggleMask(false);
+		Effects.Instance.ToggleMask(false);
 		window.Invoke("CreateFoVMesh", 1);
 	}
 
@@ -149,7 +146,7 @@ public class Player : Singleton<Player>, IStateMachine
 		}
 
 		Initialize();
-		VFX.StartFade(true, fadeDuration);
+		Effects.Instance.StartFade(true, fadeDuration);
 	}
 
 	public void OnEnable()
@@ -357,7 +354,7 @@ public class Player : Singleton<Player>, IStateMachine
 			hands.RevertAim();
 			audioController.PlaceWindow();
 			heartWindow.SetActive(false);
-			VFX.ToggleMask(false);
+			Effects.Instance.ToggleMask(false);
 			EndState();
 			OnApplyCut?.Invoke();
 		}

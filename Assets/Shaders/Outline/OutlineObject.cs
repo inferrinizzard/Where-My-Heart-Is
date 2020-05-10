@@ -24,7 +24,7 @@ public class OutlineObject : MonoBehaviour
 
 	void OnWillRenderObject()
 	{
-		if (Camera.current == Player.Instance.cam || Player.Instance.VFX.maskOn)
-			GameManager.Instance.VFX.RenderGlowMap(renderers, outlineMat);
+		if (Camera.current == Effects.Instance.mainCam || (Effects.Instance.maskOn && Camera.current == Effects.Instance.heartCam))
+			Effects.Instance.RenderGlowMap(renderers, outlineMat);
 	}
 }
