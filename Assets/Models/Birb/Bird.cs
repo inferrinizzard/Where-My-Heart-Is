@@ -22,7 +22,7 @@ public class Bird : MonoBehaviour
 	private FMOD.Studio.EventInstance chirpInstance;
 	private Animator anim;
 	private int curveIndex = -1;
-	bool flying = false;
+	[HideInInspector] public bool flying = false;
 
 	void Start()
 	{

@@ -89,6 +89,11 @@ Shader "Screen/Main"
 					output = tex2D(_MainTex, i.uv);
 				#endif
 
+				#if BIRD
+					exit = CalculateBird(output, i.uv, mask);
+					if(exit) return output;
+				#endif
+
 				// #if OUTLINE
 				exit = CalculateGlow(output, i.uv, mask);
 				if(exit) return output;
@@ -101,11 +106,6 @@ Shader "Screen/Main"
 
 				#if WAVE
 					exit = CalculateWave(output, i.uv, mask); //does not like new watercolour
-					if(exit) return output;
-				#endif
-
-				#if BIRD
-					exit = CalculateBird(output, i.uv, mask);
 					if(exit) return output;
 				#endif
 
