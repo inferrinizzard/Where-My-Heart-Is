@@ -19,7 +19,7 @@ public class ApplyOutline : MonoBehaviour
 		glowBuffer.name = "Glow Map Buffer";
 
 		cam.AddCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
-		ResetGlowBuffer();
+		ResetScreenBuffer(glowBuffer, glowTempID);
 	}
 
 	public void OnEnable() => Cleanup();
@@ -30,18 +30,18 @@ public class ApplyOutline : MonoBehaviour
 			cam.RemoveCommandBuffer(CameraEvent.BeforeLighting, glowBuffer);
 	}
 
-	void ResetGlowBuffer()
+	public static void ResetScreenBuffer(CommandBuffer buffer, int tempID)
 	{
-		glowBuffer.Clear();
-		glowBuffer.GetTemporaryRT(glowTempID, -1, -1, 24, FilterMode.Bilinear);
-		glowBuffer.SetRenderTarget(glowTempID);
-		glowBuffer.ClearRenderTarget(true, true, Color.clear);
+		buffer.Clear();
+		buffer.GetTemporaryRT(tempID, -1, -1, 24, FilterMode.Bilinear);
+		buffer.SetRenderTarget(tempID);
+		buffer.ClearRenderTarget(true, true, Color.clear);
 	}
 
 	void LateUpdate()
 	{
 		if (drawGlow)
-			ResetGlowBuffer();
+			ResetScreenBuffer(glowBuffer, glowTempID);
 	}
 
 	void OnPreCull()
