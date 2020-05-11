@@ -25,7 +25,8 @@ int CalculateGlow(inout float4 output, float2 uv, float mask) {
 		#if MASK
 			if(sumColour.a > 0) {
 				if(mask > .5) {
-					if(!heartOnly) glowOutput = float4(1 - glowOutput.xyz, glowOutput.a);
+					if(!heartOnly) glowOutput = float4(lerp(glowOutput.xyz, 1 - glowOutput.xyz, mask), glowOutput.a);
+					else glowOutput = float4(lerp(0, glowOutput, mask));
 				}
 				else if(heartOnly) glowOutput = 0;
 			}

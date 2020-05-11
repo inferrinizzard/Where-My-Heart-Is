@@ -62,7 +62,7 @@ Shader "Screen/Main"
 			#include "fog.cginc"
 
 			sampler2D _Mask;
-			sampler2D _MainTex; // _WaveTrail
+			sampler2D _MainTex;
 			sampler2D _Heart;
 
 			// sampler2D _CameraDepthTexture;
@@ -80,7 +80,10 @@ Shader "Screen/Main"
 				float mask = tex2D(_Mask, i.uv).r;
 
 				#if MASK
-					output = mask > .5 ? mask * tex2D(_Heart, i.uv) + (1 - mask) * tex2D(_MainTex, i.uv) : tex2D(_MainTex, i.uv);
+					output = mask > .5 ? 
+					lerp(tex2D(_MainTex, i.uv), tex2D(_Heart, i.uv), mask)
+					// mask * tex2D(_Heart, i.uv) + (1 - mask) * tex2D(_MainTex, i.uv) 
+					: tex2D(_MainTex, i.uv);
 					//output = mask * tex2D(_Heart, i.uv) + (1 - mask) * tex2D(_MainTex, i.uv);
 				#else
 					output = tex2D(_MainTex, i.uv);

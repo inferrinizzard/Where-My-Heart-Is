@@ -64,6 +64,7 @@ public class Effects : MonoBehaviour
 #if UNITY_EDITOR
 		Shader.SetGlobalFloat("_LightAttenBias", 30 - lightPower);
 #endif
+
 #endif
 	}
 
