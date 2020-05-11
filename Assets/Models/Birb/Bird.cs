@@ -62,8 +62,9 @@ public class Bird : MonoBehaviour
 
 		if (!flying)
 			anim.SetFloat("IdleBlend", Mathf.PingPong(Time.time, 1));
-		if (transform.position == curves[curveIndex].Points.Last().PositionWorld)
-			ReachedEnd();
+		if (curveIndex < curves.Count - 1)
+			if (transform.position == curves[curveIndex].Points.Last().PositionWorld)
+				ReachedEnd();
 	}
 
 	void ReachedEnd()
@@ -102,7 +103,7 @@ public class Bird : MonoBehaviour
 			flapInstance.setParameterByName("Flying", 1);
 			anim.SetTrigger("Takeoff");
 			StartCoroutine(DriveBlend("TakeoffBlend"));
-			Debug.Log(transform.position);
+			// Debug.Log(transform.position);
 			flying = true;
 		}
 	}

@@ -14,7 +14,6 @@ public class TestCamera : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		transform.LookAt(FindObjectOfType<BirdTrail>().transform.position);
 		mat = new Material(shader);
 		mat.SetTexture("_Background", birdBackground);
 	}
@@ -35,8 +34,5 @@ public class TestCamera : MonoBehaviour
 		transform.localEulerAngles = new Vector3(-rotationX, rotationY, 0);
 	}
 
-	void OnRenderImage(RenderTexture src, RenderTexture dest)
-	{
-		Graphics.Blit(src, dest, mat);
-	}
+	void OnRenderImage(RenderTexture src, RenderTexture dest) => Graphics.Blit(src, dest, mat);
 }

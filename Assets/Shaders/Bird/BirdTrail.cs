@@ -29,7 +29,7 @@ public class BirdTrail : MonoBehaviour
 		birdBuffer.name = "Bird Trail Buffer";
 
 		cam.AddCommandBuffer(CameraEvent.BeforeSkybox, birdBuffer);
-		ApplyOutline.ResetScreenBuffer(birdBuffer, birdTempID);
+		ResetScreenBuffer();
 	}
 
 	public void OnEnable() => Cleanup();
@@ -82,6 +82,14 @@ public class BirdTrail : MonoBehaviour
 	// 		this.DrawCube(t.position, 1, t.rotation, Color.red, depthCheck : true);
 	// }
 
+	void ResetScreenBuffer()
+	{
+		birdBuffer.Clear();
+		birdBuffer.GetTemporaryRT(birdTempID, -1, -1, 24, FilterMode.Bilinear);
+		birdBuffer.SetRenderTarget(birdTempID);
+		birdBuffer.ClearRenderTarget(true, true, Color.black);
+	}
+
 	void FixedUpdate()
 	{
 		step = ++step % length;
@@ -97,20 +105,20 @@ public class BirdTrail : MonoBehaviour
 		// }
 	}
 
-	void LateUpdate() => ApplyOutline.ResetScreenBuffer(birdBuffer, birdTempID);
+	void LateUpdate() => ResetScreenBuffer();
 	int colourID = Shader.PropertyToID("_Color");
 	void OnWillRenderObject()
 	{
 		if (Camera.current == Effects.Instance.mainCam)
 		{
-			var properties = new MaterialPropertyBlock();
-			for (int i = 0; i < copies.Count; i++)
-			{
-				float step = 1f / (copies.Count - i);
-				properties.SetColor(colourID, new Color(0, 1, step, 1));
-				foreach (var(mesh, pos, rot) in copies[i].Data())
-					birdBuffer.DrawMesh(mesh, Matrix4x4.TRS(pos, rot, transform.localScale * step), drawMat, 0, 0, properties);
-			}
+			// var properties = new MaterialPropertyBlock();
+			// for (int i = 0; i < copies.Count; i++)
+			// {
+			// 	float step = 1f / (copies.Count - i);
+			// 	properties.SetColor(colourID, new Color(0, 1, step, 1));
+			// 	foreach (var(mesh, pos, rot) in copies[i].Data())
+			// 		birdBuffer.DrawMesh(mesh, Matrix4x4.TRS(pos, rot, transform.localScale * step), drawMat, 0, 0, properties);
+			// }
 		}
 	}
 	void OnPreCull() => birdBuffer.SetGlobalTexture(birdMaskID, birdTempID);
