@@ -9,8 +9,8 @@ public class Move : MonoBehaviour
 {
 	void Start()
 	{
-		// var bam = GetComponent<BirbAnimTester>();
-		// var b2 = gameObject.AddComponent<BirbAnimTester>();
+		// var bam = GetComponent<Bird>();
+		// var b2 = gameObject.AddComponent<Bird>();
 		// EditorUtility.CopySerialized(bam, b2);
 		GetComponent<Animator>().SetBool("IsFlying", true);
 	}

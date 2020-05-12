@@ -9,7 +9,7 @@ public class AutumnFinalController : MonoBehaviour
 	public PlayerTrigger zone2;
 	public PlayerTrigger zone3;
 	public PlayerTrigger zone4;
-	public BirbAnimTester birbAnim;
+	public Bird birbAnim;
 
 	private float songState = 0;
 
