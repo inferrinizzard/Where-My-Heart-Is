@@ -12,13 +12,13 @@ public class Level : ScriptableObject
 	public string dialogue;
 	// level behaviors
 	public List<LevelBehaviour> behaviours;
-	public string levelName;
+	[SerializeField, ReadOnly] string levelName = "";
 
 #if UNITY_EDITOR
 	// scene
 	public UnityEditor.SceneAsset scene;
 
-	void OnValidate() => levelName = scene?.name;
+	void OnValidate() => levelName = scene?.name ?? "";
 #endif
 
 	public string Name { get => levelName; }

@@ -207,7 +207,7 @@ public class Window : MonoBehaviour
 		ClippableObject[] clippables = FindObjectsOfType<ClippableObject>();
 
 		//Bounds bound = clippables[0].GetComponent<MeshCollider>().bounds;
-		Bounds bound = new Bounds(Player.Instance.transform.position, clippables[0].GetComponent<MeshCollider>().bounds.size);
+		Bounds bound = clippables.Length > 0 ? new Bounds(Player.Instance.transform.position, clippables[0].GetComponent<MeshCollider>().bounds.size) : Player.Instance.heartWindow.GetComponentInChildren<MeshCollider>().bounds;
 
 		for (int i = 0; i < clippables.Length; i++)
 		{
