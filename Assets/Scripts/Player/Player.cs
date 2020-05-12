@@ -114,7 +114,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 		// Creates an empty game object at the position where a held object should be.
 		heldObjectLocation = new GameObject("HeldObjectLocation").transform;
-		heldObjectLocation.position = cam.transform.position + cam.transform.forward;
+		heldObjectLocation.position = cam.transform.position + cam.transform.forward * 2;
 		heldObjectLocation.parent = cam.transform;
 
 		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
