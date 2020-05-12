@@ -15,7 +15,7 @@ public class Bird : MonoBehaviour
 	List<Curve> curves;
 	[SerializeField] Transform triggerHolder = default;
 	List<PlayerTrigger> pathTriggers;
-	[SerializeField] float flySpeed;
+	[SerializeField] float flySpeed = 3;
 	[FMODUnity.EventRef] public string FlapEvent;
 	[FMODUnity.EventRef] public string ChirpEvent;
 	private FMOD.Studio.EventInstance flapInstance;

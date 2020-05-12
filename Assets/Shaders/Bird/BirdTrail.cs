@@ -30,9 +30,9 @@ public class BirdTrail : MonoBehaviour
 
 		bird = GetComponent<Bird>();
 
-		// cam = Effects.Instance.mainCam;
-		// birdBuffer = new CommandBuffer();
-		// birdBuffer.name = "Bird Trail Buffer";
+		cam = Effects.Instance.mainCam;
+		birdBuffer = new CommandBuffer();
+		birdBuffer.name = "Bird Trail Buffer";
 
 		// cam.AddCommandBuffer(CameraEvent.BeforeSkybox, birdBuffer);
 		// ResetScreenBuffer();

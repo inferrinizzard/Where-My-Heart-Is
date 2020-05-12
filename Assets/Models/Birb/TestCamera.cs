@@ -6,7 +6,7 @@ using UnityEngine;
 public class TestCamera : MonoBehaviour
 {
 	public Shader shader;
-	[SerializeField] Texture2D birdBackground;
+	[SerializeField] Texture2D birdBackground = default;
 	Material mat;
 
 	float rotationX, rotationY;
