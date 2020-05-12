@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-// [ExecuteInEditMode]
 public class BirdTrail : MonoBehaviour
 {
 	Material drawMat;
@@ -30,12 +29,12 @@ public class BirdTrail : MonoBehaviour
 
 		bird = GetComponent<Bird>();
 
-		// cam = Effects.Instance.mainCam;
-		// birdBuffer = new CommandBuffer();
-		// birdBuffer.name = "Bird Trail Buffer";
+		cam = Effects.Instance.mainCam;
+		birdBuffer = new CommandBuffer();
+		birdBuffer.name = "Bird Trail Buffer";
 
-		// cam.AddCommandBuffer(CameraEvent.BeforeSkybox, birdBuffer);
-		// ResetScreenBuffer();
+		cam.AddCommandBuffer(CameraEvent.BeforeSkybox, birdBuffer);
+		ResetScreenBuffer();
 	}
 
 	public void OnEnable() => Cleanup();
@@ -88,13 +87,13 @@ public class BirdTrail : MonoBehaviour
 	// 		this.DrawCube(t.position, 1, t.rotation, Color.red, depthCheck : true);
 	// }
 
-	// void ResetScreenBuffer()
-	// {
-	// 	birdBuffer.Clear();
-	// 	birdBuffer.GetTemporaryRT(birdTempID, -1, -1, 24, FilterMode.Bilinear);
-	// 	birdBuffer.SetRenderTarget(birdTempID);
-	// 	birdBuffer.ClearRenderTarget(true, true, Color.black);
-	// }
+	void ResetScreenBuffer()
+	{
+		birdBuffer.Clear();
+		birdBuffer.GetTemporaryRT(birdTempID, -1, -1, 24, FilterMode.Bilinear);
+		birdBuffer.SetRenderTarget(birdTempID);
+		birdBuffer.ClearRenderTarget(true, true, Color.black);
+	}
 
 	void FixedUpdate()
 	{
@@ -115,7 +114,7 @@ public class BirdTrail : MonoBehaviour
 		// }
 	}
 
-	// void LateUpdate() => ResetScreenBuffer();
+	void LateUpdate() => ResetScreenBuffer();
 	int colourID = Shader.PropertyToID("_Color");
 	void OnWillRenderObject()
 	{
@@ -127,9 +126,9 @@ public class BirdTrail : MonoBehaviour
 				float step = 1f / (copies.Count - i);
 				properties.SetColor(colourID, new Color(0, 1, step, 1));
 				foreach (var(mesh, pos, rot) in copies[i].Data())
-					ApplyOutline.glowBuffer.DrawMesh(mesh, Matrix4x4.TRS(pos, rot, transform.localScale * step), drawMat, 0, 0, properties);
+					birdBuffer.DrawMesh(mesh, Matrix4x4.TRS(pos, rot, transform.localScale * step), drawMat, 0, 0, properties);
 			}
 		}
 	}
-	// void OnPreCull() => birdBuffer.SetGlobalTexture(birdMaskID, birdTempID);
+	void OnPreCull() => birdBuffer.SetGlobalTexture(birdMaskID, birdTempID);
 }

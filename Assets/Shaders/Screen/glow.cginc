@@ -5,6 +5,8 @@ float _GlowIntensity;
 
 int CalculateGlow(inout float4 output, float2 uv, float mask) {
 	float4 glow = tex2D(_GlowMap, uv);
+	// output = glow;
+	// return 1;
 
 	int heartOnly = 0;
 
