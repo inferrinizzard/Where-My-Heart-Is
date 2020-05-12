@@ -12,7 +12,6 @@ public class GameManager : Singleton<GameManager>
 	public bool duringLoad;
 	public DialogueSystem dialogue;
 	public Prompt prompt;
-	public Effects VFX;
 	public PauseMenu pause;
 	public LevelOrder levelOrder;
 	public float transitionTime = 3f;
@@ -20,7 +19,6 @@ public class GameManager : Singleton<GameManager>
 	public override void Awake()
 	{
 		base.Awake();
-		VFX = Player.Instance.GetComponentInChildren<Effects>();
 		dialogue = GetComponentInChildren<DialogueSystem>();
 		prompt = GetComponentInChildren<Prompt>();
 		pause = GetComponentInChildren<PauseMenu>();

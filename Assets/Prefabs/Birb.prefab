@@ -611,7 +611,7 @@ GameObject:
   - component: {fileID: 5689164163903171203}
   - component: {fileID: 5689164163903171206}
   m_Layer: 0
-  m_Name: Bird
+  m_Name: Birb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5493,9 +5493,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c3cec8e06daa664e8afc978aa4130fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  curveHolder: {fileID: 0}
-  triggerHolder: {fileID: 0}
-  flySpeed: 3
+  curves: []
+  pathTriggers: []
+  flySpeed: 1
   FlapEvent: event:/Bird/Fly
   ChirpEvent: event:/Bird/Bird Chirp
 --- !u!114 &5689164163903171206

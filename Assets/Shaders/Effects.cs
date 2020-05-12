@@ -9,26 +9,31 @@ using UnityEngine;
 #endif
 public class Effects : MonoBehaviour
 {
+	public static Effects Instance;
+
 	Fade fadeController;
-	[HideInInspector] public Wave waveController; // TODO: add wave controller?
-	bool outlineOn = true;
-	bool bloomOn = false;
 	bool dissolveOn = false;
 	[SerializeField, Range(0, 30)] float lightPower = 5;
 	[HideInInspector] public bool maskOn = false;
 
+	[HideInInspector] public Camera mainCam, heartCam;
+
 	void Awake()
 	{
+		Instance = this;
+		mainCam = GetComponent<Camera>();
+		heartCam = this.GetComponentOnlyInChildren<Camera>();
+
 		Shader.SetGlobalFloat("_LightAttenBias", 30 - lightPower);
 		fadeController = GetComponent<Fade>();
-		waveController = GetComponent<Wave>();
 
 		ToggleWave(false);
 		ToggleMask(maskOn);
-		ToggleEdgeOutline(true); //outlineOn
+		// ToggleEdgeOutline(true);
 		ToggleDissolve(dissolveOn);
 		ToggleBoil(true);
 		ToggleBird(true);
+		ToggleFog(false);
 
 		glowMat = new Material(Shader.Find("Outline/GlowObject"));
 		glowMat.color = Color.black;
@@ -45,16 +50,11 @@ public class Effects : MonoBehaviour
 	void Update()
 	{
 #if DEBUG // debug toggles
-		if (Input.GetKeyDown(KeyCode.Alpha2))
-		{
-			ToggleEdgeOutline(outlineOn = !outlineOn);
-			print($"edge: {outlineOn}");
-		}
-		if (Input.GetKeyDown(KeyCode.Alpha3))
-		{
-			ToggleBloom(bloomOn = !bloomOn);
-			print($"bloom: {bloomOn}");
-		}
+		// if (Input.GetKeyDown(KeyCode.Alpha2))
+		// {
+		// 	ToggleEdgeOutline(outlineOn = !outlineOn);
+		// 	print($"edge: {outlineOn}");
+		// }
 		if (Input.GetKeyDown(KeyCode.Alpha4))
 		{
 			ToggleDissolve(dissolveOn = !dissolveOn);
@@ -64,6 +64,7 @@ public class Effects : MonoBehaviour
 #if UNITY_EDITOR
 		Shader.SetGlobalFloat("_LightAttenBias", 30 - lightPower);
 #endif
+
 #endif
 	}
 
@@ -74,8 +75,7 @@ public class Effects : MonoBehaviour
 
 	/// <summary> toggles edge outline on and off </summary>
 	/// <param name="on"> Is edge outline on? </summary>
-	public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE");
-	public void ToggleBloom(bool on) => ToggleEffect(on, "BLOOM");
+	// public void ToggleEdgeOutline(bool on) => ToggleEffect(on, "OUTLINE");
 	public void ToggleDissolve(bool on) => ToggleEffect(on, "DISSOLVE");
 	public void ToggleBoil(bool on) => ToggleEffect(on, "BOIL");
 	public void ToggleWave(bool on) => ToggleEffect(on, "WAVE");
@@ -101,7 +101,6 @@ public class Effects : MonoBehaviour
 	Material glowMat;
 	[HideInInspector] public InteractableObject currentGlowObj;
 	Color targetColour = Color.black;
-	int glowColourID = Shader.PropertyToID("_Colour");
 	Coroutine glowRoutine;
 
 	public void RenderGlowMap(Renderer[] renderers, Material mat)

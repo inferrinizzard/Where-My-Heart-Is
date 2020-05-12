@@ -14,14 +14,14 @@ public class Aiming : PlayerState
 	{
 		// Make the window visible.
 		// player.heartWindow.SetActive(true);
-		// player.VFX.ToggleMask(true);
+		// Effects.Instance.ToggleMask(true);
 		// player.audioController.OpenWindow();
 	}
 
 	public void DeferredStart()
 	{
 		player.heartWindow.SetActive(true);
-		player.VFX.ToggleMask(true);
+		Effects.Instance.ToggleMask(true);
 		player.audioController.OpenWindow();
 	}
 
@@ -30,7 +30,7 @@ public class Aiming : PlayerState
 		player.hands.ToggleHands(false);
 		player.hands.RevertAim();
 		player.heartWindow.SetActive(false);
-		player.VFX.ToggleMask(false);
+		Effects.Instance.ToggleMask(false);
 		player.audioController.CloseWindow();
 	}
 }
