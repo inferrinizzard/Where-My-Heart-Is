@@ -125,7 +125,7 @@ public class BirdTrail : MonoBehaviour
 			for (int i = 0; i < copies.Count; i++)
 			{
 				float step = 1f / (copies.Count - i);
-				properties.SetColor(colourID, new Color(0, 1, step, 1));
+				properties.SetColor(colourID, new Color(0, 1, step, .999f));
 				foreach (var(mesh, pos, rot) in copies[i].Data())
 					ApplyOutline.glowBuffer.DrawMesh(mesh, Matrix4x4.TRS(pos, rot, transform.localScale * step), drawMat, 0, 0, properties);
 			}

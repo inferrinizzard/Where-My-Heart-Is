@@ -7,6 +7,7 @@ int CalculateBird(inout float4 output, float2 uv, float mask) {
 	// output = birdMask;
 	// return 1;
 	
+	if(birdMask.a < 1 && birdMask.a > .99)
 	if(birdMask.r > 0 || birdMask.g > 0 || birdMask.b > 0) {
 		// float3 birdColour = tex2D(_BirdBackground, uv + float2(_Time.x, _Time.x)).rgb;
 		// #if MASK
