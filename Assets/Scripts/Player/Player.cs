@@ -255,7 +255,12 @@ public class Player : Singleton<Player>, IStateMachine
 		velocityChange.z = Mathf.Clamp(velocityChange.z, -10f, 10f);
 		velocityChange.y = 0;
 
-		if(ValidGroundSlope()) body.AddForce(velocityChange, ForceMode.VelocityChange);
+		// Only move the player if they are on a valid slope
+		if (ValidGroundSlope()) body.AddForce(velocityChange, ForceMode.VelocityChange);
+
+		// Make sure the player doesn't slide on a slope when not inputting movement.
+		if (IsGrounded() && moveDirection == Vector3.zero) body.useGravity = false;
+		else body.useGravity = true;
 	}
 
 	/// <summary> Player jump function. </summary>
@@ -276,8 +281,8 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (playerCanRotate)
 		{ // Get the rotation from the Mouse X and Mouse Y Axes and scale them by mouseSensitivity.
-			rotation.y += Input.GetAxis("Mouse X") * mouseSensitivity;
-			rotation.x += Input.GetAxis("Mouse Y") * mouseSensitivity;
+			rotation.y += Input.GetAxis("Mouse X") * mouseSensitivity * 20 * Time.deltaTime;
+			rotation.x += Input.GetAxis("Mouse Y") * mouseSensitivity * 20 * Time.deltaTime;
 
 			// Limit the rotation along the x axis.
 			rotation.x = Mathf.Clamp(rotation.x, xRotationBounds.Item1, xRotationBounds.Item2);
