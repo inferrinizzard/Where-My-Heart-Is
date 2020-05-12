@@ -37,6 +37,7 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public float playerHeight;
 	/// <summary> Whether the player can move or not. </summary>
 	[HideInInspector] public bool canMove = true;
+	/// <summary> Whether the player can rotate their camera or not. </summary>
 	[HideInInspector] public bool playerCanRotate = true;
 	/// <summary> Whether the player is crouching or not. </summary>
 	[HideInInspector] public bool crouching = false;
@@ -44,7 +45,10 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public bool looking = false;
 	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
 	private bool stillCrouching = false;
+	/// <summary> See if the player has picked something up. </summary>
 	public bool pickedUpFirst = false;
+	/// <summary> Whether or not the player can activate the window. </summary>
+	public bool windowEnabled = true;
 
 	// [Header("Game Object References")]
 	/// <summary> Reference to heart window. </summary>
@@ -53,24 +57,28 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public Transform deathPlane;
 	/// <summary> Get Window script from GameObject. </summary>
 	[HideInInspector] public Prompt prompt;
+	/// <summary> Reference to Window. </summary>
 	[HideInInspector] public Window window;
+	/// <summary> Reference to camera mask. </summary>
 	[HideInInspector] public ApplyMask mask;
+	/// <summary> Reference to PlayerAudio audio controller. </summary>
 	[HideInInspector] public PlayerAudio audioController;
+	/// <summary> Reference to Hands object. </summary>
 	[HideInInspector] public Hands hands;
 
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
 	[SerializeField] float speed = 5f;
-	/// <summary> Player gravity variable. </summary>
-	// [SerializeField] float gravity = 25f;
 	/// <summary> Player jump force. </summary>
 	[SerializeField] float jumpForce = 7f;
 	/// <summary> Mouse sensitivity for camera rotation. </summary>
 	public static float mouseSensitivity = 2f;
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
-	public bool windowEnabled = true;
+	/// <summary> Duration of the fade animation. </summary>
 	[SerializeField] float fadeDuration = 1;
+	/// <summary> The maximum angle of the floor that the player can move on. </summary>
+	[SerializeField] float maxSlopeAngle = 50f;
 
 	// [Header("Camera Variables")]
 	/// <summary> Bounds angle the player can look upward. </summary>
@@ -247,13 +255,13 @@ public class Player : Singleton<Player>, IStateMachine
 		velocityChange.z = Mathf.Clamp(velocityChange.z, -10f, 10f);
 		velocityChange.y = 0;
 
-		body.AddForce(velocityChange, ForceMode.VelocityChange);
+		if(ValidGroundSlope()) body.AddForce(velocityChange, ForceMode.VelocityChange);
 	}
 
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-		if (IsGrounded()) body.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+		if (ValidGroundSlope() && IsGrounded()) body.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
 	}
 
 	/// <summary> Increases gravity while falling. </summary>
@@ -364,10 +372,18 @@ public class Player : Singleton<Player>, IStateMachine
 			OnApplyCut?.Invoke();
 		}
 	}
+
 	public bool IsGrounded()
 	{
 		RaycastHit ray;
 		return Physics.SphereCast(playerCollider.transform.position, 0.2f, Vector3.down, out ray, playerHeight / 2 - 0.1f);
+	}
+
+	public bool ValidGroundSlope()
+	{
+		RaycastHit ray;
+		Physics.SphereCast(playerCollider.transform.position, playerCollider.radius, Vector3.down, out ray, playerHeight / 2 - 0.1f);
+		return (Mathf.Abs(Vector3.Angle(ray.normal, Vector3.up)) < maxSlopeAngle);
 	}
 
 	public InteractableObject RaycastInteractable() => Physics.SphereCast(cam.transform.position, .25f, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
