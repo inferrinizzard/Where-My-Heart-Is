@@ -47,6 +47,9 @@ public class ClippableObject : MonoBehaviour
 			meshFilter = gameObject.AddComponent<MeshFilter>();
 		if (!this.TryComponent<MeshCollider>())
 			gameObject.AddComponent<MeshCollider>();
+
+        meshFilter.mesh = new CSG.Model(meshFilter.mesh).ToMesh(Matrix4x4.identity);// hack to shade smooth
+
 		initialMesh = meshFilter.mesh;
 
 		oldLayer = gameObject.layer;
