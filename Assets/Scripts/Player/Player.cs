@@ -2,9 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using CSG;
+
 using FMOD;
+
 using UnityEditor;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,14 +47,11 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public bool looking = false;
 	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
 	private bool stillCrouching = false;
-	/// <summary> See if the player has picked something up. </summary>
-	public bool pickedUpFirst = false;
 	/// <summary> Whether or not the player can activate the window. </summary>
 	public bool windowEnabled = true;
 
-	// [Header("Game Object References")]
 	/// <summary> Reference to heart window. </summary>
-	public GameObject heartWindow;
+	[HideInInspector] public GameObject heartWindow;
 	/// <summary> Reference to death plane. </summary>
 	[HideInInspector] public Transform deathPlane;
 	/// <summary> Get Window script from GameObject. </summary>
@@ -101,6 +102,7 @@ public class Player : Singleton<Player>, IStateMachine
 		body = GetComponent<Rigidbody>();
 		cam = GetComponentInChildren<Camera>();
 		window = GetComponent<Window>();
+		heartWindow = cam.GetComponentInChildren<MeshFilter>().gameObject; // order-dependent
 		mask = GetComponentInChildren<ApplyMask>();
 		audioController = GetComponent<PlayerAudio>();
 		hands = GetComponentInChildren<Hands>();

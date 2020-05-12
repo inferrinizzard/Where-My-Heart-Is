@@ -9,19 +9,19 @@ using UnityEngine.UI;
 /// <summary> Constrols app macro and scene manipulations </summary>
 public class GameManager : Singleton<GameManager>
 {
-	public bool duringLoad;
-	public DialogueSystem dialogue;
-	public Prompt prompt;
-	public PauseMenu pause;
+	[HideInInspector] public bool duringLoad;
+	[HideInInspector] public PauseMenu pause;
+	[HideInInspector] public DialogueSystem dialogue;
+	[HideInInspector] public Prompt prompt;
 	public LevelOrder levelOrder;
 	public float transitionTime = 3f;
 
 	public override void Awake()
 	{
 		base.Awake();
+		pause = GetComponentInChildren<PauseMenu>();
 		dialogue = GetComponentInChildren<DialogueSystem>();
 		prompt = GetComponentInChildren<Prompt>();
-		pause = GetComponentInChildren<PauseMenu>();
 	}
 
 	void Start()

@@ -14,7 +14,6 @@ public class PickUp : PlayerState
 
 	public override void Start()
 	{
-		player.pickedUpFirst = true;
 		if (target.GetComponent<Placeable>() && target.GetComponent<Placeable>().PlaceConditionsMet())
 			return;
 		target.Interact();
