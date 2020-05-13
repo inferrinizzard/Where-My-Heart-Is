@@ -18,6 +18,7 @@ using Debug = UnityEngine.Debug;
 [System.Serializable]
 public class Player : Singleton<Player>, IStateMachine
 {
+	public static Effects VFX { get => Player.Instance.GetComponentInChildren<Effects>(); } // TODO fix this
 	/// <summary> Reference to the current state. </summary>
 	public PlayerState State;
 
@@ -108,7 +109,7 @@ public class Player : Singleton<Player>, IStateMachine
 		hands = GetComponentInChildren<Hands>();
 		prompt = GameManager.Instance.prompt;
 
-		Effects.Instance.SubcribeToCutEvents(window);
+		Player.VFX.SubcribeToCutEvents(window);
 
 		playerHeight = playerCollider.height;
 
@@ -119,7 +120,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
 		Cursor.visible = false;
-		Effects.Instance.StartFade(true, fadeDuration);
+		Player.VFX.StartFade(true, fadeDuration);
 
 		Initialize();
 	}
@@ -138,7 +139,7 @@ public class Player : Singleton<Player>, IStateMachine
 		looking = false;
 		window.world = World.Instance;
 		window.cam = cam;
-		Effects.Instance.ToggleMask(false);
+		Player.VFX.ToggleMask(false);
 		window.Invoke("CreateFoVMesh", 1);
 	}
 
@@ -156,7 +157,7 @@ public class Player : Singleton<Player>, IStateMachine
 		}
 
 		Initialize();
-		Effects.Instance.StartFade(true, fadeDuration);
+		Player.VFX.StartFade(true, fadeDuration);
 	}
 
 	public void OnEnable()
@@ -371,7 +372,7 @@ public class Player : Singleton<Player>, IStateMachine
 			hands.RevertAim();
 			audioController.PlaceWindow();
 			heartWindow.SetActive(false);
-			Effects.Instance.ToggleMask(false);
+			Player.VFX.ToggleMask(false);
 			EndState();
 			OnApplyCut?.Invoke();
 		}

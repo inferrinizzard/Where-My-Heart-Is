@@ -43,7 +43,7 @@ public class Window : MonoBehaviour
 		fieldOfViewSource = Player.Instance.heartWindow;
 		fieldOfView = fieldOfViewSource.GetComponentOnlyInChildren<MeshFilter>().gameObject;
 		mirrorObj = World.Instance.heartWorldContainer.GetComponentInChildren<Mirror>()?.GetComponent<ClippableObject>();
-		mirror = mirrorObj.GetComponent<Mirror>();
+		mirror = mirrorObj?.GetComponent<Mirror>();
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
 	}
 

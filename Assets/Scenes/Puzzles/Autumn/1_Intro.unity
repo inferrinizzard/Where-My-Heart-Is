@@ -6463,7 +6463,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh195236
+  m_Name: pb_Mesh67978
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -6626,7 +6626,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh195214
+  m_Name: pb_Mesh67956
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -6972,7 +6972,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh195012
+  m_Name: pb_Mesh67760
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -7796,7 +7796,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh195158
+  m_Name: pb_Mesh67900
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -8607,13 +8607,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c3cec8e06daa664e8afc978aa4130fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  curves:
-  - {fileID: 501060391}
-  - {fileID: 1954565016}
-  pathTriggers: []
+  curveHolder: {fileID: 0}
+  triggerHolder: {fileID: 0}
   flySpeed: 5
   FlapEvent: event:/Bird/Fly
   ChirpEvent: event:/Bird/Bird Chirp
+  flying: 0
 --- !u!54 &612707668
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9365,7 +9364,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh195166
+  m_Name: pb_Mesh67908
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -11641,7 +11640,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh195054
+  m_Name: pb_Mesh67802
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -12833,7 +12832,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh194654
+  m_Name: pb_Mesh67402
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -13257,7 +13256,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh194806
+  m_Name: pb_Mesh67554
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -14471,7 +14470,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh194830
+  m_Name: pb_Mesh67578
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -15558,7 +15557,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh194868
+  m_Name: pb_Mesh67616
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -18474,7 +18473,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh195080
+  m_Name: pb_Mesh67822
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -22065,7 +22064,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh194722
+  m_Name: pb_Mesh67470
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -22646,7 +22645,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh194630
+  m_Name: pb_Mesh67378
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -24079,7 +24078,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   depthCheck: 0
-  outlineColour: {r: 1, g: 1, b: 1, a: 1}
+  heartOnly: 0
+  outlineColour: {r: 0, g: 0, b: 1, a: 1}
 --- !u!1 &2417833037586778437
 GameObject:
   m_ObjectHideFlags: 0

@@ -29,8 +29,8 @@ public abstract class InteractableObject : MonoBehaviour
 	void OnMouseEnter()
 	{
 		if (!player.heldObject && !this.TryComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
-			Effects.Instance.SetGlow(this);
+			Player.VFX.SetGlow(this);
 	}
 
-	void OnMouseExit() => Effects.Instance.SetGlow(null);
+	void OnMouseExit() => Player.VFX?.SetGlow(null);
 }

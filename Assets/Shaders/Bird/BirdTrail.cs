@@ -30,7 +30,7 @@ public class BirdTrail : MonoBehaviour
 
 		bird = GetComponent<Bird>();
 
-		cam = Effects.Instance.mainCam;
+		cam = Player.VFX.mainCam;
 		birdBuffer = new CommandBuffer();
 		birdBuffer.name = "Bird Trail Buffer";
 
@@ -119,7 +119,7 @@ public class BirdTrail : MonoBehaviour
 	int colourID = Shader.PropertyToID("_Color");
 	void OnWillRenderObject()
 	{
-		if (Camera.current == Effects.Instance.mainCam)
+		if (Camera.current == Player.VFX.mainCam)
 		{
 			var properties = new MaterialPropertyBlock();
 			for (int i = 0; i < copies.Count; i++)

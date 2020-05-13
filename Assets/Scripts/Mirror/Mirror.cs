@@ -23,11 +23,11 @@ public class Mirror : ClippableObject
 	// Start is called before the first frame update
 	void Start()
 	{
-		mainCamera = Effects.Instance.mainCam;
+		mainCamera = Player.VFX.mainCam;
 		mirrorMaterial = GetComponent<MeshRenderer>().material;
 		if (!reflectionCamera) reflectionCamera = new GameObject("ReflectionCamera").AddComponent<Camera>();
 		reflectionCamera.enabled = false;
-		reflectionCamera.CopyFrom(Effects.Instance.heartCam);
+		reflectionCamera.CopyFrom(Player.VFX.heartCam);
 		reflectionCamera.cullingMask = reflectionCamera.cullingMask & ~(1 << LayerMask.NameToLayer("Hands"));
 
 		renderTarget = new RenderTexture(Screen.width, Screen.height, 24);
@@ -158,7 +158,7 @@ public class Mirror : ClippableObject
 	/// </summary>
 	private void RenderReflection()
 	{
-		reflectionCamera.CopyFrom(Effects.Instance.heartCam);
+		reflectionCamera.CopyFrom(Player.VFX.heartCam);
 		reflectionCamera.cullingMask = reflectionCamera.cullingMask & ~(1 << LayerMask.NameToLayer("Hands"));
 		Transform mainTransform = mainCamera.transform;
 
