@@ -17,6 +17,7 @@ public class ApplyMask : MonoBehaviour
 
 	///<summary> Reference to Heart World Cam, temp Mask Cam </summary>
 	[HideInInspector] public Camera heartCam, maskCam, mainCam;
+	[SerializeField] Camera depthCam;
 	[SerializeField] Shader depthReplacement = default;
 
 	///<summary> Generated RenderTexture for Heart World </summary>
@@ -60,9 +61,12 @@ public class ApplyMask : MonoBehaviour
 		CreateMask();
 
 		depth = new RenderTexture(Screen.width / 4, Screen.height / 4, 16, RenderTextureFormat.Default);
+		depth.name = "DepthRT";
 		depth2D = new Texture2D(Screen.width / 4, Screen.height / 4);
 
 		Shader.SetGlobalFloat("_ScreenXToYRatio", Screen.width / Screen.height);
+
+		depthCam.targetTexture = depth;
 	}
 
 	public void CopyInto(ApplyMask target)
@@ -143,18 +147,17 @@ public class ApplyMask : MonoBehaviour
 	public void RenderDepth()
 	{
 		// spawn temp mask cam and configure transform
-		Camera depthCam = new GameObject("Depth Cam").AddComponent<Camera>();
+		// Camera depthCam = new GameObject("Depth Cam").AddComponent<Camera>();
 		//(maskCam.transform.position, maskCam.transform.eulerAngles) = (Vector3.zero, Vector3.zero);
-		depthCam.transform.parent = transform;
-		depthCam.CopyFrom(GetComponent<Camera>());
-		(depthCam.transform.localPosition, depthCam.transform.localEulerAngles) = (Vector3.zero, Vector3.zero);
-		depthCam.enabled = false;
+		// depthCam.transform.parent = transform;
+		// depthCam.CopyFrom(GetComponent<Camera>());
+		// (depthCam.transform.localPosition, depthCam.transform.localEulerAngles) = (Vector3.zero, Vector3.zero);
+		// depthCam.enabled = false;
 
-		depthCam.backgroundColor = Color.black;
-		depthCam.clearFlags = CameraClearFlags.SolidColor;
-		depthCam.clearFlags = CameraClearFlags.Skybox;
-		depthCam.targetTexture = depth;
-		depthCam.gameObject.AddComponent<Skybox>().material = blackSkybox;
+		// depthCam.backgroundColor = Color.black;
+		// depthCam.clearFlags = CameraClearFlags.Skybox;
+		// depthCam.targetTexture = depth;
+		// depthCam.gameObject.AddComponent<Skybox>().material = blackSkybox;
 		depthCam.SetReplacementShader(depthReplacement, "");
 		//depthCam.RenderWithShader(depthReplacement, "");
 		depthCam.Render();
@@ -168,8 +171,8 @@ public class ApplyMask : MonoBehaviour
 		RenderTexture.active = screen;
 
 		// remove temp cam
-		depthCam.targetTexture = null;
-		Destroy(depthCam.gameObject);
+		// depthCam.targetTexture = null;
+		// Destroy(depthCam.gameObject);
 		//RenderTexture.ReleaseTemporary(mask);
 	}
 
