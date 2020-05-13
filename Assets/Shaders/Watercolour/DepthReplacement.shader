@@ -1,4 +1,6 @@
-﻿Shader "Custom/DepthReplacement"
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+Shader "Custom/DepthReplacement"
 {
     Properties
     {
@@ -53,7 +55,11 @@
 			//o.Alpha = IN.screenPos.z / IN.vertex.w;
 			o.Alpha = 1;
 			//o.Alpha = IN.screenPos.z;
-			o.Emission.b = IN.screenPos.z / (IN.screenPos.w * 0.02);
+			//o.Emission.b = IN.screenPos.z / (IN.screenPos.w * 0.02);
+			//float3 worldPos = mul(unity_ObjectToWorld, float4(0, 0, 0, 0)).xyz;
+			//o.Emission.b = _ColorY;
+			o.Emission.b = IN.screenPos.z;// / (IN.screenPos.w * 0.02);
+
 			//o.Alpha = IN.screenPos.z / IN.screenPos.w;
 			//o.Emission = float3(o.Alpha, o.Alpha, o.Alpha);
 			//o.Emission = float3(IN.vertex.xyz);

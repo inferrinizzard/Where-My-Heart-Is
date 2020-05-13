@@ -8,7 +8,7 @@ public class IntroController : MonoBehaviour
 {
 	Player player;
 	public PlayerTrigger trigger;
-	public BirbAnimTester birdAnim;
+	public Bird birdAnim;
 	public CanvasObject canvas;
 
 	private bool initialized = false;

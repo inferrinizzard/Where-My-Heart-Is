@@ -48,17 +48,18 @@ public class Pickupable : InteractableObject
 			PickUp();
 		else if (player.looking)
 			player.looking = false;
-		else if(!dissolves)
+		else if (!dissolves)
 			PutDown();
-        else
-            StartCoroutine(DissolveOnDrop());
-    }
+		else
+			StartCoroutine(DissolveOnDrop());
+	}
 
 	public void PickUp()
 	{
 		initialPosition = transform.position;
 		initialRotation = transform.rotation;
 
+		(col as MeshCollider).convex = true;
 		oldParent = transform.parent;
 		transform.parent = player.heldObjectLocation; // set the new parent to the hold object location object
 		transform.localPosition = Vector3.zero; // set the position to local zero to match the position of the hold object location target
@@ -70,6 +71,7 @@ public class Pickupable : InteractableObject
 		transform.rotation = initialRotation;
 
 		transform.parent = oldParent;
+		(col as MeshCollider).convex = false;
 	}
 
 	public IEnumerator DissolveOnDrop(float time = .25f)
@@ -94,9 +96,9 @@ public class Pickupable : InteractableObject
 		mat.DisableKeyword("DISSOLVE_MANUAL");
 		mat.SetFloat(ManualDissolveID, 1);
 
-        PutDown();
+		PutDown();
 
-        col.enabled = true;
+		col.enabled = true;
 		active = false;
 	}
 }

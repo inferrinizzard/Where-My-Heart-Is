@@ -9,21 +9,19 @@ using UnityEngine.UI;
 /// <summary> Constrols app macro and scene manipulations </summary>
 public class GameManager : Singleton<GameManager>
 {
-	public bool duringLoad;
-	public DialogueSystem dialogue;
-	public Prompt prompt;
-	public Effects VFX;
-	public PauseMenu pause;
+	[HideInInspector] public bool duringLoad;
+	[HideInInspector] public PauseMenu pause;
+	[HideInInspector] public DialogueSystem dialogue;
+	[HideInInspector] public Prompt prompt;
 	public LevelOrder levelOrder;
 	public float transitionTime = 3f;
 
 	public override void Awake()
 	{
 		base.Awake();
-		VFX = Player.Instance.GetComponentInChildren<Effects>();
+		pause = GetComponentInChildren<PauseMenu>();
 		dialogue = GetComponentInChildren<DialogueSystem>();
 		prompt = GetComponentInChildren<Prompt>();
-		pause = GetComponentInChildren<PauseMenu>();
 	}
 
 	void Start()
@@ -46,14 +44,14 @@ public class GameManager : Singleton<GameManager>
 	{
 		levelOrder.End();
 		levelOrder.NextScene();
-		Transition(levelOrder.GetSceneName());
+		Transition(levelOrder.Name);
 	}
 
 	public IEnumerator ChangeLevelManual()
 	{
 		levelOrder.End();
 		levelOrder.NextScene();
-		return LoadScene(levelOrder.GetSceneName());
+		return LoadScene(levelOrder.Name);
 	}
 
 	/// <summary> Starts Coroutine to load scene async  </summary>
