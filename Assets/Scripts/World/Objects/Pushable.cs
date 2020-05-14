@@ -17,7 +17,7 @@ public class Pushable : InteractableObject
 	{
 		base.Start();
 		spawn = transform.position;
-		rb = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
+		rb = this.TryComponent<Rigidbody>() ? GetComponent<Rigidbody>() : gameObject.AddComponent<Rigidbody>();
 		rb.constraints = ~RigidbodyConstraints.FreezePositionY;
 
 		trigger = this.TryComponent<BoxCollider>() ? GetComponent<BoxCollider>() : gameObject.AddComponent<BoxCollider>();
@@ -60,20 +60,28 @@ public class Pushable : InteractableObject
 
 	void OnTriggerEnter(Collider other)
 	{
-		inRange = true;
+		if (other.CompareTag("Player"))
+			inRange = true;
 	}
 
 	void OnTriggerStay(Collider other)
 	{
-		if (isPushing)
+		if (other.CompareTag("Player"))
 		{
-			rb.velocity = Player.Instance.body.velocity;
+			inRange = true;
+			if (isPushing)
+			{
+				rb.velocity = Player.Instance.body.velocity;
+			}
 		}
 	}
 
 	void OnTriggerExit(Collider other)
 	{
-		inRange = false;
-		StopPushing();
+		if (other.CompareTag("Player"))
+		{
+			inRange = false;
+			StopPushing();
+		}
 	}
 }
