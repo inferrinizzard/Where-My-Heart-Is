@@ -6,6 +6,8 @@ using UnityEngine;
 public class Pushable : InteractableObject
 {
 	[SerializeField] float pushDistance = 3;
+	string _prompt = "Press E to Start Pushing";
+	public override string prompt { get => _prompt; set => _prompt = value; }
 	private Vector3 spawn;
 	Rigidbody rb;
 	BoxCollider trigger;
@@ -14,7 +16,6 @@ public class Pushable : InteractableObject
 	protected override void Start()
 	{
 		base.Start();
-		prompt = "Press E to Start Pushing";
 		spawn = transform.position;
 		rb = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
 		trigger = GetComponent<BoxCollider>() ?? gameObject.AddComponent<BoxCollider>();
