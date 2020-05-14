@@ -7,7 +7,7 @@ public class Placeable : Pickupable
 {
 	public float placeDistanceThreshold;
 	public GameObject placeTarget;
-	public BirbAnimTester birdAnim;
+	public Bird birdAnim;
 	public IntroController introController;
 
 	public override void Interact()

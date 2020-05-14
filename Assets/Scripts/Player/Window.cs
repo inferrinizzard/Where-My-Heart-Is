@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +12,11 @@ using UnityEngine;
  * */
 public class Window : MonoBehaviour
 {
-	[Header("References")]
-	public GameObject fieldOfViewSource;
-	public GameObject fieldOfView;
-	public GameObject mirror;
+	// [Header("References")]
+	[HideInInspector] public GameObject fieldOfViewSource;
+	[HideInInspector] public GameObject fieldOfView;
+	[HideInInspector] public ClippableObject mirrorObj;
+	Mirror mirror;
 	public CSG.Model fieldOfViewModel;
 
 	[Header("Behavior")]
@@ -39,6 +40,10 @@ public class Window : MonoBehaviour
 
 	void Start()
 	{
+		fieldOfViewSource = Player.Instance.heartWindow;
+		fieldOfView = fieldOfViewSource.GetComponentOnlyInChildren<MeshFilter>().gameObject;
+		mirrorObj = World.Instance.heartWorldContainer.GetComponentInChildren<Mirror>()?.GetComponent<ClippableObject>();
+		mirror = mirrorObj.GetComponent<Mirror>();
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
 	}
 
@@ -55,7 +60,7 @@ public class Window : MonoBehaviour
 		world.ResetCut();
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh, fieldOfView.transform);
 		fieldOfViewModel.ConvertToWorld();
-		StartCoroutine(ApplyCutCoroutine(1f / ((float) framerateTarget), new Bounds(fieldOfView.GetComponent<MeshCollider>().bounds.center, fieldOfView.GetComponent<MeshCollider>().bounds.size), fieldOfViewModel));
+		StartCoroutine(ApplyCutCoroutine(1f / ((float) framerateTarget), new Bounds(fieldOfView.GetComponent<MeshRenderer>().bounds.center, fieldOfView.GetComponent<MeshRenderer>().bounds.size), fieldOfViewModel));
 	}
 
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds, CSG.Model boundModel)
@@ -64,21 +69,21 @@ public class Window : MonoBehaviour
 		CSG.Model mirrorBoundModel = null;
 		Matrix4x4 reflectionMatrix = Matrix4x4.identity;
 
-		if (mirror && mirror.GetComponent<ClippableObject>().CachedModel.Intersects(boundModel, 0.0001f, true))
+		if (mirrorObj && mirrorObj.CachedModel.Intersects(boundModel, 0.0001f, true))
 		{
 			mirrorCutApplied = true;
 
 			reflectionMatrix = new Matrix4x4(
-				mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(0),
-				mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(1),
-				mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(2),
-				mirror.GetComponent<Mirror>().reflectionMatrix.GetColumn(3)
+				mirror.reflectionMatrix.GetColumn(0),
+				mirror.reflectionMatrix.GetColumn(1),
+				mirror.reflectionMatrix.GetColumn(2),
+				mirror.reflectionMatrix.GetColumn(3)
 			);
 
-			mirror.GetComponent<ClippableObject>().ClipWith(boundModel);
+			mirrorObj.ClipWith(boundModel);
 
 			Bounds mirrorBound;
-			mirrorBoundModel = mirror.GetComponent<Mirror>().CreateBound(out mirrorBound);
+			mirrorBoundModel = mirror.CreateBound(out mirrorBound);
 
 			foreach (EntangledClippable entangled in world.EntangledClippables)
 			{
@@ -143,7 +148,7 @@ public class Window : MonoBehaviour
 		//Debug.Log(clippableObject.GetComponent<MeshFilter>().mesh.bounds.extents);
 		//Debug.Log(bounds.min + " :: " + bounds.max);
 		//Debug.Log(clippableObject.GetComponent<MeshCollider>().bounds.min + " :: " + clippableObject.GetComponent<MeshCollider>().bounds.max);
-		if (bounds.Intersects(clippableObject.GetComponent<MeshCollider>().bounds)) //true || 
+		if (bounds.Intersects(clippableObject.GetComponent<MeshCollider>().bounds)) //true ||
 		{
 			//Debug.Log(clippableObject.IntersectsBound(fieldOfViewModel));
 			// more expensive, more accurate intersection check
@@ -198,7 +203,7 @@ public class Window : MonoBehaviour
 		model.edges.ForEach(edge => edge.Draw(Color.red));
 		// convert to local space of the cam
 		fovFilter.mesh = model.ToMesh(fieldOfView.transform.worldToLocalMatrix);
-		fieldOfView.GetComponent<MeshCollider>().sharedMesh = fovFilter.mesh;
+		fieldOfView.GetComponent<MeshFilter>().sharedMesh = fovFilter.mesh;
 		fovFilter.mesh.RecalculateNormals();
 	}
 
@@ -207,7 +212,7 @@ public class Window : MonoBehaviour
 		ClippableObject[] clippables = FindObjectsOfType<ClippableObject>();
 
 		//Bounds bound = clippables[0].GetComponent<MeshCollider>().bounds;
-		Bounds bound = new Bounds(Player.Instance.transform.position, clippables[0].GetComponent<MeshCollider>().bounds.size);
+		Bounds bound = clippables.Length > 0 ? new Bounds(Player.Instance.transform.position, clippables[0].GetComponent<MeshCollider>().bounds.size) : Player.Instance.heartWindow.GetComponentInChildren<MeshRenderer>().bounds;
 
 		for (int i = 0; i < clippables.Length; i++)
 		{

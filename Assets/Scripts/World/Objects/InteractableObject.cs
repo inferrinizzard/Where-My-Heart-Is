@@ -7,7 +7,7 @@ public abstract class InteractableObject : MonoBehaviour
 	[HideInInspector] public Player player;
 	/// <summary> Whether or not this is the active item </summary>
 	[HideInInspector] public bool active;
-	public string prompt = "Press E to Interact";
+	public virtual string prompt { get => "Press E to Interact"; set { } }
 	string flavorText = "";
 	DialogueSystem dialogue;
 	[HideInInspector] public Renderer[] renderers;
@@ -29,8 +29,8 @@ public abstract class InteractableObject : MonoBehaviour
 	void OnMouseEnter()
 	{
 		if (!player.heldObject && !this.TryComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
-			GameManager.Instance.VFX.SetGlow(this);
+			Effects.Instance.SetGlow(this);
 	}
 
-	void OnMouseExit() => GameManager.Instance.VFX.SetGlow(null);
+	void OnMouseExit() => Effects.Instance.SetGlow(null);
 }

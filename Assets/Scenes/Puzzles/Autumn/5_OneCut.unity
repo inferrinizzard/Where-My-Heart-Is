@@ -4948,12 +4948,6 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!1 &187489144 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2682051114935348212, guid: c1ad9c75fb5753e4886d56e6b2740636,
-    type: 3}
-  m_PrefabInstance: {fileID: 5759986516849227856}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &194844390 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 4d6bc75a9482d4a82a1dea7e8064bb9b,
@@ -27565,11 +27559,6 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 66a37f678b33c0d4499eb3bb413631b5, type: 2}
-    - target: {fileID: 1221828518550174640, guid: 88a1332d793f22942af77265e8e3e519,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 66a37f678b33c0d4499eb3bb413631b5, type: 2}
     - target: {fileID: -8015906858036905871, guid: 88a1332d793f22942af77265e8e3e519,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -27580,6 +27569,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -1.371
       objectReference: {fileID: 0}
+    - target: {fileID: 1221828518550174640, guid: 88a1332d793f22942af77265e8e3e519,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 66a37f678b33c0d4499eb3bb413631b5, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88a1332d793f22942af77265e8e3e519, type: 3}
 --- !u!1001 &1047908192
@@ -41208,18 +41202,6 @@ MonoBehaviour:
   heartClippables: []
   realClippables: []
   mirrorClippables: []
---- !u!114 &3119480722938911925
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 187489144}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52f46e25a3b92e649aafd615af3c026c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &4456526574816502456
 Transform:
   m_ObjectHideFlags: 0
@@ -41258,6 +41240,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -41312,11 +41299,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 4.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 8854909899827168894, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}

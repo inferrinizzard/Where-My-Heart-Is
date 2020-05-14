@@ -19,6 +19,17 @@ public static class Extensions
 			}
 		return default(T);
 	}
+	public static T GetComponentOnlyInChildren<T>(this GameObject script) where T : Component
+	{
+		if (typeof(T).IsInterface || typeof(T).IsSubclassOf(typeof(Component)) || typeof(T) == typeof(Component))
+			foreach (Transform child in script.transform)
+			{
+				var component = child.GetComponentInChildren<T>();
+				if (component != null)
+					return component;
+			}
+		return default(T);
+	}
 
 	///<summary> Same as GetComponentsInChildren but does not return parent </summary>
 	///<returns> Array of Component type <typeparamref name="T"/> or null </returns>

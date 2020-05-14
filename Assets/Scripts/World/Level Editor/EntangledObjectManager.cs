@@ -14,5 +14,4 @@ public class EntangledObjectManager : MonoBehaviour
 		createdObject.AddComponent<EntangledClippable>();
 		createdObject.layer = 9;
 	}
-
 }
