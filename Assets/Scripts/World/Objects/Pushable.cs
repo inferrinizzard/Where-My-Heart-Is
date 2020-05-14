@@ -18,10 +18,11 @@ public class Pushable : InteractableObject
 		base.Start();
 		spawn = transform.position;
 		rb = GetComponent<Rigidbody>() ?? gameObject.AddComponent<Rigidbody>();
-		trigger = GetComponent<BoxCollider>() ?? gameObject.AddComponent<BoxCollider>();
+		rb.constraints = ~RigidbodyConstraints.FreezePositionY;
 
+		trigger = this.TryComponent<BoxCollider>() ? GetComponent<BoxCollider>() : gameObject.AddComponent<BoxCollider>();
 		trigger.isTrigger = true;
-		trigger.size = new Vector3(pushDistance, 1, pushDistance);
+		trigger.size = new Vector3(pushDistance, 2, pushDistance);
 	}
 
 	void Update()
@@ -42,13 +43,13 @@ public class Pushable : InteractableObject
 	void BeginPushing()
 	{
 		isPushing = true;
-		rb.isKinematic = false;
+		rb.constraints = RigidbodyConstraints.FreezeRotation;
 		prompt = "Press E to Stop Pushing";
 	}
 	void StopPushing()
 	{
 		isPushing = false;
-		rb.isKinematic = true;
+		rb.constraints = ~RigidbodyConstraints.FreezePositionY;
 		prompt = "Press E to Start Pushing";
 	}
 	void Reset()
