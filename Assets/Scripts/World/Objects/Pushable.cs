@@ -45,12 +45,14 @@ public class Pushable : InteractableObject
 		isPushing = true;
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
 		prompt = "Press E to Stop Pushing";
+		Effects.Instance.SetGlow(this, Color.white);
 	}
 	void StopPushing()
 	{
 		isPushing = false;
 		rb.constraints = ~RigidbodyConstraints.FreezePositionY;
 		prompt = "Press E to Start Pushing";
+		Effects.Instance.SetGlow(this);
 	}
 	void Reset()
 	{
@@ -61,7 +63,11 @@ public class Pushable : InteractableObject
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("Player"))
+		{
 			inRange = true;
+			if (!this.TryComponent<OutlineObject>())
+				Effects.Instance.SetGlow(this);
+		}
 	}
 
 	void OnTriggerStay(Collider other)
@@ -71,7 +77,7 @@ public class Pushable : InteractableObject
 			inRange = true;
 			if (isPushing)
 			{
-				rb.velocity = Player.Instance.body.velocity;
+				rb.velocity = new Vector3(Player.Instance.body.velocity.x, rb.velocity.y, Player.Instance.body.velocity.z);
 			}
 		}
 	}
@@ -82,6 +88,7 @@ public class Pushable : InteractableObject
 		{
 			inRange = false;
 			StopPushing();
+			Effects.Instance.SetGlow(null);
 		}
 	}
 }

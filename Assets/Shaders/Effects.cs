@@ -110,9 +110,9 @@ public class Effects : MonoBehaviour
 			ApplyOutline.glowBuffer.DrawRenderer(r, mat);
 	}
 
-	public void SetGlow(InteractableObject obj)
+	public void SetGlow(InteractableObject obj, Color custom = default)
 	{
-		targetColour = glowColours[obj];
+		targetColour = custom != Color.clear ? custom : glowColours[obj];
 		if (glowRoutine != null)
 			StopCoroutine(glowRoutine);
 		if (obj)

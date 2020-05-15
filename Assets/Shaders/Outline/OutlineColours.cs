@@ -17,16 +17,15 @@ public class OutlineColours : ScriptableObject
 			if (I is null)
 				return Empty;
 
-			var type = I.GetType();
-			switch (type)
+			switch (I)
 			{
-				case var _ when type is CanvasObject:
+				case var _ when I is CanvasObject:
 					return Canvas;
-				case var _ when type is Pushable:
+				case var _ when I is Pushable:
 					return Pushable;
-				case var _ when type is Pickupable:
+				case var _ when I is Pickupable:
 					return Pickupable;
-				case var _ when(type is InteractableObject || type.IsSubclassOf(typeof(InteractableObject))):
+				case var _ when(I is InteractableObject || I is FlavorObject || I.GetType().IsSubclassOf(typeof(InteractableObject))):
 					return Interactable;
 			}
 			return Empty;

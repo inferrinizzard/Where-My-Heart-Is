@@ -25,12 +25,4 @@ public abstract class InteractableObject : MonoBehaviour
 		player = Player.Instance;
 		if (hitboxObject) hitboxObject.GetComponent<ClippableObject>().tiedInteractable = this;
 	}
-
-	void OnMouseEnter()
-	{
-		if (!player.heldObject && !this.TryComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
-			Effects.Instance.SetGlow(this);
-	}
-
-	void OnMouseExit() => Effects.Instance.SetGlow(null);
 }
