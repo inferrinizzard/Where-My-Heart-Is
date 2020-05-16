@@ -146,7 +146,11 @@ namespace CSG
 						}
 						catch (Exception e)
 						{
-							Debug.LogError("Failed to find edge loop for triangle #" + modelA.triangles.IndexOf(triangle) + ", ERROR: " + e.Message);
+                            //triangle.Draw(Color.cyan);
+                            Debug.Log(triangle.edges.Count);
+                            triangle.edges.ForEach(edge => Debug.Log(edge));
+                            triangle.vertices.ForEach(edge => Debug.Log(edge));
+                            Debug.LogError("Failed to find edge loop for triangle #" + modelA.triangles.IndexOf(triangle) + ", ERROR: " + e.Message);
 						}
 					}
 
@@ -212,7 +216,7 @@ namespace CSG
 		}
 
 		/// <summary>
-		/// Clips a single Triangle to just its parts contained by the bound
+		/// Clips a single Triangle to just the parts contained by the bound
 		/// </summary>
 		/// <param name="triangle">The triangle to clip</param>
 		/// <param name="boundsTriangles">A list of triangles defining the bounding object</param>
@@ -316,6 +320,10 @@ namespace CSG
 			{
 				return !loops.Exists(loop => loop.vertices.Contains(intersection.vertex));
 			}).ToList();
+
+            Vector3 triangleNormal = triangle.CalculateNormal();
+
+            loops.ForEach(loop => loop.MatchNormal(triangleNormal));
 
 			overflow = 0;
 			while (unusedInternalIntersections.Count > 0)

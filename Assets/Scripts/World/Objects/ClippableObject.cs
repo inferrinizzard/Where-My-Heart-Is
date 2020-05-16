@@ -33,7 +33,7 @@ public class ClippableObject : MonoBehaviour
 
 	private int oldLayer;
 	private Mesh initialMesh;
-	private MeshFilter meshFilter;
+	protected MeshFilter meshFilter;
 	private CSG.Model model;
 	private Vector3 previousCutPosition;
 
@@ -110,13 +110,22 @@ public class ClippableObject : MonoBehaviour
         mirroredCopy.transform.position = reflectionMatrix.MultiplyPoint(transform.position);
         mirroredCopy.transform.LookAt(mirroredCopy.transform.position + reflectionMatrix.MultiplyVector(mirroredCopy.transform.forward), reflectionMatrix.MultiplyVector(mirroredCopy.transform.up));
 
-        if (!volumeless)
-            mirroredCopy.GetComponent<MeshFilter>().mesh = CSG.Operations.Intersect(CachedModel, other, true, mirroredCopy.transform.worldToLocalMatrix * reflectionMatrix);
-        else
-            mirroredCopy.GetComponent<MeshFilter>().mesh = CSG.Operations.ClipAToB(CachedModel, other, true, true, mirroredCopy.transform.worldToLocalMatrix * reflectionMatrix);
+        CSG.Model tempModel = new CSG.Model(initialMesh, transform);
+        tempModel.ConvertToWorld();
 
-        if (mirroredCopy.TryComponent(out MeshCollider col))
-            col.sharedMesh = meshFilter.mesh;
+        if (!volumeless)
+        {
+            mirroredCopy.GetComponent<MeshFilter>().mesh = CSG.Operations.Intersect(tempModel, other, true, mirroredCopy.transform.worldToLocalMatrix * reflectionMatrix);
+        }
+        else
+        {
+            GetComponent<MeshFilter>().mesh = CSG.Operations.ClipAToB(tempModel, other, true, true, mirroredCopy.transform.worldToLocalMatrix * reflectionMatrix);
+        }
+
+        if (mirroredCopy.TryComponent(out MeshCollider meshCollider))
+        {
+            meshCollider.sharedMesh = mirroredCopy.GetComponent<MeshFilter>().mesh;
+        }
 
         mirroredCopy.layer = 9;
     }
@@ -141,7 +150,9 @@ public class ClippableObject : MonoBehaviour
 
     public virtual void ApplyIntersectMirroredInPlace(Matrix4x4 reflectionMatrix)
     {
+        Debug.Log(gameObject);
         GetComponent<MeshFilter>().mesh = stagedModel.ToMesh(transform.worldToLocalMatrix * reflectionMatrix);
+        GetComponent<MeshCollider>().sharedMesh = GetComponent<MeshFilter>().mesh;
     }
 
     public virtual void Revert()

@@ -95,14 +95,15 @@ public class Mirror : ClippableObject
 			}
 		} while (currentVertex != initialVertex);
 
-		for (int i = 0; i < order.Count - 1; i++)
+
+        /*for (int i = 0; i < order.Count - 1; i++)
 		{
 			//new CSG.Edge(sourceModel.vertices[order[i]], sourceModel.vertices[order[(i+1)%order.Count]]).Draw(Color.red);
-		}
+		}*/
 
-		// copy existing model faces
+        // copy existing model faces
 
-		CSG.Model farModel = new CSG.Model(GetComponent<MeshFilter>().mesh);
+        CSG.Model farModel = new CSG.Model(GetComponent<MeshFilter>().mesh);
 		farModel.ApplyTransformation(transform.localToWorldMatrix);
 		Vector3 camPosition = reflectionCamera.transform.position;
 		// project copy outwards to act as far side of the bound
@@ -120,25 +121,31 @@ public class Mirror : ClippableObject
 		CSG.Model result = CSG.Model.Combine(sourceModel, farModel);
 
 		Vector3 testNormal = new CSG.Triangle(farLoop[order[0]], closeLoop[order[1]], farLoop[order[2]]).CalculateNormal();
-		if (Vector3.Dot(testNormal, sourceModel.triangles[0].CalculateNormal()) > 0)
+		if (Vector3.Dot(testNormal, sourceModel.triangles[0].CalculateNormal()) <= 0)
 		{
 			order.Reverse();
 		}
 
 		// for every pair of vertices on the close face
-		for (int i = 0; i < order.Count; i++)
+		for (int i = 0; i < order.Count - 1; i++)
 		{
+            Debug.Log(i);
 			// create two new triangles that connect them to the corrosponding pair on the other surface
 			result.AddTriangle(new CSG.Triangle(farLoop[order[i]], closeLoop[order[i]], farLoop[order[(i + 1) % order.Count]]));
-			result.AddTriangle(new CSG.Triangle(closeLoop[order[i]], closeLoop[order[(i + 1) % order.Count]], farLoop[order[(i + 1) % order.Count]]));
+            result.triangles.Last().vertices.ForEach(edge => Debug.Log(i + " :: " + edge));
+            result.AddTriangle(new CSG.Triangle(closeLoop[order[i]], closeLoop[order[(i + 1) % order.Count]], farLoop[order[(i + 1) % order.Count]]));
+            result.triangles.Last().vertices.ForEach(edge => Debug.Log(edge));
 		}
 
 		result.CreateEdges();
-		//result.FlipNormals();
+        if(Vector3.Dot(result.triangles[0].CalculateNormal(), reflectionCamera.transform.forward) < 0)
+        {
+		    result.FlipNormals();
+        }
 
-		/*GameObject test = new GameObject();
+		GameObject test = new GameObject();
 		test.AddComponent<MeshFilter>().mesh = result.ToMesh(test.transform.worldToLocalMatrix);
-		test.AddComponent<MeshRenderer>();*/
+		test.AddComponent<MeshRenderer>();
 
 		bound = new Bounds();
 		Vector3 center = Vector3.zero;
