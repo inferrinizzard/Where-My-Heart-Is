@@ -1,47 +1,64 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
-
 public class Gate : MonoBehaviour
 {
 	[SerializeField] float rotationAngle = 50;
 	[SerializeField] float rotationTime = 1;
-	[SerializeField] Transform leftDoor = default;
-	[SerializeField] Transform rightDoor = default;
-
+	[SerializeField] float unlockRadius = 3;
+	[SerializeField] Transform leftDoor = default, rightDoor = default;
 	[FMODUnity.EventRef] public string GateOpenEvent;
-	public GameObject keyHole;
 	private bool open = false;
-
-	public void Open()
+	public List<LockPair> locks = new List<LockPair>();
+	public void AddLock(Lock l)
 	{
-		if (!open)
+		var worldType = l.GetComponent<ClippableObject>()?.worldType;
+		var existingPair = locks.Find(pair => pair.heartLock?.transform.position == l.transform.position || pair.realLock?.transform.position == l.transform.position);
+		if (existingPair != null)
 		{
-			open = true;
-			StartCoroutine(OpenGate(rotationAngle, rotationTime));
+			if (worldType == ClippableObject.WorldType.Real) //TODO: make under world
+				existingPair.realLock = l;
+			else
+				existingPair.heartLock = l;
 		}
+		else
+			locks.Add(worldType == ClippableObject.WorldType.Real ? new LockPair(real: l) : new LockPair(heart: l));
+		l.name += $" [{worldType}]";
+		locks = locks.Where(pair => pair.heartLock != null || pair.realLock != null).ToList();
+	}
+
+	public void Unlock(Lock l)
+	{
+		var removeLock = locks.Find(pair => pair.heartLock == l || pair.realLock == l);
+		locks.Remove(removeLock);
+		// could potentially play unlock anim here;
+		Destroy(removeLock.realLock?.gameObject);
+		Destroy(removeLock.heartLock?.gameObject);
+
+		if (locks.Count == 0)
+			StartCoroutine(OpenGate(rotationAngle, rotationTime));
 	}
 
 	IEnumerator OpenGate(float angle, float time)
 	{
-		float start = Time.time;
-		bool inProgress = true;
-
 		var leftStart = leftDoor.eulerAngles;
 		var rightStart = rightDoor.eulerAngles;
 
 		FMODUnity.RuntimeManager.PlayOneShot(GateOpenEvent, transform.position);
 
-		while (inProgress)
+		for (var(start, step) = (Time.time, 0f); step <= time; step = Time.time - start)
 		{
 			yield return null;
-			float step = Time.time - start;
 			leftDoor.eulerAngles = leftStart + Vector3.up * (angle * step / time);
 			rightDoor.eulerAngles = rightStart + Vector3.up * (-angle * step / time);
-
-			if (step > time)
-				inProgress = false;
 		}
 	}
+}
+
+[System.Serializable] public class LockPair
+{
+	public Lock realLock, heartLock;
+	public LockPair(Lock real = null, Lock heart = null) => (realLock, heartLock) = (real, heart);
 }
