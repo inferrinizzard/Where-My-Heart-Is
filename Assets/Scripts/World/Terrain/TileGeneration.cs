@@ -38,19 +38,19 @@ public class TileGeneration : MonoBehaviour
 	void GenerateTile()
 	{
 		// Calculate tile depth and width
-		Vector3[] meshVertices = this.meshFilter.mesh.vertices;
+		Vector3[] meshVertices = meshFilter.mesh.vertices;
 		int tileDepth = (int) Mathf.Sqrt(meshVertices.Length);
 		int tileWidth = tileDepth;
 
 		// Calculate the offsets based on the tile position
-		float offsetX = -this.gameObject.transform.position.x;
-		float offsetZ = -this.gameObject.transform.position.z;
+		float offsetX = -transform.position.x;
+		float offsetZ = -transform.position.z;
 
 		// Generate heightmap 
-		float[, ] heightMap = this.noiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, this.mapScale, offsetX, offsetZ, waves);
+		float[, ] heightMap = noiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, mapScale, offsetX, offsetZ, waves);
 
 		Texture2D tileTexture = BuildTexture(heightMap);
-		this.tileRenderer.material.mainTexture = tileTexture;
+		tileRenderer.material.mainTexture = tileTexture;
 
 		// Get trees and door from pool and place based on mesh height
 		for (int v = 0; v < meshVertices.Length; v++)
@@ -63,9 +63,9 @@ public class TileGeneration : MonoBehaviour
 				float treeScale = Random.Range(0.0f, 0.1f);
 				if (newTree != null && Random.Range(0.0f, 1.0f) < 0.05)
 				{
-					Vector3 treePos = new Vector3(meshVertices[v].x + this.gameObject.transform.position.x,
+					Vector3 treePos = new Vector3(meshVertices[v].x + transform.position.x,
 						meshVertices[v].y + 2.5f,
-						meshVertices[v].z + this.gameObject.transform.position.z);
+						meshVertices[v].z + transform.position.z);
 					newTree.transform.position = treePos;
 					newTree.transform.localScale += new Vector3(treeScale, treeScale, treeScale);
 					newTree.SetActive(true);
@@ -107,7 +107,7 @@ public class TileGeneration : MonoBehaviour
 			myDoors.Clear();
 		}
 
-		Debug.Log((int) Vector3.Distance(Vector3.zero, player.transform.position));
+		// Debug.Log((int) Vector3.Distance(Vector3.zero, player.transform.position));
 	}
 	// Clear trees and doors when tiles are destoryed
 	void OnDestroy()
@@ -119,15 +119,15 @@ public class TileGeneration : MonoBehaviour
 		}
 
 		myTrees.Clear();
-
 	}
+
 	// Changes plane mesh vertices according to the height map
 	private void UpdateMeshVertices(float[, ] heightMap)
 	{
 		int tileDepth = heightMap.GetLength(0);
 		int tileWidth = heightMap.GetLength(1);
 
-		Vector3[] meshVertices = this.meshFilter.mesh.vertices;
+		Vector3[] meshVertices = meshFilter.mesh.vertices;
 
 		// iterate through all the heightMap coordinates, updating the vertex index
 		int vertexIndex = 0;
@@ -139,18 +139,18 @@ public class TileGeneration : MonoBehaviour
 
 				Vector3 vertex = meshVertices[vertexIndex];
 				// change the vertex Y coordinate, proportional to the height value. The height value is evaluated by the heightCurve function, in order to correct it.
-				meshVertices[vertexIndex] = new Vector3(vertex.x, this.heightCurve.Evaluate(height) * this.heightMultiplier, vertex.z);
+				meshVertices[vertexIndex] = new Vector3(vertex.x, heightCurve.Evaluate(height) * heightMultiplier, vertex.z);
 
 				vertexIndex++;
 			}
 		}
 
 		// update the vertices in the mesh and update its properties
-		this.meshFilter.mesh.vertices = meshVertices;
-		this.meshFilter.mesh.RecalculateBounds();
-		this.meshFilter.mesh.RecalculateNormals();
+		meshFilter.mesh.vertices = meshVertices;
+		meshFilter.mesh.RecalculateBounds();
+		meshFilter.mesh.RecalculateNormals();
 		// update the mesh collider
-		this.meshCollider.sharedMesh = this.meshFilter.mesh;
+		meshCollider.sharedMesh = meshFilter.mesh;
 	}
 
 	// Return a Color array to create the Texture2D
