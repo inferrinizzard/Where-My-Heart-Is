@@ -1284,6 +1284,12 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4681228249720185881, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: test
+      value: 
+      objectReference: {fileID: 11400000, guid: efe3dbfad94c29a4691f61fb7f6c84c9,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e408cfb269dae24999d2b21e62931c5, type: 3}
 --- !u!4 &2567998057564522578
@@ -1338,6 +1344,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1392,11 +1403,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 8854909899827168894, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
@@ -1840,27 +1846,6 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 2950740718295748212, guid: ce2e34029942daa4c845cd2ceec80c14, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ce2e34029942daa4c845cd2ceec80c14, type: 3}
---- !u!1 &5398478463193133309 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5407968007786445911, guid: ce2e34029942daa4c845cd2ceec80c14,
-    type: 3}
-  m_PrefabInstance: {fileID: 5398478463193133308}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &5398478463193133310
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5398478463193133309}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 952576c4e284ade41bdb3ad578b28498, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  transitionTex: {fileID: 2800000, guid: 27652fb6e8e6045458cfd167c5531c0b, type: 3}
-  betaTex: {fileID: 0}
-  distance: 100
 --- !u!1 &6027842516987942098
 GameObject:
   m_ObjectHideFlags: 0
