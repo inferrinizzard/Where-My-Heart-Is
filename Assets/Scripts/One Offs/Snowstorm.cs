@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Snowstorm : MonoBehaviour
 {
-	[SerializeField] Texture2D transitionTex = default, backgroundTex = default;
+	Texture2D transitionTex = default, backgroundTex = default;
 	Material snowMat;
 	int _CutoffID = Shader.PropertyToID("_Cutoff");
 	float progress = 0;
@@ -13,6 +13,8 @@ public class Snowstorm : MonoBehaviour
 
 	void Start()
 	{
+		transitionTex = Resources.Load<Texture2D>("Frost");
+
 		var fadeSnowTex = new Texture2D(transitionTex.width, transitionTex.height);
 		Graphics.CopyTexture(transitionTex, 0, 0, fadeSnowTex, 0, 0);
 		var snowPixels = transitionTex.GetPixels();
@@ -31,7 +33,7 @@ public class Snowstorm : MonoBehaviour
 	{
 		progress = Player.Instance.transform.position.magnitude;
 		if (distance - progress < .05)
-			this.enabled = false;
+			Destroy(this);
 	}
 	void FixedUpdate() => snowMat.SetFloat(_CutoffID, EaseMethods.CubicEaseIn(1 - progress / distance, 0, 1, 1));
 	void OnRenderImage(RenderTexture src, RenderTexture dest) => Graphics.Blit(src, dest, snowMat);
