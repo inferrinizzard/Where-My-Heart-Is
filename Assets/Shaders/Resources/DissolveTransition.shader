@@ -25,17 +25,14 @@ Shader "Dissolve/Transition"
 			float _Cutoff;
 
 			fixed4 frag(v2f_img i) : SV_Target {
-				fixed4 transit = tex2D(_TransitionTex, i.uv);
-				fixed2 direction = float2(0, 0);
-				fixed4 col = tex2D(_MainTex, i.uv + _Cutoff * direction);
+				return lerp(tex2D(_BackgroundTex, i.uv), tex2D(_MainTex, i.uv), 1 - _Cutoff / tex2D(_TransitionTex, i.uv).b);
+				// return lerp(tex2D(_BackgroundTex, i.uv), col, 1 - (_Cutoff - blend) / blend); // deep fries
 
-				return lerp(tex2D(_BackgroundTex, i.uv), col, 1 - (_Cutoff - transit.b) / transit.b);
-				
-				if (transit.b < _Cutoff)
-				return float4(tex2D(_BackgroundTex, i.uv).rgb, 1 - (_Cutoff - transit.b) / transit.b); // fade with alpha
+				// if (transit.b < _Cutoff)
+				// return float4(tex2D(_BackgroundTex, i.uv).rgb, 1 - (_Cutoff - transit.b) / transit.b); // fade with alpha
 				// return col = lerp(col, tex2D(_BackgroundTex, i.uv), (_Cutoff - transit.b) / transit.b);
 
-				return float4(col.rgb,  (_Cutoff - transit.b) / transit.b);
+				// return float4(col.rgb,  (_Cutoff - transit.b) / transit.b);
 			}					
 			ENDCG
 		}

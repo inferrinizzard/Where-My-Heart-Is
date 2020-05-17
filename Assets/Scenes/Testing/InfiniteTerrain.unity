@@ -1470,6 +1470,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -2124705421725058983, guid: 152bd8c7cefbd1f46861d90ab372da4e,
         type: 3}
+    - target: {fileID: 5407968008035840464, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: windowEnabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1928347570233019699, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -1832,7 +1837,8 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0.26827085
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2950740718295748212, guid: ce2e34029942daa4c845cd2ceec80c14, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ce2e34029942daa4c845cd2ceec80c14, type: 3}
 --- !u!1 &5398478463193133309 stripped
 GameObject:
@@ -1854,7 +1860,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transitionTex: {fileID: 2800000, guid: 27652fb6e8e6045458cfd167c5531c0b, type: 3}
   betaTex: {fileID: 0}
-  snowMat: {fileID: 0}
   distance: 100
 --- !u!1 &6027842516987942098
 GameObject:
