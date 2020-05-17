@@ -18,7 +18,6 @@ public class Lock : MonoBehaviour
 	{
 		if (other.CompareTag("Key") && other.gameObject.layer == gameObject.layer)
 		{
-			// k.Destroy();
 			Destroy(other.gameObject);
 			gate.Unlock(this);
 		}

@@ -7,10 +7,9 @@ public class Gate : MonoBehaviour
 {
 	[SerializeField] float rotationAngle = 50;
 	[SerializeField] float rotationTime = 1;
-	[SerializeField] float unlockRadius = 3;
+	[SerializeField] float unlockRadius = .5f;
 	[SerializeField] Transform leftDoor = default, rightDoor = default;
 	[FMODUnity.EventRef] public string GateOpenEvent;
-	private bool open = false;
 	public List<LockPair> locks = new List<LockPair>();
 	public void AddLock(Lock l)
 	{
@@ -26,6 +25,7 @@ public class Gate : MonoBehaviour
 		else
 			locks.Add(worldType == ClippableObject.WorldType.Real ? new LockPair(real: l) : new LockPair(heart: l));
 		l.name += $" [{worldType}]";
+		l.GetComponent<SphereCollider>().radius = unlockRadius;
 		locks = locks.Where(pair => pair.heartLock != null || pair.realLock != null).ToList();
 	}
 
