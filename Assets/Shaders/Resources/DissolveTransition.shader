@@ -29,6 +29,8 @@ Shader "Dissolve/Transition"
 				fixed2 direction = float2(0, 0);
 				fixed4 col = tex2D(_MainTex, i.uv + _Cutoff * direction);
 
+				return lerp(tex2D(_BackgroundTex, i.uv), col, 1 - (_Cutoff - transit.b) / transit.b);
+				
 				if (transit.b < _Cutoff)
 				return float4(tex2D(_BackgroundTex, i.uv).rgb, 1 - (_Cutoff - transit.b) / transit.b); // fade with alpha
 				// return col = lerp(col, tex2D(_BackgroundTex, i.uv), (_Cutoff - transit.b) / transit.b);
