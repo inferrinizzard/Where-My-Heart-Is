@@ -26,13 +26,13 @@ public class Level : ScriptableObject
 	public void StartBehaviors()
 	{
 		foreach (LevelBehaviour behavior in behaviours)
-			behavior.OnLevelLoad();
+			behavior.StartEvent.Invoke();
 	}
 
 	public void EndBehaviours()
 	{
 		foreach (LevelBehaviour behaviour in behaviours)
-			behaviour.OnLevelUnload();
+			behaviour.EndEvent.Invoke();
 	}
 
 }
