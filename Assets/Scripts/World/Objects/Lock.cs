@@ -17,9 +17,6 @@ public class Lock : MonoBehaviour
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("Key") && other.gameObject.layer == gameObject.layer)
-		{
-			Destroy(other.gameObject);
-			gate.Unlock(this);
-		}
+			gate.Unlock(this, other.gameObject);
 	}
 }

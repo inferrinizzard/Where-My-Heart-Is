@@ -10,6 +10,7 @@ public class Gate : MonoBehaviour
 	[SerializeField] float unlockRadius = .5f;
 	[SerializeField] Transform leftDoor = default, rightDoor = default;
 	[FMODUnity.EventRef] public string GateOpenEvent;
+	[SerializeField] GameObject crackedLock;
 	public List<LockPair> locks = new List<LockPair>();
 	public void AddLock(Lock l)
 	{
@@ -29,13 +30,41 @@ public class Gate : MonoBehaviour
 		locks = locks.Where(pair => pair.heartLock != null || pair.realLock != null).ToList();
 	}
 
-	public void Unlock(Lock l)
+	public void Unlock(Lock l, GameObject key)
 	{
 		var removeLock = locks.Find(pair => pair.heartLock == l || pair.realLock == l);
 		locks.Remove(removeLock);
 		// could potentially play unlock anim here;
-		Destroy(removeLock.realLock?.gameObject);
-		Destroy(removeLock.heartLock?.gameObject);
+		StartCoroutine(KeyAnim(l.transform, key.transform, removeLock));
+	}
+
+	IEnumerator KeyAnim(Transform _lock, Transform key, LockPair destroy, float time = 1.5f)
+	{
+		key.parent = key.GetComponent<ClippableObject>().worldType == ClippableObject.WorldType.Heart ? World.Instance.heartWorldContainer : World.Instance.realWorldContainer;
+		key.position = _lock.position + _lock.up;
+		key.eulerAngles = new Vector3(-90, _lock.transform.eulerAngles.y, 0);
+		for (var(start, step) = (Time.time, 0f); step <= time; step = Time.time - start)
+		{
+			yield return null;
+			if (step < time / 3)
+				key.position = _lock.position + _lock.up * (1 - EaseMethods.CubicEaseOut(step * 3 / time, 0, 1, 1));
+			else if (step < time * 2 / 3)
+				key.RotateAround(key.up, time / 3 / -5);
+			else
+			{
+				if (key)
+				{
+					key.GetComponent<InteractableObject>().Interact();
+					Destroy(key.gameObject);
+					if (crackedLock)
+						_lock.GetComponent<MeshFilter>().mesh = crackedLock.GetComponent<MeshFilter>().sharedMesh;
+				}
+				_lock.transform.Translate(-Vector3.forward / 5 * EaseMethods.QuartEaseOut((3 * step - time * 2) / time, 0, 1, 1));
+			}
+		}
+
+		Destroy(destroy.realLock?.gameObject);
+		Destroy(destroy.heartLock?.gameObject);
 
 		if (locks.Count == 0)
 			StartCoroutine(OpenGate(rotationAngle, rotationTime));
