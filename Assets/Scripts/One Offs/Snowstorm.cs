@@ -9,7 +9,6 @@ public class Snowstorm : MonoBehaviour
 	Material snowMat;
 	int _CutoffID = Shader.PropertyToID("_Cutoff");
 	float progress = 0;
-	[SerializeField] float distance = 100;
 
 	void Start()
 	{
@@ -32,9 +31,9 @@ public class Snowstorm : MonoBehaviour
 	void Update()
 	{
 		progress = Player.Instance.transform.position.magnitude;
-		if (distance - progress < .05)
+		if (SnowstormBehaviour.walkDistance - progress < .05)
 			Destroy(this);
 	}
-	void FixedUpdate() => snowMat.SetFloat(_CutoffID, EaseMethods.CubicEaseIn(1 - progress / distance, 0, 1, 1));
+	void FixedUpdate() => snowMat.SetFloat(_CutoffID, EaseMethods.CubicEaseIn(1 - progress / SnowstormBehaviour.walkDistance, 0, 1, 1));
 	void OnRenderImage(RenderTexture src, RenderTexture dest) => Graphics.Blit(src, dest, snowMat);
 }

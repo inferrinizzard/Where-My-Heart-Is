@@ -3,13 +3,10 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-/// <summary>
-/// Instantiates tree array with two tree prefabs and gets inactive trees in tree pool.
-/// </summary>
-/// <returns> Tree if available, null if all trees are unavailable </returns>
+/// <summary> Instantiates tree array with two tree prefabs and gets inactive trees in tree pool. </summary>
 public class TreePool : MonoBehaviour
 {
-	static int numTrees = 500;
+	static int numTrees = 2000;
 	[SerializeField] GameObject[] treePrefabs;
 	static GameObject[] trees;
 

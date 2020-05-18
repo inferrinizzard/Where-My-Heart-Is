@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 
@@ -29,25 +30,34 @@ public class TileGeneration : MonoBehaviour
 	[SerializeField] private AnimationCurve heightCurve = default;
 	[SerializeField] private Waves[] waves = default; // Perlin noise detail
 
-	// Start is called before the first frame update
+	GenerateInfinite gen;
+	[HideInInspector] public Vector2Int gridPos;
+
 	void Start()
 	{
+		gen = transform.GetComponentInParent<GenerateInfinite>();
 		GenerateTile();
+	}
+
+	Vector2 Gaussian(float? x = null, float? y = null)
+	{
+		float u1 = x ?? 1f - Random.value, u2 = y ?? 1f - Random.value;
+		float preLog = Mathf.Sqrt(-2f * Mathf.Log(u1));
+		return new Vector2(preLog * Mathf.Sin(2f * Mathf.PI * u2), preLog * Mathf.Cos(2f * Mathf.PI * u2));
 	}
 
 	void GenerateTile()
 	{
 		// Calculate tile depth and width
-		Vector3[] meshVertices = meshFilter.mesh.vertices;
+		Vector3[] meshVertices = meshFilter.mesh.vertices.OrderBy(v => v.sqrMagnitude).ToArray();
 		int tileDepth = (int) Mathf.Sqrt(meshVertices.Length);
 		int tileWidth = tileDepth;
 
 		// Calculate the offsets based on the tile position
-		float offsetX = -transform.position.x;
-		float offsetZ = -transform.position.z;
+		Vector2 offset = -new Vector2(transform.position.x, transform.position.z);
 
 		// Generate heightmap 
-		float[, ] heightMap = noiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, mapScale, offsetX, offsetZ, waves);
+		float[, ] heightMap = noiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, mapScale, offset.x, offset.y, waves);
 
 		Texture2D tileTexture = BuildTexture(heightMap);
 		tileRenderer.material.mainTexture = tileTexture;
@@ -61,7 +71,8 @@ public class TileGeneration : MonoBehaviour
 				//   Debug.Log("perlin noise: " + Mathf.PerlinNoise((meshVertices[v].x + 5) / 10, (meshVertices[v].z + 5) / 10) * 10);
 				GameObject newTree = TreePool.GetTree();
 				float treeScale = Random.Range(0.0f, 0.1f);
-				if (newTree != null && Random.Range(0.0f, 1.0f) < 0.05)
+				if (newTree != null && Random.Range(0.0f, 1.0f) < .5f)
+				// if (newTree != null && Random.Range(0.0f, 1.0f) < (1.2f - Mathf.Min(1, meshVertices[v].magnitude / SnowstormBehaviour.walkDistance)) * .8f)
 				{
 					Vector3 treePos = new Vector3(meshVertices[v].x + transform.position.x,
 						meshVertices[v].y + 2.5f,
@@ -80,6 +91,9 @@ public class TileGeneration : MonoBehaviour
 
 	private void Update()
 	{
+		// if ((player.transform.position - transform.position).sqrMagnitude > 100 * 100)
+		// 	gen.Remove(gridPos);
+
 		// Spawn one door when it exists in the pool and respawns when player moves a certain distance
 		GameObject newDoor = DoorPool.GetDoor();
 		if (newDoor != null && (int) Vector3.Distance(Vector3.zero, player.transform.position) > stepsTaken && (int) Vector3.Distance(Vector3.zero, player.transform.position) % spawnDist == 0)
@@ -114,10 +128,9 @@ public class TileGeneration : MonoBehaviour
 	{
 		for (int i = 0; i < myTrees.Count; i++)
 		{
-			if (myTrees[i] != null)
+			if (myTrees[i])
 				myTrees[i].SetActive(false);
 		}
-
 		myTrees.Clear();
 	}
 
@@ -132,7 +145,6 @@ public class TileGeneration : MonoBehaviour
 		// iterate through all the heightMap coordinates, updating the vertex index
 		int vertexIndex = 0;
 		for (int zIndex = 0; zIndex < tileDepth; zIndex++)
-		{
 			for (int xIndex = 0; xIndex < tileWidth; xIndex++)
 			{
 				float height = heightMap[zIndex, xIndex];
@@ -143,7 +155,6 @@ public class TileGeneration : MonoBehaviour
 
 				vertexIndex++;
 			}
-		}
 
 		// update the vertices in the mesh and update its properties
 		meshFilter.mesh.vertices = meshVertices;
