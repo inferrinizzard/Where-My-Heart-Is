@@ -8,8 +8,6 @@ public class Snowstorm : MonoBehaviour
 	[SerializeField] Shader transition = default;
 	[SerializeField] Texture2D rawSnow = default;
 	Material snowMat;
-	int _CutoffID = Shader.PropertyToID("_Cutoff");
-
 	bool snowOn = true;
 	float progress = 0;
 	[SerializeField] float distance = 100;
@@ -38,7 +36,7 @@ public class Snowstorm : MonoBehaviour
 	void FixedUpdate()
 	{
 		if (snowOn)
-			snowMat.SetFloat(_CutoffID, 1 - progress / distance); // add curve here	
+			snowMat.SetFloat(ShaderID._TransitionCutoff, 1 - progress / distance); // add curve here	
 	}
 
 	void OnRenderImage(RenderTexture src, RenderTexture dest) => Graphics.Blit(src, dest, snowOn ? snowMat : null);

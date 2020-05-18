@@ -18,7 +18,6 @@ public class ApplyMask : MonoBehaviour
 	///<summary> Generated RenderTexture for Heart World </summary>
 	RenderTexture heart;
 	Texture2D curSave;
-	int _HeartID = Shader.PropertyToID("_Heart"), _ViewProjInvID = Shader.PropertyToID("_ViewProjectionInverse");
 
 	[Header("Ripple Behavior")]
 	[SerializeField] float rippleLength = 1, rippleTarget = 10;
@@ -49,6 +48,7 @@ public class ApplyMask : MonoBehaviour
 
 		depth = new RenderTexture(Screen.width / 4, Screen.height / 4, 16, RenderTextureFormat.Default);
 		depth.name = "DepthRT";
+		depthCam.SetReplacementShader(depthReplacement, "");
 		depthCam.targetTexture = depth;
 
 		Shader.SetGlobalFloat("_ScreenXToYRatio", Screen.width / Screen.height);
@@ -85,8 +85,8 @@ public class ApplyMask : MonoBehaviour
 
 	void OnRenderImage(RenderTexture source, RenderTexture dest)
 	{
-		screenMat.SetTexture(_HeartID, heart);
-		screenMat.SetMatrix(_ViewProjInvID, (GetComponent<Camera>().projectionMatrix * GetComponent<Camera>().worldToCameraMatrix).inverse);
+		screenMat.SetTexture(ShaderID._Heart, heart);
+		screenMat.SetMatrix(ShaderID._ViewProjectionInverse, (mainCam.projectionMatrix * mainCam.worldToCameraMatrix).inverse);
 
 		if (rippleInProgress)
 		{
@@ -111,7 +111,7 @@ public class ApplyMask : MonoBehaviour
 			{
 				if (Time.time - rippleStartTime > 0)
 				{
-					rippleMat.SetFloat("_Offset", rippleCurve.Evaluate((Time.time - rippleStartTime) / rippleLength) * rippleTarget);
+					rippleMat.SetFloat(ShaderID._RippleOffset, rippleCurve.Evaluate((Time.time - rippleStartTime) / rippleLength) * rippleTarget);
 				}
 			}
 			else
@@ -123,9 +123,8 @@ public class ApplyMask : MonoBehaviour
 
 	public void RenderDepth()
 	{
-		depthCam.SetReplacementShader(depthReplacement, "");
 		depthCam.Render();
-		Shader.SetGlobalTexture("_DepthColor", depth);
+		Shader.SetGlobalTexture(ShaderID._DepthColor, depth);
 	}
 
 	public void SetMask(RenderTexture nextMask)

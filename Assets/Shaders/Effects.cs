@@ -85,8 +85,8 @@ public class Effects : MonoBehaviour
 	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
 
 	// public void SetWave(float distance) => waveController.waveDistance = distance;
-	public void SetWave(float distance) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", distance);
-	public void SetWave(ClippableObject clippable) => Player.Instance.mask.screenMat.SetFloat("_WaveDistance", (clippable.transform.position - transform.position).magnitude);
+	public void SetWave(float distance) => Player.Instance.mask.screenMat.SetFloat(ShaderID._WaveDistance, distance);
+	public void SetWave(ClippableObject clippable) => Player.Instance.mask.screenMat.SetFloat(ShaderID._WaveDistance, (clippable.transform.position - transform.position).magnitude);
 
 	void ToggleEffect(bool on, string keyword)
 	{
