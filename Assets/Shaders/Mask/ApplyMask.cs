@@ -18,7 +18,7 @@ public class ApplyMask : MonoBehaviour
 	///<summary> Generated RenderTexture for Heart World </summary>
 	RenderTexture heart;
 	Texture2D curSave;
-	int _HeartID = Shader.PropertyToID("_Heart");
+	int _HeartID = Shader.PropertyToID("_Heart"), _ViewProjInvID = Shader.PropertyToID("_ViewProjectionInverse");
 
 	[Header("Ripple Behavior")]
 	[SerializeField] float rippleLength = 1, rippleTarget = 10;
@@ -54,7 +54,7 @@ public class ApplyMask : MonoBehaviour
 		Shader.SetGlobalFloat("_ScreenXToYRatio", Screen.width / Screen.height);
 	}
 
-	public void StartRipple()
+	void StartRipple()
 	{
 		rippleInProgress = true;
 		rippleStartTime = Time.time;
@@ -86,6 +86,7 @@ public class ApplyMask : MonoBehaviour
 	void OnRenderImage(RenderTexture source, RenderTexture dest)
 	{
 		screenMat.SetTexture(_HeartID, heart);
+		screenMat.SetMatrix(_ViewProjInvID, (GetComponent<Camera>().projectionMatrix * GetComponent<Camera>().worldToCameraMatrix).inverse);
 
 		if (rippleInProgress)
 		{

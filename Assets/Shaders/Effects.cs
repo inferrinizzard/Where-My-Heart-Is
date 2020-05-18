@@ -42,8 +42,8 @@ public class Effects : MonoBehaviour
 	public void SubcribeToCutEvents(Window window)
 	{
 		window.OnClippableCut += SetWave;
-		window.OnBeginCut += () => ToggleWave(true);
-		window.OnCompleteCut += () => ToggleWave(false);
+		window.OnBeginCut += () => { ToggleWave(true); screen.screenMat.SetVector("_WaveOrigin", mainCam.transform.position); };
+		window.OnCompleteCut += () => { ToggleWave(false); SetWave(0); };
 	}
 
 	#region toggles
