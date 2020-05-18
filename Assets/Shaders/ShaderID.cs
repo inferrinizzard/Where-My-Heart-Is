@@ -19,6 +19,8 @@ public sealed class ShaderID
 
 	/// <summary> Used for ripple anim </summary>
 	public static readonly int _RippleOffset = Shader.PropertyToID("_RippleOffset");
+	/// <summary> Used for mask </summary>
+	public static readonly int _Mask = Shader.PropertyToID("_Mask");
 	/// <summary> Used for mask ramp anim </summary>
 	public static readonly int _MaskCutoff = Shader.PropertyToID("_MaskCutoff");
 	/// <summary> Used for mask ramp anim </summary>

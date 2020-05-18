@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class ApplyMask : MonoBehaviour
 {
-	///<summary> External RenderTexture for Mask TODO: to be consumed </summary>
 	[Header("Image Effect Materials")]
 	public Material rippleMat;
 	public Material screenMat;
@@ -23,7 +22,7 @@ public class ApplyMask : MonoBehaviour
 	[SerializeField] float rippleLength = 1, rippleTarget = 10;
 	[SerializeField] AnimationCurve rippleCurve = default;
 
-	[HideInInspector] public RenderTexture mask;
+	public RenderTexture mask;
 	RenderTexture depth;
 
 	private bool rippleInProgress;
@@ -127,18 +126,18 @@ public class ApplyMask : MonoBehaviour
 		Shader.SetGlobalTexture(ShaderID._DepthColor, depth);
 	}
 
-	public void SetMask(RenderTexture nextMask)
-	{
-		RenderTexture screen = RenderTexture.active;
-		RenderTexture.active = nextMask;
+	public void SetMask(RenderTexture nextMask) => Shader.SetGlobalTexture(ShaderID._Mask, nextMask);
+	// {
+	// 	RenderTexture screen = RenderTexture.active;
+	// 	RenderTexture.active = nextMask;
 
-		// copy to Texture2D and pass to shader
-		var mask2D = new Texture2D(Screen.width, Screen.height);
-		mask2D.ReadPixels(new Rect(0, 0, nextMask.width, nextMask.height), 0, 0);
-		mask2D.Apply();
-		Shader.SetGlobalTexture("_Mask", mask2D);
-		RenderTexture.active = screen;
-	}
+	// 	// copy to Texture2D and pass to shader
+	// 	var mask2D = new Texture2D(Screen.width, Screen.height);
+	// 	mask2D.ReadPixels(new Rect(0, 0, nextMask.width, nextMask.height), 0, 0);
+	// 	mask2D.Apply();
+	// 	Shader.SetGlobalTexture(ShaderID._Mask, mask2D);
+	// 	RenderTexture.active = screen;
+	// }
 
 	public IEnumerator PreTransition()
 	{
