@@ -49,9 +49,9 @@ int CalculateBoil(inout float4 output, float2 uv, float mask) {
 	float col = floor(texIndex / _HatchSize);
 
 	int maskOn = 0;
-	#if MASK
-		if(mask > .5) maskOn = 1;
-	#endif
+	// #if MASK
+	// 	if(mask > .5) maskOn = 1;
+	// #endif
 
 	float4 depthNormal = maskOn ? tex2D(_HeartDepthNormals, uv) : tex2D(_CameraDepthNormalsTexture, uv);
 
@@ -85,9 +85,9 @@ int CalculateBoil(inout float4 output, float2 uv, float mask) {
 	if(!rgbEquals(output, color)) { 
 		float4 preOutline = tex2D(_HatchTex, modUV(uv * _HatchSize, row, col, _HatchSize));
 		preOutline = lerp(color, output, 1 - preOutline.r);
-		// #if MASK
-		// 	if(mask > .5) preOutline = 0;
-		// #endif
+		#if MASK
+			if(mask > .5) preOutline = 0;
+		#endif
 		output += preOutline;
 	}
 
