@@ -5,18 +5,18 @@ using UnityEngine;
 
 public class ClippableObject : MonoBehaviour
 {
-    public enum WorldType {Real, Heart};
+	public enum WorldType { Real, Heart }
 
-    public WorldType worldType;
+	public WorldType worldType;
 
 	[SerializeField] protected bool volumeless = default;
 	[HideInInspector] public InteractableObject tiedInteractable;
 	[HideInInspector] public bool isClipped;
 	[HideInInspector] public GameObject uncutCopy;
 
-    protected GameObject mirroredCopy;
+	protected GameObject mirroredCopy;
 
-    public CSG.Model CachedModel
+	public CSG.Model CachedModel
 	{
 		get
 		{
@@ -37,7 +37,7 @@ public class ClippableObject : MonoBehaviour
 	private CSG.Model model;
 	private Vector3 previousCutPosition;
 
-    private CSG.Model stagedModel;
+	private CSG.Model stagedModel;
 
 	protected void Awake()
 	{
@@ -57,26 +57,26 @@ public class ClippableObject : MonoBehaviour
 		return CachedModel.Intersects(bound, 0.001f);
 	}
 
-    public virtual void ClipWith(CSG.Model other)
-    {
-        isClipped = true;
+	public virtual void ClipWith(CSG.Model other)
+	{
+		isClipped = true;
 
-        if (worldType == WorldType.Heart)
-        {
-            IntersectWith(other);
-        }
-        else if (worldType == WorldType.Real)
-        {
-            Subtract(other);
-        }
-    }
+		if (worldType == WorldType.Heart)
+		{
+			IntersectWith(other);
+		}
+		else if (worldType == WorldType.Real)
+		{
+			Subtract(other);
+		}
+	}
 
 	public virtual void IntersectWith(CSG.Model other)
 	{
 		uncutCopy = Instantiate(gameObject, transform.position, transform.rotation, transform);
-		uncutCopy.transform.localScale = Vector3.one;// since this will be a child of a duplicate of its transform, don't double apply the
+		uncutCopy.transform.localScale = Vector3.one; // since this will be a child of a duplicate of its transform, don't double apply the
 
-        oldLayer = gameObject.layer;
+		oldLayer = gameObject.layer;
 		gameObject.layer = 9;
 
 		if (!volumeless)
@@ -88,90 +88,90 @@ public class ClippableObject : MonoBehaviour
 			col.sharedMesh = meshFilter.mesh;
 	}
 
-    public void Subtract(CSG.Model other, bool normalOverride = true)
-    {
-        if (!volumeless)
-            meshFilter.mesh = CSG.Operations.Subtract(CachedModel, other, normalOverride);
-        else
-            meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other, false, false, null);
-
-        if (this.TryComponent(out MeshCollider col))
-            col.sharedMesh = meshFilter.mesh;
-    }
-
-    public virtual void IntersectMirrored(CSG.Model other, Matrix4x4 reflectionMatrix)
-    {
-        isClipped = true;
-
-        mirroredCopy = Instantiate(gameObject, transform.position, transform.rotation);
-        mirroredCopy.transform.position = reflectionMatrix.MultiplyPoint(transform.position);
-        mirroredCopy.transform.LookAt(mirroredCopy.transform.position + reflectionMatrix.MultiplyVector(mirroredCopy.transform.forward), reflectionMatrix.MultiplyVector(mirroredCopy.transform.up));
-
-        if (!volumeless)
-            mirroredCopy.GetComponent<MeshFilter>().mesh = CSG.Operations.Intersect(CachedModel, other, true, mirroredCopy.transform.worldToLocalMatrix * reflectionMatrix);
-        else
-            mirroredCopy.GetComponent<MeshFilter>().mesh = CSG.Operations.ClipAToB(CachedModel, other, true, true, mirroredCopy.transform.worldToLocalMatrix * reflectionMatrix);
-
-        if (mirroredCopy.TryComponent(out MeshCollider col))
-            col.sharedMesh = meshFilter.mesh;
-
-        mirroredCopy.layer = 9;
-    }
-
-    public virtual void StageIntersectMirroredInPlace(CSG.Model other)
-    {
-        isClipped = true;
-
-        CSG.Model model = CachedModel;
-        stagedModel = model;
-
-        if (!volumeless)
-            stagedModel = CSG.Operations.Intersect(model, other, true);// * reflectionMatrix
-        else
-            stagedModel = CSG.Operations.ClipAToB(model, other, true, true);// * reflectionMatrix
-
-        if (this.TryComponent(out MeshCollider col))
-            col.sharedMesh = meshFilter.mesh;
-
-        gameObject.layer = 9;
-    }
-
-    public virtual void ApplyIntersectMirroredInPlace(Matrix4x4 reflectionMatrix)
-    {
-        GetComponent<MeshFilter>().mesh = stagedModel.ToMesh(transform.worldToLocalMatrix * reflectionMatrix);
-    }
-
-    public virtual void Revert()
+	public void Subtract(CSG.Model other, bool normalOverride = true)
 	{
-        isClipped = false;
-
-        if (worldType == WorldType.Real)
-        {
-		    meshFilter.mesh = initialMesh;
-        }
-        else
-        {
-            meshFilter.mesh = initialMesh;
-		    gameObject.layer = oldLayer;
-
-            if (uncutCopy)
-            {
-                uncutCopy.GetComponent<ClippableObject>().Revert();
-                DestroyImmediate(uncutCopy);
-            }
-            if (mirroredCopy)
-            {
-                DestroyImmediate(mirroredCopy);
-            }
-        }
+		if (!volumeless)
+			meshFilter.mesh = CSG.Operations.Subtract(CachedModel, other, normalOverride);
+		else
+			meshFilter.mesh = CSG.Operations.ClipAToB(CachedModel, other, false, false, null);
 
 		if (this.TryComponent(out MeshCollider col))
 			col.sharedMesh = meshFilter.mesh;
 	}
 
-    private void OnDestroy()
-    {
-        World.Instance.RemoveClippable(this);
-        
-    }
+	public virtual void IntersectMirrored(CSG.Model other, Matrix4x4 reflectionMatrix)
+	{
+		isClipped = true;
+
+		mirroredCopy = Instantiate(gameObject, transform.position, transform.rotation);
+		mirroredCopy.transform.position = reflectionMatrix.MultiplyPoint(transform.position);
+		mirroredCopy.transform.LookAt(mirroredCopy.transform.position + reflectionMatrix.MultiplyVector(mirroredCopy.transform.forward), reflectionMatrix.MultiplyVector(mirroredCopy.transform.up));
+
+		if (!volumeless)
+			mirroredCopy.GetComponent<MeshFilter>().mesh = CSG.Operations.Intersect(CachedModel, other, true, mirroredCopy.transform.worldToLocalMatrix * reflectionMatrix);
+		else
+			mirroredCopy.GetComponent<MeshFilter>().mesh = CSG.Operations.ClipAToB(CachedModel, other, true, true, mirroredCopy.transform.worldToLocalMatrix * reflectionMatrix);
+
+		if (mirroredCopy.TryComponent(out MeshCollider col))
+			col.sharedMesh = meshFilter.mesh;
+
+		mirroredCopy.layer = 9;
+	}
+
+	public virtual void StageIntersectMirroredInPlace(CSG.Model other)
+	{
+		isClipped = true;
+
+		CSG.Model model = CachedModel;
+		stagedModel = model;
+
+		if (!volumeless)
+			stagedModel = CSG.Operations.Intersect(model, other, true); // * reflectionMatrix
+		else
+			stagedModel = CSG.Operations.ClipAToB(model, other, true, true); // * reflectionMatrix
+
+		if (this.TryComponent(out MeshCollider col))
+			col.sharedMesh = meshFilter.mesh;
+
+		gameObject.layer = 9;
+	}
+
+	public virtual void ApplyIntersectMirroredInPlace(Matrix4x4 reflectionMatrix)
+	{
+		GetComponent<MeshFilter>().mesh = stagedModel.ToMesh(transform.worldToLocalMatrix * reflectionMatrix);
+	}
+
+	public virtual void Revert()
+	{
+		isClipped = false;
+
+		if (worldType == WorldType.Real)
+		{
+			meshFilter.mesh = initialMesh;
+		}
+		else
+		{
+			meshFilter.mesh = initialMesh;
+			gameObject.layer = oldLayer;
+
+			if (uncutCopy)
+			{
+				uncutCopy.GetComponent<ClippableObject>().Revert();
+				DestroyImmediate(uncutCopy);
+			}
+			if (mirroredCopy)
+			{
+				DestroyImmediate(mirroredCopy);
+			}
+		}
+
+		if (this.TryComponent(out MeshCollider col))
+			col.sharedMesh = meshFilter.mesh;
+	}
+
+	private void OnDestroy()
+	{
+		World.Instance.RemoveClippable(this);
+
+	}
 }

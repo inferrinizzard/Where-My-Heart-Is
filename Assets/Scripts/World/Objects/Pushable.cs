@@ -70,9 +70,7 @@ public class Pushable : InteractableObject
 		{
 			inRange = true;
 			if (isPushing)
-			{
 				rb.velocity = Player.Instance.body.velocity;
-			}
 		}
 	}
 
