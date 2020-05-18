@@ -1,6 +1,7 @@
-sampler2D _CameraDepthNormalsTexture;
 // Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
 #pragma exclude_renderers gles
+sampler2D _CameraDepthNormalsTexture;
+sampler2D _HeartDepthNormals;
 float4 _CameraDepthNormalsTexture_TexelSize;
 static const float4x2 dirs = { 0, 1, 1, 0, 0, -1, -1, 0 };
 
@@ -12,9 +13,10 @@ sampler2D _HatchTex;
 int _HatchSize, _HatchSpeed;
 float _Distortion, _NoiseSpeed;
 
-void Compare(inout float depthOutline, inout float normalOutline, float baseDepth, float3 baseNormal, float2 uv, float2 offset) {
+
+void Compare(inout float depthOutline, inout float normalOutline, float baseDepth, float3 baseNormal, float2 uv, float2 offset, int maskOn) {
 	//read neighbor pixel
-	float4 neighbour = tex2D(_CameraDepthNormalsTexture, uv + _CameraDepthNormalsTexture_TexelSize.xy * offset);
+	float4 neighbour = maskOn ? tex2D(_HeartDepthNormals, uv + _CameraDepthNormalsTexture_TexelSize.xy * offset) : tex2D(_CameraDepthNormalsTexture, uv + _CameraDepthNormalsTexture_TexelSize.xy * offset);
 	float3 neighborNormal;
 	float neighborDepth;
 	DecodeDepthNormal(neighbour, neighborDepth, neighborNormal);
@@ -45,8 +47,13 @@ int CalculateBoil(inout float4 output, float2 uv, float mask) {
 	float texIndex = floor(_Time.y * _HatchSpeed % 9);
 	float row = 1 + texIndex % (_HatchSize - 1);
 	float col = floor(texIndex / _HatchSize);
-	
-	float4 depthNormal = tex2D(_CameraDepthNormalsTexture, uv);
+
+	int maskOn = 0;
+	#if MASK
+		if(mask > .5) maskOn = 1;
+	#endif
+
+	float4 depthNormal = maskOn ? tex2D(_HeartDepthNormals, uv) : tex2D(_CameraDepthNormalsTexture, uv);
 
 	float3 normal;
 	float boilDepth;
@@ -56,7 +63,7 @@ int CalculateBoil(inout float4 output, float2 uv, float mask) {
 	float depthDifference = 0;
 	float normalDifference = 0;
 
-	for(int j = 0; j < 4; j++) Compare(depthDifference, normalDifference, boilDepth, normal, uv, dirs[j]);
+	for(int j = 0; j < 4; j++) Compare(depthDifference, normalDifference, boilDepth, normal, uv, dirs[j], maskOn);
 
 	depthDifference *= _DepthMult;
 	depthDifference = saturate(depthDifference);
@@ -78,9 +85,9 @@ int CalculateBoil(inout float4 output, float2 uv, float mask) {
 	if(!rgbEquals(output, color)) { 
 		float4 preOutline = tex2D(_HatchTex, modUV(uv * _HatchSize, row, col, _HatchSize));
 		preOutline = lerp(color, output, 1 - preOutline.r);
-		#if MASK
-			if(mask > .5) preOutline = 0; // TODO: heart world depth normal texture lookup;
-		#endif
+		// #if MASK
+		// 	if(mask > .5) preOutline = 0;
+		// #endif
 		output += preOutline;
 	}
 

@@ -14,6 +14,8 @@ public sealed class ShaderID
 	public static readonly int _ViewDir = Shader.PropertyToID("_ViewDir");
 	/// <summary> Used for mask heart world texture </summary>
 	public static readonly int _Heart = Shader.PropertyToID("_Heart");
+	/// <summary> Used for mask heart world texture </summary>
+	public static readonly int _HeartDepthNormals = Shader.PropertyToID("_HeartDepthNormals");
 
 	/// <summary> Used for ripple anim </summary>
 	public static readonly int _RippleOffset = Shader.PropertyToID("_RippleOffset");
