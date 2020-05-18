@@ -87,7 +87,7 @@ public class ApplyMask : MonoBehaviour
 	{
 		screenMat.SetTexture(_HeartID, heart);
 
-		if (rippleInProgress == true)
+		if (rippleInProgress)
 		{
 			RenderTexture temp = RenderTexture.GetTemporary(Screen.width, Screen.height, 16);
 			Graphics.Blit(source, temp, screenMat);

@@ -368,13 +368,15 @@ public class Player : Singleton<Player>, IStateMachine
 		if (State is Aiming && windowEnabled && !heldObject)
 		{
 			// SetState(new Cut(this));
-			window.ApplyCut();
-			hands.RevertAim();
-			audioController.PlaceWindow();
-			heartWindow.SetActive(false);
-			Player.VFX.ToggleMask(false);
-			EndState();
-			OnApplyCut?.Invoke();
+			if (window.ApplyCut()) // returns true if succeeds
+			{
+				hands.RevertAim();
+				audioController.PlaceWindow();
+				heartWindow.SetActive(false);
+				Player.VFX.ToggleMask(false);
+				EndState();
+				OnApplyCut?.Invoke();
+			}
 		}
 	}
 

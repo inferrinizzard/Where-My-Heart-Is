@@ -47,20 +47,21 @@ public class Window : MonoBehaviour
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh);
 	}
 
-	public void ApplyCut()
+	public bool ApplyCut()
 	{
 		OnBeginCut?.Invoke();
 
 		if (cutInProgress)
 		{
 			Debug.Log("Cut attempted during other cut");
-			return;
+			return false;
 		}
 		cutInProgress = true;
 		world.ResetCut();
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh, fieldOfView.transform);
 		fieldOfViewModel.ConvertToWorld();
 		StartCoroutine(ApplyCutCoroutine(1f / ((float) framerateTarget), new Bounds(fieldOfView.GetComponent<MeshRenderer>().bounds.center, fieldOfView.GetComponent<MeshRenderer>().bounds.size), fieldOfViewModel));
+		return true;
 	}
 
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds, CSG.Model boundModel)
