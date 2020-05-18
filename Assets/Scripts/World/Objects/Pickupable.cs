@@ -47,10 +47,13 @@ public class Pickupable : InteractableObject
 			PickUp();
 		else if (player.looking)
 			player.looking = false;
-		else if (!dissolves)
-			PutDown();
 		else
-			StartCoroutine(DissolveOnDrop());
+		{
+			if (!dissolves)
+				PutDown();
+			else
+				StartCoroutine(Dissolve());
+		}
 	}
 
 	public void PickUp()
@@ -73,29 +76,31 @@ public class Pickupable : InteractableObject
 		(col as MeshCollider).convex = false;
 	}
 
-	public IEnumerator DissolveOnDrop(float time = .25f)
+	public void Disintegrate() => StartCoroutine(Dissolve(true));
+
+	public IEnumerator Dissolve(bool destroy = false, float time = .25f)
 	{
-		transform.parent = oldParent;
+		transform.parent = World.Instance.realWorldContainer;
 		col.enabled = false;
 		Material mat = GetComponent<MeshRenderer>().material;
 		mat.EnableKeyword("DISSOLVE_MANUAL");
 		int ManualDissolveID = Shader.PropertyToID("_ManualDissolve");
 
-		float start = Time.time;
-		bool inProgress = true;
-
-		while (inProgress)
+		for (var(start, step) = (Time.time, 0f); step <= time; step = Time.time - start)
 		{
 			yield return null;
-			float step = Time.time - start;
-			mat.SetFloat(ManualDissolveID, step / time);
-			if (step > time)
-				inProgress = false;
+			// Debug.Log("dissolving");
+			mat.SetFloat(ManualDissolveID, EaseMethods.CubicEaseOut(step / time, 0, 1, 1));
 		}
+		yield return new WaitForEndOfFrame();
+
 		mat.DisableKeyword("DISSOLVE_MANUAL");
 		mat.SetFloat(ManualDissolveID, 1);
 
-		PutDown();
+		if (destroy)
+			Destroy(gameObject);
+		else
+			PutDown();
 
 		col.enabled = true;
 		active = false;

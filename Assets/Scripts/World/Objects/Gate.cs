@@ -34,6 +34,8 @@ public class Gate : MonoBehaviour
 	{
 		var removeLock = locks.Find(pair => pair.heartLock == l || pair.realLock == l);
 		locks.Remove(removeLock);
+		// Debug.Log(removeLock);
+		locks = locks.Where(pair => pair.heartLock != null || pair.realLock != null).ToList(); // TODO: prevent new locks on cut
 		// could potentially play unlock anim here;
 		StartCoroutine(KeyAnim(l.transform, key.transform, removeLock));
 	}
@@ -54,8 +56,9 @@ public class Gate : MonoBehaviour
 			{
 				if (key)
 				{
-					key.GetComponent<InteractableObject>().Interact();
-					Destroy(key.gameObject);
+					key.GetComponent<Pickupable>().Disintegrate();
+					// key.GetComponent<InteractableObject>().Interact();
+					// Destroy(key.gameObject);
 					if (crackedLock)
 						_lock.GetComponent<MeshFilter>().mesh = crackedLock.GetComponent<MeshFilter>().sharedMesh;
 				}
