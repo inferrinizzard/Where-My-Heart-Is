@@ -84,6 +84,10 @@ namespace CSG
 		public void FlipNormal()
 		{
 			vertices.Reverse();
+            foreach(Edge edge in edges)
+            {
+                edge.vertices.Reverse();
+            }
 		}
 
 		/// <summary>

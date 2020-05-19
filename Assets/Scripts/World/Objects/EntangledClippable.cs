@@ -33,7 +33,7 @@ public class EntangledClippable : ClippableObject
 
     public void ClipMirrored(Window window, Bounds mirrorBound, CSG.Model mirrorBoundModel, Matrix4x4 reflectionMatrix)
     {
-        isClipped = true; 
+        isClipped = true;
         mirroredCopy = Instantiate(gameObject, transform.parent);
         Destroy(mirroredCopy.GetComponent<EntangledClippable>().realObject);
 
@@ -41,6 +41,7 @@ public class EntangledClippable : ClippableObject
         {
             if (window.IntersectsBounds(clippable, mirrorBound, mirrorBoundModel))
             {
+                Debug.Log(clippable.gameObject);
                 clippable.GetComponent<ClippableObject>().StageIntersectMirroredInPlace(mirrorBoundModel);
             }
         }
