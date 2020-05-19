@@ -183,9 +183,9 @@ public class Player : Singleton<Player>, IStateMachine
 		// InputManager.OnCrouchUp -= EndState;
 		InputManager.OnInteractDown -= Interact;
 		InputManager.OnRightClickDown -= Aiming;
-		InputManager.OnRightClickUp -= EndState;
+		InputManager.OnRightClickUp -= () => { if (State is Aiming) EndState(); };
 		InputManager.OnAltAimKeyDown -= Aiming;
-		InputManager.OnAltAimKeyUp -= EndState;
+		InputManager.OnAltAimKeyUp -= () => { if (State is Aiming) EndState(); };
 		InputManager.OnLeftClickDown -= Cut;
 	}
 
@@ -364,7 +364,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (State is Aiming && windowEnabled && !heldObject)
+		if (State is Aiming && windowEnabled)
 		{
 			// SetState(new Cut(this));
 			if (window.ApplyCut()) // returns true if succeeds

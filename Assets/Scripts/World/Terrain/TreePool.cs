@@ -10,7 +10,7 @@ using UnityEngine;
 public class TreePool : MonoBehaviour
 {
 	static int numTrees = 500;
-	[SerializeField] GameObject[] treePrefabs;
+	[SerializeField] GameObject[] treePrefabs = default;
 	static GameObject[] trees;
 
 	// Start is called before the first frame update

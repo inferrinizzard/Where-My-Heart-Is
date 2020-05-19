@@ -49,11 +49,11 @@
 
 		void surf (Input IN, inout SurfaceOutputStandard o)
 		{
-			float camDist = distance(IN.worldPos, _WorldSpaceCameraPos);
+			// float camDist = distance(IN.worldPos, _WorldSpaceCameraPos);
 			float dissolve = tex2D(_DissolveTex, IN.uv_DissolveTex).r;
 			dissolve = dissolve * 0.999;
-			// float isVisible = dissolve - _Dissolve;
-			float isVisible = dissolve - exp(-camDist);
+			float isVisible = dissolve - _Dissolve;
+			// float isVisible = dissolve - exp(-camDist);
 			clip(isVisible);
 
 			// // // // float isGlowing = smoothstep(_GlowRange + _GlowFalloff, _GlowRange, isVisible);

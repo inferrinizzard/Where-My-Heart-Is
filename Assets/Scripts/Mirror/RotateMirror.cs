@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class RotateMirror : InteractableObject
 {
-    [SerializeField] GameObject mirror;
+    [SerializeField] GameObject mirror = default;
     bool rotated = false;
 
     //public float Rotation_Speed;
