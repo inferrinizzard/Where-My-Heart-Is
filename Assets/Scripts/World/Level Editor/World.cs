@@ -7,6 +7,7 @@ using UnityEngine;
 public class World : MonoBehaviour
 {
 	public static World Instance;
+	public enum Type { Real, Heart }
 
 	public Transform heartWorldContainer;
 	public Transform realWorldContainer;
@@ -65,12 +66,12 @@ public class World : MonoBehaviour
 
 			foreach (ClippableObject clippable in entangled.heartObject.GetComponentsInChildren<ClippableObject>())
 			{
-				clippable.worldType = ClippableObject.WorldType.Heart;
+				clippable.worldType = World.Type.Heart;
 			}
 
 			foreach (ClippableObject clippable in entangled.realObject.GetComponentsInChildren<ClippableObject>())
 			{
-				clippable.worldType = ClippableObject.WorldType.Real;
+				clippable.worldType = World.Type.Real;
 			}
 		}
 
@@ -107,7 +108,7 @@ public class World : MonoBehaviour
 
 	public void RemoveClippable(ClippableObject clippable)
 	{
-		if (clippable.worldType == ClippableObject.WorldType.Real)
+		if (clippable.worldType == World.Type.Real)
 		{
 			realClippables.Remove(clippable);
 
@@ -128,8 +129,8 @@ public class World : MonoBehaviour
 			if (!meshFilter.TryComponent<MeshCollider>()) meshFilter.gameObject.AddComponent<MeshCollider>();
 			if (!meshFilter.TryComponent<ClippableObject>()) meshFilter.gameObject.AddComponent<ClippableObject>();
 
-			if (layer == "Heart") meshFilter.gameObject.GetComponent<ClippableObject>().worldType = ClippableObject.WorldType.Heart;
-			else if (layer == "Real") meshFilter.gameObject.GetComponent<ClippableObject>().worldType = ClippableObject.WorldType.Real;
+			if (layer == "Heart") meshFilter.gameObject.GetComponent<ClippableObject>().worldType = World.Type.Heart;
+			else if (layer == "Real") meshFilter.gameObject.GetComponent<ClippableObject>().worldType = World.Type.Real;
 		}
 
 		// foreach (Transform child in worldContainer.transform)

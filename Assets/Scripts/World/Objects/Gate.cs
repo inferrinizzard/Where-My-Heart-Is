@@ -21,13 +21,13 @@ public class Gate : MonoBehaviour
 		);
 		if (existingPair != null)
 		{
-			if (worldType == ClippableObject.WorldType.Real) //TODO: make under world
+			if (worldType == World.Type.Real)
 				existingPair.realLock = l;
 			else
 				existingPair.heartLock = l;
 		}
 		else
-			locks.Add(worldType == ClippableObject.WorldType.Real ? new LockPair(real: l) : new LockPair(heart: l));
+			locks.Add(worldType == World.Type.Real ? new LockPair(real: l) : new LockPair(heart: l));
 		l.name += $" [{worldType}]";
 		l.GetComponent<SphereCollider>().radius = unlockRadius;
 		locks = locks.Where(pair => pair.heartLock != null || pair.realLock != null).ToList();
@@ -45,7 +45,7 @@ public class Gate : MonoBehaviour
 
 	IEnumerator KeyAnim(Transform _lock, Transform key, LockPair destroy, float time = 1.5f)
 	{
-		key.parent = key.GetComponent<ClippableObject>().worldType == ClippableObject.WorldType.Heart ? World.Instance.heartWorldContainer : World.Instance.realWorldContainer;
+		key.parent = key.GetComponent<ClippableObject>().worldType == World.Type.Heart ? World.Instance.heartWorldContainer : World.Instance.realWorldContainer;
 		key.position = _lock.position + _lock.up;
 		key.eulerAngles = new Vector3(-90, _lock.transform.eulerAngles.y, 0);
 		for (var(start, step) = (Time.time, 0f); step <= time; step = Time.time - start)
