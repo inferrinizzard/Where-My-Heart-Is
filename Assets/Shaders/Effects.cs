@@ -134,7 +134,8 @@ public class Effects : MonoBehaviour
 			glowMat.color = Color.Lerp(glowMat.color, targetColour, Time.deltaTime * time);
 
 			foreach (Renderer r in renderers)
-				ApplyOutline.glowBuffer.DrawRenderer(r, glowMat);
+				if (r.isVisible)
+					ApplyOutline.glowBuffer.DrawRenderer(r, glowMat);
 
 			if (glowMat.color.Equals(targetColour) || renderers.Length == 0)
 				yield break;
