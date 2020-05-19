@@ -140,6 +140,7 @@ public class Player : Singleton<Player>, IStateMachine
 		window.cam = cam;
 		Player.VFX.ToggleMask(false);
 		window.Invoke("CreateFoVMesh", 1);
+		window.FindMirror();
 	}
 
 	public override void OnExitScene() { }
