@@ -42,7 +42,7 @@ public class Effects : MonoBehaviour
 	public void SubcribeToCutEvents(Window window)
 	{
 		window.OnClippableCut += SetWave;
-		window.OnBeginCut += () => { ToggleWave(true); screen.screenMat.SetVector("_WaveOrigin", mainCam.transform.position); };
+		window.OnBeginCut += () => { ToggleWave(true); Player.Instance.mask.screenMat.SetVector(ShaderID._WaveOrigin, mainCam.transform.position); };
 		window.OnCompleteCut += () => { ToggleWave(false); SetWave(0); };
 	}
 

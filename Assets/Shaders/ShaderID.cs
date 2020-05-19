@@ -45,6 +45,8 @@ public sealed class ShaderID
 	/// <summary> Used for frost shader, drives anim </summary>
 	public static readonly int _TransitionCutoff = Shader.PropertyToID("_TransitionCutoff");
 
+	/// <summary> Used for wave pos </summary>
+	public static readonly int _WaveOrigin = Shader.PropertyToID("_WaveOrigin");
 	/// <summary> Used for tracking cut wave distance </summary>
 	public static readonly int _WaveDistance = Shader.PropertyToID("_WaveDistance");
 	/// <summary> Used for depth buffer world pos </summary>

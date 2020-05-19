@@ -115,6 +115,7 @@ public class ApplyMask : MonoBehaviour
 			}
 			else
 			{
+				rippleMat.SetFloat(ShaderID._RippleOffset, 0);
 				rippleInProgress = false;
 			}
 		}
