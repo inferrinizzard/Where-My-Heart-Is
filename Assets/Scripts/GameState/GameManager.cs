@@ -74,8 +74,6 @@ public class GameManager : Singleton<GameManager>
 		float startTime = Time.time;
 		bool inProgress = true;
 
-		int _CutoffID = Shader.PropertyToID("_Cutoff");
-
 		while (inProgress)
 		{
 			yield return null;

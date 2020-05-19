@@ -85,7 +85,6 @@ public class Player : Singleton<Player>, IStateMachine
 	private(float, float) xRotationBounds = (-90f, 90f);
 	/// <summary> Stores the rotation of the player. </summary>
 	[HideInInspector] public Vector3 rotation = Vector3.zero;
-	int _ViewDirID = Shader.PropertyToID("_ViewDir");
 
 	// events
 	public event Action OnOpenWindow;
@@ -294,7 +293,7 @@ public class Player : Singleton<Player>, IStateMachine
 			// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
 			cam.transform.localEulerAngles = new Vector3(-rotation.x, 0, 0);
 
-			Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
+			Shader.SetGlobalVector(ShaderID._ViewDir, cam.transform.forward.normalized);
 		}
 	}
 
@@ -368,13 +367,15 @@ public class Player : Singleton<Player>, IStateMachine
 		if (State is Aiming && windowEnabled && !heldObject)
 		{
 			// SetState(new Cut(this));
-			window.ApplyCut();
-			hands.RevertAim();
-			audioController.PlaceWindow();
-			heartWindow.SetActive(false);
-			Player.VFX.ToggleMask(false);
-			EndState();
-			OnApplyCut?.Invoke();
+			if (window.ApplyCut()) // returns true if succeeds
+			{
+				hands.RevertAim();
+				audioController.PlaceWindow();
+				heartWindow.SetActive(false);
+				Player.VFX.ToggleMask(false);
+				EndState();
+				OnApplyCut?.Invoke();
+			}
 		}
 	}
 

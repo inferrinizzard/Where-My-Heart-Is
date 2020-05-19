@@ -79,7 +79,6 @@ public class Pickupable : InteractableObject
 		col.enabled = false;
 		Material mat = GetComponent<MeshRenderer>().material;
 		mat.EnableKeyword("DISSOLVE_MANUAL");
-		int ManualDissolveID = Shader.PropertyToID("_ManualDissolve");
 
 		float start = Time.time;
 		bool inProgress = true;
@@ -88,12 +87,12 @@ public class Pickupable : InteractableObject
 		{
 			yield return null;
 			float step = Time.time - start;
-			mat.SetFloat(ManualDissolveID, step / time);
+			mat.SetFloat(ShaderID._ManualDissolve, step / time);
 			if (step > time)
 				inProgress = false;
 		}
 		mat.DisableKeyword("DISSOLVE_MANUAL");
-		mat.SetFloat(ManualDissolveID, 1);
+		mat.SetFloat(ShaderID._ManualDissolve, 1);
 
 		PutDown();
 

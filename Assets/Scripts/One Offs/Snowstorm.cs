@@ -7,7 +7,6 @@ public class Snowstorm : MonoBehaviour
 {
 	Texture2D transitionTex = default, backgroundTex = default;
 	Material snowMat;
-	int _CutoffID = Shader.PropertyToID("_Cutoff");
 	float progress = 0;
 	[SerializeField] float distance = 100;
 
@@ -35,6 +34,6 @@ public class Snowstorm : MonoBehaviour
 		if (distance - progress < .05)
 			Destroy(this);
 	}
-	void FixedUpdate() => snowMat.SetFloat(_CutoffID, EaseMethods.CubicEaseIn(1 - progress / distance, 0, 1, 1));
+	void FixedUpdate() => snowMat.SetFloat(ShaderID._TransitionCutoff, EaseMethods.CubicEaseIn(1 - progress / distance, 0, 1, 1));
 	void OnRenderImage(RenderTexture src, RenderTexture dest) => Graphics.Blit(src, dest, snowMat);
 }
