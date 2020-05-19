@@ -16,8 +16,8 @@ public class Gate : MonoBehaviour
 	{
 		var worldType = l.GetComponent<ClippableObject>()?.worldType;
 		var existingPair = locks.Find(pair =>
-			(pair.heartLock && (pair.heartLock.transform.position - l.transform.position).sqrMagnitude < .001) ||
-			(pair.realLock && (pair.realLock.transform.position - l.transform.position).sqrMagnitude < .001)
+			(pair.heartLock && (pair.heartLock.hash == l.hash || (pair.heartLock.transform.position - l.transform.position).sqrMagnitude < .001)) ||
+			(pair.realLock && (pair.realLock.hash == l.hash || (pair.realLock.transform.position - l.transform.position).sqrMagnitude < .001))
 		);
 		if (existingPair != null)
 		{
@@ -35,7 +35,7 @@ public class Gate : MonoBehaviour
 
 	public void Unlock(Lock l, GameObject key)
 	{
-		var removeLock = locks.Find(pair => pair.heartLock == l || pair.realLock == l);
+		var removeLock = locks.Find(pair => pair.heartLock.hash == l.hash || pair.realLock.hash == l.hash);
 		locks.Remove(removeLock);
 		// Debug.Log(removeLock);
 		locks = locks.Where(pair => pair.heartLock != null || pair.realLock != null).ToList(); // TODO: prevent new locks on cut
