@@ -12,13 +12,13 @@ public class RotateMirror : InteractableObject
 
     //public float Rotation_Speed;
   //  public float Rotation_Friction; //The smaller the value, the more Friction there is. [Keep this at 1 unless you know what you are doing].
-    public float Rotation_Smoothness; //Believe it or not, adjusting this before anything else is the best way to go.
+    //public float Rotation_Smoothness; //Believe it or not, adjusting this before anything else is the best way to go.
 
-    private float Resulting_Value_from_Input;
-    private Quaternion Quaternion_Rotate_From;
-    private Quaternion Quaternion_Rotate_To;
+   // private float Resulting_Value_from_Input;
+   // private Quaternion Quaternion_Rotate_From;
+   // private Quaternion Quaternion_Rotate_To;
 
-    [SerializeField] public float rotate = 135;
+    //[SerializeField] public float rotate = 90;
 
     public override void Interact()
     {
@@ -39,7 +39,6 @@ public class RotateMirror : InteractableObject
     // Update is called once per frame
     void Update()
     {
-      //  Resulting_Value_from_Input += Input.GetAxis("Horizontal") * Rotation_Speed * Rotation_Friction; //You can also use "Mouse X"
        // Quaternion_Rotate_From = mirror.transform.rotation;
      //   Quaternion_Rotate_To = Quaternion.Euler(90,0, rotate);
 
