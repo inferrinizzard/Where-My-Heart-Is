@@ -15,7 +15,10 @@ public class Gate : MonoBehaviour
 	public void AddLock(Lock l)
 	{
 		var worldType = l.GetComponent<ClippableObject>()?.worldType;
-		var existingPair = locks.Find(pair => pair.heartLock?.transform.position == l.transform.position || pair.realLock?.transform.position == l.transform.position);
+		var existingPair = locks.Find(pair =>
+			(pair.heartLock && (pair.heartLock.transform.position - l.transform.position).sqrMagnitude < .001) ||
+			(pair.realLock && (pair.realLock.transform.position - l.transform.position).sqrMagnitude < .001)
+		);
 		if (existingPair != null)
 		{
 			if (worldType == ClippableObject.WorldType.Real) //TODO: make under world
@@ -51,7 +54,7 @@ public class Gate : MonoBehaviour
 			if (step < time / 3)
 				key.position = _lock.position + _lock.up * (1 - EaseMethods.CubicEaseOut(step * 3 / time, 0, 1, 1));
 			else if (step < time * 2 / 3)
-				key.RotateAround(key.up, time / 3 / -5);
+				key.Rotate(_lock.forward, 5 / (time / -3));
 			else
 			{
 				if (key)

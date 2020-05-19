@@ -140,6 +140,7 @@ public class ApplyMask : MonoBehaviour
 			else
 			{
 				rippleInProgress = false;
+				rippleMat.SetFloat(ShaderID._RippleOffset, 0);
 			}
 		}
 	}

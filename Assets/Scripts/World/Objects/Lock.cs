@@ -9,6 +9,8 @@ public class Lock : MonoBehaviour
 	void Start()
 	{
 		gate = transform.GetComponentInParent<Gate>();
+		if (!this.TryComponent<SphereCollider>())
+			gameObject.AddComponent<SphereCollider>().isTrigger = true;
 		StartCoroutine(WaitAndAttach());
 	}
 
