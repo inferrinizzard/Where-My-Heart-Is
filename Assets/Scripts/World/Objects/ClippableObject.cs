@@ -14,6 +14,8 @@ public class ClippableObject : MonoBehaviour
 	[HideInInspector] public bool isClipped;
 	[HideInInspector] public GameObject uncutCopy;
 
+	public event System.Action OnClip;
+
     protected GameObject mirroredCopy;
 
     public CSG.Model CachedModel
@@ -62,6 +64,7 @@ public class ClippableObject : MonoBehaviour
 
     public virtual void ClipWith(CSG.Model other)
     {
+			OnClip?.Invoke();
         isClipped = true;
 
         if (worldType == WorldType.Heart)
