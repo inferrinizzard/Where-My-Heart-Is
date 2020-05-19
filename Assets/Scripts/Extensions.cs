@@ -49,6 +49,18 @@ public static class Extensions
 		return @this;
 	}
 
+	public static dynamic Log(this object @this)
+	{
+		Debug.Log(@this);
+		return @this;
+	}
+
+	public static T Log<T>(this object @this, T t)
+	{
+		Debug.Log(t);
+		return t;
+	}
+
 	public static void Print(this MonoBehaviour @this, params object[] args) => UnityEngine.Debug.Log(string.Join(" ", args));
 	public static string AsString<T>(this IEnumerable<T> args) => $"[{string.Join(", ", args)}]";
 	public static string AsString<T>(this T[] args) => $"[{string.Join(", ", args)}]";

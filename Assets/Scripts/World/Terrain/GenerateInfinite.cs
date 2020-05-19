@@ -12,7 +12,7 @@ using UnityEngine;
 public class GenerateInfinite : MonoBehaviour
 {
 	public GameObject plane;
-	public GameObject player;
+	GameObject player;
 
 	int planeSize = 10;
 	int halfTilesX = 6;
@@ -23,7 +23,8 @@ public class GenerateInfinite : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		this.gameObject.transform.position = Vector3.zero;
+		player = Player.Instance.gameObject;
+
 		startPos = Vector3.zero;
 
 		float updateTime = Time.realtimeSinceStartup;
@@ -34,12 +35,11 @@ public class GenerateInfinite : MonoBehaviour
 			for (int z = -halfTilesZ; z < halfTilesZ; z++)
 			{
 				Vector3 pos = new Vector3((x * planeSize + startPos.x), 0, (z * planeSize + startPos.z));
-				GameObject t = (GameObject) Instantiate(plane, pos, Quaternion.identity);
+				GameObject t = GameObject.Instantiate(plane, pos, Quaternion.identity, transform);
 
-				string tilename = "Tile_" + ((pos.x).ToString() + "_" + ((pos.z).ToString()));
-				t.name = tilename;
+				string tilename = $"Tile_{pos.x}_{pos.z}";
 				Tile tile = new Tile(t, updateTime);
-				tiles.Add(tilename, tile);
+				tiles.Add(t.name = tilename, tile);
 			}
 		}
 	}
@@ -66,15 +66,13 @@ public class GenerateInfinite : MonoBehaviour
 				{
 					// Create position based on player's current position
 					Vector3 pos = new Vector3((x * planeSize + playerX), 0, (z * planeSize + playerZ));
-					string tilename = "Tile_" + ((pos.x).ToString() + "_" + ((pos.z).ToString()));
+					string tilename = $"Tile_{pos.x}_{pos.z}";
 
 					if (!tiles.ContainsKey(tilename))
 					{
-						GameObject t = (GameObject) Instantiate(plane, pos, Quaternion.identity);
-
-						t.name = tilename;
+						GameObject t = GameObject.Instantiate(plane, pos, Quaternion.identity, transform);
 						Tile tile = new Tile(t, updateTime);
-						tiles.Add(tilename, tile);
+						tiles.Add(t.name = tilename, tile);
 					}
 					else
 					{
@@ -89,13 +87,9 @@ public class GenerateInfinite : MonoBehaviour
 			{
 				//if (t.creationTime != updateTime)
 				if (t.creationTime != updateTime)
-				{
 					Destroy(t.tile);
-				}
 				else
-				{
 					newTerrain.Add(t.tile.name, t);
-				}
 			}
 
 			// Copy new contents to working one

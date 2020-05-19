@@ -16,6 +16,8 @@ public class GameManager : Singleton<GameManager>
 	public LevelOrder levelOrder;
 	public float transitionTime = 3f;
 
+	// public Level test;
+
 	public override void Awake()
 	{
 		base.Awake();
@@ -31,6 +33,7 @@ public class GameManager : Singleton<GameManager>
 		// SceneManager.activeSceneChanged += new UnityEngine.Events.UnityAction<Scene, Scene>((_, __) => this.Print("ActiveSceneChanged", SceneManager.GetActiveScene().name));
 
 		levelOrder.Start();
+		// test?.StartBehaviors();
 	}
 
 	/// <summary> Closes the Application </summary>
