@@ -94,7 +94,7 @@ public class Window : MonoBehaviour
 			foreach (EntangledClippable entangled in world.EntangledClippables)
 			{
 				entangled.ClipMirrored(this, mirrorBound, mirrorBoundModel, reflectionMatrix);
-				Debug.Log(entangled.gameObject);
+				// Debug.Log(entangled.gameObject);
 			}
 
 			foreach (ClippableObject clippable in world.heartWorldContainer.GetComponentsInChildren<ClippableObject>())
@@ -102,7 +102,7 @@ public class Window : MonoBehaviour
 				if (IntersectsBounds(clippable, mirrorBound, mirrorBoundModel) && !(clippable is Mirror))
 				{
 					clippable.GetComponent<ClippableObject>().IntersectMirrored(mirrorBoundModel, reflectionMatrix);
-					Debug.Log(clippable.gameObject);
+					// Debug.Log(clippable.gameObject);
 				}
 			}
 		}
@@ -135,7 +135,7 @@ public class Window : MonoBehaviour
 			{
 				if (clippable.IntersectsBound(mirrorBoundModel))
 				{
-					Debug.Log(clippable.gameObject);
+					// Debug.Log(clippable.gameObject);
 					clippable.Subtract(mirrorBoundModel, false);
 					OnClippableCut?.Invoke(clippable);
 				}

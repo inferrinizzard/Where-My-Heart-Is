@@ -129,6 +129,7 @@ public class ClippableObject : MonoBehaviour
 		}
 
 		mirroredCopy.layer = 9;
+		mirroredCopy.transform.parent = World.Instance.mirrorParent;
 	}
 
 	public virtual void StageIntersectMirroredInPlace(CSG.Model other)
