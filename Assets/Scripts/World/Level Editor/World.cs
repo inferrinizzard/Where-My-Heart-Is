@@ -11,6 +11,7 @@ public class World : MonoBehaviour
 	public Transform heartWorldContainer;
 	public Transform realWorldContainer;
 	public Transform entangledWorldContainer;
+	public Transform mirrorParent;
 
 	public List<ClippableObject> heartClippables, realClippables, mirrorClippables;
 
@@ -46,6 +47,8 @@ public class World : MonoBehaviour
 		heartWorldContainer = transform.Find("Heart World");
 		realWorldContainer = transform.Find("Real World");
 		entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform; // TODO: decouple EntangledObjectManager
+		mirrorParent = new GameObject("Mirror Parent").transform;
+		mirrorParent.parent = realWorldContainer;
 
 		ConfigureWorld("Heart", heartWorldContainer);
 		ConfigureWorld("Real", realWorldContainer);
