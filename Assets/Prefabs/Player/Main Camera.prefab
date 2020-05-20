@@ -98,16 +98,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 496e2ae2f248e934b924c4b926615c06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testShader: {fileID: 0}
-  blackSkybox: {fileID: 0}
   rippleMat: {fileID: 2100000, guid: 278fe1009c9cfb244860348123d43989, type: 2}
   screenMat: {fileID: 2100000, guid: c53449d5837faf241a98b51503472aec, type: 2}
   heartCam: {fileID: 0}
-  maskCam: {fileID: 0}
   mainCam: {fileID: 0}
   depthCam: {fileID: 1688717949981834161}
   depthReplacement: {fileID: 4800000, guid: e48a755c1efe3e642ac22944a77d2598, type: 3}
-  heart: {fileID: 0}
   rippleLength: 2
   rippleTarget: 10
   rippleCurve:
@@ -135,7 +131,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   mask: {fileID: 0}
-  depth: {fileID: 0}
 --- !u!114 &3177498603613522797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,8 +145,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lightPower: 5
   maskOn: 0
-  mainCam: {fileID: 0}
-  heartCam: {fileID: 0}
+  mainCam: {fileID: 3177498603613522799}
+  heartCam: {fileID: 3177498604957221194}
   glowColours: {fileID: 11400000, guid: 987a995f3df07a84382262682fa98562, type: 2}
   currentGlowObj: {fileID: 0}
 --- !u!114 &3203434368716650614
@@ -294,7 +289,7 @@ GameObject:
   - component: {fileID: 3177498604957221191}
   - component: {fileID: 3177498604957221194}
   - component: {fileID: 3177498604957221192}
-  m_Layer: 8
+  m_Layer: 13
   m_Name: Heart Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -722,6 +717,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2182867183277312572, guid: 363b9a74c27aeba43ab8c35665f02ff7,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2182867183277312571, guid: 363b9a74c27aeba43ab8c35665f02ff7,
         type: 3}
       propertyPath: limitTo
@@ -752,11 +752,6 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 2182867183277312572, guid: 363b9a74c27aeba43ab8c35665f02ff7,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2182867183277312572, guid: 363b9a74c27aeba43ab8c35665f02ff7, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 363b9a74c27aeba43ab8c35665f02ff7, type: 3}
@@ -773,6 +768,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3177498603613522796}
     m_Modifications:
+    - target: {fileID: 670550455639107771, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
+        type: 3}
+      propertyPath: m_Name
+      value: Hands
+      objectReference: {fileID: 0}
     - target: {fileID: 4545574372278966952, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -827,11 +827,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 80.96
-      objectReference: {fileID: 0}
-    - target: {fileID: 670550455639107771, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
-        type: 3}
-      propertyPath: m_Name
-      value: Hands
       objectReference: {fileID: 0}
     - target: {fileID: 1382892172470704661, guid: 829cb5a1c85a1974a8e0b7644f33c31d,
         type: 3}

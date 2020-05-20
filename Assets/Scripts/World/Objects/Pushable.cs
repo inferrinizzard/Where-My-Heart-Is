@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Pushable : InteractableObject
 {
-	[SerializeField] float pushDistance = 3;
+	[SerializeField] float pushDistance = 4;
 	string _prompt = "Press E to Start Pushing";
 	public override string prompt { get => _prompt; set => _prompt = value; }
 	private Vector3 spawn;
