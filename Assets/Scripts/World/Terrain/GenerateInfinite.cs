@@ -14,45 +14,43 @@ public class GenerateInfinite : MonoBehaviour
 	[SerializeField] GameObject plane;
 	GameObject player;
 
-	int planeSize = 10;
+	public static int planeSize = 10;
 	int gridSize = 9;
 
 	Vector3 startPos;
 	TileHash tiles = new TileHash();
+	List<Vector2Int> deleteQ = new List<Vector2Int>();
 
 	void Start()
 	{
 		player = Player.Instance.gameObject;
 		startPos = Vector3.zero;
 		// ForSpiral(gridSize, gridSize, Vector2Int.zero, Generate);
-		StartCoroutine(GenerateTiles());
+		// StartCoroutine(GenerateTiles());
+		GenerateTiles(Vector2Int.zero);
 	}
 
 	void Generate(int x, int z)
 	{
 		Vector3 pos = new Vector3(x, 0, z) * planeSize;
+		Vector2Int gridPos = new Vector2Int(x, z);
 
-		if (!tiles[x, z])
+		if (!tiles[gridPos])
 		{
 			var tile = GameObject.Instantiate(plane, pos, Quaternion.identity, transform).GetComponent<TileGeneration>();
 			tile.name = $"Tile [{x}, {z}]";
-			tiles[x, z] = tile;
-			tile.gridPos = new Vector2Int(x, z);
+			tiles[gridPos] = tile;
+			tile.gridPos = gridPos;
 		}
+		deleteQ.Remove(gridPos);
 	}
 
-	IEnumerator GenerateTiles(float delay = 2)
+	public void GenerateTiles(Vector2Int offset)
 	{
-		ForSpiral(gridSize, gridSize, ToGridSpace(player.transform.position), Generate);
-		yield return new WaitForSeconds(delay);
-		StartCoroutine(GenerateTiles(delay));
-	}
-
-	public void Remove(Vector2Int index)
-	{
-		var tile = tiles[index];
-		tiles.Remove(index);
-		Destroy(tile.gameObject);
+		deleteQ = tiles.Indices();
+		ForSpiral(gridSize, gridSize, offset, Generate);
+		foreach (var pos in deleteQ)
+			tiles.Remove(pos);
 	}
 
 	Vector2Int ToGridSpace(Vector3 pos) => Vector2Int.FloorToInt(new Vector2(pos.x, pos.z));
@@ -83,27 +81,24 @@ public class GenerateInfinite : MonoBehaviour
 	{
 		Dictionary<Vector2Int, TileGeneration> tiles;
 		public TileHash() => tiles = new Dictionary<Vector2Int, TileGeneration>();
-		public void Remove(Vector2Int index) => tiles.Remove(index);
+		public List<Vector2Int> Indices()
+		{
+			var list = new List<Vector2Int>();
+			foreach (var kvp in tiles)
+				list.Add(kvp.Key);
+			return list;
+		}
+		public void Remove(Vector2Int index)
+		{
+			var destroy = tiles[index];
+			tiles.Remove(index);
+			Destroy(destroy.gameObject);
+		}
 		public TileGeneration this [Vector2Int index]
 		{
 			get => tiles.ContainsKey(index) ? tiles[index] : null;
 			set
 			{
-				if (tiles.ContainsKey(index))
-					tiles[index] = value;
-				else tiles.Add(index, value);
-			}
-		}
-		public TileGeneration this [int x, int z]
-		{
-			get
-			{
-				Vector2Int index = new Vector2Int(x, z);
-				return tiles.ContainsKey(index) ? tiles[index] : null;
-			}
-			set
-			{
-				Vector2Int index = new Vector2Int(x, z);
 				if (tiles.ContainsKey(index))
 					tiles[index] = value;
 				else tiles.Add(index, value);

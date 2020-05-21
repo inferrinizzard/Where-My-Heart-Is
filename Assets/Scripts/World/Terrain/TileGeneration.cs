@@ -91,9 +91,6 @@ public class TileGeneration : MonoBehaviour
 
 	private void Update()
 	{
-		// if ((player.transform.position - transform.position).sqrMagnitude > 100 * 100)
-		// 	gen.Remove(gridPos);
-
 		// Spawn one door when it exists in the pool and respawns when player moves a certain distance
 		GameObject newDoor = DoorPool.GetDoor();
 		if (newDoor != null && (int) Vector3.Distance(Vector3.zero, player.transform.position) > stepsTaken && (int) Vector3.Distance(Vector3.zero, player.transform.position) % spawnDist == 0)
@@ -210,6 +207,12 @@ public class TileGeneration : MonoBehaviour
 			}
 		}
 		return terrainTypes[terrainTypes.Length - 1];
+	}
+
+	void OnTriggerEnter(Collider other)
+	{
+		if (other.CompareTag("Player"))
+			gen.GenerateTiles(Vector2Int.FloorToInt(new Vector2(transform.position.x, transform.position.z) / GenerateInfinite.planeSize));
 	}
 }
 
