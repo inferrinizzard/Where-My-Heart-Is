@@ -6,7 +6,7 @@ using UnityEngine;
 /// <summary> Instantiates tree array with two tree prefabs and gets inactive trees in tree pool. </summary>
 public class TreePool : MonoBehaviour
 {
-	static int numTrees = 1000;
+	static int numTrees = 2000;
 	[SerializeField] GameObject[] treePrefabs;
 	static GameObject[] trees;
 

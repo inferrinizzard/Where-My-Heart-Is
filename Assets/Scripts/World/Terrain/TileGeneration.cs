@@ -32,10 +32,18 @@ public class TileGeneration : MonoBehaviour
 
 	GenerateInfinite gen;
 	[HideInInspector] public Vector2Int gridPos;
+	int maxTrees = 30;
 
 	void Start()
 	{
 		gen = transform.GetComponentInParent<GenerateInfinite>();
+
+		float progress = transform.position.sqrMagnitude / (SnowstormBehaviour.walkDistance * SnowstormBehaviour.walkDistance);
+		if (progress > 1)
+			maxTrees = 0;
+		else
+			maxTrees = (int) (maxTrees * EaseMethods.QuadEaseIn(1 - progress, 0, 1, 1));
+
 		GenerateTile();
 	}
 
@@ -49,7 +57,7 @@ public class TileGeneration : MonoBehaviour
 	void GenerateTile()
 	{
 		// Calculate tile depth and width
-		Vector3[] meshVertices = meshFilter.mesh.vertices.OrderBy(v => v.sqrMagnitude).ToArray();
+		Vector3[] meshVertices = meshFilter.mesh.vertices;
 		int tileDepth = (int) Mathf.Sqrt(meshVertices.Length);
 		int tileWidth = tileDepth;
 
@@ -62,28 +70,19 @@ public class TileGeneration : MonoBehaviour
 		Texture2D tileTexture = BuildTexture(heightMap);
 		tileRenderer.material.mainTexture = tileTexture;
 
-		// Get trees and door from pool and place based on mesh height
-		for (int v = 0; v < meshVertices.Length; v++)
+		meshVertices.Where(pos => pos.y > 1).OrderBy(_ => Random.value).Take(maxTrees).ToList().ForEach(pos =>
 		{
-			// if(meshVertices[v].y > 0.8 && Mathf.PerlinNoise((meshVertices[v].x+5)/10, (meshVertices[v].z+5)/10)*10 > 5.2)
-			if (meshVertices[v].y > 1.0)
+			GameObject newTree = TreePool.GetTree();
+			if (newTree)
 			{
-				//   Debug.Log("perlin noise: " + Mathf.PerlinNoise((meshVertices[v].x + 5) / 10, (meshVertices[v].z + 5) / 10) * 10);
-				GameObject newTree = TreePool.GetTree();
-				float treeScale = Random.Range(0.0f, 0.1f);
-				if (newTree != null && Random.Range(0.0f, 1.0f) < .5f)
-				// if (newTree != null && Random.Range(0.0f, 1.0f) < (1.2f - Mathf.Min(1, meshVertices[v].magnitude / SnowstormBehaviour.walkDistance)) * .8f)
-				{
-					Vector3 treePos = new Vector3(meshVertices[v].x + transform.position.x,
-						meshVertices[v].y + 2.5f,
-						meshVertices[v].z + transform.position.z);
-					newTree.transform.position = treePos;
-					newTree.transform.localScale += new Vector3(treeScale, treeScale, treeScale);
-					newTree.SetActive(true);
-					myTrees.Add(newTree);
-				}
+				float treeScale = Random.value / 10;
+				Vector3 treePos = new Vector3(pos.x + transform.position.x, pos.y + 2.5f, pos.z + transform.position.z);
+				newTree.transform.position = treePos;
+				newTree.transform.localScale += new Vector3(treeScale, treeScale, treeScale);
+				newTree.SetActive(true);
+				myTrees.Add(newTree);
 			}
-		}
+		});
 
 		// Update the tile mesh vertices according to the height map
 		UpdateMeshVertices(heightMap);
