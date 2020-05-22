@@ -117,7 +117,7 @@
 				
 				// the amount of paper vs paint is determined by the noise sample, the lighting, and the paper texture
 				float t = noiseSample * lighting * lighting * (_WatercolorStrength + paper.r);
-				t = saturate(max(0.5, t) + 0.45) - 0.25;
+				t = saturate(max(0.5, t) + 0.35) - 0.15;
 
 				return lerp(paper, paint, t);
 			}
