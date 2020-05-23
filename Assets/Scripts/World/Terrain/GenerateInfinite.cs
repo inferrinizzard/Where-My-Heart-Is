@@ -20,6 +20,7 @@ public class GenerateInfinite : MonoBehaviour
 	Vector3 startPos;
 	TileHash tiles = new TileHash();
 	List<Vector2Int> deleteQ = new List<Vector2Int>();
+	public DoorController door;
 
 	void Start()
 	{
@@ -51,6 +52,12 @@ public class GenerateInfinite : MonoBehaviour
 		ForSpiral(gridSize, gridSize, offset, Generate);
 		foreach (var pos in deleteQ)
 			tiles.Remove(pos);
+	}
+
+	public void DoorPos(float sqrMag)
+	{
+		if (sqrMag > (Snowstorm.walkDistance * Snowstorm.walkDistance * .8f) && !door.spawned)
+			door.Spawn();
 	}
 
 	Vector2Int ToGridSpace(Vector3 pos) => Vector2Int.FloorToInt(new Vector2(pos.x, pos.z));

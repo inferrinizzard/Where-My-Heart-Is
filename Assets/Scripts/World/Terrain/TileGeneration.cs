@@ -38,11 +38,11 @@ public class TileGeneration : MonoBehaviour
 	{
 		gen = transform.GetComponentInParent<GenerateInfinite>();
 
-		float progress = transform.position.sqrMagnitude / (SnowstormBehaviour.walkDistance * SnowstormBehaviour.walkDistance);
+		float progress = transform.position.sqrMagnitude / (Snowstorm.walkDistance * Snowstorm.walkDistance * .9f);
 		if (progress > 1)
 			maxTrees = 0;
 		else
-			maxTrees = (int) (maxTrees * EaseMethods.QuadEaseIn(1 - progress, 0, 1, 1));
+			maxTrees = (int) (maxTrees * EaseMethods.QuadEaseIn((1 - progress) * .9f, 0, 1, 1));
 
 		GenerateTile();
 	}
@@ -84,41 +84,47 @@ public class TileGeneration : MonoBehaviour
 			}
 		});
 
+		myTrees.ForEach(tree =>
+		{
+			if ((tree.transform.position - player.transform.position).sqrMagnitude < 10)
+				tree.SetActive(false);
+		});
+
 		// Update the tile mesh vertices according to the height map
 		UpdateMeshVertices(heightMap);
 	}
 
-	private void Update()
-	{
-		// Spawn one door when it exists in the pool and respawns when player moves a certain distance
-		GameObject newDoor = DoorPool.GetDoor();
-		if (newDoor != null && (int) Vector3.Distance(Vector3.zero, player.transform.position) > stepsTaken && (int) Vector3.Distance(Vector3.zero, player.transform.position) % spawnDist == 0)
-		{
-			Vector3 doorPos = (player.transform.forward * 20) + new Vector3(player.transform.position.x,
-				0.6f,
-				player.transform.position.z);
-			newDoor.transform.position = doorPos;
-			newDoor.transform.rotation = Quaternion.LookRotation(player.transform.forward);
-			newDoor.SetActive(true);
-			myDoors.Add(newDoor);
-			// Debug.Log("player door dist: " + Vector3.Distance(myDoors[0].transform.position, player.transform.position));
-		}
+	// private void Update()
+	// {
+	// 	// Spawn one door when it exists in the pool and respawns when player moves a certain distance
+	// 	GameObject newDoor = DoorPool.GetDoor();
+	// 	if (newDoor != null && (int) Vector3.Distance(Vector3.zero, player.transform.position) > stepsTaken && (int) Vector3.Distance(Vector3.zero, player.transform.position) % spawnDist == 0)
+	// 	{
+	// 		Vector3 doorPos = (player.transform.forward * 20) + new Vector3(player.transform.position.x,
+	// 			0.6f,
+	// 			player.transform.position.z);
+	// 		newDoor.transform.position = doorPos;
+	// 		newDoor.transform.rotation = Quaternion.LookRotation(player.transform.forward);
+	// 		newDoor.SetActive(true);
+	// 		myDoors.Add(newDoor);
+	// 		// Debug.Log("player door dist: " + Vector3.Distance(myDoors[0].transform.position, player.transform.position));
+	// 	}
 
-		// Clear door when player position is far enough
-		if ((int) Vector3.Distance(Vector3.zero, player.transform.position) % (spawnDist * 2) == 0)
-		{
-			for (int i = 0; i < myDoors.Count; i++)
-			{
-				if (myDoors[i] != null)
-				{
-					myDoors[i].SetActive(false);
-				}
-			}
-			myDoors.Clear();
-		}
+	// 	// Clear door when player position is far enough
+	// 	if ((int) Vector3.Distance(Vector3.zero, player.transform.position) % (spawnDist * 2) == 0)
+	// 	{
+	// 		for (int i = 0; i < myDoors.Count; i++)
+	// 		{
+	// 			if (myDoors[i] != null)
+	// 			{
+	// 				myDoors[i].SetActive(false);
+	// 			}
+	// 		}
+	// 		myDoors.Clear();
+	// 	}
 
-		// Debug.Log((int) Vector3.Distance(Vector3.zero, player.transform.position));
-	}
+	// 	// Debug.Log((int) Vector3.Distance(Vector3.zero, player.transform.position));
+	// }
 	// Clear trees and doors when tiles are destoryed
 	void OnDestroy()
 	{
@@ -211,7 +217,10 @@ public class TileGeneration : MonoBehaviour
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("Player"))
+		{
 			gen.GenerateTiles(Vector2Int.FloorToInt(new Vector2(transform.position.x, transform.position.z) / GenerateInfinite.planeSize));
+			gen.DoorPos(player.transform.position.sqrMagnitude);
+		}
 	}
 }
 
