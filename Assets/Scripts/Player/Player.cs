@@ -3,7 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+using CSG;
+
 using FMOD;
+
+using UnityEditor;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +18,7 @@ using Debug = UnityEngine.Debug;
 [System.Serializable]
 public class Player : Singleton<Player>, IStateMachine
 {
+	public static Effects VFX { get => Player.Instance.GetComponentInChildren<Effects>(); } // TODO fix this
 	/// <summary> Reference to the current state. </summary>
 	public PlayerState State;
 
@@ -25,8 +30,6 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public CapsuleCollider playerCollider;
 	/// <summary> Reference to player Camera. </summary>
 	[HideInInspector] public Camera cam;
-	/// <summary> Reference to FX Controller. </summary>
-	[HideInInspector] public Effects VFX;
 	/// <summary> Empty GameObject for where to put a Pickupable object. </summary>
 	[HideInInspector] public Transform heldObjectLocation;
 	/// <summary> Reference to a Pickupable object that has been picked up. </summary>
@@ -37,6 +40,7 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public float playerHeight;
 	/// <summary> Whether the player can move or not. </summary>
 	[HideInInspector] public bool canMove = true;
+	/// <summary> Whether the player can rotate their camera or not. </summary>
 	[HideInInspector] public bool playerCanRotate = true;
 	/// <summary> Whether the player is crouching or not. </summary>
 	[HideInInspector] public bool crouching = false;
@@ -44,67 +48,78 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public bool looking = false;
 	/// <summary> Whether the player is still crouching after the crouch key has been let go. </summary>
 	private bool stillCrouching = false;
-	public bool pickedUpFirst = false;
+	/// <summary> Whether or not the player can activate the window. </summary>
+	public bool windowEnabled = true;
 
-	// [Header("Game Object References")]
 	/// <summary> Reference to heart window. </summary>
-	public GameObject heartWindow;
+	[HideInInspector] public GameObject heartWindow;
 	/// <summary> Reference to death plane. </summary>
 	[HideInInspector] public Transform deathPlane;
 	/// <summary> Get Window script from GameObject. </summary>
 	[HideInInspector] public Prompt prompt;
+	/// <summary> Reference to Window. </summary>
 	[HideInInspector] public Window window;
+	/// <summary> Reference to camera mask. </summary>
 	[HideInInspector] public ApplyMask mask;
+	/// <summary> Reference to PlayerAudio audio controller. </summary>
 	[HideInInspector] public PlayerAudio audioController;
+	/// <summary> Reference to Hands object. </summary>
 	[HideInInspector] public Hands hands;
 
 	[Header("Parametres")]
 	/// <summary> Player move speed. </summary>
 	[SerializeField] float speed = 5f;
-	/// <summary> Player gravity variable. </summary>
-	[SerializeField] float gravity = 25f;
 	/// <summary> Player jump force. </summary>
 	[SerializeField] float jumpForce = 7f;
 	/// <summary> Mouse sensitivity for camera rotation. </summary>
 	public static float mouseSensitivity = 2f;
 	/// <summary> How far the player can reach to pick something up. </summary>
 	public float playerReach = 4f;
-	public bool windowEnabled = true;
-	[SerializeField] float fadeDuration;
+	/// <summary> Duration of the fade animation. </summary>
+	[SerializeField] float fadeDuration = 1;
+	/// <summary> The maximum angle of the floor that the player can move on. </summary>
+	[SerializeField] float maxSlopeAngle = 50f;
 
 	// [Header("Camera Variables")]
 	/// <summary> Bounds angle the player can look upward. </summary>
 	private(float, float) xRotationBounds = (-90f, 90f);
 	/// <summary> Stores the rotation of the player. </summary>
 	[HideInInspector] public Vector3 rotation = Vector3.zero;
-	int _ViewDirID = Shader.PropertyToID("_ViewDir");
 
 	// events
 	public event Action OnOpenWindow;
 	public event Action OnApplyCut;
+
+	public override void Awake()
+	{
+		base.Awake();
+		GetComponentInChildren<PageFlip>(true).Init();
+	}
 
 	void Start()
 	{
 		playerCollider = GetComponentInChildren<CapsuleCollider>();
 		body = GetComponent<Rigidbody>();
 		cam = GetComponentInChildren<Camera>();
-		VFX = cam.GetComponent<Effects>();
 		window = GetComponent<Window>();
+		heartWindow = cam.GetComponentInChildren<MeshFilter>().gameObject; // order-dependent
 		mask = GetComponentInChildren<ApplyMask>();
 		audioController = GetComponent<PlayerAudio>();
 		hands = GetComponentInChildren<Hands>();
 		prompt = GameManager.Instance.prompt;
 
+		Player.VFX.SubcribeToCutEvents(window);
+
 		playerHeight = playerCollider.height;
 
 		// Creates an empty game object at the position where a held object should be.
 		heldObjectLocation = new GameObject("HeldObjectLocation").transform;
-		heldObjectLocation.position = cam.transform.position + cam.transform.forward;
+		heldObjectLocation.position = cam.transform.position + cam.transform.forward * 2;
 		heldObjectLocation.parent = cam.transform;
 
 		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
 		Cursor.visible = false;
-		VFX.StartFade(true, fadeDuration);
+		Player.VFX.StartFade(true, fadeDuration);
 
 		Initialize();
 	}
@@ -123,8 +138,9 @@ public class Player : Singleton<Player>, IStateMachine
 		looking = false;
 		window.world = World.Instance;
 		window.cam = cam;
-		VFX.ToggleMask(false);
+		Player.VFX.ToggleMask(false);
 		window.Invoke("CreateFoVMesh", 1);
+		window.FindMirror();
 	}
 
 	public override void OnExitScene() { }
@@ -141,7 +157,7 @@ public class Player : Singleton<Player>, IStateMachine
 		}
 
 		Initialize();
-		VFX.StartFade(true, fadeDuration);
+		Player.VFX.StartFade(true, fadeDuration);
 	}
 
 	public void OnEnable()
@@ -168,9 +184,9 @@ public class Player : Singleton<Player>, IStateMachine
 		// InputManager.OnCrouchUp -= EndState;
 		InputManager.OnInteractDown -= Interact;
 		InputManager.OnRightClickDown -= Aiming;
-		InputManager.OnRightClickUp -= EndState;
+		InputManager.OnRightClickUp -= () => { if (State is Aiming) EndState(); };
 		InputManager.OnAltAimKeyDown -= Aiming;
-		InputManager.OnAltAimKeyUp -= EndState;
+		InputManager.OnAltAimKeyUp -= () => { if (State is Aiming) EndState(); };
 		InputManager.OnLeftClickDown -= Cut;
 	}
 
@@ -228,22 +244,29 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Moves and applies gravity to the player using Horizonal and Vertical Axes. </summary>
 	private void Move()
 	{
-		Vector3 targetVelocity = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-		targetVelocity = transform.TransformDirection(targetVelocity);
-		targetVelocity *= speed;
+		Vector3 moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+		moveDirection = Vector3.ClampMagnitude(moveDirection, 1f);
+		moveDirection = transform.TransformDirection(moveDirection);
+		Vector3 targetVelocity = moveDirection * speed;
 
 		Vector3 velocity = body.velocity;
 		Vector3 velocityChange = (targetVelocity - velocity);
 		velocityChange.x = Mathf.Clamp(velocityChange.x, -10f, 10f);
 		velocityChange.z = Mathf.Clamp(velocityChange.z, -10f, 10f);
 		velocityChange.y = 0;
-		body.AddForce(velocityChange, ForceMode.VelocityChange);
+
+		// Only move the player if they are on a valid slope
+		if (ValidGroundSlope()) body.AddForce(velocityChange, ForceMode.VelocityChange);
+
+		// Make sure the player doesn't slide on a slope when not inputting movement.
+		if (IsGrounded() && moveDirection == Vector3.zero) body.useGravity = false;
+		else body.useGravity = true;
 	}
 
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-		if (IsGrounded()) body.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+		if (ValidGroundSlope() && IsGrounded()) body.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
 	}
 
 	/// <summary> Increases gravity while falling. </summary>
@@ -258,8 +281,8 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (playerCanRotate)
 		{ // Get the rotation from the Mouse X and Mouse Y Axes and scale them by mouseSensitivity.
-			rotation.y += Input.GetAxis("Mouse X") * mouseSensitivity;
-			rotation.x += Input.GetAxis("Mouse Y") * mouseSensitivity;
+			rotation.y += Input.GetAxis("Mouse X") * mouseSensitivity * 20 * Time.deltaTime;
+			rotation.x += Input.GetAxis("Mouse Y") * mouseSensitivity * 20 * Time.deltaTime;
 
 			// Limit the rotation along the x axis.
 			rotation.x = Mathf.Clamp(rotation.x, xRotationBounds.Item1, xRotationBounds.Item2);
@@ -271,7 +294,7 @@ public class Player : Singleton<Player>, IStateMachine
 			// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
 			cam.transform.localEulerAngles = new Vector3(-rotation.x, 0, 0);
 
-			Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
+			Shader.SetGlobalVector(ShaderID._ViewDir, cam.transform.forward.normalized);
 		}
 	}
 
@@ -342,23 +365,33 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (State is Aiming && windowEnabled && !heldObject && GameManager.instance.pause.GameIsPaused)
+		if (State is Aiming && windowEnabled)
 		{
 			// SetState(new Cut(this));
-			window.ApplyCut();
-			hands.RevertAim();
-			audioController.PlaceWindow();
-			heartWindow.SetActive(false);
-			VFX.ToggleMask(false);
-			EndState();
-			OnApplyCut?.Invoke();
+			if (window.ApplyCut()) // returns true if succeeds
+			{
+				hands.RevertAim();
+				audioController.PlaceWindow();
+				heartWindow.SetActive(false);
+				Player.VFX.ToggleMask(false);
+				EndState();
+				OnApplyCut?.Invoke();
+			}
 		}
 	}
+
 	public bool IsGrounded()
 	{
 		RaycastHit ray;
 		return Physics.SphereCast(playerCollider.transform.position, 0.2f, Vector3.down, out ray, playerHeight / 2 - 0.1f);
 	}
 
-	public InteractableObject RaycastInteractable() => Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
+	public bool ValidGroundSlope()
+	{
+		RaycastHit ray;
+		Physics.SphereCast(playerCollider.transform.position, playerCollider.radius, Vector3.down, out ray, playerHeight / 2 - 0.1f);
+		return (Mathf.Abs(Vector3.Angle(ray.normal, Vector3.up)) < maxSlopeAngle);
+	}
+
+	public InteractableObject RaycastInteractable() => Physics.SphereCast(cam.transform.position, .25f, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }

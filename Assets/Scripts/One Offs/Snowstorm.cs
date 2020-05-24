@@ -5,41 +5,35 @@ using UnityEngine;
 
 public class Snowstorm : MonoBehaviour
 {
-	[SerializeField] Shader transition = default;
-	[SerializeField] Texture2D rawSnow = default;
+	Texture2D transitionTex = default, backgroundTex = default;
 	Material snowMat;
-	int _CutoffID = Shader.PropertyToID("_Cutoff");
-
-	bool snowOn = true;
 	float progress = 0;
 	[SerializeField] float distance = 100;
 
 	void Start()
 	{
-		var fadeSnowTex = new Texture2D(rawSnow.width, rawSnow.height);
-		Graphics.CopyTexture(rawSnow, 0, 0, fadeSnowTex, 0, 0);
-		var snowPixels = rawSnow.GetPixels();
+		transitionTex = Resources.Load<Texture2D>("Frost");
+
+		var fadeSnowTex = new Texture2D(transitionTex.width, transitionTex.height);
+		Graphics.CopyTexture(transitionTex, 0, 0, fadeSnowTex, 0, 0);
+		var snowPixels = transitionTex.GetPixels();
 		for (int i = 0; i < snowPixels.Length; i++)
 			snowPixels[i] = new Color(1 - snowPixels[i].r, 1 - snowPixels[i].g, 1 - snowPixels[i].b, snowPixels[i].a);
 		fadeSnowTex.SetPixels(snowPixels);
 		fadeSnowTex.Apply();
 
-		snowMat = new Material(transition);
+		snowMat = new Material(Shader.Find("Dissolve/Transition"));
 		snowMat.SetTexture("_TransitionTex", fadeSnowTex);
+		if (backgroundTex != null)
+			snowMat.SetTexture("_BackgroundTex", backgroundTex);
 	}
 
 	void Update()
 	{
 		progress = Player.Instance.transform.position.magnitude;
-		if (progress >= distance)
-			snowOn = false;
+		if (distance - progress < .05)
+			Destroy(this);
 	}
-
-	void FixedUpdate()
-	{
-		if (snowOn)
-			snowMat.SetFloat(_CutoffID, 1 - progress / distance); // add curve here	
-	}
-
-	void OnRenderImage(RenderTexture src, RenderTexture dest) => Graphics.Blit(src, dest, snowOn ? snowMat : null);
+	void FixedUpdate() => snowMat.SetFloat(ShaderID._TransitionCutoff, EaseMethods.CubicEaseIn(1 - progress / distance, 0, 1, 1));
+	void OnRenderImage(RenderTexture src, RenderTexture dest) => Graphics.Blit(src, dest, snowMat);
 }

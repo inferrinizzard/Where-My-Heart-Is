@@ -229,7 +229,9 @@ namespace CSG
 
 		public void Draw(float length, Vector3 direction, Color color)
 		{
-			Debug.DrawLine(value, value + direction.normalized * length, color, 60f);
+            Debug.Log("here");
+
+            Debug.DrawLine(value, value + direction.normalized * length, color, 60f);
 		}
 	}
 }

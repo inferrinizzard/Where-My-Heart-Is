@@ -7,10 +7,10 @@ public abstract class InteractableObject : MonoBehaviour
 	[HideInInspector] public Player player;
 	/// <summary> Whether or not this is the active item </summary>
 	[HideInInspector] public bool active;
-	public string prompt = "Press E to Interact";
+	public virtual string prompt { get => "Press E to Interact"; set { } }
 	string flavorText = "";
 	DialogueSystem dialogue;
-	Renderer[] renderers;
+	[HideInInspector] public Renderer[] renderers;
 
 	public virtual void Interact()
 	{
@@ -24,26 +24,5 @@ public abstract class InteractableObject : MonoBehaviour
 		dialogue = GameManager.Instance.dialogue;
 		player = Player.Instance;
 		if (hitboxObject) hitboxObject.GetComponent<ClippableObject>().tiedInteractable = this;
-	}
-
-	void OnMouseEnter()
-	{
-		if (!player.heldObject && !this.TryComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
-		{
-			GameManager.Instance.VFX.currentGlowObj = this;
-			GameManager.Instance.VFX.SetTargetColour(null);
-		}
-	}
-
-	void OnMouseExit()
-	{
-		GameManager.Instance.VFX.currentGlowObj = null;
-		GameManager.Instance.VFX.SetTargetColour(Color.black);
-	}
-
-	void OnWillRenderObject()
-	{
-		if (GameManager.Instance.VFX.currentGlowObj == this)
-			GameManager.Instance.VFX.RenderGlowMap(renderers, lerp : true);
 	}
 }
