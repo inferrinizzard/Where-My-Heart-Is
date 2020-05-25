@@ -106,7 +106,8 @@ public class KeySetter : MonoBehaviour
 	{
 		float input = float.Parse(sensitivityInputField.text);
 		input = Mathf.Clamp(input, sensitivitySlider.minValue, sensitivitySlider.maxValue);
-		sensitivitySlider.value = input;
-		SetSensitivitySlider();
+		Debug.Log(input);
+		sensitivitySlider.value = input; 
+		Player.mouseSensitivity = sensitivitySlider.value;
 	}
 }
