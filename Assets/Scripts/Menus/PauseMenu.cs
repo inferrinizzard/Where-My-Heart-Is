@@ -9,7 +9,6 @@ public class PauseMenu : MonoBehaviour
 {
     /// <summary> Whether the game is paused or not. </summary>
     public bool GameIsPaused = false;
-
     /// <summary> Local instance of pause menu canvas objects. </summary>
     public GameObject pauseMenuUI;
     /// <summary> Local instance of options menu canvas objects. </summary>
@@ -17,10 +16,16 @@ public class PauseMenu : MonoBehaviour
     /// <summary> Local instance of crosshair object. </summary>
     public GameObject gameplayUI;
     /// <summary> Local instance of keysetter object. </summary>
-    public KeySetter keySetter;
+    [HideInInspector] public KeySetter keySetter;
+    /// <summary> Local instance of camera for PIP. </summary>
+    private Camera _camera;
+    /// <summary> Raw image for PIP. </summary>
+    private RawImage pip;
 
     void Start()
     {
+        _camera = Camera.main;
+        pip = GetComponentInChildren<RawImage>();
         keySetter = GetComponentInChildren<KeySetter>();
         InputManager.OnPauseKeyDown += PauseAction;
         Resume(); // When the game starts, make sure we aren't paused.
@@ -54,6 +59,7 @@ public class PauseMenu : MonoBehaviour
     /// <summary> Pauses the game. </summary>
     void Pause()
     {
+        StartCoroutine(GetPIP());
         pauseMenuUI.SetActive(true);
         gameplayUI.SetActive(false);
         Time.timeScale = 0f;
@@ -104,5 +110,17 @@ public class PauseMenu : MonoBehaviour
     {
         optionsMenuUI.SetActive(false);
         pauseMenuUI.SetActive(true);
+    }
+
+    /// <summary> Takes a screenshot of the main camera and applies it to a RenderTexture. </summary>
+    public IEnumerator GetPIP()
+    {
+        yield return new WaitForEndOfFrame();
+
+        pip.texture = new RenderTexture(Camera.main.pixelWidth, Camera.main.pixelHeight, 24);
+        _camera.targetTexture = (RenderTexture)pip.texture;
+        _camera.Render();
+        RenderTexture.active = (RenderTexture)pip.texture;
+        _camera.targetTexture = null; // must set to null so that the camera will also render to main display after taking screenshot
     }
 }
