@@ -9991,12 +9991,9 @@ MonoBehaviour:
   hitboxObject: {fileID: 141043705}
   player: {fileID: 0}
   active: 0
-  prompt: Press E to Interact
   renderers: []
   oldParent: {fileID: 0}
   dissolves: 1
-  gate: {fileID: 770981108}
-  distanceThreshold: 0.5
 --- !u!4 &202733391 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 744c5cffdbb447e4a8ef67312f7b7594,
@@ -12763,10 +12760,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotationAngle: 50
   rotationTime: 2
+  unlockRadius: 0.5
   leftDoor: {fileID: 1958770185}
   rightDoor: {fileID: 73020171}
   GateOpenEvent: event:/Gate/Gate Open
-  keyHole: {fileID: 1524255523}
+  crackedLock: {fileID: 0}
+  locks: []
 --- !u!1001 &801593689
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13349,11 +13348,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a358a4c410806d47a59f9c8c14dd3fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 0}
+  player: {fileID: 0}
+  active: 0
+  renderers: []
   pushDistance: 2
-  verticalBreakpoint: 0.4
-  verticalOffset: 0.5
-  pushSpeed: 2
-  debug: 0
 --- !u!54 &978302286
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -24066,12 +24065,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1524255521}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1524255523 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 6b06316ada9112845b811f462f54a135,
-    type: 3}
-  m_PrefabInstance: {fileID: 1524255521}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1542175532
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31167,6 +31160,41 @@ PrefabInstance:
       propertyPath: sceneIndex
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5695175442755291296, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695175442939261559, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695175442939261559, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695175442939261559, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695175443016207832, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695175443016207832, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2378778687605159666, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e408cfb269dae24999d2b21e62931c5, type: 3}
 --- !u!4 &3985418643068005381
@@ -31214,6 +31242,7 @@ MonoBehaviour:
   heartWorldContainer: {fileID: 3985418643068005381}
   realWorldContainer: {fileID: 414783490008204454}
   entangledWorldContainer: {fileID: 7061449545694626658}
+  mirrorParent: {fileID: 0}
   heartClippables: []
   realClippables: []
   mirrorClippables: []
@@ -31260,11 +31289,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -31319,6 +31343,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_Name
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 8854909899827168894, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
