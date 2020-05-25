@@ -61,9 +61,12 @@ Shader "Screen/Main"
 			#include "bird.cginc"
 			#include "fog.cginc"
 
-			sampler2D _Mask;
 			sampler2D _MainTex;
 			sampler2D _Heart;
+
+			sampler2D _Mask;
+			// sampler2D _RampTex;
+			// sampler2D _MaskCutoff;
 
 			// sampler2D _CameraDepthTexture;
 
@@ -78,6 +81,7 @@ Shader "Screen/Main"
 				int exit = 0;
 				float4 output;
 				float mask = tex2D(_Mask, i.uv).r;
+				// float mask = tex2D(_Mask, i.uv).r * tex2D(_RampTex, TRANSFORM_TEX(i.uv, _RampTex)) * _MaskCutoff
 
 				#if MASK
 					output = mask > .5 ? 

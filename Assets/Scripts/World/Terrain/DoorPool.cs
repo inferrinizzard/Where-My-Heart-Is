@@ -19,7 +19,7 @@ public class DoorPool : MonoBehaviour
 		doors = new GameObject[numDoors];
 		for (int i = 0; i < numDoors; i++)
 		{
-			doors[i] = (GameObject) Instantiate(doorPrefab, Vector3.zero, Quaternion.identity);
+			doors[i] = GameObject.Instantiate(doorPrefab, Vector3.zero, Quaternion.identity);
 			doors[i].SetActive(false);
 		}
 	}

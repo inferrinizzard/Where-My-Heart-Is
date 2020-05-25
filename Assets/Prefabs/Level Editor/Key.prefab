@@ -14,9 +14,10 @@ GameObject:
   - component: {fileID: 5046467279757376370}
   - component: {fileID: 5046467279757376371}
   - component: {fileID: 5112598467439915849}
+  - component: {fileID: 472261869781763512}
   m_Layer: 0
   m_Name: Key
-  m_TagString: Untagged
+  m_TagString: Key
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -113,12 +114,9 @@ MonoBehaviour:
   hitboxObject: {fileID: 5046467279757376370}
   player: {fileID: 0}
   active: 0
-  prompt: Press E to Interact
   renderers: []
   oldParent: {fileID: 0}
   dissolves: 0
-  gate: {fileID: 0}
-  distanceThreshold: 0.5
 --- !u!114 &5112598467439915849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,3 +132,21 @@ MonoBehaviour:
   depthCheck: 1
   heartOnly: 1
   outlineColour: {r: 1, g: 0.9696859, b: 0, a: 1}
+--- !u!114 &472261869781763512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3830674694585576516}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc8ce9b84dfb8c84db3ce5876b60698b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 5046467279757376370}
+  player: {fileID: 0}
+  active: 0
+  renderers: []
+  oldParent: {fileID: 0}
+  dissolves: 0

@@ -15,7 +15,6 @@ public class BirdTrail : MonoBehaviour
 
 	Camera cam;
 	CommandBuffer birdBuffer;
-	int birdTempID = Shader.PropertyToID("_BirdTemp"), birdMaskID = Shader.PropertyToID("_BirdMask");
 	SkinnedMeshRenderer[] smrs;
 	Bird bird;
 
@@ -30,7 +29,7 @@ public class BirdTrail : MonoBehaviour
 
 		bird = GetComponent<Bird>();
 
-		cam = Effects.Instance.mainCam;
+		cam = Player.VFX.mainCam;
 		birdBuffer = new CommandBuffer();
 		birdBuffer.name = "Bird Trail Buffer";
 
@@ -91,8 +90,8 @@ public class BirdTrail : MonoBehaviour
 	// void ResetScreenBuffer()
 	// {
 	// 	birdBuffer.Clear();
-	// 	birdBuffer.GetTemporaryRT(birdTempID, -1, -1, 24, FilterMode.Bilinear);
-	// 	birdBuffer.SetRenderTarget(birdTempID);
+	// 	birdBuffer.GetTemporaryRT(ShaderID._BirdTemp, -1, -1, 24, FilterMode.Bilinear);
+	// 	birdBuffer.SetRenderTarget(ShaderID._BirdTemp);
 	// 	birdBuffer.ClearRenderTarget(true, true, Color.black);
 	// }
 
@@ -116,20 +115,19 @@ public class BirdTrail : MonoBehaviour
 	}
 
 	// void LateUpdate() => ResetScreenBuffer();
-	int colourID = Shader.PropertyToID("_Color");
 	void OnWillRenderObject()
 	{
-		if (Camera.current == Effects.Instance.mainCam)
+		if (Camera.current == Player.VFX.mainCam)
 		{
 			var properties = new MaterialPropertyBlock();
 			for (int i = 0; i < copies.Count; i++)
 			{
 				float step = 1f / (copies.Count - i);
-				properties.SetColor(colourID, new Color(0, 1, step, .999f));
+				properties.SetColor(ShaderID._Color, new Color(0, 1, step, .999f));
 				foreach (var(mesh, pos, rot) in copies[i].Data())
 					ApplyOutline.glowBuffer.DrawMesh(mesh, Matrix4x4.TRS(pos, rot, transform.localScale * step), drawMat, 0, 0, properties);
 			}
 		}
 	}
-	// void OnPreCull() => birdBuffer.SetGlobalTexture(birdMaskID, birdTempID);
+	// void OnPreCull() => birdBuffer.SetGlobalTexture(ShaderID._BirdMask, ShaderID._BirdTemp);
 }

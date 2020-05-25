@@ -500,7 +500,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh112816
+  m_Name: pb_Mesh127910
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -9991,12 +9991,9 @@ MonoBehaviour:
   hitboxObject: {fileID: 141043705}
   player: {fileID: 0}
   active: 0
-  prompt: Press E to Interact
   renderers: []
   oldParent: {fileID: 0}
   dissolves: 1
-  gate: {fileID: 770981108}
-  distanceThreshold: 0.5
 --- !u!4 &202733391 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 744c5cffdbb447e4a8ef67312f7b7594,
@@ -12458,10 +12455,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotationAngle: 50
   rotationTime: 2
+  unlockRadius: 0.5
   leftDoor: {fileID: 1958770185}
   rightDoor: {fileID: 73020171}
   GateOpenEvent: event:/Gate/Gate Open
-  keyHole: {fileID: 1524255523}
+  crackedLock: {fileID: 0}
+  locks: []
 --- !u!1001 &801593689
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13012,11 +13011,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a358a4c410806d47a59f9c8c14dd3fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pushDistance: 2
-  verticalBreakpoint: 0.4
-  verticalOffset: 0.5
-  pushSpeed: 2
-  debug: 0
+  hitboxObject: {fileID: 0}
+  player: {fileID: 0}
+  active: 0
+  renderers: []
+  pushDistance: 4
 --- !u!54 &978302286
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -13074,7 +13073,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh112758
+  m_Name: pb_Mesh127852
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -13437,6 +13436,25 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1041733690}
   m_Mesh: {fileID: 8421744311104621043, guid: e2941f23203d02f46afbbd899406c191, type: 3}
+--- !u!1 &1066102552 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -927199367670048503, guid: 6b06316ada9112845b811f462f54a135,
+    type: 3}
+  m_PrefabInstance: {fileID: 768820302}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1066102553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066102552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 257d7882425973f4fa1eae13e9132921, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hash: 0
 --- !u!1001 &1109468975
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22216,7 +22234,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh112696
+  m_Name: pb_Mesh127790
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -23531,6 +23549,19 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1524255521}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1524255524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1524255523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 257d7882425973f4fa1eae13e9132921, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hash: 0
 --- !u!1001 &1553843167
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28993,7 +29024,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh112346
+  m_Name: pb_Mesh127430
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -30451,12 +30482,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4681228249720185881, guid: 2e408cfb269dae24999d2b21e62931c5,
-        type: 3}
-      propertyPath: levelOrder
-      value: 
-      objectReference: {fileID: 11400000, guid: 7597ef4d2e7418d4dbf5038b2b181c76,
-        type: 2}
     - target: {fileID: 4681228249720185881, guid: 2e408cfb269dae24999d2b21e62931c5,
         type: 3}
       propertyPath: sceneIndex

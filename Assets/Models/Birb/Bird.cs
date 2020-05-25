@@ -30,8 +30,8 @@ public class Bird : MonoBehaviour
 		if (triggerHolder)
 			pathTriggers = triggerHolder?.GetComponentsInChildren<PlayerTrigger>().Select(trigger => { trigger.OnPlayerEnterID += StartNextCurveID; return trigger; }).ToList();
 
-		curves = curveHolder.GetComponentsInChildren<Curve>().ToList();
-		cursors = curveHolder.GetComponentsInChildren<CurveCursor>().ToList();
+		curves = curveHolder?.GetComponentsInChildren<Curve>().ToList() ?? new List<Curve>();
+		cursors = curveHolder?.GetComponentsInChildren<CurveCursor>().ToList() ?? new List<CurveCursor>();
 		curves.ForEach(c => Debug.Log(c.Points.AsString()));
 		cursors.ForEach(cursor =>
 		{

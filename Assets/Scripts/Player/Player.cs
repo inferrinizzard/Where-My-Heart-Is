@@ -18,6 +18,7 @@ using Debug = UnityEngine.Debug;
 [System.Serializable]
 public class Player : Singleton<Player>, IStateMachine
 {
+	public static Effects VFX { get => Player.Instance.GetComponentInChildren<Effects>(); } // TODO fix this
 	/// <summary> Reference to the current state. </summary>
 	public PlayerState State;
 
@@ -84,7 +85,6 @@ public class Player : Singleton<Player>, IStateMachine
 	private(float, float) xRotationBounds = (-90f, 90f);
 	/// <summary> Stores the rotation of the player. </summary>
 	[HideInInspector] public Vector3 rotation = Vector3.zero;
-	int _ViewDirID = Shader.PropertyToID("_ViewDir");
 
 	// events
 	public event Action OnOpenWindow;
@@ -108,7 +108,7 @@ public class Player : Singleton<Player>, IStateMachine
 		hands = GetComponentInChildren<Hands>();
 		prompt = GameManager.Instance.prompt;
 
-		Effects.Instance.SubcribeToCutEvents(window);
+		Player.VFX.SubcribeToCutEvents(window);
 
 		playerHeight = playerCollider.height;
 
@@ -119,7 +119,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
 		Cursor.visible = false;
-		Effects.Instance.StartFade(true, fadeDuration);
+		Player.VFX.StartFade(true, fadeDuration);
 
 		Initialize();
 	}
@@ -138,8 +138,9 @@ public class Player : Singleton<Player>, IStateMachine
 		looking = false;
 		window.world = World.Instance;
 		window.cam = cam;
-		Effects.Instance.ToggleMask(false);
+		Player.VFX.ToggleMask(false);
 		window.Invoke("CreateFoVMesh", 1);
+		window.FindMirror();
 	}
 
 	public override void OnExitScene() { }
@@ -156,7 +157,7 @@ public class Player : Singleton<Player>, IStateMachine
 		}
 
 		Initialize();
-		Effects.Instance.StartFade(true, fadeDuration);
+		Player.VFX.StartFade(true, fadeDuration);
 	}
 
 	public void OnEnable()
@@ -183,9 +184,9 @@ public class Player : Singleton<Player>, IStateMachine
 		// InputManager.OnCrouchUp -= EndState;
 		InputManager.OnInteractDown -= Interact;
 		InputManager.OnRightClickDown -= Aiming;
-		InputManager.OnRightClickUp -= EndState;
+		InputManager.OnRightClickUp -= () => { if (State is Aiming) EndState(); };
 		InputManager.OnAltAimKeyDown -= Aiming;
-		InputManager.OnAltAimKeyUp -= EndState;
+		InputManager.OnAltAimKeyUp -= () => { if (State is Aiming) EndState(); };
 		InputManager.OnLeftClickDown -= Cut;
 	}
 
@@ -293,7 +294,7 @@ public class Player : Singleton<Player>, IStateMachine
 			// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
 			cam.transform.localEulerAngles = new Vector3(-rotation.x, 0, 0);
 
-			Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
+			Shader.SetGlobalVector(ShaderID._ViewDir, cam.transform.forward.normalized);
 		}
 	}
 
@@ -364,16 +365,18 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (State is Aiming && windowEnabled && !heldObject)
+		if (State is Aiming && windowEnabled)
 		{
 			// SetState(new Cut(this));
-			window.ApplyCut();
-			hands.RevertAim();
-			audioController.PlaceWindow();
-			heartWindow.SetActive(false);
-			Effects.Instance.ToggleMask(false);
-			EndState();
-			OnApplyCut?.Invoke();
+			if (window.ApplyCut()) // returns true if succeeds
+			{
+				hands.RevertAim();
+				audioController.PlaceWindow();
+				heartWindow.SetActive(false);
+				Player.VFX.ToggleMask(false);
+				EndState();
+				OnApplyCut?.Invoke();
+			}
 		}
 	}
 
