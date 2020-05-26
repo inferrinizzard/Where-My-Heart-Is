@@ -6,29 +6,42 @@ using UnityEngine;
 // Set door animation to play at current scene position
 public class DoorController : MonoBehaviour
 {
-	public Animator anim;
+	Animator anim;
 	Player player;
 	public bool spawned = false;
+	GameObject holder;
+	[SerializeField] GameObject house = default, blocker = default;
 
-	// Use this for initialization
 	void Start()
 	{
+		holder = transform.parent.gameObject;
 		player = Player.Instance;
-		// transform.parent.position = transform.position;
-		anim = GetComponentInChildren<Animator>();
-		gameObject.SetActive(false);
-	}
+		anim = GetComponent<Animator>();
 
-	void Update() { }
+		foreach (Renderer r in house.GetComponentsInChildren<Renderer>())
+			foreach (Material m in r.materials)
+				m.renderQueue = 3002;
+
+		holder.SetActive(false);
+	}
 
 	public void Spawn()
 	{
 		spawned = true;
-		gameObject.SetActive(true);
-		Debug.Log(player);
+		holder.SetActive(true);
 		Vector3 doorPos = (player.transform.forward * 10) + new Vector3(player.transform.position.x, 0.6f, player.transform.position.z);
-		transform.position = doorPos;
-		transform.rotation = Quaternion.LookRotation(player.transform.forward);
+		holder.transform.position = doorPos;
+		holder.transform.rotation = Quaternion.LookRotation(player.transform.forward);
 		anim.Play("doorDrop");
+	}
+
+	void OnTriggerEnter()
+	{
+		blocker.GetComponent<Collider>().enabled = false;
+	}
+
+	void OnTriggerExit()
+	{
+		blocker.GetComponent<Collider>().enabled = true;
 	}
 }
