@@ -54,10 +54,10 @@ namespace CSG
 		/// <returns>The created triangles</returns>
 		public List<Triangle> TriangulateEarMethod()
 		{
-            Vector3 center = Vector3.zero;
+            /*Vector3 center = Vector3.zero;
             vertices.ForEach(vertex => center += vertex.value);
             center /= vertices.Count;
-            Debug.DrawLine(center, center + GetNormal(), Color.blue, 3f);
+            Debug.DrawLine(center, center + GetNormal(), Color.blue, 3f);*/
 
 			List<Triangle> triangles = new List<Triangle>();
 			List<Vertex> currentVertices = new List<Vertex>(vertices);

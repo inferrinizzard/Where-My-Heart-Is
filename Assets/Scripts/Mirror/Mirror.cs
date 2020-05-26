@@ -95,11 +95,6 @@ public class Mirror : ClippableObject
 			}
 		} while (currentVertex != initialVertex);
 
-		/*for (int i = 0; i < order.Count - 1; i++)
-		{
-			//new CSG.Edge(sourceModel.vertices[order[i]], sourceModel.vertices[order[(i+1)%order.Count]]).Draw(Color.red);
-		}*/
-
 		// copy existing model faces
 
 		CSG.Model farModel = new CSG.Model(GetComponent<MeshFilter>().mesh);
@@ -137,14 +132,19 @@ public class Mirror : ClippableObject
 		}
 
 		result.CreateEdges();
-		if (Vector3.Dot(result.triangles[0].CalculateNormal(), reflectionCamera.transform.forward) < 0)
+        /*Debug.Log(result.triangles[0].CalculateNormal());
+        Debug.Log(reflectionCamera.transform.forward);
+        Debug.Log(Vector3.Dot(result.triangles[0].CalculateNormal(), reflectionCamera.transform.forward));
+        result.triangles[0].DrawNormal(Color.green);*/
+
+        if (Vector3.Dot(result.triangles[0].CalculateNormal(), reflectionCamera.transform.forward) > 0)
 		{
 			result.FlipNormals();
 		}
 
-		// GameObject test = new GameObject();
-		// test.AddComponent<MeshFilter>().mesh = result.ToMesh(test.transform.worldToLocalMatrix);
-		// test.AddComponent<MeshRenderer>();
+		/*GameObject test = new GameObject();
+		test.AddComponent<MeshFilter>().mesh = result.ToMesh(test.transform.worldToLocalMatrix);
+		test.AddComponent<MeshRenderer>();*/
 
 		bound = new Bounds();
 		Vector3 center = Vector3.zero;

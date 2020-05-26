@@ -103,9 +103,23 @@ public class ClippableObject : MonoBehaviour
 			col.sharedMesh = meshFilter.mesh;
 	}
 
+    public void SubtractUncached(CSG.Model other)
+    {
+        CSG.Model model = new CSG.Model(meshFilter.mesh, transform);
+        model.ConvertToWorld();
+
+        if (!volumeless)
+            meshFilter.mesh = CSG.Operations.Subtract(model, other, true);
+        else
+            meshFilter.mesh = CSG.Operations.ClipAToB(model, other, false, false, null);
+
+        if (this.TryComponent(out MeshCollider col))
+            col.sharedMesh = meshFilter.mesh;
+    }
+
 	public virtual void IntersectMirrored(CSG.Model other, Matrix4x4 reflectionMatrix)
 	{
-		isClipped = true;
+		//isClipped = true;
 
 		mirroredCopy = Instantiate(gameObject, transform.position, transform.rotation);
 		mirroredCopy.transform.position = reflectionMatrix.MultiplyPoint(transform.position);

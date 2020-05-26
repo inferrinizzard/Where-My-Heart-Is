@@ -95,7 +95,6 @@ public class Window : MonoBehaviour
 			foreach (EntangledClippable entangled in world.EntangledClippables)
 			{
 				entangled.ClipMirrored(this, mirrorBound, mirrorBoundModel, reflectionMatrix);
-				// Debug.Log(entangled.gameObject);
 			}
 
 			foreach (ClippableObject clippable in world.heartWorldContainer.GetComponentsInChildren<ClippableObject>())
@@ -103,17 +102,14 @@ public class Window : MonoBehaviour
 				if (IntersectsBounds(clippable, mirrorBound, mirrorBoundModel) && !(clippable is Mirror))
 				{
 					clippable.GetComponent<ClippableObject>().IntersectMirrored(mirrorBoundModel, reflectionMatrix);
-					// Debug.Log(clippable.gameObject);
 				}
 			}
 		}
 		else mirrorCutApplied = false;
 
-		// cut away the stuff behind the mirror
+		// subtract the bound from all real objects and intersect it with with all heart objects
 		foreach (ClippableObject clippable in world.Clippables)
 		{
-			// TODO: could we just check if they were already clipped?
-			// since things that are clipped have already intersected the fovmodel, so we've already checked for this
 			if (IntersectsBounds(clippable, bounds, fieldOfViewModel))
 			{
 				clippable.ClipWith(boundModel);
@@ -127,26 +123,28 @@ public class Window : MonoBehaviour
 			}
 		}
 
+        // subtract the reflected mirror bound from all 
 		if (mirrorCutApplied)
 		{
 			//reflect csg model
 			mirrorBoundModel.ApplyTransformation(reflectionMatrix);
+            mirrorBoundModel.FlipNormals();
+            mirrorBoundModel.RecalculateNormals();
 
-			foreach (ClippableObject clippable in world.Clippables)
-			{
-				if (clippable.IntersectsBound(mirrorBoundModel))
-				{
-					// Debug.Log(clippable.gameObject);
-					clippable.Subtract(mirrorBoundModel, false);
-					OnClippableCut?.Invoke(clippable);
-				}
+            foreach(ClippableObject clippable in world.heartClippables)
+            {
+                if (clippable.isClipped)
+                {
+                    clippable.SubtractUncached(mirrorBoundModel);
+                    OnClippableCut?.Invoke(clippable);
+                }
 
-				if (Time.realtimeSinceStartup - startTime > frameLength)
-				{
-					yield return null;
-					startTime = Time.realtimeSinceStartup;
-				}
-			}
+                if (Time.realtimeSinceStartup - startTime > frameLength)
+                {
+                    yield return null;
+                    startTime = Time.realtimeSinceStartup;
+                }
+            }
 		}
 
         //Debug.Log(Time.realtimeSinceStartup - monitorStartTime);

@@ -114,7 +114,6 @@ public class World : MonoBehaviour
 		if (clippable.worldType == World.Type.Real)
 		{
 			realClippables.Remove(clippable);
-
 		}
 		else
 		{
