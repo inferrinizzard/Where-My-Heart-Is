@@ -37,6 +37,7 @@ public class Window : MonoBehaviour
 	public event Action OnBeginCut;
 	public event Action<ClippableObject> OnClippableCut;
 	public event Action OnCompleteCut;
+	public static Vector3 cutOrderAnchor;
 
 	void Start()
 	{
@@ -63,16 +64,17 @@ public class Window : MonoBehaviour
 		}
 		cutInProgress = true;
 		world.ResetCut();
+		cutOrderAnchor = Player.Instance.transform.position - Player.Instance.cam.transform.forward * fovDistance;
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh, fieldOfView.transform);
 		fieldOfViewModel.ConvertToWorld();
-		StartCoroutine(ApplyCutCoroutine(1f / ((float) framerateTarget), new Bounds(fieldOfView.GetComponent<MeshRenderer>().bounds.center, fieldOfView.GetComponent<MeshRenderer>().bounds.size), fieldOfViewModel));
+		StartCoroutine(ApplyCutCoroutine(1f / framerateTarget, new Bounds(fieldOfView.GetComponent<MeshRenderer>().bounds.center, fieldOfView.GetComponent<MeshRenderer>().bounds.size), fieldOfViewModel));
 		return true;
 	}
 
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds, CSG.Model boundModel)
 	{
 		float startTime = Time.realtimeSinceStartup;
-        //float monitorStartTime = startTime;
+		//float monitorStartTime = startTime;
 		CSG.Model mirrorBoundModel = null;
 		Matrix4x4 reflectionMatrix = Matrix4x4.identity;
 
@@ -112,6 +114,7 @@ public class Window : MonoBehaviour
 		{
 			if (IntersectsBounds(clippable, bounds, fieldOfViewModel))
 			{
+				// Debug.Log(clippable);
 				clippable.ClipWith(boundModel);
 				OnClippableCut?.Invoke(clippable);
 			}
@@ -123,31 +126,31 @@ public class Window : MonoBehaviour
 			}
 		}
 
-        // subtract the reflected mirror bound from all 
+		// subtract the reflected mirror bound from all 
 		if (mirrorCutApplied)
 		{
 			//reflect csg model
 			mirrorBoundModel.ApplyTransformation(reflectionMatrix);
-            mirrorBoundModel.FlipNormals();
-            mirrorBoundModel.RecalculateNormals();
+			mirrorBoundModel.FlipNormals();
+			mirrorBoundModel.RecalculateNormals();
 
-            foreach(ClippableObject clippable in world.heartClippables)
-            {
-                if (clippable.isClipped)
-                {
-                    clippable.SubtractUncached(mirrorBoundModel);
-                    OnClippableCut?.Invoke(clippable);
-                }
+			foreach (ClippableObject clippable in world.heartClippables)
+			{
+				if (clippable.isClipped)
+				{
+					clippable.SubtractUncached(mirrorBoundModel);
+					OnClippableCut?.Invoke(clippable);
+				}
 
-                if (Time.realtimeSinceStartup - startTime > frameLength)
-                {
-                    yield return null;
-                    startTime = Time.realtimeSinceStartup;
-                }
-            }
+				if (Time.realtimeSinceStartup - startTime > frameLength)
+				{
+					yield return null;
+					startTime = Time.realtimeSinceStartup;
+				}
+			}
 		}
 
-        //Debug.Log(Time.realtimeSinceStartup - monitorStartTime);
+		//Debug.Log(Time.realtimeSinceStartup - monitorStartTime);
 		cutInProgress = false;
 		OnCompleteCut?.Invoke();
 	}
@@ -203,7 +206,7 @@ public class Window : MonoBehaviour
 
 		if (Vector3.Dot(transform.forward, model.triangles[0].CalculateNormal()) < 0)
 		{
-            model.FlipNormals();
+			model.FlipNormals();
 		}
 		// flip their normals
 
