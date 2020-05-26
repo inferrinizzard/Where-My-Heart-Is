@@ -6,11 +6,10 @@ using Newtonsoft.Json;
 
 using UnityEngine;
 
-[ExecuteInEditMode]
-public class Dialogue : MonoBehaviour
+public class DialogueText : MonoBehaviour
 {
-	Dictionary<string, LevelText> autumn, winter, spring;
-	struct LevelText
+	public static Dictionary<string, LevelText> autumn, winter, spring;
+	public struct LevelText
 	{
 		public string name;
 		public List<string> preface, triggers;
@@ -25,7 +24,7 @@ public class Dialogue : MonoBehaviour
 		public override string ToString() => $"{name} Level with {preface.Count} items in preface and {triggers.Count} triggers";
 	}
 
-	void OnEnable()
+	public static void Load()
 	{
 		(autumn, winter, spring) =
 		Func.Lambda<List<Dictionary<string, LevelText>>,
