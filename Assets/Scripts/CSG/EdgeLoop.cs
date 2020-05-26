@@ -236,7 +236,7 @@ namespace CSG
 		/// <returns>The normal vector</returns>
 		public Vector3 GetNormal()
 		{
-			return Vector3.Cross(vertices[0].value - vertices[1].value, vertices[2].value - vertices[1].value).normalized;
+			return Vector3.Cross(vertices[2].value - vertices[1].value, vertices[0].value - vertices[1].value).normalized;
 		}
 
 		/// <summary>

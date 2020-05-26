@@ -217,8 +217,6 @@ namespace CSG
 			mesh.SetTriangles(newTriangles, 0);
 			mesh.RecalculateNormals();
 
-			mesh.RecalculateNormals();
-
 			return mesh;
 		}
 

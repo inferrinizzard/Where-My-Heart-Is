@@ -200,11 +200,12 @@ public class Window : MonoBehaviour
 		{
 			vertex.value = GetComponent<Player>().cam.transform.position + (vertex.value - GetComponent<Player>().cam.transform.position).normalized * fovDistance;
 		});
-
-		if (Vector3.Dot(transform.forward, Vector3.Cross(model.vertices[0].value - model.vertices[1].value, model.vertices[0].value - model.vertices[1].value)) <= 0)
+        model.Draw(Color.white); 
+		if (Vector3.Dot(transform.forward, model.triangles[0].CalculateNormal()) < 0)
 		{
-			//Debug.Log(Vector3.Dot(transform.forward, Vector3.Cross(model.vertices[0].value - model.vertices[1].value, model.vertices[0].value - model.vertices[1].value)));
-			model.FlipNormals();
+            Debug.Log(Vector3.Dot(transform.forward, model.triangles[0].CalculateNormal()));
+            //Debug.Log(Vector3.Dot(transform.forward, Vector3.Cross(model.vertices[0].value - model.vertices[1].value, model.vertices[0].value - model.vertices[1].value)));
+            model.FlipNormals();
 		}
 		// flip their normals
 

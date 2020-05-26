@@ -74,8 +74,10 @@ namespace CSG
 		/// <returns>The calculated normal Vector3</returns>
 		public Vector3 CalculateNormal()
 		{
-			//1>3 X 1>2
-			return Vector3.Cross(vertices[2].value - vertices[0].value, vertices[1].value - vertices[0].value).normalized;
+            //1>3 X 1>2
+            //return Vector3.Cross(vertices[2].value - vertices[0].value, vertices[1].value - vertices[0].value).normalized;
+            //1>2 X 1>3
+            return Vector3.Cross(vertices[1].value - vertices[0].value, vertices[2].value - vertices[0].value).normalized;
 		}
 
 		/// <summary>
