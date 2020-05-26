@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -131,7 +132,8 @@ namespace CSG
 		/// <param name="other">The model to find intersections with</param>
 		public List<Vertex> IntersectWith(Model other)
 		{
-			ClearCutMetadata();
+
+            ClearCutMetadata();
 			other.ClearCutMetadata();
 
 			List<Vertex> createdVertices = new List<Vertex>();
@@ -171,8 +173,7 @@ namespace CSG
 						triangle.internalIntersections.Add(intersection);
 					}
 				}
-			}
-			//createdVertices.ForEach(vertex => vertex.Draw(0.02f, Vector3.back, color));
+            }
 			return createdVertices;
 		}
 

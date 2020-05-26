@@ -54,6 +54,11 @@ namespace CSG
 		/// <returns>The created triangles</returns>
 		public List<Triangle> TriangulateEarMethod()
 		{
+            Vector3 center = Vector3.zero;
+            vertices.ForEach(vertex => center += vertex.value);
+            center /= vertices.Count;
+            Debug.DrawLine(center, center + GetNormal(), Color.blue, 3f);
+
 			List<Triangle> triangles = new List<Triangle>();
 			List<Vertex> currentVertices = new List<Vertex>(vertices);
 			Triangle nextEar;
@@ -265,7 +270,7 @@ namespace CSG
 		/// <param name="toMatch">A Vector representing the normal to be matched</param>
         public void MatchNormal(Vector3 toMatch)
         {
-            if (Vector3.Distance(this.GetNormal(), toMatch) > 0.0001)
+            if (Vector3.SqrMagnitude(this.GetNormal() - toMatch) > 0.0001)
             {
                 this.FlipNormal();
             }

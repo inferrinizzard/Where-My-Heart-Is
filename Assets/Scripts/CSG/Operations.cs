@@ -34,11 +34,16 @@ namespace CSG
 
 		public static Model Intersect(Model modelA, Model modelB, bool flipNormals = false)
 		{
-			modelA.IntersectWith(modelB); //generate all intersections
+            float startTime = Time.realtimeSinceStartup;
+            float veryStartTime = Time.realtimeSinceStartup;
 
-			Model clippedA;
+            modelA.IntersectWith(modelB); //generate all intersections
+            float intersectTime = Time.realtimeSinceStartup - startTime;
+
+            Model clippedA;
 			Model clippedB;
 
+            startTime = Time.realtimeSinceStartup;
 			try
 			{
 				clippedA = ClipModelAToModelB(modelA, modelB, true, flipNormals);
@@ -58,6 +63,13 @@ namespace CSG
 				// Debug.LogError("INTERSECTION ERROR: Failed to clip model B to model A, returning clipped modelA without clipped modelB");
 				return clippedA;
 			}
+            float parseTime = Time.realtimeSinceStartup - startTime;
+
+
+            /*Debug.Log("Intersection finds: " + intersectTime);
+            Debug.Log("Intersection parses: " + parseTime);
+            Debug.Log("Total Time: " + (Time.realtimeSinceStartup - veryStartTime));*/
+
 
 			return Model.Combine(clippedA, clippedB);
 		}
@@ -136,54 +148,30 @@ namespace CSG
 
 			if (clipInside)
 			{
-				if (faceIndex <= -1)
+				foreach (Triangle triangle in modelA.triangles)
 				{
-					foreach (Triangle triangle in modelA.triangles)
+					try
 					{
-						try
-						{
-							edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointContainedByBound));
-						}
-						catch (Exception e)
-						{
-							//triangle.Draw(Color.cyan);
-							// Debug.Log(triangle.edges.Count);
-							// triangle.edges.ForEach(edge => Debug.Log(edge));
-							// triangle.vertices.ForEach(edge => Debug.Log(edge));
-							// Debug.LogError("Failed to find edge loop for triangle #" + modelA.triangles.IndexOf(triangle) + ", ERROR: " + e.Message);
-						}
+						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointContainedByBound));
 					}
-
-				}
-				else // DEBUG
-				{
-					edgeLoops = new List<EdgeLoop>();
-					if (faceIndex < modelA.triangles.Count)
+					catch (Exception e)
 					{
-						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[faceIndex], modelB, PointContainedByBound));
-						edgeLoops.ForEach(loop => loop.Draw(Color.red, Color.green, Color.blue));
+						//triangle.Draw(Color.cyan);
+						// Debug.Log(triangle.edges.Count);
+						// triangle.edges.ForEach(edge => Debug.Log(edge));
+						// triangle.vertices.ForEach(edge => Debug.Log(edge));
+						Debug.LogError("Failed to find edge loop for triangle #" + modelA.triangles.IndexOf(triangle) + ", ERROR: " + e.Message);
 					}
 				}
 			}
 			else
 			{
-				if (faceIndex <= -1)
+				foreach (Triangle triangle in modelA.triangles)
 				{
-					foreach (Triangle triangle in modelA.triangles)
-					{
-						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointExcludedByBound));
-					}
-
-				}
-				else
-				{
-					edgeLoops = new List<EdgeLoop>();
-					if (faceIndex < modelA.triangles.Count)
-					{
-						edgeLoops.AddRange(IdentifyTriangleEdgeLoops(modelA.triangles[faceIndex], modelB, PointExcludedByBound));
-					}
+					edgeLoops.AddRange(IdentifyTriangleEdgeLoops(triangle, modelB, PointExcludedByBound));
 				}
 			}
+
 			Model finalModel = new Model();
 			edgeLoops.ForEach(loop =>
 			{
@@ -205,7 +193,7 @@ namespace CSG
 				}
 				catch (Exception e)
 				{
-					// Debug.LogError("Failed to triangulate edge loop #" + edgeLoops.IndexOf(loop) + ", ERROR: " + e.Message);
+					Debug.LogError("Failed to triangulate edge loop #" + edgeLoops.IndexOf(loop) + ", ERROR: " + e.Message);
 					loop.Draw(Color.red, Color.green, Color.blue);
 				}
 			});
@@ -321,7 +309,7 @@ namespace CSG
 				return !loops.Exists(loop => loop.vertices.Contains(intersection.vertex));
 			}).ToList();
 
-			Vector3 triangleNormal = triangle.CalculateNormal();
+			Vector3 triangleNormal = triangle.CachedNormal;
 
 			loops.ForEach(loop => loop.MatchNormal(triangleNormal));
 
@@ -435,9 +423,9 @@ namespace CSG
 			for (int i = 0; i < 3; i++)
 			{
 				//TODO do this somewhere where it won't get called multiple times on the same edges
-				triangle.edges[i].intersections.Sort(
-					(a, b) => Math.Sign(Vector3.Distance(a.vertex.value, triangle.vertices[i].value) -
-						Vector3.Distance(b.vertex.value, triangle.vertices[i].value)));
+				/*triangle.edges[i].intersections.Sort(
+					(a, b) => Math.Sign(Vector3.SqrMagnitude(a.vertex.value - triangle.vertices[i].value) -
+						Vector3.SqrMagnitude(b.vertex.value - triangle.vertices[i].value)));*/
 				int overflow = 0;
 
 				// for each edge forming the parimeter, find its cuts

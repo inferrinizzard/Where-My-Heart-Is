@@ -102,13 +102,15 @@ namespace CSG
 			// first, determine whether the ray intersects the triangle
 			if (PointLiesOnTriangle(origin, direction, triangle))
 			{
-				// if the ray intersects the triangle, we can find the specific point at which it does
+                // if the ray intersects the triangle, we can find the specific point at which it does
 
-				// determine equation of plane
-				Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
-				Vector3 planePoint = triangle.vertices[0].value;
+                // determine equation of plane
+                //Vector3 normal = Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value);
 
-				return new Vertex(0, RayToPlane(origin, direction, planePoint, normal));
+                //Vector3 planePoint = triangle.vertices[0].value;
+                //Debug.Log("calculated Normal: " + Vector3.Cross(triangle.vertices[0].value - triangle.vertices[1].value, triangle.vertices[1].value - triangle.vertices[2].value));
+                //Debug.Log("Cached Normal: " + triangle.CachedNormal);
+				return new Vertex(0, RayToPlane(origin, direction, triangle.vertices[0].value, triangle.CachedNormal));
 			}
 			else
 			{

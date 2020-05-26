@@ -156,7 +156,7 @@ namespace CSG
 		/// <returns>Whether this vertex lies inside the area of the given triangle, assuming they share a plane</returns>
 		public bool LiesWithinTriangle(Triangle triangle)
 		{
-			return Raycast.PointLiesOnTriangle(value, triangle.CalculateNormal(), triangle);
+			return Raycast.PointLiesOnTriangle(value, triangle.CachedNormal, triangle);
 		}
 
 		/// <summary>
