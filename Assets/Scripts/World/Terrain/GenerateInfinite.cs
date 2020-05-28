@@ -11,7 +11,7 @@ using UnityEngine;
 
 public class GenerateInfinite : MonoBehaviour
 {
-	[SerializeField] GameObject plane;
+	[SerializeField] GameObject plane = default;
 	GameObject player;
 
 	public static int planeSize = 10;

@@ -10,13 +10,7 @@ using UnityEngine;
 public class TileGeneration : MonoBehaviour
 {
 	public GameObject player;
-	public GameObject door;
-
 	List<GameObject> myTrees = new List<GameObject>();
-	List<GameObject> myDoors = new List<GameObject>();
-
-	[SerializeField] private int spawnDist = 50; // Spawn door after 50 steps
-	[SerializeField] private int stepsTaken = 149;
 
 	[SerializeField] NoiseMapGeneration noiseMapGeneration = default; // Get script
 	[SerializeField] private MeshRenderer tileRenderer = default; // Show height map of each vertex

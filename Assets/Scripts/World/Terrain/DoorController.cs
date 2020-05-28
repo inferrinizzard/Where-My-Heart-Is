@@ -35,13 +35,19 @@ public class DoorController : MonoBehaviour
 		anim.Play("doorDrop");
 	}
 
+	public void Open() => anim.SetTrigger("Open");
+
 	void OnTriggerEnter()
 	{
 		blocker.GetComponent<Collider>().enabled = false;
+		foreach (var c in GetComponentsInChildren<Collider>())
+			c.enabled = false;
 	}
 
 	void OnTriggerExit()
 	{
 		blocker.GetComponent<Collider>().enabled = true;
+		foreach (var c in GetComponentsInChildren<Collider>())
+			c.enabled = true;
 	}
 }
