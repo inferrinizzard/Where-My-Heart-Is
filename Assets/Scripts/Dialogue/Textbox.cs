@@ -16,15 +16,24 @@ public class Textbox : MonoBehaviour
 		text = transform.parent.GetComponentInChildren<DialogueSystem>().GetComponent<Text>();
 		image = GetComponent<Image>();
 
+		SetTextbox();
+	}
+	public void SetTextbox()
+	{
 		(transform as RectTransform).sizeDelta = new Vector2(text.preferredWidth + padding * 2, text.preferredHeight + padding * 2);
 		(text.transform as RectTransform).GetWorldCorners(pos); // repeat operation every new text;
 		float textX = pos[0].x;
 		(transform as RectTransform).GetWorldCorners(pos);
-		(transform as RectTransform).anchoredPosition = new Vector2((textX - pos[0].x) - padding * 2, 0);
+		(transform as RectTransform).anchoredPosition = new Vector2((textX - pos[0].x) - padding, 0);
 	}
 
 	void Update()
 	{
+		if (Input.GetMouseButtonDown(0))
+		{
+			text.text = "tekbkusjndksdks"; // advance text here
+			SetTextbox();
+		}
 		(transform as RectTransform).sizeDelta = new Vector2(text.preferredWidth + padding * 2, text.preferredHeight + padding * 2);
 	}
 }
