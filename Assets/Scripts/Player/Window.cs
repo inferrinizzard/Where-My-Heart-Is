@@ -41,6 +41,7 @@ public class Window : MonoBehaviour
 
 	void Start()
 	{
+		world = World.Instance;
 		fieldOfViewSource = Player.Instance.heartWindow;
 		fieldOfView = fieldOfViewSource.GetComponentOnlyInChildren<MeshFilter>().gameObject;
 		FindMirror();

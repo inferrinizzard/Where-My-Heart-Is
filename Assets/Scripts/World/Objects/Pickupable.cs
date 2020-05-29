@@ -59,6 +59,8 @@ public class Pickupable : InteractableObject
 		initialRotation = transform.rotation;
 
 		(col as MeshCollider).convex = true;
+		col.isTrigger = true;
+		// col.enabled = false;
 		oldParent = transform.parent;
 		transform.parent = player.heldObjectLocation; // set the new parent to the hold object location object
 		transform.localPosition = Vector3.zero; // set the position to local zero to match the position of the hold object location target
@@ -70,7 +72,12 @@ public class Pickupable : InteractableObject
 		transform.rotation = initialRotation;
 
 		transform.parent = oldParent;
+		col.isTrigger = false;
 		(col as MeshCollider).convex = false;
+		// col.enabled = true;
+		// if (Physics.Raycast(transform.position, player.transform.position - transform.position, out RaycastHit hit, (player.transform.position - transform.position).magnitude + 1))
+		// 	if (hit.transform != player.transform)
+		// 		Debug.Log(hit.transform.gameObject);
 	}
 
 	public IEnumerator DissolveOnDrop(float time = .25f)
