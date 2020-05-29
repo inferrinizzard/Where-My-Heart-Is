@@ -236,6 +236,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 			// Set the rotation to the spawnpoint
 			rotation = lastSpawn.eulerAngles;
+			PickUp(false, null);
 		}
 		else if (!lastSpawn)
 			Debug.LogWarning("Missing spawn point!");
