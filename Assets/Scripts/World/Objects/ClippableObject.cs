@@ -103,6 +103,20 @@ public class ClippableObject : MonoBehaviour
 			col.sharedMesh = meshFilter.mesh;
 	}
 
+    public void SubtractUncached(CSG.Model other)
+    {
+        CSG.Model model = new CSG.Model(meshFilter.mesh, transform);
+        model.ConvertToWorld();
+
+        if (!volumeless)
+            meshFilter.mesh = CSG.Operations.Subtract(model, other, true);
+        else
+            meshFilter.mesh = CSG.Operations.ClipAToB(model, other, false, false, null);
+
+        if (this.TryComponent(out MeshCollider col))
+            col.sharedMesh = meshFilter.mesh;
+    }
+
 	public virtual void IntersectMirrored(CSG.Model other, Matrix4x4 reflectionMatrix)
 	{
 		isClipped = true;
@@ -110,7 +124,6 @@ public class ClippableObject : MonoBehaviour
 		mirroredCopy = Instantiate(gameObject, transform.position, transform.rotation);
 		mirroredCopy.transform.position = reflectionMatrix.MultiplyPoint(transform.position);
 		mirroredCopy.transform.LookAt(mirroredCopy.transform.position + reflectionMatrix.MultiplyVector(mirroredCopy.transform.forward), reflectionMatrix.MultiplyVector(mirroredCopy.transform.up));
-
 		CSG.Model tempModel = new CSG.Model(initialMesh, transform);
 		tempModel.ConvertToWorld();
 
@@ -152,7 +165,6 @@ public class ClippableObject : MonoBehaviour
 
 	public virtual void ApplyIntersectMirroredInPlace(Matrix4x4 reflectionMatrix)
 	{
-		Debug.Log(gameObject);
 		GetComponent<MeshFilter>().mesh = stagedModel.ToMesh(transform.worldToLocalMatrix * reflectionMatrix);
 		GetComponent<MeshCollider>().sharedMesh = GetComponent<MeshFilter>().mesh;
 	}
@@ -161,7 +173,7 @@ public class ClippableObject : MonoBehaviour
 	{
 		isClipped = false;
 
-		if (worldType == World.Type.Real)
+        if (worldType == World.Type.Real)
 		{
 			meshFilter.mesh = initialMesh;
 		}
@@ -169,17 +181,18 @@ public class ClippableObject : MonoBehaviour
 		{
 			meshFilter.mesh = initialMesh;
 			gameObject.layer = oldLayer;
-
-			if (uncutCopy)
+            
+            if (uncutCopy)
 			{
-				uncutCopy.GetComponent<ClippableObject>().Revert();
+                uncutCopy.GetComponent<ClippableObject>().Revert();
 				DestroyImmediate(uncutCopy);
 			}
-			if (mirroredCopy)
-			{
-				DestroyImmediate(mirroredCopy);
-			}
-		}
+            if (mirroredCopy)
+            {
+                DestroyImmediate(mirroredCopy);
+            }
+
+        }
 
 		if (this.TryComponent(out MeshCollider col))
 			col.sharedMesh = meshFilter.mesh;

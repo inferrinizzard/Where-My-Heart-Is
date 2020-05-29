@@ -41,7 +41,6 @@ public class EntangledClippable : ClippableObject
         {
             if (window.IntersectsBounds(clippable, mirrorBound, mirrorBoundModel))
             {
-                Debug.Log(clippable.gameObject);
                 clippable.GetComponent<ClippableObject>().StageIntersectMirroredInPlace(mirrorBoundModel);
             }
         }

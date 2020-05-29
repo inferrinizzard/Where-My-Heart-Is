@@ -37,6 +37,7 @@ public class Window : MonoBehaviour
 	public event Action OnBeginCut;
 	public event Action<ClippableObject> OnClippableCut;
 	public event Action OnCompleteCut;
+	public static Vector3 cutOrderAnchor;
 
 	void Start()
 	{
@@ -63,15 +64,17 @@ public class Window : MonoBehaviour
 		}
 		cutInProgress = true;
 		world.ResetCut();
+		cutOrderAnchor = Player.Instance.transform.position - Player.Instance.cam.transform.forward * fovDistance;
 		fieldOfViewModel = new CSG.Model(fieldOfView.GetComponent<MeshFilter>().mesh, fieldOfView.transform);
 		fieldOfViewModel.ConvertToWorld();
-		StartCoroutine(ApplyCutCoroutine(1f / ((float) framerateTarget), new Bounds(fieldOfView.GetComponent<MeshRenderer>().bounds.center, fieldOfView.GetComponent<MeshRenderer>().bounds.size), fieldOfViewModel));
+		StartCoroutine(ApplyCutCoroutine(1f / framerateTarget, new Bounds(fieldOfView.GetComponent<MeshRenderer>().bounds.center, fieldOfView.GetComponent<MeshRenderer>().bounds.size), fieldOfViewModel));
 		return true;
 	}
 
 	private IEnumerator ApplyCutCoroutine(float frameLength, Bounds bounds, CSG.Model boundModel)
 	{
 		float startTime = Time.realtimeSinceStartup;
+		//float monitorStartTime = startTime;
 		CSG.Model mirrorBoundModel = null;
 		Matrix4x4 reflectionMatrix = Matrix4x4.identity;
 
@@ -94,7 +97,6 @@ public class Window : MonoBehaviour
 			foreach (EntangledClippable entangled in world.EntangledClippables)
 			{
 				entangled.ClipMirrored(this, mirrorBound, mirrorBoundModel, reflectionMatrix);
-				// Debug.Log(entangled.gameObject);
 			}
 
 			foreach (ClippableObject clippable in world.heartWorldContainer.GetComponentsInChildren<ClippableObject>())
@@ -102,19 +104,17 @@ public class Window : MonoBehaviour
 				if (IntersectsBounds(clippable, mirrorBound, mirrorBoundModel) && !(clippable is Mirror))
 				{
 					clippable.GetComponent<ClippableObject>().IntersectMirrored(mirrorBoundModel, reflectionMatrix);
-					// Debug.Log(clippable.gameObject);
 				}
 			}
 		}
 		else mirrorCutApplied = false;
 
-		// cut away the stuff behind the mirror
+		// subtract the bound from all real objects and intersect it with with all heart objects
 		foreach (ClippableObject clippable in world.Clippables)
 		{
-			// TODO: could we just check if they were already clipped?
-			// since things that are clipped have already intersected the fovmodel, so we've already checked for this
 			if (IntersectsBounds(clippable, bounds, fieldOfViewModel))
 			{
+				// Debug.Log(clippable);
 				clippable.ClipWith(boundModel);
 				OnClippableCut?.Invoke(clippable);
 			}
@@ -126,17 +126,19 @@ public class Window : MonoBehaviour
 			}
 		}
 
+		// subtract the reflected mirror bound from all 
 		if (mirrorCutApplied)
 		{
 			//reflect csg model
 			mirrorBoundModel.ApplyTransformation(reflectionMatrix);
+			mirrorBoundModel.FlipNormals();
+			mirrorBoundModel.RecalculateNormals();
 
-			foreach (ClippableObject clippable in world.Clippables)
+			foreach (ClippableObject clippable in world.heartClippables)
 			{
-				if (clippable.IntersectsBound(mirrorBoundModel))
+				if (clippable.isClipped)
 				{
-					// Debug.Log(clippable.gameObject);
-					clippable.Subtract(mirrorBoundModel, false);
+					clippable.SubtractUncached(mirrorBoundModel);
 					OnClippableCut?.Invoke(clippable);
 				}
 
@@ -148,6 +150,7 @@ public class Window : MonoBehaviour
 			}
 		}
 
+		//Debug.Log(Time.realtimeSinceStartup - monitorStartTime);
 		cutInProgress = false;
 		OnCompleteCut?.Invoke();
 	}
@@ -201,9 +204,8 @@ public class Window : MonoBehaviour
 			vertex.value = GetComponent<Player>().cam.transform.position + (vertex.value - GetComponent<Player>().cam.transform.position).normalized * fovDistance;
 		});
 
-		if (Vector3.Dot(transform.forward, Vector3.Cross(model.vertices[0].value - model.vertices[1].value, model.vertices[0].value - model.vertices[1].value)) <= 0)
+		if (Vector3.Dot(transform.forward, model.triangles[0].CalculateNormal()) < 0)
 		{
-			//Debug.Log(Vector3.Dot(transform.forward, Vector3.Cross(model.vertices[0].value - model.vertices[1].value, model.vertices[0].value - model.vertices[1].value)));
 			model.FlipNormals();
 		}
 		// flip their normals

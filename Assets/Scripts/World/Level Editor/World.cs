@@ -16,22 +16,16 @@ public class World : MonoBehaviour
 
 	public List<ClippableObject> heartClippables, realClippables, mirrorClippables;
 
-	[HideInInspector] public List<EntangledClippable> EntangledClippables
+	public IEnumerable<EntangledClippable> EntangledClippables
 	{
-		get
-		{
-			return entangledClippables.OrderBy(clippable => (clippable.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList();
-		}
+		get => entangledClippables.OrderBy(clippable => (clippable.transform.position - Window.cutOrderAnchor).sqrMagnitude);
 	}
 
 	private List<EntangledClippable> entangledClippables;
 
-	[HideInInspector] public List<ClippableObject> Clippables
+	public IEnumerable<ClippableObject> Clippables
 	{
-		get
-		{
-			return clippables.OrderBy(clippable => (clippable.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList();
-		}
+		get => clippables.OrderBy(clippable => (clippable.transform.position - Window.cutOrderAnchor).sqrMagnitude);
 	}
 
 	private List<ClippableObject> clippables;
@@ -114,7 +108,6 @@ public class World : MonoBehaviour
 		if (clippable.worldType == World.Type.Real)
 		{
 			realClippables.Remove(clippable);
-
 		}
 		else
 		{
