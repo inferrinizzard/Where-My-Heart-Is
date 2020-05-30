@@ -12,14 +12,19 @@ public class Gate : MonoBehaviour
 	[FMODUnity.EventRef] public string GateOpenEvent;
 	[SerializeField] GameObject crackedLock = default;
 	public List<LockPair> locks = new List<LockPair>();
+
 	public void AddLock(Lock l)
 	{
 		var worldType = l.GetComponent<ClippableObject>()?.worldType;
-		var existingPair = locks.Find(pair =>
-			(pair.heartLock && (pair.heartLock.hash == l.hash || (pair.heartLock.transform.position - l.transform.position).sqrMagnitude < .001)) ||
-			(pair.realLock && (pair.realLock.hash == l.hash || (pair.realLock.transform.position - l.transform.position).sqrMagnitude < .001))
-		);
-		if (existingPair != null)
+		/*var existingPair = locks.Find(pair =>
+			(pair.heartLock && (pair.heartLock.hash == l.hash || (pair.heartLock.transform.position - l.transform.position).sqrMagnitude < unlockRadius * unlockRadius)) ||
+			(pair.realLock && (pair.realLock.hash == l.hash || (pair.realLock.transform.position - l.transform.position).sqrMagnitude < unlockRadius * unlockRadius))
+		);*/
+        var existingPair = locks.Find(pair =>
+            (pair.heartLock && (pair.heartLock.hash == l.hash || (pair.heartLock.transform.position - l.transform.position).sqrMagnitude < unlockRadius * unlockRadius)) ||
+            (pair.realLock && (pair.realLock.hash == l.hash || (pair.realLock.transform.position - l.transform.position).sqrMagnitude < unlockRadius * unlockRadius))
+        );
+        if (existingPair != null)
 		{
 			if (worldType == World.Type.Real)
 				existingPair.realLock = l;
