@@ -32,7 +32,6 @@ public class Bird : MonoBehaviour
 
 		curves = curveHolder?.GetComponentsInChildren<Curve>().ToList() ?? new List<Curve>();
 		cursors = curveHolder?.GetComponentsInChildren<CurveCursor>().ToList() ?? new List<CurveCursor>();
-		curves.ForEach(c => Debug.Log(c.Points.AsString()));
 		cursors.ForEach(cursor =>
 		{
 			var trs = cursor.GetComponent<CurveTRS>();
@@ -57,14 +56,14 @@ public class Bird : MonoBehaviour
 	void Update()
 	{
 		// CheckCurvePoints();
-		if (Input.GetMouseButtonDown(0))
-			StartNextCurve();
+		//if (Input.GetMouseButtonDown(0))
+			//StartNextCurve();
 
 		if (!flying)
 			anim.SetFloat("IdleBlend", Mathf.PingPong(Time.time, 1));
-		if (curveIndex < curves.Count - 1)
+		if (curveIndex < curves.Count)
 			if (transform.position == curves[curveIndex].Points.Last().PositionWorld)
-				ReachedEnd();
+				ReachedEnd(); 
 	}
 
 	void ReachedEnd()

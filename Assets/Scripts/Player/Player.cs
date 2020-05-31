@@ -267,7 +267,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-		if (ValidGroundSlope() && IsGrounded()) body.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+		if (ValidGroundSlope() && IsGrounded()) body.velocity = new Vector3(body.velocity.x, jumpForce, body.velocity.z);
 	}
 
 	/// <summary> Increases gravity while falling. </summary>

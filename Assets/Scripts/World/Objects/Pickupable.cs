@@ -8,6 +8,8 @@ public class Pickupable : InteractableObject
 {
 	[HideInInspector] public Transform oldParent;
 
+	public bool birdTrigger;
+
 	protected Vector3 initialPosition;
 	protected Quaternion initialRotation;
 	public bool dissolves = false;
@@ -53,7 +55,7 @@ public class Pickupable : InteractableObject
 			StartCoroutine(DissolveOnDrop());
 	}
 
-	public void PickUp()
+	public virtual void PickUp()
 	{
 		initialPosition = transform.position;
 		initialRotation = transform.rotation;
@@ -64,6 +66,11 @@ public class Pickupable : InteractableObject
 		oldParent = transform.parent;
 		transform.parent = player.heldObjectLocation; // set the new parent to the hold object location object
 		transform.localPosition = Vector3.zero; // set the position to local zero to match the position of the hold object location target
+
+		if(birdTrigger)
+		{
+			GameObject.Find("/Bird").GetComponent<Bird>().StartNextCurve();
+		}
 	}
 
 	public void PutDown()
