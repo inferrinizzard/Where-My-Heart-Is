@@ -83,6 +83,7 @@ public class Gate : MonoBehaviour
 
 	IEnumerator OpenGate(float angle, float time)
 	{
+		angle = -angle;
 		var leftStart = leftDoor.eulerAngles;
 		var rightStart = rightDoor.eulerAngles;
 
