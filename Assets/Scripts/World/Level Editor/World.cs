@@ -1,0 +1,174 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
+using UnityEngine;
+
+public class World : MonoBehaviour
+{
+	public static World Instance;
+	public enum Type { Real, Heart }
+
+	public Transform heartWorldContainer;
+	public Transform realWorldContainer;
+	public Transform entangledWorldContainer;
+	public Transform mirrorParent;
+
+	public List<ClippableObject> heartClippables, realClippables, mirrorClippables;
+
+	public IEnumerable<EntangledClippable> EntangledClippables
+	{
+		get => entangledClippables.OrderBy(clippable => (clippable.transform.position - Window.cutOrderAnchor).sqrMagnitude);
+	}
+
+	private List<EntangledClippable> entangledClippables;
+
+	public IEnumerable<ClippableObject> Clippables
+	{
+		get => clippables.OrderBy(clippable => (clippable.transform.position - Window.cutOrderAnchor).sqrMagnitude);
+	}
+
+	private List<ClippableObject> clippables;
+
+	public ClippableObject[] GetEntangledObjects()
+	{
+		return entangledWorldContainer.GetComponentsInChildren<EntangledClippable>();
+	}
+
+	public void Awake() => Instance = this;
+
+	public void Start()
+	{
+		heartWorldContainer = transform.Find("Heart World");
+		realWorldContainer = transform.Find("Real World");
+		entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform; // TODO: decouple EntangledObjectManager
+		mirrorParent = new GameObject("Mirror Parent").transform;
+		mirrorParent.parent = realWorldContainer;
+
+		ConfigureWorld("Heart", heartWorldContainer);
+		ConfigureWorld("Real", realWorldContainer);
+
+		heartClippables = heartWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => !(clippable is Mirror)).ToList();
+		realClippables = realWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => !(clippable is Mirror)).ToList();
+
+		// get the mirror. Futureproofed in case we have more than one mirror or mirrors in both worlds
+		mirrorClippables = realWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => clippable is Mirror).ToList();
+		mirrorClippables.AddRange(heartWorldContainer.GetComponentsInChildren<ClippableObject>().Where(clippable => clippable is Mirror).ToList());
+
+		entangledClippables = entangledWorldContainer.GetComponentsInChildren<EntangledClippable>().ToList();
+		foreach (EntangledClippable entangled in entangledClippables)
+		{
+			heartClippables.AddRange(entangled.heartObject.GetComponentsInChildren<ClippableObject>());
+			realClippables.AddRange(entangled.realObject.GetComponentsInChildren<ClippableObject>());
+
+			foreach (ClippableObject clippable in entangled.heartObject.GetComponentsInChildren<ClippableObject>())
+			{
+				clippable.worldType = World.Type.Heart;
+			}
+
+			foreach (ClippableObject clippable in entangled.realObject.GetComponentsInChildren<ClippableObject>())
+			{
+				clippable.worldType = World.Type.Real;
+			}
+		}
+
+		clippables = new List<ClippableObject>();
+		clippables.AddRange(realClippables);
+		clippables.AddRange(heartClippables);
+	}
+
+	/*public void Initialize()
+	{
+	    heartWorldContainer = transform.Find("Heart World");
+	    realWorldContainer = transform.Find("Real World");
+	    entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform;
+
+	    ConfigureWorld("Heart", heartWorldContainer);
+	    ConfigureWorld("Real", realWorldContainer);
+	}*/
+
+	/*/// <summary> configures children and related clippables, interactables </summary>
+	public void OnExitScene()
+	{
+        Initialize();
+	}*/
+
+	/*/// <summary> removes refs and deletes current to pass singleton to next world </summary>
+	public void OnEnterScene()
+	{
+		heartWorldContainer = null;
+		realWorldContainer = null;
+		entangledWorldContainer = null;
+		instance = null;
+		Destroy(gameObject);
+	}*/
+
+	public void RemoveClippable(ClippableObject clippable)
+	{
+		if (clippable.worldType == World.Type.Real)
+		{
+			realClippables.Remove(clippable);
+		}
+		else
+		{
+			heartClippables.Remove(clippable);
+		}
+		clippables.Remove(clippable);
+	}
+
+	private void ConfigureWorld(string layer, Transform worldContainer)
+	{
+		foreach (MeshFilter meshFilter in worldContainer.GetComponentsInChildren<MeshFilter>())
+		{
+			meshFilter.gameObject.layer = LayerMask.NameToLayer(layer);
+			if (!meshFilter.TryComponent(out MeshRenderer meshRenderer)) meshRenderer = meshFilter.gameObject.AddComponent<MeshRenderer>();
+			if (!meshFilter.TryComponent<MeshCollider>()) meshFilter.gameObject.AddComponent<MeshCollider>();
+			ClippableObject clippableObject = meshFilter.TryComponent<ClippableObject>() ? meshFilter.GetComponent<ClippableObject>() : meshFilter.gameObject.AddComponent<ClippableObject>();
+			clippableObject.worldType = layer == "Heart" ? World.Type.Heart : World.Type.Real;
+		}
+
+		// foreach (Transform child in worldContainer.transform)
+		// {
+		// 	// Debug.Log(child);
+		// 	if (child.TryComponent<MeshFilter>())
+		// 	{
+		// 		child.gameObject.layer = LayerMask.NameToLayer(layer);
+		// 		if (!child.TryComponent(out MeshRenderer mr)) mr = child.gameObject.AddComponent<MeshRenderer>();
+		// 		if (!child.TryComponent<MeshCollider>()) child.gameObject.AddComponent<MeshCollider>();
+		// 		if (!child.TryComponent<ClippableObject>()) child.gameObject.AddComponent<ClippableObject>();
+
+		// 		if (layer == "Heart")
+		// 			mr.material.SetInt("_Dissolve", 1);
+		// 	}
+
+		// 	ConfigureWorld(layer, child); // do this recursively to hit everything in the given world
+		// }
+	}
+
+	public void ResetCut()
+	{
+		foreach (ClippableObject clippable in heartClippables)
+			if (clippable.isClipped) clippable.Revert();
+
+		foreach (ClippableObject clippable in realClippables)
+			if (clippable.isClipped) clippable.Revert();
+
+		foreach (EntangledClippable entangled in GetComponentsInChildren<EntangledClippable>())
+			if (entangled.isClipped) entangled.Revert();
+
+		foreach (Mirror mirror in mirrorClippables)
+			if (mirror.isClipped) mirror.Revert();
+
+		// foreach (Transform child in heartWorldContainer)
+		// 	foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
+		// 		if (obj.isClipped) obj.Revert();
+
+		// foreach (Transform child in realWorldContainer)
+		// 	foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
+		// 		if (obj.isClipped) obj.Revert();
+
+		// foreach (Transform child in entangledWorldContainer)
+		// 	foreach (ClippableObject obj in child.GetComponentsInChildren<ClippableObject>())
+		// 		if (obj.isClipped) obj.Revert();
+	}
+}
