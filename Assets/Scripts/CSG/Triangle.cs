@@ -20,6 +20,17 @@ namespace CSG
 
 		public List<Intersection> internalIntersections;
 
+        public Vector3 CachedNormal
+        {
+            get
+            {
+                if (_cachedNormal == Vector3.zero) CalculateNormal();
+                return _cachedNormal;
+            }
+        }
+
+        private Vector3 _cachedNormal;
+
 		/// <summary>
 		/// Creates a Triangle with the three given vertices
 		/// </summary>
@@ -32,7 +43,8 @@ namespace CSG
 			vertices.ForEach(v => v.triangles.Add(this));
 			edges = new List<Edge>();
 			internalIntersections = new List<Intersection>();
-		}
+            _cachedNormal = Vector3.zero;
+        }
 
 		public List<Vertex> GetPerimeter()
 		{
@@ -43,9 +55,9 @@ namespace CSG
 				perimeter.Add(vertices[i]);
 				List<Vertex> edgeIntersections = edges[i].intersections.Select(intersection => intersection.vertex).ToList();
 
-				edgeIntersections.Sort((a, b) => Math.Sign(Vector3.Distance(a.value, vertices[i].value) - Vector3.Distance(b.value, vertices[i].value)));
+                edgeIntersections.Sort((a, b) => Math.Sign(Vector3.SqrMagnitude(a.value - vertices[i].value) - Vector3.SqrMagnitude(b.value - vertices[i].value)));
 
-				perimeter.AddRange(edgeIntersections);
+                perimeter.AddRange(edgeIntersections);
 			}
 
 			return perimeter;
@@ -74,9 +86,10 @@ namespace CSG
 		/// <returns>The calculated normal Vector3</returns>
 		public Vector3 CalculateNormal()
 		{
-			//1>3 X 1>2
-			return Vector3.Cross(vertices[2].value - vertices[0].value, vertices[1].value - vertices[0].value).normalized;
-		}
+            //1>2 X 1>3
+            _cachedNormal = Vector3.Cross(vertices[1].value - vertices[0].value, vertices[2].value - vertices[0].value).normalized;
+            return _cachedNormal;
+        }
 
 		/// <summary>
 		/// Flips the order of the vertex list in order to flip the triangle's facing
@@ -84,6 +97,10 @@ namespace CSG
 		public void FlipNormal()
 		{
 			vertices.Reverse();
+            foreach(Edge edge in edges)
+            {
+                edge.vertices.Reverse();
+            }
 		}
 
 		/// <summary>

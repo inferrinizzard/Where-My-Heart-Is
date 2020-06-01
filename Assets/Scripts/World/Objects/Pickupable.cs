@@ -8,6 +8,8 @@ public class Pickupable : InteractableObject
 {
 	[HideInInspector] public Transform oldParent;
 
+	public bool birdTrigger;
+
 	protected Vector3 initialPosition;
 	protected Quaternion initialRotation;
 	public bool dissolves = false;
@@ -53,15 +55,22 @@ public class Pickupable : InteractableObject
 			StartCoroutine(DissolveOnDrop());
 	}
 
-	public void PickUp()
+	public virtual void PickUp()
 	{
 		initialPosition = transform.position;
 		initialRotation = transform.rotation;
 
 		(col as MeshCollider).convex = true;
+		col.isTrigger = true;
+		// col.enabled = false;
 		oldParent = transform.parent;
 		transform.parent = player.heldObjectLocation; // set the new parent to the hold object location object
 		transform.localPosition = Vector3.zero; // set the position to local zero to match the position of the hold object location target
+
+		if(birdTrigger)
+		{
+			GameObject.Find("/Bird").GetComponent<Bird>().StartNextCurve();
+		}
 	}
 
 	public void PutDown()
@@ -70,7 +79,12 @@ public class Pickupable : InteractableObject
 		transform.rotation = initialRotation;
 
 		transform.parent = oldParent;
+		col.isTrigger = false;
 		(col as MeshCollider).convex = false;
+		// col.enabled = true;
+		// if (Physics.Raycast(transform.position, player.transform.position - transform.position, out RaycastHit hit, (player.transform.position - transform.position).magnitude + 1))
+		// 	if (hit.transform != player.transform)
+		// 		Debug.Log(hit.transform.gameObject);
 	}
 
 	public IEnumerator DissolveOnDrop(float time = .25f)
@@ -79,7 +93,6 @@ public class Pickupable : InteractableObject
 		col.enabled = false;
 		Material mat = GetComponent<MeshRenderer>().material;
 		mat.EnableKeyword("DISSOLVE_MANUAL");
-		int ManualDissolveID = Shader.PropertyToID("_ManualDissolve");
 
 		float start = Time.time;
 		bool inProgress = true;
@@ -88,12 +101,12 @@ public class Pickupable : InteractableObject
 		{
 			yield return null;
 			float step = Time.time - start;
-			mat.SetFloat(ManualDissolveID, step / time);
+			mat.SetFloat(ShaderID._ManualDissolve, step / time);
 			if (step > time)
 				inProgress = false;
 		}
 		mat.DisableKeyword("DISSOLVE_MANUAL");
-		mat.SetFloat(ManualDissolveID, 1);
+		mat.SetFloat(ShaderID._ManualDissolve, 1);
 
 		PutDown();
 

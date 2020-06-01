@@ -17,13 +17,10 @@ public class PageFlip : MonoBehaviour
 
 	public IEnumerator Flip(Texture texture)
 	{
-		int posID = Shader.PropertyToID("_BottomLeft");
-		int thetaID = Shader.PropertyToID("_Theta"), rhoID = Shader.PropertyToID("_Rho");
-
 		var renderer = GetComponent<Renderer>();
 		var page = renderer.sharedMaterial;
-		page.SetFloat(thetaID, 1);
-		page.SetFloat(rhoID, 0);
+		page.SetFloat(ShaderID._Theta, 1);
+		page.SetFloat(ShaderID._Rho, 0);
 
 		page.mainTexture = texture;
 		gameObject.SetActive(true);
@@ -35,9 +32,9 @@ public class PageFlip : MonoBehaviour
 		for (var(start, step) = (Time.time, 0f); step < time; step = Time.time - start)
 		{
 			yield return null;
-			page.SetVector(posID, renderer.bounds.min);
-			page.SetFloat(thetaID, (1 - EaseMethods.CubicEaseOut(step / time, 0, 1, 1)) * .8f + .2f);
-			page.SetFloat(rhoID, EaseMethods.CubicEaseIn(step / time, 0, 1, 1) / 4f);
+			page.SetVector(ShaderID._BottomLeft, renderer.bounds.min);
+			page.SetFloat(ShaderID._Theta, (1 - EaseMethods.CubicEaseOut(step / time, 0, 1, 1)) * .8f + .2f);
+			page.SetFloat(ShaderID._Rho, EaseMethods.CubicEaseIn(step / time, 0, 1, 1) / 4f);
 
 		}
 		gameObject.SetActive(false);

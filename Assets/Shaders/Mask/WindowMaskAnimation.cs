@@ -22,19 +22,18 @@ public class WindowMaskAnimation : MonoBehaviour
 	[Header("Misc")]
 	public float scrollRate;
 
-	private bool openingWindow;
+	[HideInInspector] public bool openingWindow;
 	private float currentBreath;
 	private float rampStartTime;
 
 	private ApplyMask applyMask;
 	[HideInInspector] public RenderTexture rampResult;
 
-	int cutoffID = Shader.PropertyToID("_Cutoff"), rampTexID = Shader.PropertyToID("_RampTex");
-
 	void Start()
 	{
 		openMat = new Material(Shader.Find("Mask/OpenWindowRamp"));
-		openMat.SetTexture(rampTexID, Resources.Load<Texture>("Illustration3"));
+		// openMat.SetTexture(ShaderID._RampTex, Resources.Load<Texture>("Illustration3"));
+		openMat.SetTexture(ShaderID._RampTex, Resources.Load<Texture>("Untitled-1"));
 		rampResult = new RenderTexture(Screen.width, Screen.height, 8, RenderTextureFormat.Default);
 		breathIn = false;
 		applyMask = GetComponent<ApplyMask>();
@@ -45,7 +44,7 @@ public class WindowMaskAnimation : MonoBehaviour
 	{
 		openingWindow = true;
 		rampStartTime = Time.time + rampTimeOffset;
-		openMat.SetTextureOffset(rampTexID, new Vector2(Random.value, Random.value));
+		// openMat.SetTextureOffset(ShaderID._RampTex, new Vector2(Random.value, Random.value));
 	}
 
 	private void OnPreRender()
@@ -58,7 +57,7 @@ public class WindowMaskAnimation : MonoBehaviour
 				{
 
 					//openMat.SetFloat(cutoffID, ConcreteEaseMethods.QuadEaseOut(Time.time - rampStartTime, 0, rampTarget, rampLength));
-					openMat.SetFloat(cutoffID, rampCurve.Evaluate(Time.time - rampStartTime / rampLength) * rampTarget);
+					openMat.SetFloat(ShaderID._MaskCutoff, rampCurve.Evaluate(Time.time - rampStartTime / rampLength) * rampTarget);
 					Graphics.Blit(applyMask.mask, rampResult, openMat);
 					applyMask.SetMask(rampResult);
 				}
@@ -78,9 +77,9 @@ public class WindowMaskAnimation : MonoBehaviour
 				breathIn = !breathIn;
 			}
 
-			openMat.SetTextureOffset(rampTexID, openMat.GetTextureOffset(rampTexID) + Vector2.right * scrollRate * Time.deltaTime);
+			// openMat.SetTextureOffset(ShaderID._RampTex, openMat.GetTextureOffset(ShaderID._RampTex) + Vector2.right * scrollRate * Time.deltaTime);
 
-			openMat.SetFloat(cutoffID, currentBreath);
+			openMat.SetFloat(ShaderID._MaskCutoff, currentBreath);
 			Graphics.Blit(applyMask.mask, rampResult, openMat);
 			applyMask.SetMask(rampResult);
 		}

@@ -240,7 +240,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5977050091189475331}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 8face2f4276978643997166df69a8bce, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
@@ -254,11 +254,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5407968008035840465}
     m_Modifications:
-    - target: {fileID: 3177498603613522795, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
-        type: 3}
-      propertyPath: m_Name
-      value: Main Camera
-      objectReference: {fileID: 0}
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -314,11 +309,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8583276254621258113, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
+        type: 3}
+      propertyPath: bobbingAmount
+      value: 0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 3177498603613522797, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
       propertyPath: waveController
       value: 
-      objectReference: {fileID: 2950740718295748212}
+      objectReference: {fileID: 0}
     - target: {fileID: 3177498603613522798, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
       propertyPath: blackSkybox
@@ -332,18 +332,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 7427641284244191036}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2950740718295748212 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5757688750421981512, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
-    type: 3}
-  m_PrefabInstance: {fileID: 7427641284244191036}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5f860fa0d5f69d4a9596cca24bc1e54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6145140127035620908 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3626422470985271568, guid: 31ce0a8a718ba094b9f6c937e3c9676c,

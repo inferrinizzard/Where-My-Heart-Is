@@ -1,5 +1,5 @@
 // sampler2D _BirdMask;
-// sampler3D _GlowMap;
+// sampler2D _GlowMap;
 sampler2D _BirdBackground;
 
 int CalculateBird(inout float4 output, float2 uv, float mask) {

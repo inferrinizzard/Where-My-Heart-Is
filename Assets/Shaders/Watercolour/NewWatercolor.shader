@@ -1,7 +1,6 @@
 ﻿Shader "Custom/NewWatercolor"
 {
-	Properties
-	{
+	Properties {
 		[Header(Color and Palette)]
 		_ColorX ("Color palette X", Range(0, 0.99)) = 0
 		_ColorY ("Color palette Y", Range(0, 0.99)) = 0
@@ -19,13 +18,13 @@
 		_WatercolorStrength ("Watercolor Strength", Range(0, 5)) = 0.5
 		_Radius ("Radius", Range(0, 0.5)) = 0.1
 	}
-		SubShader
-	{
+
+	SubShader {
 		Tags { "RenderType" = "Opaque" }
 		LOD 100
 
-		Pass
-		{
+		ZWrite On
+		Pass {
 			CGPROGRAM
 			// Upgrade NOTE: excluded shader from OpenGL ES 2.0 because it uses non-square matrices
 			#pragma exclude_renderers gles
@@ -117,11 +116,12 @@
 				
 				// the amount of paper vs paint is determined by the noise sample, the lighting, and the paper texture
 				float t = noiseSample * lighting * lighting * (_WatercolorStrength + paper.r);
-				t = saturate(max(0.5, t) + 0.45) - 0.25;
+				t = saturate(max(0.5, t) + 0.35) - 0.15;
 
 				return lerp(paper, paint, t);
 			}
-		ENDCG
+			ENDCG
 		}
-    }
+	}
+	Fallback "Diffuse" 
 }

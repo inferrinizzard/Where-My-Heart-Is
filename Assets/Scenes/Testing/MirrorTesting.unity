@@ -322,7 +322,6 @@ MonoBehaviour:
   isClipped: 0
   uncutCopy: {fileID: 0}
   maskShader: {fileID: 4800000, guid: c26889c33fef9234c9d79ce663593d15, type: 3}
-  mainCamera: {fileID: 7294522663246278167}
   reflectionMatrix:
     e00: 0
     e01: 0
@@ -830,7 +829,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b9a29aedf0d36e4e9eb463a6402aec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heartWorldContainer: {fileID: 0}
+  heartWorldContainer: {fileID: 4538974044078226971}
   realWorldContainer: {fileID: 4538974044078226971}
   entangledWorldContainer: {fileID: 7515926175239197052}
   heartClippables: []
@@ -970,14 +969,18 @@ PrefabInstance:
       propertyPath: rampTarget
       value: 2.4
       objectReference: {fileID: 0}
+    - target: {fileID: 1155635245598926525, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: bobbingSpeed
+      value: 1.67
+      objectReference: {fileID: 0}
+    - target: {fileID: 1155635245598926525, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: bobbingAmount
+      value: 0.01
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce2e34029942daa4c845cd2ceec80c14, type: 3}
---- !u!20 &7294522663246278167 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 5407968009125951094, guid: ce2e34029942daa4c845cd2ceec80c14,
-    type: 3}
-  m_PrefabInstance: {fileID: 7294522663246278166}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &7294522663246278168 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6145140127035620908, guid: ce2e34029942daa4c845cd2ceec80c14,

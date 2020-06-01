@@ -16,7 +16,7 @@ public class IntroController : MonoBehaviour
 	void Start()
 	{
 		player = Player.Instance;
-		trigger.OnPlayerEnter += birdAnim.StartNextCurve;
+		//trigger.OnPlayerEnter += birdAnim.StartNextCurve;
 	}
 
 	public void SetCanvas(CanvasObject canvas)

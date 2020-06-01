@@ -54,7 +54,11 @@ namespace CSG
 		/// <returns>The created triangles</returns>
 		public List<Triangle> TriangulateEarMethod()
 		{
-			vertices.ForEach(vertex => vertex.Draw(0.5f, new Vector3(Random.value, Random.value, 1).normalized, Color.magenta));
+            /*Vector3 center = Vector3.zero;
+            vertices.ForEach(vertex => center += vertex.value);
+            center /= vertices.Count;
+            Debug.DrawLine(center, center + GetNormal(), Color.blue, 3f);*/
+
 			List<Triangle> triangles = new List<Triangle>();
 			List<Vertex> currentVertices = new List<Vertex>(vertices);
 			Triangle nextEar;
@@ -237,7 +241,7 @@ namespace CSG
 		/// <returns>The normal vector</returns>
 		public Vector3 GetNormal()
 		{
-			return Vector3.Cross(vertices[0].value - vertices[1].value, vertices[2].value - vertices[1].value).normalized;
+			return Vector3.Cross(vertices[2].value - vertices[1].value, vertices[0].value - vertices[1].value).normalized;
 		}
 
 		/// <summary>
@@ -255,11 +259,22 @@ namespace CSG
 		/// <param name="toMatch">The edge loop whose normal should be matched</param>
 		public void MatchNormal(EdgeLoop toMatch)
 		{
-			if (Vector3.Distance(this.GetNormal(), toMatch.GetNormal()) > 0.0001)
-			{
-				this.FlipNormal();
-			}
+            // delegate to version that takes a vector3 representing the normal
+            MatchNormal(toMatch.GetNormal());
 		}
+
+        /// <summary>
+		/// Determines whether this edge loop's normal matches the given normal, and flips this edge
+		/// loop's normal if they don't match
+		/// </summary>
+		/// <param name="toMatch">A Vector representing the normal to be matched</param>
+        public void MatchNormal(Vector3 toMatch)
+        {
+            if (Vector3.SqrMagnitude(this.GetNormal() - toMatch) > 0.0001)
+            {
+                this.FlipNormal();
+            }
+        }
 
 		public override string ToString() =>
 			$"{base.ToString()}::{string.Join("::", vertices.Select(v => (v.value.ToString("F4") + " (" + (v.fromIntersection) + ")")))}";
