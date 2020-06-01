@@ -81,7 +81,7 @@ Shader "Screen/Main"
 
 				#if MASK
 					output = mask > .5 ? 
-					lerp(tex2D(_MainTex, i.uv), tex2D(_Heart, i.uv), mask)
+					lerp(tex2D(_MainTex, i.uv), tex2D(_Heart, i.uv), mask * 2 - 1)
 					// mask * tex2D(_Heart, i.uv) + (1 - mask) * tex2D(_MainTex, i.uv) 
 					: tex2D(_MainTex, i.uv);
 					//output = mask * tex2D(_Heart, i.uv) + (1 - mask) * tex2D(_MainTex, i.uv);

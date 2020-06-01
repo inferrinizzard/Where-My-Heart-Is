@@ -32,7 +32,8 @@ public class WindowMaskAnimation : MonoBehaviour
 	void Start()
 	{
 		openMat = new Material(Shader.Find("Mask/OpenWindowRamp"));
-		openMat.SetTexture(ShaderID._RampTex, Resources.Load<Texture>("Illustration3"));
+		// openMat.SetTexture(ShaderID._RampTex, Resources.Load<Texture>("Illustration3"));
+		openMat.SetTexture(ShaderID._RampTex, Resources.Load<Texture>("Untitled-1"));
 		rampResult = new RenderTexture(Screen.width, Screen.height, 8, RenderTextureFormat.Default);
 		breathIn = false;
 		applyMask = GetComponent<ApplyMask>();
@@ -43,7 +44,7 @@ public class WindowMaskAnimation : MonoBehaviour
 	{
 		openingWindow = true;
 		rampStartTime = Time.time + rampTimeOffset;
-		openMat.SetTextureOffset(ShaderID._RampTex, new Vector2(Random.value, Random.value));
+		// openMat.SetTextureOffset(ShaderID._RampTex, new Vector2(Random.value, Random.value));
 	}
 
 	private void OnPreRender()
@@ -76,7 +77,7 @@ public class WindowMaskAnimation : MonoBehaviour
 				breathIn = !breathIn;
 			}
 
-			openMat.SetTextureOffset(ShaderID._RampTex, openMat.GetTextureOffset(ShaderID._RampTex) + Vector2.right * scrollRate * Time.deltaTime);
+			// openMat.SetTextureOffset(ShaderID._RampTex, openMat.GetTextureOffset(ShaderID._RampTex) + Vector2.right * scrollRate * Time.deltaTime);
 
 			openMat.SetFloat(ShaderID._MaskCutoff, currentBreath);
 			Graphics.Blit(applyMask.mask, rampResult, openMat);
