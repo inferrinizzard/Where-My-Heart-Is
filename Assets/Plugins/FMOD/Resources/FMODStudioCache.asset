@@ -1,0 +1,633 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8704000640867066195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Bird/Cage Bird
+  m_EditorClassIdentifier: 
+  Path: event:/Bird/Cage Bird
+  guid: 99042cb35329a3468bcbbaa76cf3f260
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 4500
+--- !u!114 &-8474492217881932240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Music/Autumn Main Theme
+  m_EditorClassIdentifier: 
+  Path: event:/Music/Autumn Main Theme
+  guid: 2849c19c2d28904487a2a98a0ca0976d
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 30428
+--- !u!114 &-7898977037878009919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Fly/Flying
+  m_EditorClassIdentifier: 
+  Name: Flying
+  Min: 0
+  Max: 1
+  Default: 0
+  Exists: 1
+--- !u!114 &-7414175152458946515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Walking - V2/Surface
+  m_EditorClassIdentifier: 
+  Name: Surface
+  Min: 0
+  Max: 5
+  Default: 0
+  Exists: 1
+--- !u!114 &-7196912326048193149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Player Movement/Crouch - Down
+  m_EditorClassIdentifier: 
+  Path: event:/Player Movement/Crouch - Down
+  guid: 7336de0978ae1544920482ac485b8405
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 1008
+--- !u!114 &-6717597148475776362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Player Movement/Jump - Liftoff
+  m_EditorClassIdentifier: 
+  Path: event:/Player Movement/Jump - Liftoff
+  guid: 680a9933c47668429016f628ed905967
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters:
+  - {fileID: 1365050257067728341}
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 1000
+--- !u!114 &-5989721931397748653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Music/Autumn Tension
+  m_EditorClassIdentifier: 
+  Path: event:/Music/Autumn Tension
+  guid: 7dc93a100ba0f84c8caf55b3fbf6f644
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters:
+  - {fileID: 5966126187483850614}
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 36000
+--- !u!114 &-5657315046932773368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Jump - Landing/Surface
+  m_EditorClassIdentifier: 
+  Name: Surface
+  Min: 0
+  Max: 5
+  Default: 0
+  Exists: 1
+--- !u!114 &-5546670285047461181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Walking - V2/Velocity
+  m_EditorClassIdentifier: 
+  Name: Velocity
+  Min: 0
+  Max: 1
+  Default: 0
+  Exists: 1
+--- !u!114 &-4980136063522389726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Ambient/Autumn Ambience
+  m_EditorClassIdentifier: 
+  Path: event:/Ambient/Autumn Ambience
+  guid: 6b380bb86f68ea4fa95a95c40299fbee
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters:
+  - {fileID: 6563346121659716921}
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 55474
+--- !u!114 &-4551673366612185211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Bird/Bird Distress
+  m_EditorClassIdentifier: 
+  Path: event:/Bird/Bird Distress
+  guid: a714c96f32c12743b78845057ce66e26
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 1
+  Is3D: 1
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 150
+  Length: 12000
+--- !u!114 &-4510982195941056436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Bird/Fly
+  m_EditorClassIdentifier: 
+  Path: event:/Bird/Fly
+  guid: 0ba4d56de1005b4cb25d03b1f1578622
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 1
+  Is3D: 1
+  IsOneShot: 0
+  Parameters:
+  - {fileID: -7898977037878009919}
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 15000
+--- !u!114 &-3566249581385523906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.strings.bank
+  m_EditorClassIdentifier: 
+  Path: Assets/Audio/FMOD/WMHI/FMODBuilds/Desktop/Master.strings.bank
+  SubDir: 
+  lastModified: 637215342027932007
+  LoadResult: 0
+  FileSizes:
+  - Name: Desktop
+    Value: 1860
+  Exists: 1
+--- !u!114 &-3156989657839312747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Window/Heart World Type
+  m_EditorClassIdentifier: 
+  Name: Heart World Type
+  Min: 0
+  Max: 3
+  Default: 0
+  Exists: 1
+--- !u!114 &-3089971399047168829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Bird/Bird Chirp
+  m_EditorClassIdentifier: 
+  Path: event:/Bird/Bird Chirp
+  guid: 515eb78167a08d4bba08edf605585c13
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 2000
+--- !u!114 &-1226340143903490821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Gate/Gate Open
+  m_EditorClassIdentifier: 
+  Path: event:/Gate/Gate Open
+  guid: 2b4f1a4e523b204d8b764c0101e09428
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 0
+  Is3D: 1
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 2929
+--- !u!114 &-41604902516730721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Player Movement/Jump - Landing
+  m_EditorClassIdentifier: 
+  Path: event:/Player Movement/Jump - Landing
+  guid: d2df926c0f482e4a8661d504dba232d7
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters:
+  - {fileID: -5657315046932773368}
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 1000
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d32cf7c32a3ed8347bac48ef5ed56d82, type: 3}
+  m_Name: FMODStudioCache
+  m_EditorClassIdentifier: 
+  EditorBanks:
+  - {fileID: -3566249581385523906}
+  - {fileID: 8583567793164861901}
+  EditorEvents:
+  - {fileID: -4510982195941056436}
+  - {fileID: 8840557675852842896}
+  - {fileID: -8474492217881932240}
+  - {fileID: -1226340143903490821}
+  - {fileID: 8122324645036199427}
+  - {fileID: 1026934839204355423}
+  - {fileID: -3089971399047168829}
+  - {fileID: 8462288684791823314}
+  - {fileID: -6717597148475776362}
+  - {fileID: -4980136063522389726}
+  - {fileID: -7196912326048193149}
+  - {fileID: 8070635392373515042}
+  - {fileID: -5989721931397748653}
+  - {fileID: -8704000640867066195}
+  - {fileID: -4551673366612185211}
+  - {fileID: 5635882009174902952}
+  - {fileID: -41604902516730721}
+  EditorParameters: []
+  MasterBanks:
+  - {fileID: 8583567793164861901}
+  StringsBanks:
+  - {fileID: -3566249581385523906}
+  stringsBankWriteTime: 637215342027932007
+  cacheVersion: 3
+--- !u!114 &770241985073880118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Window/WindowState
+  m_EditorClassIdentifier: 
+  Name: WindowState
+  Min: 0
+  Max: 1
+  Default: 0
+  Exists: 1
+--- !u!114 &1026934839204355423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Player Movement/Walking/Walking - V2
+  m_EditorClassIdentifier: 
+  Path: event:/Player Movement/Walking/Walking - V2
+  guid: 3ac12da29a0ef641a762a3b572ca598d
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 0
+  Parameters:
+  - {fileID: -7414175152458946515}
+  - {fileID: -5546670285047461181}
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 1329
+--- !u!114 &1365050257067728341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Jump - Liftoff/Surface
+  m_EditorClassIdentifier: 
+  Name: Surface
+  Min: 0
+  Max: 5
+  Default: 0
+  Exists: 1
+--- !u!114 &5635882009174902952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Ambient/Window
+  m_EditorClassIdentifier: 
+  Path: event:/Ambient/Window
+  guid: c07c05cd8c63a44ea4efab0c9099403f
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters:
+  - {fileID: -3156989657839312747}
+  - {fileID: 770241985073880118}
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 196570
+--- !u!114 &5966126187483850614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Autumn Tension/Autumn Tension State
+  m_EditorClassIdentifier: 
+  Name: Autumn Tension State
+  Min: 0
+  Max: 3
+  Default: 0
+  Exists: 1
+--- !u!114 &6563346121659716921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Autumn Ambience/Play Song
+  m_EditorClassIdentifier: 
+  Name: Play Song
+  Min: 0
+  Max: 2
+  Default: 0
+  Exists: 1
+--- !u!114 &8070635392373515042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Music/Autumn Opening
+  m_EditorClassIdentifier: 
+  Path: event:/Music/Autumn Opening
+  guid: 734da04ef8d5af45b226f9ba139861a2
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 28000
+--- !u!114 &8122324645036199427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Ambient/Winter Ambience
+  m_EditorClassIdentifier: 
+  Path: event:/Ambient/Winter Ambience
+  guid: 32388e59d6cd9e45814627f53ddf08bb
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 43917
+--- !u!114 &8462288684791823314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Player Movement/Crouch - Up
+  m_EditorClassIdentifier: 
+  Path: event:/Player Movement/Crouch - Up
+  guid: 5702be714009514d848fc7066ed298ad
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 1008
+--- !u!114 &8583567793164861901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.bank
+  m_EditorClassIdentifier: 
+  Path: Assets/Audio/FMOD/WMHI/FMODBuilds/Desktop/Master.bank
+  SubDir: 
+  lastModified: 637215342027921989
+  LoadResult: 0
+  FileSizes: []
+  Exists: 1
+--- !u!114 &8840557675852842896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Ambient/Spring Ambience
+  m_EditorClassIdentifier: 
+  Path: event:/Ambient/Spring Ambience
+  guid: 0c677bfa6658c845976fc4def5e32b12
+  Banks:
+  - {fileID: 8583567793164861901}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 196570
