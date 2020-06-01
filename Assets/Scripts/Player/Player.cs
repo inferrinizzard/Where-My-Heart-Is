@@ -214,7 +214,8 @@ public class Player : Singleton<Player>, IStateMachine
 				AdjustGravity();
 			}
 
-			prompt.UpdateText(); // non physics
+			if (State == null)
+				prompt.UpdateText(); // non physics
 			Die();
 		}
 	}
@@ -267,7 +268,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-		if (ValidGroundSlope() && IsGrounded()) body.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+		if (ValidGroundSlope() && IsGrounded()) body.velocity = new Vector3(body.velocity.x, jumpForce, body.velocity.z);
 	}
 
 	/// <summary> Increases gravity while falling. </summary>
@@ -330,7 +331,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Handles player behavior when interacting with objects. </summary>
 	void Interact()
 	{
-		var hit = RaycastInteractable();
+		var hit = InteractableObject.Raycast();
 		if (heldObject || hit is Pickupable)
 		{
 			PickUp(!heldObject, hit as Pickupable);
@@ -394,5 +395,5 @@ public class Player : Singleton<Player>, IStateMachine
 		return (Mathf.Abs(Vector3.Angle(ray.normal, Vector3.up)) < maxSlopeAngle);
 	}
 
-	public InteractableObject RaycastInteractable() => Physics.SphereCast(cam.transform.position, .25f, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
+	// public InteractableObject RaycastInteractable() => Physics.SphereCast(cam.transform.position, .25f, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }

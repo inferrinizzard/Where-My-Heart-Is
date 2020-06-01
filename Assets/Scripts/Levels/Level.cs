@@ -16,9 +16,18 @@ public class Level : ScriptableObject
 
 #if UNITY_EDITOR
 	// scene
-	public UnityEditor.SceneAsset scene;
+	public UnityEditor.SceneAsset scene = null;
 
-	void OnValidate() => levelName = scene?.name ?? "";
+	// void OnValidate() => levelName = scene?.name ?? "";
+	void OnValidate()
+	{
+		if (!scene)
+		{
+			// Debug.LogError($"Scene missing in {name}");
+			return;
+		}
+		levelName = scene?.name ?? "";
+	}
 #endif
 
 	public string Name { get => levelName; }

@@ -392,7 +392,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8917473940f43664c902a01f4d8ced60, type: 2}
+  - {fileID: 2100000, guid: 3d2e6b39aee089b46b4dacaed01f8ef5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -526,7 +526,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 791b0c299c834704198dc8df3418eba7, type: 2}
+      objectReference: {fileID: 2100000, guid: 1dd9a6c028a5c2349946828c1db92d6e, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b64ca575cf03705448f4605ea9494ea7, type: 3}
 --- !u!1 &862824112 stripped
@@ -671,7 +671,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 252e6364447962a41a09ec489449cf1d, type: 2}
+      objectReference: {fileID: 2100000, guid: 518e4d9273e4d5a41857a90f17ce1a5b, type: 2}
     - target: {fileID: 332253026638133366, guid: f77c5ea4e4f151946b552e47f16eb5fa,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -681,7 +681,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: aa126cfa5d272a149bfb677b89e40a2d, type: 2}
+      objectReference: {fileID: 2100000, guid: 7aa23cb575398a347b0a963aba422e5e, type: 2}
     - target: {fileID: 2498326036907817780, guid: f77c5ea4e4f151946b552e47f16eb5fa,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -834,7 +834,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: c641e74b0ad69cc4690efed9ae04f3fb, type: 2}
+      objectReference: {fileID: 2100000, guid: 2a0093a28fe4e06448dcd79113a6baf4, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b56d48a966c6a8c47963c8249e6cb271, type: 3}
 --- !u!1 &1401237716
@@ -1344,11 +1344,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1403,6 +1398,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_Name
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 8854909899827168894, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
@@ -1476,6 +1476,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -2124705421725058983, guid: 152bd8c7cefbd1f46861d90ab372da4e,
         type: 3}
+    - target: {fileID: 5407968007786445905, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: mainCam
+      value: 
+      objectReference: {fileID: 137300205521050441, guid: 3c18e665d2597bf4cb4283f9d16c0ef3,
+        type: 3}
+    - target: {fileID: 5407968007786445905, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: heartCam
+      value: 
+      objectReference: {fileID: 137300205791007084, guid: 3c18e665d2597bf4cb4283f9d16c0ef3,
+        type: 3}
     - target: {fileID: 5407968008035840464, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: windowEnabled
@@ -1521,18 +1533,6 @@ PrefabInstance:
       propertyPath: m_LocalRotation.w
       value: -0.00000011364396
       objectReference: {fileID: 0}
-    - target: {fileID: 5407968007786445905, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: mainCam
-      value: 
-      objectReference: {fileID: 137300205521050441, guid: 3c18e665d2597bf4cb4283f9d16c0ef3,
-        type: 3}
-    - target: {fileID: 5407968007786445905, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: heartCam
-      value: 
-      objectReference: {fileID: 137300205791007084, guid: 3c18e665d2597bf4cb4283f9d16c0ef3,
-        type: 3}
     - target: {fileID: 8090092812676683773, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalRotation.x
@@ -1899,7 +1899,7 @@ PrefabInstance:
     - target: {fileID: 4037872479478507742, guid: 584309737b83dd34496c239b4a574f67,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5
+      value: -68.1093
       objectReference: {fileID: 0}
     - target: {fileID: 4037872479478507742, guid: 584309737b83dd34496c239b4a574f67,
         type: 3}
@@ -1963,6 +1963,7 @@ MonoBehaviour:
   heartWorldContainer: {fileID: 1237868543348678897}
   realWorldContainer: {fileID: 2567998057564522578}
   entangledWorldContainer: {fileID: 5160431589634396054}
+  mirrorParent: {fileID: 0}
   heartClippables: []
   realClippables: []
   mirrorClippables: []

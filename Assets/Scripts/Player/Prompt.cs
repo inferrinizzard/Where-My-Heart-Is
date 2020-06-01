@@ -8,6 +8,7 @@ public class Prompt : MonoBehaviour
 {
 	[HideInInspector] public Text textComponent;
 	Player player;
+	public bool disabled { get => !textComponent.enabled; }
 
 	void Start()
 	{
@@ -19,9 +20,9 @@ public class Prompt : MonoBehaviour
 	{
 		if (!(player.State is Aiming))
 		{
-			var hit = player.RaycastInteractable();
+			var hit = InteractableObject.Raycast();
 			if (player.heldObject is Placeable && (player.heldObject as Placeable).PlaceConditionsMet())
-				SetText("Press E to Place Canvas");
+				SetText(player.heldObject.prompt);
 			else if (hit && !player.heldObject && player.canMove)
 			{
 				if (hit.TryComponent<Bird>())
@@ -35,7 +36,7 @@ public class Prompt : MonoBehaviour
 					return;
 				}
 			}
-			else
+			else if (!BridgeBehaviour.forcePrompt)
 				Disable();
 		}
 	}
