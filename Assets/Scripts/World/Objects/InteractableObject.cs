@@ -1,3 +1,5 @@
+using System.Linq;
+
 using UnityEngine;
 
 public abstract class InteractableObject : MonoBehaviour
@@ -25,4 +27,6 @@ public abstract class InteractableObject : MonoBehaviour
 		player = Player.Instance;
 		if (hitboxObject) hitboxObject.GetComponent<ClippableObject>().tiedInteractable = this;
 	}
+
+	public static InteractableObject Raycast() => Physics.SphereCastAll(Player.Instance.cam.transform.position, .25f, Player.Instance.cam.transform.forward, Player.Instance.playerReach, 1 << 9).Take(3).FirstOrDefault(i => i.transform.TryComponent<InteractableObject>()).transform?.GetComponent<InteractableObject>();
 }

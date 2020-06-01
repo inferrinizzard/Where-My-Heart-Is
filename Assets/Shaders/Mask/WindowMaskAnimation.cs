@@ -22,7 +22,7 @@ public class WindowMaskAnimation : MonoBehaviour
 	[Header("Misc")]
 	public float scrollRate;
 
-	private bool openingWindow;
+	[HideInInspector] public bool openingWindow;
 	private float currentBreath;
 	private float rampStartTime;
 

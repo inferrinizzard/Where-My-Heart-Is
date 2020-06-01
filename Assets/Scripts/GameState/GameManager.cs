@@ -15,6 +15,7 @@ public class GameManager : Singleton<GameManager>
 	[HideInInspector] public Prompt prompt;
 	public LevelOrder levelOrder;
 	public float transitionTime = 3f;
+	public event System.Action CustomUpdate;
 
 	// public Level test;
 
@@ -35,6 +36,8 @@ public class GameManager : Singleton<GameManager>
 		levelOrder.Start();
 		// test?.StartBehaviors();
 	}
+
+	void Update() => CustomUpdate?.Invoke();
 
 	/// <summary> Closes the Application </summary>
 	public static void QuitGame()
