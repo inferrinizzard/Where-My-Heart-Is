@@ -25,7 +25,7 @@ public class Hands : MonoBehaviour
 	public IEnumerator WaitAndAim()
 	{
 		anim.SetBool("Aiming", true);
-		var heartTargetPos = new Vector3(.01f, -.5f, 1.19f); // VS GHETTO
+		var heartTargetPos = new Vector3(.05f, -1.6f, .8f); // VS GHETTO
 		var heartTargetEulers = new Vector3(0, 90, -21.5f); // VS GHETTO
 
 		float start = Time.time;
@@ -40,7 +40,7 @@ public class Hands : MonoBehaviour
 			yield return null;
 			float step = Time.time - start;
 			// TODO: ease these
-			// anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / heartAnimDuration);
+			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / heartAnimDuration);
 			// anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTargetEulers, step / heartAnimDuration);
 
 			if (step > heartAnimDuration)
