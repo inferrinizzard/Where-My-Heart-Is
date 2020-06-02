@@ -26,6 +26,8 @@ public class Snowstorm : MonoBehaviour
 		snowMat.SetTexture("_TransitionTex", fadeSnowTex);
 		if (backgroundTex != null)
 			snowMat.SetTexture("_BackgroundTex", backgroundTex);
+
+		Player.Instance.windowEnabled = false;
 	}
 
 	void Update()

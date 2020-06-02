@@ -12,7 +12,6 @@ public class TileGeneration : MonoBehaviour
 	public GameObject player;
 	List<GameObject> myTrees = new List<GameObject>();
 
-	[SerializeField] NoiseMapGeneration noiseMapGeneration = default; // Get script
 	[SerializeField] private MeshRenderer tileRenderer = default; // Show height map of each vertex
 	[SerializeField] private MeshFilter meshFilter = default; // Access mesh vertices
 	[SerializeField] private MeshCollider meshCollider = default;
@@ -59,7 +58,7 @@ public class TileGeneration : MonoBehaviour
 		Vector2 offset = -new Vector2(transform.position.x, transform.position.z);
 
 		// Generate heightmap 
-		float[, ] heightMap = noiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, mapScale, offset.x, offset.y, waves);
+		float[, ] heightMap = NoiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, mapScale, offset.x, offset.y, waves);
 
 		Texture2D tileTexture = BuildTexture(heightMap);
 		tileRenderer.material.mainTexture = tileTexture;
@@ -88,37 +87,6 @@ public class TileGeneration : MonoBehaviour
 		UpdateMeshVertices(heightMap);
 	}
 
-	// private void Update()
-	// {
-	// 	// Spawn one door when it exists in the pool and respawns when player moves a certain distance
-	// 	GameObject newDoor = DoorPool.GetDoor();
-	// 	if (newDoor != null && (int) Vector3.Distance(Vector3.zero, player.transform.position) > stepsTaken && (int) Vector3.Distance(Vector3.zero, player.transform.position) % spawnDist == 0)
-	// 	{
-	// 		Vector3 doorPos = (player.transform.forward * 20) + new Vector3(player.transform.position.x,
-	// 			0.6f,
-	// 			player.transform.position.z);
-	// 		newDoor.transform.position = doorPos;
-	// 		newDoor.transform.rotation = Quaternion.LookRotation(player.transform.forward);
-	// 		newDoor.SetActive(true);
-	// 		myDoors.Add(newDoor);
-	// 		// Debug.Log("player door dist: " + Vector3.Distance(myDoors[0].transform.position, player.transform.position));
-	// 	}
-
-	// 	// Clear door when player position is far enough
-	// 	if ((int) Vector3.Distance(Vector3.zero, player.transform.position) % (spawnDist * 2) == 0)
-	// 	{
-	// 		for (int i = 0; i < myDoors.Count; i++)
-	// 		{
-	// 			if (myDoors[i] != null)
-	// 			{
-	// 				myDoors[i].SetActive(false);
-	// 			}
-	// 		}
-	// 		myDoors.Clear();
-	// 	}
-
-	// 	// Debug.Log((int) Vector3.Distance(Vector3.zero, player.transform.position));
-	// }
 	// Clear trees and doors when tiles are destoryed
 	void OnDestroy()
 	{
