@@ -4,7 +4,6 @@ using UnityEngine;
 
 public abstract class InteractableObject : MonoBehaviour
 {
-	public ClippableObject hitboxObject;
 	/// <summary> Reference to the player. </summary>
 	[HideInInspector] public Player player;
 	/// <summary> Whether or not this is the active item </summary>
@@ -25,7 +24,6 @@ public abstract class InteractableObject : MonoBehaviour
 		renderers = GetComponentsInChildren<Renderer>();
 		dialogue = GameManager.Instance.dialogue;
 		player = Player.Instance;
-		if (hitboxObject) hitboxObject.GetComponent<ClippableObject>().tiedInteractable = this;
 	}
 
 	public static InteractableObject Raycast() => Physics.SphereCastAll(Player.Instance.cam.transform.position, .25f, Player.Instance.cam.transform.forward, Player.Instance.playerReach, 1 << 9).Take(3).FirstOrDefault(i => i.transform.TryComponent<InteractableObject>()).transform?.GetComponent<InteractableObject>();

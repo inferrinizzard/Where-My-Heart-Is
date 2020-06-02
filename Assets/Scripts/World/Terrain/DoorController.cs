@@ -4,25 +4,39 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Set door animation to play at current scene position
-public class DoorController : MonoBehaviour
+public class DoorController : InteractableObject
 {
 	Animator anim;
-	Player player;
 	public bool spawned = false;
 	GameObject holder;
 	[SerializeField] GameObject house = default, blocker = default;
+	bool snowstormLevel = false;
 
-	void Start()
+	protected override void Start()
 	{
+		base.Start();
+		anim = GetComponentInParent<Animator>();
+
+		if (Player.Instance.GetComponentInChildren<Snowstorm>())
+			snowstormLevel = true;
+
 		holder = transform.parent.gameObject;
-		player = Player.Instance;
-		anim = GetComponent<Animator>();
 
-		foreach (Renderer r in house.GetComponentsInChildren<Renderer>())
-			foreach (Material m in r.materials)
-				m.renderQueue = 3002;
+		if (house)
+			foreach (Renderer r in house.GetComponentsInChildren<Renderer>())
+				foreach (Material m in r.materials)
+					m.renderQueue = 3002;
 
-		holder.SetActive(false);
+		if (snowstormLevel)
+			holder.SetActive(false);
+	}
+
+	public override void Interact()
+	{
+		base.Interact();
+		// if (\)
+		anim.Play("Locked");
+		// Debug.Log("door");
 	}
 
 	public void Spawn()
