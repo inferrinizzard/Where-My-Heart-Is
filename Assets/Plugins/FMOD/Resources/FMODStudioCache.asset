@@ -1,5 +1,39 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8983786318038167571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Window/WindowState
+  m_EditorClassIdentifier: 
+  Name: WindowState
+  Min: 0
+  Max: 1
+  Default: 0
+  Exists: 1
+--- !u!114 &-8797809621253291867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Jump - Landing/Surface
+  m_EditorClassIdentifier: 
+  Name: Surface
+  Min: 0
+  Max: 5
+  Default: 0
+  Exists: 1
 --- !u!114 &-8704000640867066195
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15,7 +49,7 @@ MonoBehaviour:
   Path: event:/Bird/Cage Bird
   guid: 99042cb35329a3468bcbbaa76cf3f260
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 0
   Is3D: 0
   IsOneShot: 1
@@ -38,7 +72,7 @@ MonoBehaviour:
   Path: event:/Music/Autumn Main Theme
   guid: 2849c19c2d28904487a2a98a0ca0976d
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 1
   Is3D: 0
   IsOneShot: 1
@@ -62,6 +96,24 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+  Exists: 0
+--- !u!114 &-7649171383556122903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Master.bank
+  m_EditorClassIdentifier: 
+  Path: Assets/Audio/FMOD/WMHI/FMODBuilds/Desktop/Master.bank
+  SubDir: 
+  lastModified: 637266200029276587
+  LoadResult: 0
+  FileSizes: []
   Exists: 1
 --- !u!114 &-7414175152458946515
 MonoBehaviour:
@@ -79,7 +131,7 @@ MonoBehaviour:
   Min: 0
   Max: 5
   Default: 0
-  Exists: 1
+  Exists: 0
 --- !u!114 &-7196912326048193149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,7 +147,7 @@ MonoBehaviour:
   Path: event:/Player Movement/Crouch - Down
   guid: 7336de0978ae1544920482ac485b8405
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 0
   Is3D: 0
   IsOneShot: 1
@@ -118,12 +170,12 @@ MonoBehaviour:
   Path: event:/Player Movement/Jump - Liftoff
   guid: 680a9933c47668429016f628ed905967
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 0
   Is3D: 0
   IsOneShot: 1
   Parameters:
-  - {fileID: 1365050257067728341}
+  - {fileID: 2442614528374719494}
   MinDistance: 0
   MaxDistance: 0
   Length: 1000
@@ -142,12 +194,12 @@ MonoBehaviour:
   Path: event:/Music/Autumn Tension
   guid: 7dc93a100ba0f84c8caf55b3fbf6f644
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 1
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: 5966126187483850614}
+  - {fileID: 1659025584054772563}
   MinDistance: 0
   MaxDistance: 0
   Length: 36000
@@ -167,7 +219,7 @@ MonoBehaviour:
   Min: 0
   Max: 5
   Default: 0
-  Exists: 1
+  Exists: 0
 --- !u!114 &-5546670285047461181
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,7 +236,7 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
-  Exists: 1
+  Exists: 0
 --- !u!114 &-4980136063522389726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200,12 +252,12 @@ MonoBehaviour:
   Path: event:/Ambient/Autumn Ambience
   guid: 6b380bb86f68ea4fa95a95c40299fbee
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 1
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: 6563346121659716921}
+  - {fileID: 1162901361113931845}
   MinDistance: 0
   MaxDistance: 0
   Length: 55474
@@ -224,7 +276,7 @@ MonoBehaviour:
   Path: event:/Bird/Bird Distress
   guid: a714c96f32c12743b78845057ce66e26
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 1
   Is3D: 1
   IsOneShot: 0
@@ -247,12 +299,12 @@ MonoBehaviour:
   Path: event:/Bird/Fly
   guid: 0ba4d56de1005b4cb25d03b1f1578622
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 1
   Is3D: 1
   IsOneShot: 0
   Parameters:
-  - {fileID: -7898977037878009919}
+  - {fileID: 854070592453543477}
   MinDistance: 1
   MaxDistance: 20
   Length: 15000
@@ -270,7 +322,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Path: Assets/Audio/FMOD/WMHI/FMODBuilds/Desktop/Master.strings.bank
   SubDir: 
-  lastModified: 637215342027932007
+  lastModified: 637266200029286603
   LoadResult: 0
   FileSizes:
   - Name: Desktop
@@ -292,7 +344,7 @@ MonoBehaviour:
   Min: 0
   Max: 3
   Default: 0
-  Exists: 1
+  Exists: 0
 --- !u!114 &-3089971399047168829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -308,7 +360,7 @@ MonoBehaviour:
   Path: event:/Bird/Bird Chirp
   guid: 515eb78167a08d4bba08edf605585c13
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 0
   Is3D: 1
   IsOneShot: 0
@@ -316,6 +368,40 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 2000
+--- !u!114 &-2839594801298013450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Window/Heart World Type
+  m_EditorClassIdentifier: 
+  Name: Heart World Type
+  Min: 0
+  Max: 3
+  Default: 0
+  Exists: 1
+--- !u!114 &-2785015473705745859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Walking - V2/Surface
+  m_EditorClassIdentifier: 
+  Name: Surface
+  Min: 0
+  Max: 5
+  Default: 0
+  Exists: 1
 --- !u!114 &-1226340143903490821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -331,7 +417,7 @@ MonoBehaviour:
   Path: event:/Gate/Gate Open
   guid: 2b4f1a4e523b204d8b764c0101e09428
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 0
   Is3D: 1
   IsOneShot: 1
@@ -354,12 +440,12 @@ MonoBehaviour:
   Path: event:/Player Movement/Jump - Landing
   guid: d2df926c0f482e4a8661d504dba232d7
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 0
   Is3D: 0
   IsOneShot: 1
   Parameters:
-  - {fileID: -5657315046932773368}
+  - {fileID: -8797809621253291867}
   MinDistance: 0
   MaxDistance: 0
   Length: 1000
@@ -377,7 +463,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EditorBanks:
   - {fileID: -3566249581385523906}
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   EditorEvents:
   - {fileID: -4510982195941056436}
   - {fileID: 8840557675852842896}
@@ -398,10 +484,10 @@ MonoBehaviour:
   - {fileID: -41604902516730721}
   EditorParameters: []
   MasterBanks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   StringsBanks:
   - {fileID: -3566249581385523906}
-  stringsBankWriteTime: 637215342027932007
+  stringsBankWriteTime: 637266200029286603
   cacheVersion: 3
 --- !u!114 &770241985073880118
 MonoBehaviour:
@@ -416,6 +502,23 @@ MonoBehaviour:
   m_Name: parameter:/Window/WindowState
   m_EditorClassIdentifier: 
   Name: WindowState
+  Min: 0
+  Max: 1
+  Default: 0
+  Exists: 0
+--- !u!114 &854070592453543477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Fly/Flying
+  m_EditorClassIdentifier: 
+  Name: Flying
   Min: 0
   Max: 1
   Default: 0
@@ -435,17 +538,68 @@ MonoBehaviour:
   Path: event:/Player Movement/Walking/Walking - V2
   guid: 3ac12da29a0ef641a762a3b572ca598d
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 0
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: -7414175152458946515}
-  - {fileID: -5546670285047461181}
+  - {fileID: -2785015473705745859}
+  - {fileID: 8349283120016796474}
   MinDistance: 0
   MaxDistance: 0
   Length: 1329
+--- !u!114 &1162901361113931845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Autumn Ambience/Play Song
+  m_EditorClassIdentifier: 
+  Name: Play Song
+  Min: 0
+  Max: 2
+  Default: 0
+  Exists: 1
 --- !u!114 &1365050257067728341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Jump - Liftoff/Surface
+  m_EditorClassIdentifier: 
+  Name: Surface
+  Min: 0
+  Max: 5
+  Default: 0
+  Exists: 0
+--- !u!114 &1659025584054772563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Autumn Tension/Autumn Tension State
+  m_EditorClassIdentifier: 
+  Name: Autumn Tension State
+  Min: 0
+  Max: 3
+  Default: 0
+  Exists: 1
+--- !u!114 &2442614528374719494
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -477,13 +631,13 @@ MonoBehaviour:
   Path: event:/Ambient/Window
   guid: c07c05cd8c63a44ea4efab0c9099403f
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 1
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: -3156989657839312747}
-  - {fileID: 770241985073880118}
+  - {fileID: -2839594801298013450}
+  - {fileID: -8983786318038167571}
   MinDistance: 0
   MaxDistance: 0
   Length: 196570
@@ -503,7 +657,7 @@ MonoBehaviour:
   Min: 0
   Max: 3
   Default: 0
-  Exists: 1
+  Exists: 0
 --- !u!114 &6563346121659716921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -520,7 +674,7 @@ MonoBehaviour:
   Min: 0
   Max: 2
   Default: 0
-  Exists: 1
+  Exists: 0
 --- !u!114 &8070635392373515042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -536,7 +690,7 @@ MonoBehaviour:
   Path: event:/Music/Autumn Opening
   guid: 734da04ef8d5af45b226f9ba139861a2
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 1
   Is3D: 0
   IsOneShot: 1
@@ -559,7 +713,7 @@ MonoBehaviour:
   Path: event:/Ambient/Winter Ambience
   guid: 32388e59d6cd9e45814627f53ddf08bb
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 1
   Is3D: 0
   IsOneShot: 0
@@ -567,6 +721,23 @@ MonoBehaviour:
   MinDistance: 0
   MaxDistance: 0
   Length: 43917
+--- !u!114 &8349283120016796474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/Walking - V2/Velocity
+  m_EditorClassIdentifier: 
+  Name: Velocity
+  Min: 0
+  Max: 1
+  Default: 0
+  Exists: 1
 --- !u!114 &8462288684791823314
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -582,7 +753,7 @@ MonoBehaviour:
   Path: event:/Player Movement/Crouch - Up
   guid: 5702be714009514d848fc7066ed298ad
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 0
   Is3D: 0
   IsOneShot: 1
@@ -607,7 +778,7 @@ MonoBehaviour:
   lastModified: 637215342027921989
   LoadResult: 0
   FileSizes: []
-  Exists: 1
+  Exists: 0
 --- !u!114 &8840557675852842896
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -623,7 +794,7 @@ MonoBehaviour:
   Path: event:/Ambient/Spring Ambience
   guid: 0c677bfa6658c845976fc4def5e32b12
   Banks:
-  - {fileID: 8583567793164861901}
+  - {fileID: -7649171383556122903}
   IsStream: 1
   Is3D: 0
   IsOneShot: 0
