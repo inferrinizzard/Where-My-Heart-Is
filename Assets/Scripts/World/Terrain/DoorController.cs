@@ -8,8 +8,7 @@ public class DoorController : InteractableObject
 {
 	Animator anim;
 	public bool spawned = false;
-	GameObject holder;
-	[SerializeField] GameObject house = default, blocker = default;
+	[SerializeField] GameObject house = default, blocker = default, holder = default;
 	bool snowstormLevel = false;
 
 	protected override void Start()
@@ -20,7 +19,7 @@ public class DoorController : InteractableObject
 		if (Player.Instance.GetComponentInChildren<Snowstorm>())
 			snowstormLevel = true;
 
-		holder = transform.parent.gameObject;
+		// holder = transform.parent.gameObject;
 
 		if (house)
 			foreach (Renderer r in house.GetComponentsInChildren<Renderer>())
@@ -34,8 +33,10 @@ public class DoorController : InteractableObject
 	public override void Interact()
 	{
 		base.Interact();
-		// if (\)
-		anim.Play("Locked");
+		if (!snowstormLevel)
+			anim.Play("Locked");
+		else
+			anim.Play("Opening- Slow");
 		// Debug.Log("door");
 	}
 
@@ -46,7 +47,7 @@ public class DoorController : InteractableObject
 		Vector3 doorPos = (player.transform.forward * 10) + new Vector3(player.transform.position.x, 0.6f, player.transform.position.z);
 		holder.transform.position = doorPos;
 		holder.transform.rotation = Quaternion.LookRotation(player.transform.forward);
-		anim.Play("doorDrop");
+		// anim.Play("doorDrop");
 	}
 
 	public void Open() => anim.SetTrigger("Open");

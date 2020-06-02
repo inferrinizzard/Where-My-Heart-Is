@@ -34,6 +34,6 @@ public class Snowstorm : MonoBehaviour
 		if (walkDistance - progress < .05)
 			Destroy(this);
 	}
-	void FixedUpdate() => snowMat.SetFloat(ShaderID._TransitionCutoff, EaseMethods.CubicEaseIn(1 - progress / walkDistance, 0, 1, 1));
+	void FixedUpdate() => snowMat.SetFloat(ShaderID._TransitionCutoff, EaseMethods.CubicEaseIn(1 - progress / walkDistance, -0.05f, 1f, 1));
 	void OnRenderImage(RenderTexture src, RenderTexture dest) => Graphics.Blit(src, dest, snowMat);
 }
