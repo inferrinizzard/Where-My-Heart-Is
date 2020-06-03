@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 
@@ -9,15 +10,8 @@ using UnityEngine;
 public class TileGeneration : MonoBehaviour
 {
 	public GameObject player;
-	public GameObject door;
-
 	List<GameObject> myTrees = new List<GameObject>();
-	List<GameObject> myDoors = new List<GameObject>();
 
-	[SerializeField] private int spawnDist = 50; // Spawn door after 50 steps
-	[SerializeField] private int stepsTaken = 149;
-
-	[SerializeField] NoiseMapGeneration noiseMapGeneration = default; // Get script
 	[SerializeField] private MeshRenderer tileRenderer = default; // Show height map of each vertex
 	[SerializeField] private MeshFilter meshFilter = default; // Access mesh vertices
 	[SerializeField] private MeshCollider meshCollider = default;
@@ -29,10 +23,28 @@ public class TileGeneration : MonoBehaviour
 	[SerializeField] private AnimationCurve heightCurve = default;
 	[SerializeField] private Waves[] waves = default; // Perlin noise detail
 
-	// Start is called before the first frame update
+	GenerateInfinite gen;
+	[HideInInspector] public Vector2Int gridPos;
+	int maxTrees = 30;
+
 	void Start()
 	{
+		gen = transform.GetComponentInParent<GenerateInfinite>();
+
+		float progress = transform.position.sqrMagnitude / (Snowstorm.walkDistance * Snowstorm.walkDistance * .9f);
+		if (progress > 1)
+			maxTrees = 0;
+		else
+			maxTrees = (int) (maxTrees * EaseMethods.QuadEaseIn((1 - progress) * .9f, 0, 1, 1));
+
 		GenerateTile();
+	}
+
+	Vector2 Gaussian(float? x = null, float? y = null)
+	{
+		float u1 = x ?? 1f - Random.value, u2 = y ?? 1f - Random.value;
+		float preLog = Mathf.Sqrt(-2f * Mathf.Log(u1));
+		return new Vector2(preLog * Mathf.Sin(2f * Mathf.PI * u2), preLog * Mathf.Cos(2f * Mathf.PI * u2));
 	}
 
 	void GenerateTile()
@@ -43,81 +55,46 @@ public class TileGeneration : MonoBehaviour
 		int tileWidth = tileDepth;
 
 		// Calculate the offsets based on the tile position
-		float offsetX = -transform.position.x;
-		float offsetZ = -transform.position.z;
+		Vector2 offset = -new Vector2(transform.position.x, transform.position.z);
 
 		// Generate heightmap 
-		float[, ] heightMap = noiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, mapScale, offsetX, offsetZ, waves);
+		float[, ] heightMap = NoiseMapGeneration.GenerateNoiseMap(tileDepth, tileWidth, mapScale, offset.x, offset.y, waves);
 
 		Texture2D tileTexture = BuildTexture(heightMap);
 		tileRenderer.material.mainTexture = tileTexture;
 
-		// Get trees and door from pool and place based on mesh height
-		for (int v = 0; v < meshVertices.Length; v++)
+		meshVertices.Where(pos => pos.y > 1).OrderBy(_ => Random.value).Take(maxTrees).ToList().ForEach(pos =>
 		{
-			// if(meshVertices[v].y > 0.8 && Mathf.PerlinNoise((meshVertices[v].x+5)/10, (meshVertices[v].z+5)/10)*10 > 5.2)
-			if (meshVertices[v].y > 1.0)
+			GameObject newTree = TreePool.GetTree();
+			if (newTree)
 			{
-				//   Debug.Log("perlin noise: " + Mathf.PerlinNoise((meshVertices[v].x + 5) / 10, (meshVertices[v].z + 5) / 10) * 10);
-				GameObject newTree = TreePool.GetTree();
-				float treeScale = Random.Range(0.0f, 0.1f);
-				if (newTree != null && Random.Range(0.0f, 1.0f) < 0.05)
-				{
-					Vector3 treePos = new Vector3(meshVertices[v].x + transform.position.x,
-						meshVertices[v].y + 2.5f,
-						meshVertices[v].z + transform.position.z);
-					newTree.transform.position = treePos;
-					newTree.transform.localScale += new Vector3(treeScale, treeScale, treeScale);
-					newTree.SetActive(true);
-					myTrees.Add(newTree);
-				}
+				float treeScale = Random.value / 10;
+				Vector3 treePos = new Vector3(pos.x + transform.position.x, pos.y + 2.5f, pos.z + transform.position.z);
+				newTree.transform.position = treePos;
+				newTree.transform.localScale += new Vector3(treeScale, treeScale, treeScale);
+				newTree.SetActive(true);
+				myTrees.Add(newTree);
 			}
-		}
+		});
+
+		myTrees.ForEach(tree =>
+		{
+			if ((tree.transform.position - player.transform.position).sqrMagnitude < 10)
+				tree.SetActive(false);
+		});
 
 		// Update the tile mesh vertices according to the height map
 		UpdateMeshVertices(heightMap);
 	}
 
-	private void Update()
-	{
-		// Spawn one door when it exists in the pool and respawns when player moves a certain distance
-		GameObject newDoor = DoorPool.GetDoor();
-		if (newDoor != null && (int) Vector3.Distance(Vector3.zero, player.transform.position) > stepsTaken && (int) Vector3.Distance(Vector3.zero, player.transform.position) % spawnDist == 0)
-		{
-			Vector3 doorPos = (player.transform.forward * 20) + new Vector3(player.transform.position.x,
-				0.6f,
-				player.transform.position.z);
-			newDoor.transform.position = doorPos;
-			newDoor.transform.rotation = Quaternion.LookRotation(player.transform.forward);
-			newDoor.SetActive(true);
-			myDoors.Add(newDoor);
-			// Debug.Log("player door dist: " + Vector3.Distance(myDoors[0].transform.position, player.transform.position));
-		}
-
-		// Clear door when player position is far enough
-		if ((int) Vector3.Distance(Vector3.zero, player.transform.position) % (spawnDist * 2) == 0)
-		{
-			for (int i = 0; i < myDoors.Count; i++)
-			{
-				if (myDoors[i] != null)
-				{
-					myDoors[i].SetActive(false);
-				}
-			}
-			myDoors.Clear();
-		}
-
-		// Debug.Log((int) Vector3.Distance(Vector3.zero, player.transform.position));
-	}
 	// Clear trees and doors when tiles are destoryed
 	void OnDestroy()
 	{
 		for (int i = 0; i < myTrees.Count; i++)
 		{
-			if (myTrees[i] != null)
+			if (myTrees[i])
 				myTrees[i].SetActive(false);
 		}
-
 		myTrees.Clear();
 	}
 
@@ -132,7 +109,6 @@ public class TileGeneration : MonoBehaviour
 		// iterate through all the heightMap coordinates, updating the vertex index
 		int vertexIndex = 0;
 		for (int zIndex = 0; zIndex < tileDepth; zIndex++)
-		{
 			for (int xIndex = 0; xIndex < tileWidth; xIndex++)
 			{
 				float height = heightMap[zIndex, xIndex];
@@ -143,7 +119,6 @@ public class TileGeneration : MonoBehaviour
 
 				vertexIndex++;
 			}
-		}
 
 		// update the vertices in the mesh and update its properties
 		meshFilter.mesh.vertices = meshVertices;
@@ -199,6 +174,15 @@ public class TileGeneration : MonoBehaviour
 			}
 		}
 		return terrainTypes[terrainTypes.Length - 1];
+	}
+
+	void OnTriggerEnter(Collider other)
+	{
+		if (other.CompareTag("Player"))
+		{
+			gen.GenerateTiles(Vector2Int.FloorToInt(new Vector2(transform.position.x, transform.position.z) / GenerateInfinite.planeSize));
+			gen.DoorPos(player.transform.position.sqrMagnitude);
+		}
 	}
 }
 
