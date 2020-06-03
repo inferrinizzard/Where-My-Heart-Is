@@ -1,3 +1,5 @@
+using System.Linq;
+
 using UnityEngine;
 
 public abstract class InteractableObject : MonoBehaviour
@@ -26,11 +28,5 @@ public abstract class InteractableObject : MonoBehaviour
 		if (hitboxObject) hitboxObject.GetComponent<ClippableObject>().tiedInteractable = this;
 	}
 
-	void OnMouseEnter()
-	{
-		if (!player.heldObject && !this.TryComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
-			Player.VFX.SetGlow(this);
-	}
-
-	void OnMouseExit() => Player.VFX?.SetGlow(null);
+	public static InteractableObject Raycast() => Physics.SphereCastAll(Player.Instance.cam.transform.position, .25f, Player.Instance.cam.transform.forward, Player.Instance.playerReach, 1 << 9).Take(3).FirstOrDefault(i => i.transform.TryComponent<InteractableObject>()).transform?.GetComponent<InteractableObject>();
 }

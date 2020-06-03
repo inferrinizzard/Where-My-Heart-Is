@@ -10,8 +10,7 @@ using UnityEngine;
 public class TreePool : MonoBehaviour
 {
 	static int numTrees = 500;
-	public GameObject firstTreePrefab;
-	public GameObject secondTreePrefab;
+	[SerializeField] GameObject[] treePrefabs = default;
 	static GameObject[] trees;
 
 	// Start is called before the first frame update
@@ -20,11 +19,7 @@ public class TreePool : MonoBehaviour
 		trees = new GameObject[numTrees];
 		for (int i = 0; i < numTrees; i++)
 		{
-			if (Random.Range(0.0f, 1.0f) < 0.5)
-				trees[i] = (GameObject) Instantiate(firstTreePrefab, Vector3.zero, Quaternion.identity);
-			else
-				trees[i] = (GameObject) Instantiate(secondTreePrefab, Vector3.zero, Quaternion.identity);
-
+			trees[i] = GameObject.Instantiate(treePrefabs[Random.Range(0, treePrefabs.Length)], Vector3.zero, Quaternion.identity, transform);
 			trees[i].transform.Rotate(0f, Random.Range(0f, 180f), 0f);
 			trees[i].SetActive(false);
 		}
@@ -33,12 +28,8 @@ public class TreePool : MonoBehaviour
 	static public GameObject GetTree()
 	{
 		for (int i = 0; i < numTrees; i++)
-		{
 			if (!trees[i].activeSelf)
-			{
 				return trees[i];
-			}
-		}
 		return null;
 	}
 }

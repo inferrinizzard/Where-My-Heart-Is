@@ -45,9 +45,6 @@ namespace CSG
 		//public List<Cut> cuts;
 		public Cut cut;
 
-		public Vector2 UV;
-		public Vector2 UV2; // optional container for the uv coord of duplicate vertices used for flat shading
-
 		public Transform referenceFrame;
 
 		public bool fromIntersection;
@@ -77,7 +74,6 @@ namespace CSG
 		{
 			this.index = index;
 			this.value = value;
-			this.UV = UV;
 
 			loops = new List<EdgeLoop>();
 			triangles = new List<Triangle>();
@@ -156,7 +152,7 @@ namespace CSG
 		/// <returns>Whether this vertex lies inside the area of the given triangle, assuming they share a plane</returns>
 		public bool LiesWithinTriangle(Triangle triangle)
 		{
-			return Raycast.PointLiesOnTriangle(value, triangle.CalculateNormal(), triangle);
+			return Raycast.PointLiesOnTriangle(value, triangle.CachedNormal, triangle);
 		}
 
 		/// <summary>
@@ -229,7 +225,7 @@ namespace CSG
 
 		public void Draw(float length, Vector3 direction, Color color)
 		{
-			Debug.DrawLine(value, value + direction.normalized * length, color, 60f);
+            Debug.DrawLine(value, value + direction.normalized * length, color, 60f);
 		}
 	}
 }

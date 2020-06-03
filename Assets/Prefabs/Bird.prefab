@@ -610,6 +610,7 @@ GameObject:
   - component: {fileID: 5689164163903171209}
   - component: {fileID: 5689164163903171203}
   - component: {fileID: 5689164163903171206}
+  - component: {fileID: 5662293609332711579}
   m_Layer: 0
   m_Name: Bird
   m_TagString: Untagged
@@ -5498,6 +5499,7 @@ MonoBehaviour:
   flySpeed: 3
   FlapEvent: event:/Bird/Fly
   ChirpEvent: event:/Bird/Bird Chirp
+  flying: 0
 --- !u!114 &5689164163903171206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5510,9 +5512,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bddbda3483be07409d3cbbbe64d2f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawShader: {fileID: 4800000, guid: baf52884322321e429448352e15392dd, type: 3}
   count: 3
   length: 10
+--- !u!23 &5662293609332711579
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4454646879193731711}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials: []
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1 &4616312509879959920
 GameObject:
   m_ObjectHideFlags: 0

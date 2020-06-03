@@ -15,6 +15,9 @@ public class GameManager : Singleton<GameManager>
 	[HideInInspector] public Prompt prompt;
 	public LevelOrder levelOrder;
 	public float transitionTime = 3f;
+	public event System.Action CustomUpdate;
+
+	// public Level test;
 
 	public override void Awake()
 	{
@@ -31,7 +34,10 @@ public class GameManager : Singleton<GameManager>
 		// SceneManager.activeSceneChanged += new UnityEngine.Events.UnityAction<Scene, Scene>((_, __) => this.Print("ActiveSceneChanged", SceneManager.GetActiveScene().name));
 
 		levelOrder.Start();
+		// test?.StartBehaviors();
 	}
+
+	void Update() => CustomUpdate?.Invoke();
 
 	/// <summary> Closes the Application </summary>
 	public static void QuitGame()
@@ -70,8 +76,6 @@ public class GameManager : Singleton<GameManager>
 
 		float startTime = Time.time;
 		bool inProgress = true;
-
-		int _CutoffID = Shader.PropertyToID("_Cutoff");
 
 		while (inProgress)
 		{

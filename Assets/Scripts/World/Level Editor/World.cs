@@ -7,29 +7,25 @@ using UnityEngine;
 public class World : MonoBehaviour
 {
 	public static World Instance;
+	public enum Type { Real, Heart }
 
 	public Transform heartWorldContainer;
 	public Transform realWorldContainer;
 	public Transform entangledWorldContainer;
+	public Transform mirrorParent;
 
 	public List<ClippableObject> heartClippables, realClippables, mirrorClippables;
 
-	[HideInInspector] public List<EntangledClippable> EntangledClippables
+	public IEnumerable<EntangledClippable> EntangledClippables
 	{
-		get
-		{
-			return entangledClippables.OrderBy(clippable => (clippable.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList();
-		}
+		get => entangledClippables.OrderBy(clippable => (clippable.transform.position - Window.cutOrderAnchor).sqrMagnitude);
 	}
 
 	private List<EntangledClippable> entangledClippables;
 
-	[HideInInspector] public List<ClippableObject> Clippables
+	public IEnumerable<ClippableObject> Clippables
 	{
-		get
-		{
-			return clippables.OrderBy(clippable => (clippable.transform.position - Player.Instance.transform.position).sqrMagnitude).ToList();
-		}
+		get => clippables.OrderBy(clippable => (clippable.transform.position - Window.cutOrderAnchor).sqrMagnitude);
 	}
 
 	private List<ClippableObject> clippables;
@@ -46,6 +42,8 @@ public class World : MonoBehaviour
 		heartWorldContainer = transform.Find("Heart World");
 		realWorldContainer = transform.Find("Real World");
 		entangledWorldContainer = GetComponentInChildren<EntangledObjectManager>().transform; // TODO: decouple EntangledObjectManager
+		mirrorParent = new GameObject("Mirror Parent").transform;
+		mirrorParent.parent = realWorldContainer;
 
 		ConfigureWorld("Heart", heartWorldContainer);
 		ConfigureWorld("Real", realWorldContainer);
@@ -65,12 +63,12 @@ public class World : MonoBehaviour
 
 			foreach (ClippableObject clippable in entangled.heartObject.GetComponentsInChildren<ClippableObject>())
 			{
-				clippable.worldType = ClippableObject.WorldType.Heart;
+				clippable.worldType = World.Type.Heart;
 			}
 
 			foreach (ClippableObject clippable in entangled.realObject.GetComponentsInChildren<ClippableObject>())
 			{
-				clippable.worldType = ClippableObject.WorldType.Real;
+				clippable.worldType = World.Type.Real;
 			}
 		}
 
@@ -107,10 +105,9 @@ public class World : MonoBehaviour
 
 	public void RemoveClippable(ClippableObject clippable)
 	{
-		if (clippable.worldType == ClippableObject.WorldType.Real)
+		if (clippable.worldType == World.Type.Real)
 		{
 			realClippables.Remove(clippable);
-
 		}
 		else
 		{
@@ -126,10 +123,8 @@ public class World : MonoBehaviour
 			meshFilter.gameObject.layer = LayerMask.NameToLayer(layer);
 			if (!meshFilter.TryComponent(out MeshRenderer meshRenderer)) meshRenderer = meshFilter.gameObject.AddComponent<MeshRenderer>();
 			if (!meshFilter.TryComponent<MeshCollider>()) meshFilter.gameObject.AddComponent<MeshCollider>();
-			if (!meshFilter.TryComponent<ClippableObject>()) meshFilter.gameObject.AddComponent<ClippableObject>();
-
-			if (layer == "Heart") meshFilter.gameObject.GetComponent<ClippableObject>().worldType = ClippableObject.WorldType.Heart;
-			else if (layer == "Real") meshFilter.gameObject.GetComponent<ClippableObject>().worldType = ClippableObject.WorldType.Real;
+			ClippableObject clippableObject = meshFilter.TryComponent<ClippableObject>() ? meshFilter.GetComponent<ClippableObject>() : meshFilter.gameObject.AddComponent<ClippableObject>();
+			clippableObject.worldType = layer == "Heart" ? World.Type.Heart : World.Type.Real;
 		}
 
 		// foreach (Transform child in worldContainer.transform)

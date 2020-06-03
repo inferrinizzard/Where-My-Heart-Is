@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +60,6 @@ namespace CSG
 				}
 				else
 				{
-					existingVertex.UV2 = vertex.UV;
 					uniqueVertices.Add(existingVertex);
 				}
 			}
@@ -131,7 +131,8 @@ namespace CSG
 		/// <param name="other">The model to find intersections with</param>
 		public List<Vertex> IntersectWith(Model other)
 		{
-			ClearCutMetadata();
+
+            ClearCutMetadata();
 			other.ClearCutMetadata();
 
 			List<Vertex> createdVertices = new List<Vertex>();
@@ -171,8 +172,7 @@ namespace CSG
 						triangle.internalIntersections.Add(intersection);
 					}
 				}
-			}
-			//createdVertices.ForEach(vertex => vertex.Draw(0.02f, Vector3.back, color));
+            }
 			return createdVertices;
 		}
 
@@ -187,36 +187,21 @@ namespace CSG
 			//TODO: each face may need to have its vertices inputed as separate things
 			Mesh mesh = new Mesh();
 
-			List<Vector2> uvs = new List<Vector2>();
-
 			Dictionary<int, int> vertexIndices = new Dictionary<int, int>();
-
 			// reindex vertices and add them to the mesh
 			List<Vector3> createdVertices = vertices.Select((vertex, index) =>
 			{
 				vertexIndices.Add(vertex.GetHashCode(), index);
 
-				//vertex.index = index;
-				if (vertex.UV != null)
-				{
-					uvs.Add(vertex.UV);
-				}
-				else
-				{
-					uvs.Add(new Vector2(0, 0));
-				}
 				return worldToLocalMatrix.MultiplyPoint(vertex.value);
 			}).ToList();
 
 			mesh.SetVertices(createdVertices);
-			mesh.SetUVs(0, uvs);
 
-			// add triangles to mesh
-			int[] newTriangles = triangles.SelectMany(triangle => triangle.vertices.Select(vertex => vertexIndices[vertex.GetHashCode()])).ToArray();
+            // add triangles to mesh
+            int[] newTriangles = triangles.SelectMany(triangle => triangle.vertices.Select(vertex => vertexIndices[vertex.GetHashCode()])).ToArray();
 
 			mesh.SetTriangles(newTriangles, 0);
-			mesh.RecalculateNormals();
-
 			mesh.RecalculateNormals();
 
 			return mesh;
@@ -338,6 +323,14 @@ namespace CSG
 		{
 			triangles.ForEach(triangle => triangle.FlipNormal());
 		}
+
+        /// <summary>
+        /// Recalculates the normal vectors for each triangle of the model
+        /// </summary>
+        public void RecalculateNormals()
+        {
+            triangles.ForEach(triangle => triangle.CalculateNormal());
+        }
 
 		/// <summary>
 		/// Combines the triangles of the two given models into one model

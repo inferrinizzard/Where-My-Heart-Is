@@ -85,7 +85,6 @@ public class Player : Singleton<Player>, IStateMachine
 	private(float, float) xRotationBounds = (-90f, 90f);
 	/// <summary> Stores the rotation of the player. </summary>
 	[HideInInspector] public Vector3 rotation = Vector3.zero;
-	int _ViewDirID = Shader.PropertyToID("_ViewDir");
 
 	// events
 	public event Action OnOpenWindow;
@@ -141,6 +140,7 @@ public class Player : Singleton<Player>, IStateMachine
 		window.cam = cam;
 		Player.VFX.ToggleMask(false);
 		window.Invoke("CreateFoVMesh", 1);
+		window.FindMirror();
 	}
 
 	public override void OnExitScene() { }
@@ -184,9 +184,9 @@ public class Player : Singleton<Player>, IStateMachine
 		// InputManager.OnCrouchUp -= EndState;
 		InputManager.OnInteractDown -= Interact;
 		InputManager.OnRightClickDown -= Aiming;
-		InputManager.OnRightClickUp -= EndState;
+		InputManager.OnRightClickUp -= () => { if (State is Aiming) EndState(); };
 		InputManager.OnAltAimKeyDown -= Aiming;
-		InputManager.OnAltAimKeyUp -= EndState;
+		InputManager.OnAltAimKeyUp -= () => { if (State is Aiming) EndState(); };
 		InputManager.OnLeftClickDown -= Cut;
 	}
 
@@ -214,7 +214,8 @@ public class Player : Singleton<Player>, IStateMachine
 				AdjustGravity();
 			}
 
-			prompt.UpdateText(); // non physics
+			if (State == null)
+				prompt.UpdateText(); // non physics
 			Die();
 		}
 	}
@@ -236,6 +237,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 			// Set the rotation to the spawnpoint
 			rotation = lastSpawn.eulerAngles;
+			PickUp(false, null);
 		}
 		else if (!lastSpawn)
 			Debug.LogWarning("Missing spawn point!");
@@ -266,7 +268,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-		if (ValidGroundSlope() && IsGrounded()) body.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+		if (ValidGroundSlope() && IsGrounded()) body.velocity = new Vector3(body.velocity.x, jumpForce, body.velocity.z);
 	}
 
 	/// <summary> Increases gravity while falling. </summary>
@@ -294,7 +296,7 @@ public class Player : Singleton<Player>, IStateMachine
 			// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
 			cam.transform.localEulerAngles = new Vector3(-rotation.x, 0, 0);
 
-			Shader.SetGlobalVector(_ViewDirID, cam.transform.forward.normalized);
+			Shader.SetGlobalVector(ShaderID._ViewDir, cam.transform.forward.normalized);
 		}
 	}
 
@@ -329,7 +331,7 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Handles player behavior when interacting with objects. </summary>
 	void Interact()
 	{
-		var hit = RaycastInteractable();
+		var hit = InteractableObject.Raycast();
 		if (heldObject || hit is Pickupable)
 		{
 			PickUp(!heldObject, hit as Pickupable);
@@ -365,16 +367,18 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> The player cut function. </summary>
 	private void Cut()
 	{
-		if (State is Aiming && windowEnabled && !heldObject)
+		if (State is Aiming && windowEnabled)
 		{
 			// SetState(new Cut(this));
-			window.ApplyCut();
-			hands.RevertAim();
-			audioController.PlaceWindow();
-			heartWindow.SetActive(false);
-			Player.VFX.ToggleMask(false);
-			EndState();
-			OnApplyCut?.Invoke();
+			if (window.ApplyCut()) // returns true if succeeds
+			{
+				hands.RevertAim();
+				audioController.PlaceWindow();
+				heartWindow.SetActive(false);
+				Player.VFX.ToggleMask(false);
+				EndState();
+				OnApplyCut?.Invoke();
+			}
 		}
 	}
 
@@ -391,5 +395,5 @@ public class Player : Singleton<Player>, IStateMachine
 		return (Mathf.Abs(Vector3.Angle(ray.normal, Vector3.up)) < maxSlopeAngle);
 	}
 
-	public InteractableObject RaycastInteractable() => Physics.SphereCast(cam.transform.position, .25f, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
+	// public InteractableObject RaycastInteractable() => Physics.SphereCast(cam.transform.position, .25f, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }

@@ -26,18 +26,14 @@ Shader "Screen/Main"
 		[HideInInspector] _WaveDistance ("Distance from player", float) = 0
 
 		[Header(Fog)]
-		_FogExponent("Fog Distance Exponent", float) = 4
+		_FogDistance("Fog Distance Cutoff", float) = 4
+		_FogExponent("Fog Fade Exponent", float) = 1
 		_FogColor("Fog Color", Color) = (1, 1, 1, 1)
 
 		_BirdBackground ("Bird Background", 2D) = "white" {}
 	}
 	SubShader {
 		Tags { "Queue" = "Transparent" }
-
-		// No culling or depth
-		Cull Off ZWrite Off ZTest Always
-
-		// Blend SrcAlpha OneMinusSrcAlpha
 
 		Pass {
 			CGPROGRAM
@@ -61,9 +57,12 @@ Shader "Screen/Main"
 			#include "bird.cginc"
 			#include "fog.cginc"
 
-			sampler2D _Mask;
 			sampler2D _MainTex;
 			sampler2D _Heart;
+
+			sampler2D _Mask;
+			// sampler2D _RampTex;
+			// sampler2D _MaskCutoff;
 
 			// sampler2D _CameraDepthTexture;
 
@@ -78,10 +77,11 @@ Shader "Screen/Main"
 				int exit = 0;
 				float4 output;
 				float mask = tex2D(_Mask, i.uv).r;
+				// float mask = tex2D(_Mask, i.uv).r * tex2D(_RampTex, TRANSFORM_TEX(i.uv, _RampTex)) * _MaskCutoff
 
 				#if MASK
 					output = mask > .5 ? 
-					lerp(tex2D(_MainTex, i.uv), tex2D(_Heart, i.uv), mask)
+					lerp(tex2D(_MainTex, i.uv), tex2D(_Heart, i.uv), mask * 2 - 1)
 					// mask * tex2D(_Heart, i.uv) + (1 - mask) * tex2D(_MainTex, i.uv) 
 					: tex2D(_MainTex, i.uv);
 					//output = mask * tex2D(_Heart, i.uv) + (1 - mask) * tex2D(_MainTex, i.uv);
@@ -89,20 +89,20 @@ Shader "Screen/Main"
 					output = tex2D(_MainTex, i.uv);
 				#endif
 
-				#if BIRD
-					exit = CalculateBird(output, i.uv, mask);
-					if(exit) return output;
-				#endif
+				// #if BIRD
+				exit = CalculateBird(output, i.uv, mask);
+				if(exit) return output;
+				// #endif
 
 				// #if OUTLINE
 				exit = CalculateGlow(output, i.uv, mask);
 				if(exit) return output;
 				// #endif
 
-				#if BOIL
-					exit = CalculateBoil(output, i.uv, mask);
-					if(exit) return output;
-				#endif
+				// #if BOIL
+				exit = CalculateBoil(output, i.uv, mask);
+				if(exit) return output;
+				// #endif
 
 				#if WAVE
 					exit = CalculateWave(output, i.uv, mask); //does not like new watercolour
@@ -113,7 +113,7 @@ Shader "Screen/Main"
 					exit = CalculateFog(output, i.uv, mask);
 					if(exit) return output;
 				#endif
-
+				
 				return output;
 			}
 			
