@@ -23,6 +23,7 @@ public class Bird : MonoBehaviour
 	private Animator anim;
 	private int curveIndex = -1;
 	[HideInInspector] public bool flying = false;
+	public float currentDist { get => curveIndex == -1 ? 0 : cursors[curveIndex].Distance; }
 
 	void Start()
 	{
@@ -55,15 +56,17 @@ public class Bird : MonoBehaviour
 
 	void Update()
 	{
-		// CheckCurvePoints();
+		// ();
 		//if (Input.GetMouseButtonDown(0))
-			//StartNextCurve();
+		//StartNextCurve();
 
 		if (!flying)
 			anim.SetFloat("IdleBlend", Mathf.PingPong(Time.time, 1));
-		if (curveIndex < curves.Count)
+		if (curveIndex < curves.Count && curveIndex > 0)
 			if (transform.position == curves[curveIndex].Points.Last().PositionWorld)
-				ReachedEnd(); 
+				ReachedEnd();
+
+		// this.Print(cursors[curveIndex].Distance, cursors[curveIndex].CalculatePosition());
 	}
 
 	void ReachedEnd()
@@ -86,6 +89,7 @@ public class Bird : MonoBehaviour
 	{
 		if (pathTriggers.Contains(trigger))
 		{
+			Debug.Log("start");
 			trigger.OnPlayerEnterID -= StartNextCurveID;
 			StartNextCurve();
 		}
