@@ -25,8 +25,8 @@ public class Hands : MonoBehaviour
 	public IEnumerator WaitAndAim()
 	{
 		anim.SetBool("Aiming", true);
-		var heartTargetPos = new Vector3(.05f, -1.6f, .8f); // VS GHETTO
-		var heartTargetEulers = new Vector3(0, 90, -21.5f); // VS GHETTO
+		var heartTargetPos = new Vector3(.05f, -1.6f, 1.0f); // VS GHETTO
+		var heartTargetEulers = new Vector3(0, -90, 10f); // VS GHETTO
 
 		float start = Time.time;
 		bool inProgress = true;
