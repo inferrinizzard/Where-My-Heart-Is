@@ -89,6 +89,7 @@ public class Player : Singleton<Player>, IStateMachine
 	// events
 	public event Action OnOpenWindow;
 	public event Action OnApplyCut;
+    public event Action OnJump;
 
 	public override void Awake()
 	{
@@ -268,7 +269,12 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-		if (ValidGroundSlope() && IsGrounded()) body.velocity = new Vector3(body.velocity.x, jumpForce, body.velocity.z);
+        if (ValidGroundSlope() && IsGrounded())
+        {
+            body.velocity = new Vector3(body.velocity.x, jumpForce, body.velocity.z);
+            OnJump?.Invoke();
+        }
+
 	}
 
 	/// <summary> Increases gravity while falling. </summary>

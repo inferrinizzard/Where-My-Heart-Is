@@ -625,6 +625,7 @@
 	<object class="MixerBusEffectChain" id="{ad1e026a-3b13-4398-90f5-671790f68e4a}">
 		<relationship name="effects">
 			<destination>{b4d64452-1ac7-4dfb-98c1-0411bc59faea}</destination>
+			<destination>{77d3d5fa-9265-498f-8517-4e928a6e6ac2}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{647fd79c-0e6f-44dc-85db-f51370e58674}" />
@@ -1009,6 +1010,11 @@
 		</relationship>
 	</object>
 	<object class="MixerBusFader" id="{b4d64452-1ac7-4dfb-98c1-0411bc59faea}" />
+	<object class="GainEffect" id="{77d3d5fa-9265-498f-8517-4e928a6e6ac2}">
+		<property name="gain">
+			<value>1.5</value>
+		</property>
+	</object>
 	<object class="RandomizerModulator" id="{6932147c-7387-4ab1-9e22-fce6e57a1f59}">
 		<property name="nameOfPropertyBeingModulated">
 			<value>pitch</value>
@@ -1063,7 +1069,7 @@
 			<value>1</value>
 		</property>
 		<property name="value">
-			<value>6</value>
+			<value>4</value>
 		</property>
 	</object>
 	<object class="AutomationPoint" id="{def55ed2-862b-49a9-9e8d-fe2ec53a44d4}">
@@ -1071,7 +1077,7 @@
 			<value>0.029661016949152543</value>
 		</property>
 		<property name="value">
-			<value>-18.6144066</value>
+			<value>-32</value>
 		</property>
 	</object>
 	<object class="AutomationPoint" id="{f3d59f31-edfb-47e5-a57a-c193e138c3ed}">
