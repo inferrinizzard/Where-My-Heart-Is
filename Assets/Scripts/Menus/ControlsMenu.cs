@@ -4,21 +4,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary> Handles setting of controls and ui associated. </summary>
+/// <summary> Handles setting of controls and ui associated with the controls page. </summary>
 public class ControlsMenu : MonoBehaviour
 {
+	/// <summary> Input key from unity event system. </summary>
 	KeyCode inputKey;
+	/// <summary> Whether we are waiting for a user input to bind to a control. </summary>
 	bool lookingForKey;
+	/// <summary> Enum for which control is currently being set. </summary>
 	int changingControl;
-
+	/// <summary> If we were just looking for a key or not. </summary>
+	/// <remarks> Used to make sure that escape will not close the menu and only return from the key setting action. </remarks>
 	[HideInInspector] public bool wasLookingForKey = false;
 
+	/// <summary> Text element for the jump button UI element. </summary>
 	public Text jumpButtonText;
+	/// <summary> Text element for the interact button UI element. </summary>
 	public Text interactButtonText;
+	/// <summary> Text element for the alternate aim button UI element. </summary>
 	public Text altAimButtonText;
+	/// <summary> Sensitivity slider element for mouse sensitivity. </summary>
 	public Slider sensitivitySlider;
+	/// <summary> Sensitivity input field for mouse sensitivity. </summary>
 	public InputField sensitivityInputField;
 
+	/// <summary> Enum to specify controls for changingControl. </summary>
 	enum Controls
 	{
 		Jump = 0,
@@ -28,7 +38,7 @@ public class ControlsMenu : MonoBehaviour
 
 	private void Start()
 	{
-		//set all the keys for control ui
+		// Set all text fields to appropriate defaults.
 		jumpButtonText.text = ParseKey(InputManager.jumpKey.ToString());
 		interactButtonText.text = ParseKey(InputManager.interactKey.ToString());
 		altAimButtonText.text = ParseKey(InputManager.altAimKey.ToString());
@@ -41,6 +51,7 @@ public class ControlsMenu : MonoBehaviour
 		{
 			if (lookingForKey)
 			{
+				// Change the prompt for the control we are changing.
 				switch (changingControl)
 				{
 					case (int) Controls.Jump:
@@ -60,12 +71,15 @@ public class ControlsMenu : MonoBehaviour
 		}
 	}
 
+	// We use OnGUI so we only advance once we have been given a key input from Unity.
 	public void OnGUI()
 	{
+		// Check that we are looking for a key, and that the event we get is a key input.
 		if (Event.current.isKey && Event.current.type == EventType.KeyDown && lookingForKey)
 		{
 			inputKey = Event.current.keyCode;
 
+			// Set the key based on the changingControl enum.
 			switch (changingControl)
 			{
 				case (int) Controls.Jump:
@@ -89,6 +103,7 @@ public class ControlsMenu : MonoBehaviour
 		}
 	}
 
+	/// <summary> Method to start changing the jump key. </summary>
 	public void SetJumpKey()
 	{
 		if (!lookingForKey)
@@ -98,6 +113,7 @@ public class ControlsMenu : MonoBehaviour
 		}
 	}
 
+	/// <summary> Method to start changing the interact key. </summary>
 	public void SetInteractKey()
 	{
 		if (!lookingForKey)
@@ -107,6 +123,7 @@ public class ControlsMenu : MonoBehaviour
 		}
 	}
 
+	/// <summary> Method to start changing the alternate aim key. </summary>
 	public void SetAltAimKey()
 	{
 		if (!lookingForKey)
@@ -116,12 +133,14 @@ public class ControlsMenu : MonoBehaviour
 		}
 	}
 
+	/// <summary> Sets the mouse sensitivity and the input field based on the input from the slider. </summary>
 	public void SetSensitivitySlider()
 	{
 		sensitivityInputField.text = sensitivitySlider.value.ToString();
 		Player.mouseSensitivity = sensitivitySlider.value;
 	}
 
+	/// <summary> Sets the mouse sensitivity and the slider based on the input from the input field. </summary>
 	public void SetSensitivityInputField()
 	{
 		float input;
@@ -137,6 +156,9 @@ public class ControlsMenu : MonoBehaviour
 		Player.mouseSensitivity = sensitivitySlider.value;
 	}
 
+	/// <summary> Changes longer keycodes into shorter ones for UI aesthetic purposes.</summary>
+	/// <param name="input"> KeyCode as string. </param>
+	/// <returns> KeyCode as string to be put in menus and prompts. </returns>
 	public string ParseKey(string input)
 	{
 		if(input == "LeftControl")

@@ -3,23 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary> Handles setting of various volume controls associated with the sound page. </summary>
 public class SoundMenu : MonoBehaviour
 {
+    /// <summary> Input field for master volume control. </summary>
     public InputField masterInputField;
+    /// <summary> Input field for sfx volume control. </summary>
     public InputField sfxInputField;
+    /// <summary> Input field for voice volume control. </summary>
     public InputField voiceInputField;
+    /// <summary> Input field for music volume control. </summary>
     public InputField musicInputField;
 
+    /// <summary> Slider for master volume control. </summary>
     public Slider masterSlider;
+    /// <summary> Slider for sfx volume control. </summary>
     public Slider sfxSlider;
+    /// <summary> Slider for voice volume control. </summary>
     public Slider voiceSlider;
+    /// <summary> Slider for music volume control. </summary>
     public Slider musicSlider;
 
+    /// <summary> Sets the master volume control and the input field based on the input from the slider. </summary>
     public void SetMasterSlider()
     {
         masterInputField.text = masterSlider.value.ToString();
     }
 
+    /// <summary> Sets the master volume control and the slider based on the input from the input field. </summary>
     public void SetMasterInputField()
     {
         float input;
@@ -32,11 +43,13 @@ public class SoundMenu : MonoBehaviour
         masterInputField.text = input.ToString();
     }
 
+    /// <summary> Sets the sfx volume control and the input field based on the input from the slider. </summary>
     public void SetSFXSlider()
     {
         sfxInputField.text = sfxSlider.value.ToString();
     }
 
+    /// <summary> Sets the sfx volume control and the slider based on the input from the input field. </summary>
     public void SetSFXInputField()
     {
         float input;
@@ -49,11 +62,13 @@ public class SoundMenu : MonoBehaviour
         sfxInputField.text = input.ToString();
     }
 
+    /// <summary> Sets the voice volume control and the input field based on the input from the slider. </summary>
     public void SetVoiceSlider()
     {
         voiceInputField.text = voiceSlider.value.ToString();
     }
 
+    /// <summary> Sets the voice volume control and the slider based on the input from the input field. </summary>
     public void SetVoiceInputField()
     {
         float input;
@@ -66,11 +81,13 @@ public class SoundMenu : MonoBehaviour
         voiceInputField.text = input.ToString();
     }
 
+    /// <summary> Sets the music volume control and the input field based on the input from the slider. </summary>
     public void SetMusicSlider()
     {
         musicInputField.text = musicSlider.value.ToString();
     }
 
+    /// <summary> Sets the music volume control and the slider based on the input from the input field. </summary>
     public void SetMusicInputField()
     {
         float input;

@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-/// <summary> Controls the behavior of the pause menu UI elements. </summary>
+/// <summary> Handles the pause menu UI elements and the pausing of the game. </summary>
 public class PauseMenu : MonoBehaviour
 {
     /// <summary> Whether the game is paused or not. </summary>
     [HideInInspector] public bool GameIsPaused = false;
+    /// <summary> Whether the options menu is open or not. </summary>
     [HideInInspector] public bool OptionsMenuOpen = false;
     /// <summary> Local instance of pause menu canvas objects. </summary>
     public GameObject pauseMenuUI;
@@ -25,9 +26,12 @@ public class PauseMenu : MonoBehaviour
 
     void Start()
     {
+        // Components for PIP
         _camera = Camera.main;
         pip = GetComponentInChildren<RawImage>();
+
         keySetter = GetComponentInChildren<ControlsMenu>();
+
         InputManager.OnPauseKeyDown += PauseAction;
         Resume(); // When the game starts, make sure we aren't paused.
     }
@@ -36,7 +40,7 @@ public class PauseMenu : MonoBehaviour
     private void PauseAction()
     {
         if (GameIsPaused)
-            if (OptionsMenuOpen)
+            if (OptionsMenuOpen) // Allow escape to be used to exit the options menu.
                 CloseOptions();
             else
                 Resume();
@@ -83,7 +87,6 @@ public class PauseMenu : MonoBehaviour
         GameIsPaused = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        //manager.LoadScene("Intro");
     }
 
     /// <summary> Resets the current level. </summary>
