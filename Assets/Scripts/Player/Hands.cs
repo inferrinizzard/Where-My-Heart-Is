@@ -1,19 +1,30 @@
 using System.Collections;
+ using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
 using UnityEngine;
 
 public class Hands : MonoBehaviour
 {
+   Scene m_scene;
+   string sceneName;
 	Player player;
 	Animator anim;
-	[SerializeField] float heartAnimSpeed = 1;
+   bool isWinter = false;
+   [SerializeField] float heartAnimSpeed = 1;
 	float heartAnimDuration;
 	Vector3 heartStartPos, heartStartEulers;
+   string[] winterLevel = new string[]{"DoubleKey", "IslandFlip", "KeyInBridge", "MirrorHole", "MirrorPushable", "MirrorStairs", "Snowstorm", "SummonCanvas", "WinterFinal", "Wintro"};
 
 	void Start()
 	{
-
+      m_scene = SceneManager.GetActiveScene();
+      sceneName = m_scene.name;
+      foreach(string level in winterLevel){ // Search if we're in winter
+         if(sceneName == level){
+            isWinter = true;
+         }
+      }
 		player = Player.Instance;
 		anim = GetComponentInChildren<Animator>();
 		anim.SetFloat("Speed", heartAnimSpeed);
@@ -25,6 +36,10 @@ public class Hands : MonoBehaviour
 	public IEnumerator WaitAndAim()
 	{
 		anim.SetBool("Aiming", true);
+      if(isWinter){
+         anim.SetBool("Aiming", false);
+         anim.SetBool("OneHand", true);
+      }
 		var heartTargetPos = new Vector3(.05f, -1.6f, 1.0f); // VS GHETTO
 		var heartTargetEulers = new Vector3(0, -90, 10f); // VS GHETTO
 
@@ -32,6 +47,7 @@ public class Hands : MonoBehaviour
 		bool inProgress = true;
 		while (inProgress)
 		{
+
 			if (!(player.State is Aiming))
 			{
 				StartCoroutine(Repos(.5f));
@@ -43,8 +59,9 @@ public class Hands : MonoBehaviour
 			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / heartAnimDuration);
 			// anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTargetEulers, step / heartAnimDuration);
 
-			if (step > heartAnimDuration)
+			if (step > heartAnimDuration){
 				inProgress = false;
+         }
 		}
 		(player.State as Aiming).DeferredStart();
 	}
@@ -71,5 +88,8 @@ public class Hands : MonoBehaviour
 		}
 	}
 
-	public void ToggleHands(bool on) => anim.SetBool("Aiming", on);
+	public void ToggleHands(bool on){
+      anim.SetBool("Aiming", on);
+      anim.SetBool("OneHand", on);
+    }
 }
