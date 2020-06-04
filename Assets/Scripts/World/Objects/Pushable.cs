@@ -6,12 +6,11 @@ using UnityEngine;
 public class Pushable : InteractableObject
 {
 	[SerializeField] float pushDistance = 4;
-	string _prompt = "Press E to Start Pushing";
-	public override string prompt { get => _prompt; set => _prompt = value; }
 	private Vector3 spawn;
 	Rigidbody rb;
 	BoxCollider trigger;
-	bool inRange = false, isPushing = false;
+	bool inRange = false;
+	public bool isPushing = false;
 
 	protected override void Start()
 	{
@@ -44,14 +43,12 @@ public class Pushable : InteractableObject
 	{
 		isPushing = true;
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
-		prompt = "Press E to Stop Pushing";
 		Effects.Instance.SetGlow(this, Color.white);
 	}
 	void StopPushing()
 	{
 		isPushing = false;
 		rb.constraints = ~RigidbodyConstraints.FreezePositionY;
-		prompt = "Press E to Start Pushing";
 		Effects.Instance.SetGlow(this);
 	}
 	void Reset()

@@ -14,7 +14,7 @@ public class Pickupable : InteractableObject
 	protected Quaternion initialRotation;
 	public bool dissolves = false;
 	Collider col;
-	public override string prompt { get => "Press E to Pick Up"; }
+	public override string prompt { get => "Press " + ParseKey(InputManager.interactKey.ToString()) + " to Pick Up"; }
 
 	protected override void Start()
 	{
