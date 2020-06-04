@@ -87,6 +87,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{73741624-cb92-4e48-8d5f-47900418abf0}">
+		<property name="volume">
+			<value>10</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{4d386a84-294f-4b1f-a5ce-f6bcc298627e}</destination>
 		</relationship>
@@ -117,6 +120,9 @@
 		<property name="length">
 			<value>82.042902494331059</value>
 		</property>
+		<relationship name="fadeInCurve">
+			<destination>{bdbedf74-f8dd-4771-bbd7-914c0bbd67e4}</destination>
+		</relationship>
 		<relationship name="audioFile">
 			<destination>{05b98ea9-dc3c-4792-acd0-42d32dea03d1}</destination>
 		</relationship>
@@ -159,6 +165,14 @@
 	</object>
 	<object class="MixerBusPanner" id="{2caa1a38-1797-4565-861f-45a23dbb6a03}" />
 	<object class="MixerBusFader" id="{9315f507-d989-428f-83b8-e7641b7a2c2e}" />
+	<object class="FadeCurve" id="{bdbedf74-f8dd-4771-bbd7-914c0bbd67e4}">
+		<relationship name="startPoint">
+			<destination>{9d6f52ba-1da1-4955-9ab3-37a0030e2e08}</destination>
+		</relationship>
+		<relationship name="endPoint">
+			<destination>{cbeb9551-465d-43c7-ab0b-0c12a61597cf}</destination>
+		</relationship>
+	</object>
 	<object class="Automator" id="{1a4f5912-8238-47fe-bad7-519849c5979d}">
 		<property name="nameOfPropertyBeingAutomated">
 			<value>volume</value>
@@ -175,6 +189,25 @@
 	</object>
 	<object class="MixerBusPanner" id="{b68780a7-339e-4e3e-9d45-e4248d579b18}" />
 	<object class="MixerBusFader" id="{31b0644c-be89-41e9-8499-539a2768393d}" />
+	<object class="AutomationPoint" id="{9d6f52ba-1da1-4955-9ab3-37a0030e2e08}">
+		<property name="position">
+			<value>0</value>
+		</property>
+		<property name="value">
+			<value>0</value>
+		</property>
+		<property name="curveShape">
+			<value>-0.2547189</value>
+		</property>
+	</object>
+	<object class="AutomationPoint" id="{cbeb9551-465d-43c7-ab0b-0c12a61597cf}">
+		<property name="position">
+			<value>1</value>
+		</property>
+		<property name="value">
+			<value>1</value>
+		</property>
+	</object>
 	<object class="AutomationCurve" id="{874446e4-1ed6-4079-a4e6-fdd6b3b3b421}">
 		<relationship name="parameter">
 			<destination>{ddde432b-adb2-4014-ab58-625220ea63fb}</destination>
@@ -193,7 +226,7 @@
 			<value>2446.88208</value>
 		</property>
 		<property name="qualityA">
-			<value>0.100000001</value>
+			<value>1.73248279</value>
 		</property>
 		<relationship name="automators">
 			<destination>{f26533ff-9a70-43c2-a47b-226003556c34}</destination>
@@ -237,7 +270,7 @@
 			<value>0</value>
 		</property>
 		<property name="value">
-			<value>4000</value>
+			<value>22000</value>
 		</property>
 	</object>
 	<object class="AutomationPoint" id="{5e92e4aa-e4ea-4227-8b8d-027fc6ba3fbd}">
@@ -245,7 +278,7 @@
 			<value>1</value>
 		</property>
 		<property name="value">
-			<value>20</value>
+			<value>7039.16699</value>
 		</property>
 	</object>
 </objects>

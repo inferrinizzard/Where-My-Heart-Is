@@ -132,7 +132,6 @@ public class Pushable : InteractableObject
         if(isGrounded != IsGrounded())
         {
             isGrounded = !isGrounded;
-            Debug.Log(isGrounded);
             //if we landed
             if (isGrounded)
             {

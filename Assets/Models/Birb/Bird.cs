@@ -55,13 +55,12 @@ public class Bird : MonoBehaviour
 
 	void Update()
 	{
-		// CheckCurvePoints();
-		//if (Input.GetMouseButtonDown(0))
-			//StartNextCurve();
-
+        // CheckCurvePoints();
+        //if (Input.GetMouseButtonDown(0))
+        //StartNextCurve();
 		if (!flying)
 			anim.SetFloat("IdleBlend", Mathf.PingPong(Time.time, 1));
-		if (curveIndex < curves.Count)
+		if (curveIndex < curves.Count && curveIndex != -1)
 			if (transform.position == curves[curveIndex].Points.Last().PositionWorld)
 				ReachedEnd(); 
 	}
