@@ -5,30 +5,34 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary> Handles setting of controls and ui associated. </summary>
-public class KeySetter : MonoBehaviour
+public class ControlsMenu : MonoBehaviour
 {
 	KeyCode inputKey;
 	bool lookingForKey;
 	int changingControl;
 
-	public bool wasLookingForKey = false;
+	[HideInInspector] public bool wasLookingForKey = false;
 
-	public GameObject jumpButton;
-	public GameObject interactButton;
+	public Text jumpButtonText;
+	public Text interactButtonText;
+	public Text altAimButtonText;
 	public Slider sensitivitySlider;
 	public InputField sensitivityInputField;
 
 	enum Controls
 	{
 		Jump = 0,
-		Interact = 1
+		Interact = 1,
+		AltAim = 2
 	}
 
 	private void Start()
 	{
 		//set all the keys for control ui
-		jumpButton.GetComponent<Text>().text = InputManager.jumpKey.ToString();
-		interactButton.GetComponent<Text>().text = InputManager.interactKey.ToString();
+		jumpButtonText.text = ParseKey(InputManager.jumpKey.ToString());
+		interactButtonText.text = ParseKey(InputManager.interactKey.ToString());
+		altAimButtonText.text = ParseKey(InputManager.altAimKey.ToString());
+		sensitivityInputField.text = sensitivitySlider.value.ToString();
 	}
 
 	private void Update()
@@ -40,10 +44,13 @@ public class KeySetter : MonoBehaviour
 				switch (changingControl)
 				{
 					case (int) Controls.Jump:
-						jumpButton.GetComponent<Text>().text = "press any key";
+						jumpButtonText.text = "press any key";
 						break;
 					case (int) Controls.Interact:
-						interactButton.GetComponent<Text>().text = "press any key";
+						interactButtonText.text = "press any key";
+						break;
+					case (int)Controls.AltAim:
+						altAimButtonText.text = "press any key";
 						break;
 					default:
 						Debug.Log("error assigning key");
@@ -63,11 +70,15 @@ public class KeySetter : MonoBehaviour
 			{
 				case (int) Controls.Jump:
 					if (inputKey != KeyCode.Escape) InputManager.jumpKey = inputKey; else wasLookingForKey = true;
-					jumpButton.GetComponent<Text>().text = InputManager.jumpKey.ToString();
+					jumpButtonText.text = ParseKey(InputManager.jumpKey.ToString()); ;
 					break;
 				case (int) Controls.Interact:
 					if (inputKey != KeyCode.Escape) InputManager.interactKey = inputKey; else wasLookingForKey = true;
-					interactButton.GetComponent<Text>().text = InputManager.interactKey.ToString();
+					interactButtonText.text = ParseKey(InputManager.interactKey.ToString()); ;
+					break;
+				case (int)Controls.AltAim:
+					if (inputKey != KeyCode.Escape) InputManager.altAimKey = inputKey; else wasLookingForKey = true;
+					altAimButtonText.text = ParseKey(InputManager.altAimKey.ToString());
 					break;
 				default:
 					Debug.Log("error assigning key");
@@ -96,6 +107,15 @@ public class KeySetter : MonoBehaviour
 		}
 	}
 
+	public void SetAltAimKey()
+	{
+		if (!lookingForKey)
+		{
+			lookingForKey = true;
+			changingControl = (int) Controls.AltAim;
+		}
+	}
+
 	public void SetSensitivitySlider()
 	{
 		sensitivityInputField.text = sensitivitySlider.value.ToString();
@@ -104,10 +124,37 @@ public class KeySetter : MonoBehaviour
 
 	public void SetSensitivityInputField()
 	{
-		float input = float.Parse(sensitivityInputField.text);
+		float input;
+		if (sensitivityInputField.text == "")
+		{
+			input = sensitivitySlider.minValue;
+			sensitivityInputField.text = sensitivitySlider.minValue.ToString();
+		}
+		else
+			input = float.Parse(sensitivityInputField.text);
 		input = Mathf.Clamp(input, sensitivitySlider.minValue, sensitivitySlider.maxValue);
-		Debug.Log(input);
-		sensitivitySlider.value = input; 
+		sensitivitySlider.value = input;
 		Player.mouseSensitivity = sensitivitySlider.value;
+	}
+
+	public string ParseKey(string input)
+	{
+		if(input == "LeftControl")
+		{
+			return "L Ctrl";
+		}
+		if(input == "RightControl")
+		{
+			return "R Ctrl";
+		}
+		if (input == "LeftAlt")
+		{
+			return "L Alt";
+		}
+		if (input == "RightAlt")
+		{
+			return "R Alt";
+		}
+		return input;
 	}
 }

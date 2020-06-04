@@ -8,7 +8,8 @@ using UnityEngine.UI;
 public class PauseMenu : MonoBehaviour
 {
     /// <summary> Whether the game is paused or not. </summary>
-    public bool GameIsPaused = false;
+    [HideInInspector] public bool GameIsPaused = false;
+    [HideInInspector] public bool OptionsMenuOpen = false;
     /// <summary> Local instance of pause menu canvas objects. </summary>
     public GameObject pauseMenuUI;
     /// <summary> Local instance of options menu canvas objects. </summary>
@@ -16,7 +17,7 @@ public class PauseMenu : MonoBehaviour
     /// <summary> Local instance of crosshair object. </summary>
     public GameObject gameplayUI;
     /// <summary> Local instance of keysetter object. </summary>
-    [HideInInspector] public KeySetter keySetter;
+    [HideInInspector] public ControlsMenu keySetter;
     /// <summary> Local instance of camera for PIP. </summary>
     private Camera _camera;
     /// <summary> Raw image for PIP. </summary>
@@ -26,7 +27,7 @@ public class PauseMenu : MonoBehaviour
     {
         _camera = Camera.main;
         pip = GetComponentInChildren<RawImage>();
-        keySetter = GetComponentInChildren<KeySetter>();
+        keySetter = GetComponentInChildren<ControlsMenu>();
         InputManager.OnPauseKeyDown += PauseAction;
         Resume(); // When the game starts, make sure we aren't paused.
     }
@@ -34,7 +35,12 @@ public class PauseMenu : MonoBehaviour
     /// <summary> Function to bind to pause input action. </summary>
     private void PauseAction()
     {
-        if(GameIsPaused) Resume(); else Pause();
+        if (GameIsPaused)
+            if (OptionsMenuOpen)
+                CloseOptions();
+            else
+                Resume();
+        else Pause();
     }
 
     /// <summary> Resumes the game. </summary>
@@ -103,6 +109,7 @@ public class PauseMenu : MonoBehaviour
     {
         pauseMenuUI.SetActive(false);
         optionsMenuUI.SetActive(true);
+        OptionsMenuOpen = true;
     }
 
     /// <summary> Closes the options UI. </summary>
@@ -110,6 +117,7 @@ public class PauseMenu : MonoBehaviour
     {
         optionsMenuUI.SetActive(false);
         pauseMenuUI.SetActive(true);
+        OptionsMenuOpen = false;
     }
 
     /// <summary> Takes a screenshot of the main camera and applies it to a RenderTexture. </summary>
