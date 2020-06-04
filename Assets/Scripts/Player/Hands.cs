@@ -18,27 +18,37 @@ public class Hands : MonoBehaviour
 
 	void Start()
 	{
+      isWinter = false;
       m_scene = SceneManager.GetActiveScene();
       sceneName = m_scene.name;
-      foreach(string level in winterLevel){ // Search if we're in winter
-         if(sceneName == level){
-            isWinter = true;
-         }
-      }
 		player = Player.Instance;
 		anim = GetComponentInChildren<Animator>();
 		anim.SetFloat("Speed", heartAnimSpeed);
 		heartAnimDuration = anim.runtimeAnimatorController.animationClips[0].length / heartAnimSpeed;
 		heartStartPos = anim.transform.localPosition;
 		heartStartEulers = anim.transform.localEulerAngles;
+      foreach(string level in winterLevel){ // Search if we're in winter
+         if(sceneName == level){
+            isWinter = true;
+            Debug.Log("True================================================================================================================================================================");
+         }
+         Debug.Log("Searching");
+
+      }
 	}
 
 	public IEnumerator WaitAndAim()
 	{
 		anim.SetBool("Aiming", true);
+      anim.SetBool("OneHand", false);
+
       if(isWinter){
+         Debug.Log("WINTER IS HERE");
          anim.SetBool("Aiming", false);
          anim.SetBool("OneHand", true);
+      }else{
+         Debug.Log("FALL IS HERE");
+
       }
 		var heartTargetPos = new Vector3(.05f, -1.6f, 1.0f); // VS GHETTO
 		var heartTargetEulers = new Vector3(0, -90, 10f); // VS GHETTO
@@ -90,6 +100,9 @@ public class Hands : MonoBehaviour
 
 	public void ToggleHands(bool on){
       anim.SetBool("Aiming", on);
-      anim.SetBool("OneHand", on);
-    }
+      if(isWinter){
+         anim.SetBool("OneHand", on);
+      }
+   }
+
 }

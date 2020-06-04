@@ -57,7 +57,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Take 001 1
+  m_Name: One Hand Cut
   m_Speed: 0.7
   m_CycleOffset: 0
   m_Transitions:
@@ -68,14 +68,14 @@ AnimatorState:
   m_WriteDefaultValues: 1
   m_Mirror: 0
   m_SpeedParameterActive: 1
-  m_MirrorParameterActive: 0
+  m_MirrorParameterActive: 1
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 1827226128182048838, guid: fe6444096de712e4a8c32fa8dd561b49,
+  m_Motion: {fileID: 1827226128182048838, guid: 0df5bd44acfcbab45ab69d14e036220c,
     type: 3}
   m_Tag: 
   m_SpeedParameter: Speed
-  m_MirrorParameter: Aiming
+  m_MirrorParameter: OneHand
   m_CycleOffsetParameter: Speed
   m_TimeParameter: Speed
 --- !u!1101 &-3662907817415798280
@@ -129,7 +129,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Take 001
+  m_Name: Heart Cut
   m_Speed: 0.7
   m_CycleOffset: 0
   m_Transitions:
@@ -157,7 +157,10 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 2
+    m_ConditionEvent: OneHand
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 9086616583814198077}
   m_Solo: 0
@@ -254,10 +257,10 @@ AnimatorStateMachine:
     m_Position: {x: 290, y: 110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -4448632203533297833}
-    m_Position: {x: 400, y: 370, z: 0}
+    m_Position: {x: 430, y: 360, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 9086616583814198077}
-    m_Position: {x: 190, y: 410, z: 0}
+    m_Position: {x: 150, y: 390, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -275,7 +278,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Take 001 0
+  m_Name: Heart Cut Reverse
   m_Speed: -5
   m_CycleOffset: 0
   m_Transitions:
@@ -325,7 +328,10 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions: []
+  m_Conditions:
+  - m_ConditionMode: 1
+    m_ConditionEvent: OneHand
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -4448632203533297833}
   m_Solo: 0
@@ -419,8 +425,8 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Take 001 2
-  m_Speed: -5
+  m_Name: One Hand Cut Reverse
+  m_Speed: -10
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -8126817834800708653}
@@ -433,10 +439,10 @@ AnimatorState:
   m_MirrorParameterActive: 1
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 1827226128182048838, guid: fe6444096de712e4a8c32fa8dd561b49,
+  m_Motion: {fileID: 1827226128182048838, guid: 0df5bd44acfcbab45ab69d14e036220c,
     type: 3}
   m_Tag: 
   m_SpeedParameter: Speed
   m_MirrorParameter: OneHand
   m_CycleOffsetParameter: 
-  m_TimeParameter: 
+  m_TimeParameter: Speed
