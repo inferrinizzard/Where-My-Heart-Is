@@ -210,19 +210,35 @@ public class Player : Singleton<Player>, IStateMachine
 		{
 			if (canMove)
 			{
-				Move();
-				Rotate();
-				AdjustGravity();
+                Fly();
 			}
 
 			if (State == null)
 				prompt.UpdateText(); // non physics
-			Die();
 		}
 	}
 
-	/// <summary> Player sudoku function. </summary>
-	private void Die()
+    float rotationX, rotationY;
+
+    // Update is called once per frame
+    void Fly()
+    {
+        var hor = Input.GetAxis("Horizontal");
+        if (hor != 0)
+            transform.Translate(Vector3.right * hor);
+
+        var ver = Input.GetAxis("Vertical");
+        if (ver != 0)
+            transform.Translate(Vector3.forward * ver);
+
+        rotationY += Input.GetAxis("Mouse X") * mouseSensitivity;
+        rotationX += Input.GetAxis("Mouse Y") * mouseSensitivity;
+        transform.localEulerAngles = new Vector3(-rotationX, rotationY, 0);
+    }
+
+
+    /// <summary> Player sudoku function. </summary>
+    private void Die()
 	{
 		if (!deathPlane)
 		{
