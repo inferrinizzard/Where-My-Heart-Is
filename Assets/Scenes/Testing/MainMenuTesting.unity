@@ -566,6 +566,7 @@ GameObject:
   m_Component:
   - component: {fileID: 854207858}
   - component: {fileID: 854207859}
+  - component: {fileID: 854207860}
   m_Layer: 5
   m_Name: MainMenuUI
   m_TagString: Untagged
@@ -609,6 +610,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainMenuUI: {fileID: 1938150987}
   optionsMenuUI: {fileID: 6241671617348025491}
+--- !u!225 &854207860
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 854207857}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1039409094
 GameObject:
   m_ObjectHideFlags: 0
@@ -1328,7 +1341,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.5, y: -2.8213959}
+  m_AnchoredPosition: {x: 0.5, y: -2.8214111}
   m_SizeDelta: {x: 968, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2096501120
@@ -16445,7 +16458,7 @@ GameObject:
   - component: {fileID: 3166231813774384535}
   - component: {fileID: 8296172669101032191}
   m_Layer: 0
-  m_Name: OpenSketchbook - Textured 04
+  m_Name: Sketchbook
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16465,8 +16478,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   anim: {fileID: 3166231813774384535}
   cam: {fileID: 1702157901853770628}
-  mainMenuUI: {fileID: 854207857}
-  pressAnyPrompt: {fileID: 522838380}
+  mainMenuUI: {fileID: 854207860}
+  pressAnyPrompt: {fileID: 522838382}
 --- !u!1 &8303455207699784613
 GameObject:
   m_ObjectHideFlags: 0

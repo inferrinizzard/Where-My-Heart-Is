@@ -9,27 +9,33 @@ public class MainMenu : MonoBehaviour
     /// <summary> Local instance of options menu canvas objects. </summary>
     public GameObject optionsMenuUI;
 
-    // Start is called before the first frame update
     void Start()
     {
-        CloseOptions();
+        CloseOptions(); // Make sure we start in the main menu.
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape)) CloseOptions();
     }
 
+    /// <summary> Opens the options menu and closes other menus. </summary>
     public void OpenOptions()
     {
         mainMenuUI.SetActive(false);
         optionsMenuUI.SetActive(true);
     }
 
+    /// <summary> Closes the options menu and displays the main menu. </summary>
     public void CloseOptions()
     {
         mainMenuUI.SetActive(true);
         optionsMenuUI.SetActive(false);
+    }
+
+    /// <summary> Quits the game. </summary>
+	public void Quit()
+    {
+        GameManager.QuitGame();
     }
 }
