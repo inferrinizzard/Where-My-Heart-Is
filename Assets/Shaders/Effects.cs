@@ -31,7 +31,7 @@ public class Effects : MonoBehaviour
 		ToggleMask(maskOn);
 		// ToggleEdgeOutline(true);
 		ToggleDissolve(dissolveOn);
-		ToggleBoil(true);
+		ToggleBoil(false);
 		ToggleBird(true);
 		ToggleFog(false);
 
