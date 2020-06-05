@@ -19,9 +19,19 @@ public class DoorPrompt : InteractableObject
             Cursor.lockState = CursorLockMode.Locked;
     }
 
-    public void hidePrompt()
+    /// <summary>
+    /// controlled through door prompt buttons
+    /// </summary>
+    public void HidePrompt()
     {
         displayPrompt = !displayPrompt;
         Prompt.SetActive(displayPrompt);
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    // Load credits scene
+    public void StartCredits()
+    {
+        StartCoroutine(Player.Instance.mask.PreTransition());
     }
 }
