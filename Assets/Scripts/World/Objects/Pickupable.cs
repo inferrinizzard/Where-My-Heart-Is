@@ -14,7 +14,7 @@ public class Pickupable : InteractableObject
 	protected Quaternion initialRotation;
 	public bool dissolves = false;
 	Collider col;
-	public override string prompt { get => "Press " + ParseKey(InputManager.interactKey.ToString()) + " to Pick Up"; }
+	public override string prompt { get => $"Press {InputManager.InteractKey} to Pick Up"; }
 
 	protected override void Start()
 	{
@@ -67,7 +67,7 @@ public class Pickupable : InteractableObject
 		transform.parent = player.heldObjectLocation; // set the new parent to the hold object location object
 		transform.localPosition = Vector3.zero; // set the position to local zero to match the position of the hold object location target
 
-		if(birdTrigger)
+		if (birdTrigger)
 		{
 			GameObject.Find("/Bird").GetComponent<Bird>().StartNextCurve();
 		}

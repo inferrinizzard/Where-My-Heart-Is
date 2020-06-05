@@ -8,7 +8,7 @@ public abstract class InteractableObject : MonoBehaviour
 	[HideInInspector] public Player player;
 	/// <summary> Whether or not this is the active item </summary>
 	[HideInInspector] public bool active;
-	public virtual string prompt { get => "Press " + InputManager.interactKey + " to Interact"; set { } }
+	public virtual string prompt { get => $"Press {InputManager.InteractKey} to Interact"; }
 	string flavorText = "";
 	DialogueSystem dialogue;
 	[HideInInspector] public Renderer[] renderers;

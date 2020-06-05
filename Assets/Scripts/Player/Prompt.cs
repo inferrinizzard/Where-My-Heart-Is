@@ -22,19 +22,19 @@ public class Prompt : MonoBehaviour
 		{
 			var hit = InteractableObject.Raycast();
 			if (player.heldObject is Placeable && (player.heldObject as Placeable).PlaceConditionsMet())
-				// SetText(player.heldObject.prompt);
-				SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Place Canvas");
+				SetText(player.heldObject.prompt);
+			// SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Place Canvas");
 			else if (hit && !player.heldObject && player.canMove)
 			{
-				if (hit.TryComponent<Bird>())
-					SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Interact with Bird");
-				else if (hit.TryComponent<Pushable>())
-					if (!hit.GetComponent<Pushable>().isPushing)
-						SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Start Pushing");
-					else
-						SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Stop Pushing");
-				else
-					SetText(hit.prompt);
+				// if (hit.TryComponent<Bird>())
+				// 	SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Interact with Bird");
+				// else if (hit.TryComponent<Pushable>())
+				// 	if (!hit.GetComponent<Pushable>().isPushing)
+				// 		SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Start Pushing");
+				// 	else
+				// 		SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Stop Pushing");
+				// else
+				SetText(hit.prompt);
 
 				if (hit.TryComponent(out Placeable obj) && obj.PlaceConditionsMet())
 				{
@@ -54,24 +54,20 @@ public class Prompt : MonoBehaviour
 	}
 	public void Disable() => textComponent.enabled = false;
 
-	public string ParseKey(string input)
+	public static string ParseKey(string input)
 	{
-		if (input == "LeftControl")
+		switch (input)
 		{
-			return "L Ctrl";
+			case "LeftControl":
+				return "L Ctrl";
+			case "RightControl":
+				return "R Ctrl";
+			case "LeftAlt":
+				return "L Alt";
+			case "RightAlt":
+				return "R Alt";
+			default:
+				return input;
 		}
-		if (input == "RightControl")
-		{
-			return "R Ctrl";
-		}
-		if (input == "LeftAlt")
-		{
-			return "L Alt";
-		}
-		if (input == "RightAlt")
-		{
-			return "R Alt";
-		}
-		return input;
 	}
 }

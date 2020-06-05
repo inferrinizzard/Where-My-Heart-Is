@@ -9,7 +9,7 @@ public class Placeable : Pickupable
 	public GameObject placeTarget;
 	public Bird birdAnim;
 	public IntroController introController;
-	public override string prompt { get => "Press E to Place Canvas"; }
+	public override string prompt { get => $"Press {InputManager.InteractKey} to {(active ? "Place" : "Pick up")} Canvas"; }
 
 	public override void Interact()
 	{
