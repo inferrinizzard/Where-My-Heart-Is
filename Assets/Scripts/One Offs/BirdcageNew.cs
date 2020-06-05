@@ -25,29 +25,7 @@ public class BirdcageNew : InteractableObject
 		AudioMaster.Instance.StopAll();
 		//distress.GetComponent<FMODUnity.StudioEventEmitter>().Stop();
 		Player.Instance.canMove = false;
-
-		Invoke("Fade", 1.0f);
-
-		//transition to next scene
-		Invoke("Transition", 3.0f);
+		Effects.Instance.StartFade(false, .05f, false);
+		GameManager.Instance.ChangeLevel();
 	}
-
-	void Fade()
-	{
-		Player.Instance.cam.gameObject.AddComponent<FadeOut>();
-		FadeOut(-1);
-	}
-
-	void Transition()
-	{
-		StartCoroutine(Player.Instance.mask.PreTransition());
-		FadeOut(1);
-	}
-
-	IEnumerator FadeOut(int fade)
-	{
-		float fadeTime = Player.Instance.cam.gameObject.GetComponent<FadeOut>().BeginFade(fade);
-		yield return new WaitForSeconds(fadeTime);
-	}
-
 }
