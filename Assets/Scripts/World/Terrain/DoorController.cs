@@ -9,6 +9,7 @@ public class DoorController : InteractableObject
 	[HideInInspector] public Animator anim;
 	public bool spawned = false;
 	[SerializeField] GameObject house = default, holder = default;
+	[SerializeField] Transform closeTrigger = default;
 	public GameObject blocker;
 	bool snowstormLevel = false;
 
@@ -20,8 +21,6 @@ public class DoorController : InteractableObject
 		if (Player.Instance.GetComponentInChildren<Snowstorm>())
 			snowstormLevel = true;
 
-		// holder = transform.parent.gameObject;
-
 		if (house)
 			foreach (Renderer r in house.GetComponentsInChildren<Renderer>())
 				foreach (Material m in r.materials)
@@ -29,6 +28,8 @@ public class DoorController : InteractableObject
 
 		if (snowstormLevel)
 			holder.SetActive(false);
+		else
+			GetComponent<Collider>().isTrigger = false;
 	}
 
 	public override void Interact()
@@ -50,7 +51,7 @@ public class DoorController : InteractableObject
 	{
 		spawned = true;
 		holder.SetActive(true);
-		Vector3 doorPos = (player.transform.forward * 10) + new Vector3(player.transform.position.x, 0.2f, player.transform.position.z);
+		Vector3 doorPos = (player.transform.forward * 10) + new Vector3(player.transform.position.x, 0.4f, player.transform.position.z);
 		holder.transform.position = doorPos;
 		holder.transform.rotation = Quaternion.LookRotation(player.transform.forward);
 	}
@@ -59,7 +60,10 @@ public class DoorController : InteractableObject
 	{
 		blocker.GetComponent<Collider>().enabled = false;
 		foreach (var c in GetComponentsInChildren<Collider>())
-			c.enabled = false;
+		{
+			if (!c.isTrigger)
+				c.enabled = false;
+		}
 	}
 
 	void OnTriggerExit()
@@ -67,5 +71,8 @@ public class DoorController : InteractableObject
 		blocker.GetComponent<Collider>().enabled = true;
 		foreach (var c in GetComponentsInChildren<Collider>())
 			c.enabled = true;
+
+		if (Player.Instance.playerCollider.bounds.Intersects(closeTrigger.GetComponent<Collider>().bounds))
+			anim.Play("Slam");
 	}
 }
