@@ -1,12 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Phone : InteractableObject
 {
-    public override string prompt { get => "Press E to Interact with Phone"; }
-    public override void Interact()
-    {
-        StartCoroutine(Player.Instance.mask.PreTransition());
-    }
+	public override string prompt { get => "Press E to Interact with Phone"; }
+	public override void Interact()
+	{
+		Effects.Instance.ToggleFog(false);
+		StartCoroutine(Player.Instance.mask.PreTransition());
+	}
 }

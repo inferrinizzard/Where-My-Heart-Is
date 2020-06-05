@@ -50,7 +50,7 @@ public class DoorController : InteractableObject
 	{
 		spawned = true;
 		holder.SetActive(true);
-		Vector3 doorPos = (player.transform.forward * 10) + new Vector3(player.transform.position.x, 0.4f, player.transform.position.z);
+		Vector3 doorPos = (player.transform.forward * 10) + new Vector3(player.transform.position.x, 0.2f, player.transform.position.z);
 		holder.transform.position = doorPos;
 		holder.transform.rotation = Quaternion.LookRotation(player.transform.forward);
 	}
