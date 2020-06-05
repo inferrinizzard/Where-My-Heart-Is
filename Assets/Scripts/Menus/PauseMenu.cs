@@ -70,7 +70,12 @@ public class PauseMenu : MonoBehaviour
 	/// <summary> Pauses the game. </summary>
 	void Pause()
 	{
-		StartCoroutine(GetPIP());
+		StartCoroutine(PauseRoutine());
+	}
+
+	IEnumerator PauseRoutine()
+	{
+		yield return StartCoroutine(GetPIP());
 		pauseMenuUI.SetActive(true);
 		gameplayUI.SetActive(false);
 		Time.timeScale = 0f;
@@ -128,11 +133,12 @@ public class PauseMenu : MonoBehaviour
 	public IEnumerator GetPIP()
 	{
 		yield return new WaitForEndOfFrame();
+		pip.texture = ApplyMask.Screenshot();
 
-		pip.texture = new RenderTexture(Camera.main.pixelWidth, Camera.main.pixelHeight, 24);
-		_camera.targetTexture = (RenderTexture) pip.texture;
-		_camera.Render();
-		RenderTexture.active = (RenderTexture) pip.texture;
-		_camera.targetTexture = null; // must set to null so that the camera will also render to main display after taking screenshot
+		// pip.texture = new RenderTexture(Camera.main.pixelWidth, Camera.main.pixelHeight, 24);
+		// _camera.targetTexture = (RenderTexture) pip.texture;
+		// _camera.Render();
+		// RenderTexture.active = (RenderTexture) pip.texture;
+		// _camera.targetTexture = null; // must set to null so that the camera will also render to main display after taking screenshot
 	}
 }
