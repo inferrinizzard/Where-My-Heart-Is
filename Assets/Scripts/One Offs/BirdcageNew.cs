@@ -10,25 +10,32 @@ public class BirdcageNew : InteractableObject
 {
 	[FMODUnity.EventRef]
 	public string CageEvent;
-	
+	//public Animator animator;
+	public GameObject birdcage;
 	//public GameObject distress;
 	//public Image img;
 
 	public override string prompt { get => "Press E to Cage Bird"; }
 	public override void Interact()
 	{
-		// door close animation goes here
+		birdcage.GetComponent<Animator>().SetBool("close", true);
 
-		Player.Instance.cam.gameObject.AddComponent<FadeOut>();
-		FadeOut(-1);
 		Player.Instance.prompt.Disable();
 		FMODUnity.RuntimeManager.PlayOneShot(CageEvent);
 		AudioMaster.Instance.StopAll();
 		//distress.GetComponent<FMODUnity.StudioEventEmitter>().Stop();
 		Player.Instance.canMove = false;
 
+		Invoke("Fade", 1.0f);
+
 		//transition to next scene
-     	Invoke("Transition", 2.0f);
+		Invoke("Transition", 3.0f);
+	}
+
+	void Fade()
+	{
+		Player.Instance.cam.gameObject.AddComponent<FadeOut>();
+		FadeOut(-1);
 	}
 
 	void Transition()
