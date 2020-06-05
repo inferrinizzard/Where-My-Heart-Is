@@ -101,7 +101,7 @@ public class ApplyMask : MonoBehaviour
 	void OnPreRender()
 	{
 		// render depth buffer to sample from
-		RenderDepth();
+		// RenderDepth();
 
 		if (rippleInProgress)
 		{
@@ -121,11 +121,11 @@ public class ApplyMask : MonoBehaviour
 		}
 	}
 
-	public void RenderDepth()
-	{
-		depthCam.Render();
-		Shader.SetGlobalTexture(ShaderID._DepthColor, depth);
-	}
+	// public void RenderDepth()
+	// {
+	// 	depthCam.Render();
+	// 	Shader.SetGlobalTexture(ShaderID._DepthColor, depth);
+	// }
 
 	public void SetMask(RenderTexture nextMask) => Shader.SetGlobalTexture(ShaderID._Mask, nextMask);
 	// {
