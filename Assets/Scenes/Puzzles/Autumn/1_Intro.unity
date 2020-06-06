@@ -5501,10 +5501,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  active: 0
   renderers: []
+  anim: {fileID: 0}
   spawned: 0
   house: {fileID: 0}
+  holder: {fileID: 0}
+  closeTrigger: {fileID: 0}
   blocker: {fileID: 0}
 --- !u!1 &309648657
 GameObject:
@@ -6794,7 +6796,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh188850
+  m_Name: pb_Mesh35514
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -6957,7 +6959,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh188828
+  m_Name: pb_Mesh35492
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -7303,7 +7305,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh188642
+  m_Name: pb_Mesh35306
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -9128,7 +9130,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh188788
+  m_Name: pb_Mesh35452
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -12167,7 +12169,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!23 &930343647
@@ -12866,7 +12867,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh188260
+  m_Name: pb_Mesh34920
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -13689,7 +13690,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh188402
+  m_Name: pb_Mesh35066
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -14441,7 +14442,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!4 &1335574864 stripped
@@ -14848,7 +14848,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh188416
+  m_Name: pb_Mesh35080
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -15935,7 +15935,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh188456
+  m_Name: pb_Mesh35120
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -18863,7 +18863,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh188696
+  m_Name: pb_Mesh35360
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -19497,7 +19497,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!1 &1671600425 stripped
@@ -19519,7 +19518,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!1 &1671600427 stripped
@@ -19541,7 +19539,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!1 &1671600429 stripped
@@ -19563,7 +19560,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!4 &1673596441 stripped
@@ -22378,7 +22374,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh188330
+  m_Name: pb_Mesh34994
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -24357,10 +24353,10 @@ GameObject:
   - component: {fileID: 692244050272578713}
   - component: {fileID: 1862715062}
   - component: {fileID: 1862715060}
-  - component: {fileID: 1740563254691644388}
   - component: {fileID: 1740563254691644389}
+  - component: {fileID: 1740563254691644388}
   m_Layer: 0
-  m_Name: pasted__pCube8
+  m_Name: canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24375,19 +24371,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1740563254691644387}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 536e67a0c40ece547ba3f658c51d4e1b, type: 3}
+  m_Script: {fileID: 11500000, guid: c7053a5b33f617b41aa3b284f75d894c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  active: 0
   renderers: []
   oldParent: {fileID: 0}
-  birdTrigger: 1
+  birdTrigger: 0
+  active: 0
   dissolves: 0
-  placeDistanceThreshold: 0.5
-  placeTarget: {fileID: 87532652}
-  birdAnim: {fileID: 0}
-  introController: {fileID: 39484338}
+  onEasel: 0
+  placeTarget: {fileID: 87532653}
 --- !u!114 &1740563254691644389
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24601,6 +24595,36 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: e21796e3c474206478c82dc7dffecfa4,
         type: 2}
+    - target: {fileID: 7997890715642815707, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7997890715642815707, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 419518859258371002, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 419518859258371002, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 419518859258371002, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695175442802452577, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5695175442802452577, guid: 2e408cfb269dae24999d2b21e62931c5,
         type: 3}
       propertyPath: m_IsActive
@@ -24627,36 +24651,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5695175443016207832, guid: 2e408cfb269dae24999d2b21e62931c5,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5695175442802452577, guid: 2e408cfb269dae24999d2b21e62931c5,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7997890715642815707, guid: 2e408cfb269dae24999d2b21e62931c5,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7997890715642815707, guid: 2e408cfb269dae24999d2b21e62931c5,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 419518859258371002, guid: 2e408cfb269dae24999d2b21e62931c5,
-        type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 419518859258371002, guid: 2e408cfb269dae24999d2b21e62931c5,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 419518859258371002, guid: 2e408cfb269dae24999d2b21e62931c5,
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

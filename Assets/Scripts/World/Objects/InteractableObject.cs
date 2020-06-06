@@ -6,23 +6,15 @@ public abstract class InteractableObject : MonoBehaviour
 {
 	/// <summary> Reference to the player. </summary>
 	[HideInInspector] public Player player;
-	/// <summary> Whether or not this is the active item </summary>
-	[HideInInspector] public bool active;
 	public virtual string prompt { get => $"Press {InputManager.InteractKey} to Interact"; }
-	string flavorText = "";
-	DialogueSystem dialogue;
+
 	[HideInInspector] public Renderer[] renderers;
 
-	public virtual void Interact()
-	{
-		if (flavorText != "")
-			StartCoroutine(dialogue.WriteDialogue(flavorText));
-	}
+	public virtual void Interact() { }
 
 	protected virtual void Start()
 	{
 		renderers = GetComponentsInChildren<Renderer>();
-		dialogue = GameManager.Instance.dialogue;
 		player = Player.Instance;
 	}
 

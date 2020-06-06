@@ -12,6 +12,8 @@ public class Pickupable : InteractableObject
 
 	protected Vector3 initialPosition;
 	protected Quaternion initialRotation;
+	/// <summary> Whether or not this is the active item </summary>
+	[HideInInspector] public bool active;
 	public bool dissolves = false;
 	Collider col;
 	public override string prompt { get => $"Press {InputManager.InteractKey} to Pick Up"; }
@@ -22,14 +24,14 @@ public class Pickupable : InteractableObject
 		col = GetComponent<Collider>();
 	}
 
-	void Update()
-	{
-		if (active)
-		{
-			// If the object is being inspected, run Looking.
-			if (player.looking) Looking();
-		}
-	}
+	// void Update()
+	// {
+	// 	if (active)
+	// 	{
+	// 		// If the object is being inspected, run Looking.
+	// 		if (player.looking) Looking();
+	// 	}
+	// }
 
 	/// <summary> Manages behavior of the object when being inspected. </summary>
 	public void Looking()
@@ -47,8 +49,8 @@ public class Pickupable : InteractableObject
 	{
 		if (!player.heldObject)
 			PickUp();
-		else if (player.looking)
-			player.looking = false;
+		// else if (player.looking)
+		// 	player.looking = false;
 		else if (!dissolves)
 			PutDown();
 		else
