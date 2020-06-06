@@ -21,26 +21,18 @@ public class Prompt : MonoBehaviour
 		if (!(player.State is Aiming))
 		{
 			var hit = InteractableObject.Raycast();
-			if (player.heldObject is Placeable && (player.heldObject as Placeable).PlaceConditionsMet())
-				SetText(player.heldObject.prompt);
-			// SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Place Canvas");
-			else if (hit && !player.heldObject && player.canMove)
+			// if (player.heldObject is Placeable && (player.heldObject as Placeable).PlaceConditionsMet())
+			// 	SetText(player.heldObject.prompt);
+			// else 
+			if (hit && !player.heldObject && player.canMove)
 			{
-				// if (hit.TryComponent<Bird>())
-				// 	SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Interact with Bird");
-				// else if (hit.TryComponent<Pushable>())
-				// 	if (!hit.GetComponent<Pushable>().isPushing)
-				// 		SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Start Pushing");
-				// 	else
-				// 		SetText("Press " + ParseKey(InputManager.interactKey.ToString()) + " to Stop Pushing");
-				// else
 				SetText(hit.prompt);
 
-				if (hit.TryComponent(out Placeable obj) && obj.PlaceConditionsMet())
-				{
-					Disable();
-					return;
-				}
+				// if (hit.TryComponent(out Placeable obj) && obj.PlaceConditionsMet())
+				// {
+				// 	Disable();
+				// 	return;
+				// }
 			}
 			else if (!BridgeBehaviour.forcePrompt)
 				Disable();

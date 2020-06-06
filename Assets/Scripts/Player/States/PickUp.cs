@@ -14,14 +14,10 @@ public class PickUp : PlayerState
 
 	public override void Start()
 	{
-		if (target.GetComponent<Placeable>() && target.GetComponent<Placeable>().PlaceConditionsMet())
-			return;
 		target.Interact();
 		player.heldObject = target;
 		// Store the held object.
 		player.heldObject.active = true;
-
-		//player.canMove = false;
 	}
 
 	public override void End()
