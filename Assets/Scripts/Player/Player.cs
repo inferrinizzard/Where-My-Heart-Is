@@ -89,7 +89,7 @@ public class Player : Singleton<Player>, IStateMachine
 	// events
 	public event Action OnOpenWindow;
 	public event Action OnApplyCut;
-    public event Action OnJump;
+	public event Action OnJump;
 
 	public override void Awake()
 	{
@@ -150,12 +150,12 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		// window.CreateFoVMesh();
 
-		DialoguePacket packet = FindObjectOfType<DialoguePacket>();
-		if (packet != null)
-		{
-			// DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
-			StartCoroutine(GameManager.Instance.dialogue.WriteDialogue(packet.text));
-		}
+		// DialoguePacket packet = FindObjectOfType<DialoguePacket>();
+		// if (packet != null)
+		// {
+		// 	// DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
+		// 	StartCoroutine(GameManager.Instance.dialogue.WriteDialogue(packet.text));
+		// }
 
 		Initialize();
 		Player.VFX.StartFade(true, fadeDuration);
@@ -269,11 +269,11 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-        if (ValidGroundSlope() && IsGrounded())
-        {
-            body.velocity = new Vector3(body.velocity.x, jumpForce, body.velocity.z);
-            OnJump?.Invoke();
-        }
+		if (ValidGroundSlope() && IsGrounded())
+		{
+			body.velocity = new Vector3(body.velocity.x, jumpForce, body.velocity.z);
+			OnJump?.Invoke();
+		}
 
 	}
 
@@ -302,7 +302,7 @@ public class Player : Singleton<Player>, IStateMachine
 			// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
 			cam.transform.localEulerAngles = new Vector3(-rotation.x, 0, 0);
 
-			Shader.SetGlobalVector(ShaderID._ViewDir, cam.transform.forward.normalized);
+			// Shader.SetGlobalVector(ShaderID._ViewDir, cam.transform.forward.normalized);
 		}
 	}
 
