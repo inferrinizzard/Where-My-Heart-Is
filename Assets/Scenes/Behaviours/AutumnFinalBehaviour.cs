@@ -17,4 +17,8 @@ public class AutumnFinalBehaviour : LevelBehaviour
 	//     yield return new WaitForSeconds(fadeTime);
 	// }
 
+	public void HeartBreak()
+	{
+		Player.Instance.hands.leftHandOn = false;;
+	}
 }
