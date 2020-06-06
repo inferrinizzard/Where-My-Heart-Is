@@ -6,8 +6,7 @@ using UnityEngine;
 public class Pushable : InteractableObject
 {
 	[SerializeField] float pushDistance = 4;
-	string _prompt = "Press E to Start Pushing";
-	public override string prompt { get => _prompt; set => _prompt = value; }
+	public override string prompt { get => $"Press {InputManager.InteractKey} to {(isPushing ? "Stop" : "Start")} Moving Box"; }
 
 	[Header("Audio")]
 	[FMODUnity.EventRef]

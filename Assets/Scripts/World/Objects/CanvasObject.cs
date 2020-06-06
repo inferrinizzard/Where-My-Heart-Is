@@ -7,7 +7,7 @@ using UnityEngine;
 public class CanvasObject : CollectableObject
 {
 	public event Action OnInteract;
-	public override string prompt { get => "Press E to Enter Canvas"; }
+	public override string prompt { get => $"Press {InputManager.InteractKey} to Enter Canvas"; }
 
 	public override void Interact()
 	{
