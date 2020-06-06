@@ -1,4 +1,4 @@
-﻿Shader "Custom/NewWatercolor"
+﻿Shader "Custom/NewWatercolor2"
 {
 	Properties
 	{
@@ -14,7 +14,7 @@
 		_NoiseScaleRatio("Noise Scale Ratio", float) = 1
 		_PaperStrength("Paper Strength", float) = 1
 	}
-		SubShader
+	SubShader
 	{
 		Tags { "RenderType" = "Opaque" }
 		LOD 100
@@ -113,7 +113,7 @@
 				
 				return lerp(paper, paint, saturate(watercolorIntensity * 1/_PaperStrength));
 			}
-		ENDCG
+			ENDCG
 		}
-    }
+	}
 }

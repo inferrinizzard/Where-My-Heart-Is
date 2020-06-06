@@ -36,13 +36,14 @@
 			static const float4x2 dirs = { 1, 1, -1, 1, 1, -1, -1, -1};
 			static const float TAU = 6.28318530718;
 
-			sampler2D _DepthColor;// Global TODO: can be replaced with camera depth texture
+			// sampler2D _DepthColor; // sub for depth for colour bleed eventually
 
 			float _ColorX;
 			float _ColorY;
 			sampler2D _Palette;
 
 			sampler2D _Paper;
+			sampler2D _CameraDepthTexture;
 
 			sampler2D _Noise;
 			float _NoiseScale;
@@ -84,8 +85,8 @@
 			{
 				float2 screenCoords = IN.screenPos.xy / IN.screenPos.w;
 
-				// sample from previously rendered depth + color palette information TODO: color info is unused, so the camera depth texture can be used instead of this
-				float4 depthColor = tex2D(_DepthColor, screenCoords);
+				// sample from previously rendered depth + color palette information
+				float4 depthColor = tex2D(_CameraDepthTexture, screenCoords);
 
 				// calculate lighting per frag
 				float lighting = 1 - dot(IN.viewDir, IN.normal);
@@ -104,11 +105,7 @@
 				float closest = 1000;
 
 				// sample in four directions
-				for (int i = 0; i < 4; i++)
-				{
-					// can sample from camera depth texture here instead
-					closest = min(tex2D(_DepthColor, saturate(screenCoords + dirs[i] * multiplier)).b, closest);
-				}
+				for (int i = 0; i < 4; i++) closest = min(tex2D(_CameraDepthTexture, saturate(screenCoords + dirs[i] * multiplier)).b, closest);
 
 				//sample from paint and paper textures
 				float4 paint = float4(tex2D(_Palette, float2(min(_ColorX, 1), _ColorY)).rgb, 1);

@@ -7,7 +7,7 @@ using UnityEngine;
 public class BridgeBehaviour : LevelBehaviour
 {
 	public static bool forcePrompt = false;
-	string heartPromptText = "Press and Hold CTRL or Right Click to use Window";
+	string heartPromptText = $"Press and Hold {Prompt.ParseKey(InputManager.altAimKey.ToString())} or Right Click to use Window";
 	Prompt prompt;
 	WindowMaskAnimation window;
 	public void Init()

@@ -11,102 +11,105 @@ using UnityEngine;
 
 public class GenerateInfinite : MonoBehaviour
 {
-	public GameObject plane;
+	[SerializeField] GameObject plane = default;
 	GameObject player;
 
-	int planeSize = 10;
-	int halfTilesX = 6;
-	int halfTilesZ = 6;
+	public static int planeSize = 10;
+	int gridSize = 9;
 
 	Vector3 startPos;
-	Hashtable tiles = new Hashtable();
-	// Start is called before the first frame update
+	TileHash tiles = new TileHash();
+	List<Vector2Int> deleteQ = new List<Vector2Int>();
+	public DoorController door;
+
 	void Start()
 	{
 		player = Player.Instance.gameObject;
-
 		startPos = Vector3.zero;
+		// ForSpiral(gridSize, gridSize, Vector2Int.zero, Generate);
+		// StartCoroutine(GenerateTiles());
+		GenerateTiles(Vector2Int.zero);
+	}
 
-		float updateTime = Time.realtimeSinceStartup;
+	void Generate(int x, int z)
+	{
+		Vector3 pos = new Vector3(x, 0, z) * planeSize;
+		Vector2Int gridPos = new Vector2Int(x, z);
 
-		// Create 2D array of planes with postion and current time
-		for (int x = -halfTilesX; x < halfTilesX; x++)
+		if (!tiles[gridPos])
 		{
-			for (int z = -halfTilesZ; z < halfTilesZ; z++)
-			{
-				Vector3 pos = new Vector3((x * planeSize + startPos.x), 0, (z * planeSize + startPos.z));
-				GameObject t = GameObject.Instantiate(plane, pos, Quaternion.identity, transform);
+			var tile = GameObject.Instantiate(plane, pos, Quaternion.identity, transform).GetComponent<TileGeneration>();
+			tile.name = $"Tile [{x}, {z}]";
+			tiles[gridPos] = tile;
+			tile.gridPos = gridPos;
+		}
+		deleteQ.Remove(gridPos);
+	}
 
-				string tilename = $"Tile_{pos.x}_{pos.z}";
-				Tile tile = new Tile(t, updateTime);
-				tiles.Add(t.name = tilename, tile);
+	public void GenerateTiles(Vector2Int offset)
+	{
+		deleteQ = tiles.Indices();
+		ForSpiral(gridSize, gridSize, offset, Generate);
+		foreach (var pos in deleteQ)
+			tiles.Remove(pos);
+	}
+
+	public void DoorPos(float sqrMag)
+	{
+		if (sqrMag > (Snowstorm.walkDistance * Snowstorm.walkDistance * .8f) && !door.spawned)
+			door.Spawn();
+	}
+
+	Vector2Int ToGridSpace(Vector3 pos) => Vector2Int.FloorToInt(new Vector2(pos.x, pos.z));
+
+	void ForSpiral(int X, int Y, Vector2Int offset, System.Action<int, int> func)
+	{
+		int x, y, dx, dy;
+		x = y = dx = 0;
+		dy = -1;
+		int t = System.Math.Max(X, Y);
+		int maxI = t * t;
+		for (int i = 0; i < maxI; i++)
+		{
+			if ((-X / 2 <= x) && (x <= X / 2) && (-Y / 2 <= y) && (y <= Y / 2))
+				func.Invoke(x + offset.x, y + offset.y);
+			if ((x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == 1 - y)))
+			{
+				t = dx;
+				dx = -dy;
+				dy = t;
 			}
+			x += dx;
+			y += dy;
 		}
 	}
 
-	// Update is called once per frame
-	void Update()
+	class TileHash
 	{
-		// Determine how far the player has moved since the last terrain update
-		int xMove = (int) (player.transform.position.x - startPos.x);
-		int zMove = (int) (player.transform.position.z - startPos.z);
-
-		// Tile information gets updated if player position is changed
-		if (Mathf.Abs(xMove) >= planeSize || Mathf.Abs(zMove) >= planeSize)
+		Dictionary<Vector2Int, TileGeneration> tiles;
+		public TileHash() => tiles = new Dictionary<Vector2Int, TileGeneration>();
+		public List<Vector2Int> Indices()
 		{
-			float updateTime = Time.realtimeSinceStartup;
-
-			// Force integer position and round down to nearest tilesize for determining tile spawn locations
-			int playerX = (int) (Mathf.Floor(player.transform.position.x / planeSize) * planeSize);
-			int playerZ = (int) (Mathf.Floor(player.transform.position.z / planeSize) * planeSize);
-
-			for (int x = -halfTilesX; x < halfTilesX; x++)
-			{
-				for (int z = -halfTilesZ; z < halfTilesZ; z++)
-				{
-					// Create position based on player's current position
-					Vector3 pos = new Vector3((x * planeSize + playerX), 0, (z * planeSize + playerZ));
-					string tilename = $"Tile_{pos.x}_{pos.z}";
-
-					if (!tiles.ContainsKey(tilename))
-					{
-						GameObject t = GameObject.Instantiate(plane, pos, Quaternion.identity, transform);
-						Tile tile = new Tile(t, updateTime);
-						tiles.Add(t.name = tilename, tile);
-					}
-					else
-					{
-						(tiles[tilename] as Tile).creationTime = updateTime;
-					}
-				}
-			}
-
-			// Destroy old, unupdated tiles outside of player range while keeping the current/new ones
-			Hashtable newTerrain = new Hashtable();
-			foreach (Tile t in tiles.Values)
-			{
-				//if (t.creationTime != updateTime)
-				if (t.creationTime != updateTime)
-					Destroy(t.tile);
-				else
-					newTerrain.Add(t.tile.name, t);
-			}
-
-			// Copy new contents to working one
-			tiles = newTerrain;
-			startPos = player.transform.position;
+			var list = new List<Vector2Int>();
+			foreach (var kvp in tiles)
+				list.Add(kvp.Key);
+			return list;
 		}
-	}
-}
-
-class Tile
-{
-	public GameObject tile;
-	public float creationTime;
-
-	public Tile(GameObject t, float ct)
-	{
-		tile = t;
-		creationTime = ct;
+		public void Remove(Vector2Int index)
+		{
+			var destroy = tiles[index];
+			tiles.Remove(index);
+			Destroy(destroy.gameObject);
+		}
+		public TileGeneration this [Vector2Int index]
+		{
+			get => tiles.ContainsKey(index) ? tiles[index] : null;
+			set
+			{
+				if (tiles.ContainsKey(index))
+					tiles[index] = value;
+				else tiles.Add(index, value);
+			}
+		}
 	}
 }

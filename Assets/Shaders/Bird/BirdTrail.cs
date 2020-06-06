@@ -4,19 +4,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-// [ExecuteInEditMode]
 public class BirdTrail : MonoBehaviour
 {
 	Material drawMat;
 	[SerializeField] int count = 3;
-	[SerializeField] int length = 20;
+	[SerializeField] float length = 3;
 	List<Ghost> copies = new List<Ghost>();
-	int step = 0;
 
 	Camera cam;
 	CommandBuffer birdBuffer;
 	SkinnedMeshRenderer[] smrs;
 	Bird bird;
+	Vector4 posCursor;
 
 	void Start()
 	{
@@ -32,6 +31,10 @@ public class BirdTrail : MonoBehaviour
 		cam = Player.VFX.mainCam;
 		birdBuffer = new CommandBuffer();
 		birdBuffer.name = "Bird Trail Buffer";
+
+		posCursor = (Vector4) transform.position;
+		posCursor.w = bird.currentDist;
+		copies.Add(new Ghost(transform, smrs));
 
 		// cam.AddCommandBuffer(CameraEvent.BeforeSkybox, birdBuffer);
 		// ResetScreenBuffer();
@@ -97,9 +100,12 @@ public class BirdTrail : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		step = ++step % length; // choppy
-		if (step == 0)
+		// this.Print(posCursor.w, bird.currentDist);
+		if (bird.currentDist - posCursor.w > length)
 		{
+			posCursor = (Vector4) transform.position;
+			posCursor.w = bird.currentDist;
+
 			copies.Add(new Ghost(transform, smrs));
 			if (!bird.flying && copies.Count > 1)
 				copies.RemoveAt(0);

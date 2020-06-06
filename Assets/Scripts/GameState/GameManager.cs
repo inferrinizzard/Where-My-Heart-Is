@@ -17,7 +17,7 @@ public class GameManager : Singleton<GameManager>
 	public float transitionTime = 3f;
 	public event System.Action CustomUpdate;
 
-	// public Level test;
+	public Level test;
 
 	public override void Awake()
 	{
@@ -34,7 +34,7 @@ public class GameManager : Singleton<GameManager>
 		// SceneManager.activeSceneChanged += new UnityEngine.Events.UnityAction<Scene, Scene>((_, __) => this.Print("ActiveSceneChanged", SceneManager.GetActiveScene().name));
 
 		levelOrder.Start();
-		// test?.StartBehaviors();
+		test?.StartBehaviors();
 	}
 
 	void Update() => CustomUpdate?.Invoke();

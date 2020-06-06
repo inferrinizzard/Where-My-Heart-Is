@@ -44,9 +44,9 @@ Shader "Screen/Main"
 
 			#pragma multi_compile __ MASK
 			// #pragma multi_compile __ OUTLINE
-			#pragma multi_compile __ BOIL
+			// #pragma multi_compile __ BOIL
 			#pragma multi_compile __ WAVE
-			#pragma multi_compile __ BIRD
+			// #pragma multi_compile __ BIRD
 			#pragma multi_compile __ FOG
 
 			#include "UnityCG.cginc"
@@ -105,7 +105,7 @@ Shader "Screen/Main"
 				// #endif
 
 				#if WAVE
-					exit = CalculateWave(output, i.uv, mask); //does not like new watercolour
+					exit = CalculateWave(output, i.uv, mask);
 					if(exit) return output;
 				#endif
 

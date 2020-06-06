@@ -14,10 +14,11 @@ public class Fade : MonoBehaviour
 		fadeMat = new Material(fadeShader);
 	}
 
-	public void StartFade(bool fadingIn, float duration) => StartCoroutine(FadeRoutine(fadingIn, duration));
+	// public void StartFade(bool fadingIn, float duration, bool white = true) => StartCoroutine(FadeRoutine(fadingIn, duration, white));
 
-	IEnumerator FadeRoutine(bool fadingIn, float time)
+	public IEnumerator FadeRoutine(bool fadingIn, float time, bool white)
 	{
+		fadeMat.SetInt("_White", white ? 1 : 0);
 		if (!enabled)
 			yield break;
 		float start = Time.time;

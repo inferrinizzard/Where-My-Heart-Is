@@ -1,4 +1,4 @@
-﻿Shader "Custom/NewWatercolor"
+﻿Shader "Custom/NewWatercolor1"
 {
 	Properties
 	{
@@ -14,7 +14,7 @@
 		_NoiseScaleRatio("Noise Scale Ratio", float) = 1
 		_PaperStrength("Paper Strength", float) = 1
 	}
-		SubShader
+	SubShader
 	{
 		Tags { "RenderType" = "Opaque" }
 		LOD 100
@@ -115,7 +115,7 @@
 				//float edgeIntensity =
 				float watercolorIntensity = _WatercolorStrength * (abs(closest - depthColor.b) * abs(depthColor.b - totalDepth));;// + noiseSample;// *IN.screenPos.z / IN.screenPos.w;
 				//watercolorIntensity = 1;
-																																  //watercolorIntensity += IN.lighting * noiseSample;
+				//watercolorIntensity += IN.lighting * noiseSample;
 				//float watercolorIntensity = _WatercolorStrength * (abs(closest - depthColor.b) + abs((totalDepth / 4) - depthColor.b));
 				//watercolorIntensity += ;
 
@@ -137,7 +137,7 @@
 				
 				//return float4(float3(1, 1, 1) * (abs(closest - depthColor.b) * abs(totalDepth/8)), 1);
 			}
-		ENDCG
+			ENDCG
 		}
-    }
+	}
 }

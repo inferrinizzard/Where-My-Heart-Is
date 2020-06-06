@@ -1,19 +1,14 @@
-// #define DEBUG
 using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
 
-#if DEBUG
-[ExecuteInEditMode]
-#endif
 public class Effects : MonoBehaviour
 {
 	public static Effects Instance;
 
 	Fade fadeController;
 	bool dissolveOn = false;
-	[SerializeField, Range(0, 30)] float lightPower = 5;
 	[HideInInspector] public bool maskOn = false;
 
 	[HideInInspector] public Camera mainCam, heartCam;
@@ -24,15 +19,13 @@ public class Effects : MonoBehaviour
 		mainCam = GetComponent<Camera>();
 		heartCam = this.GetComponentOnlyInChildren<Camera>();
 
-		Shader.SetGlobalFloat("_LightAttenBias", 30 - lightPower);
 		fadeController = GetComponent<Fade>();
 
 		ToggleWave(false);
 		ToggleMask(maskOn);
-		// ToggleEdgeOutline(true);
-		ToggleDissolve(dissolveOn);
-		ToggleBoil(true);
-		ToggleBird(true);
+		// ToggleDissolve(dissolveOn);
+		// ToggleBoil(true);
+		// ToggleBird(true);
 		ToggleFog(false);
 
 		glowMat = new Material(Shader.Find("Outline/GlowObject"));
@@ -47,26 +40,6 @@ public class Effects : MonoBehaviour
 	}
 
 	#region toggles
-	void Update()
-	{
-#if DEBUG // debug toggles
-		// if (Input.GetKeyDown(KeyCode.Alpha2))
-		// {
-		// 	ToggleEdgeOutline(outlineOn = !outlineOn);
-		// 	print($"edge: {outlineOn}");
-		// }
-		if (Input.GetKeyDown(KeyCode.Alpha4))
-		{
-			ToggleDissolve(dissolveOn = !dissolveOn);
-			print($"dissolve: {dissolveOn}");
-		}
-
-#if UNITY_EDITOR
-		Shader.SetGlobalFloat("_LightAttenBias", 30 - lightPower);
-#endif
-
-#endif
-	}
 
 	/// <summary> toggles mask on and off </summary>
 	/// <param name="on"> Is mask on? </summary>
@@ -82,7 +55,7 @@ public class Effects : MonoBehaviour
 	public void ToggleBird(bool on) => ToggleEffect(on, "BIRD");
 	public void ToggleFog(bool on) => ToggleEffect(on, "FOG");
 
-	public void StartFade(bool fadingIn, float dur) => fadeController.StartFade(fadingIn, dur);
+	public void StartFade(bool fadingIn, float dur, bool white = true) => StartCoroutine(fadeController.FadeRoutine(fadingIn, dur, white));
 
 	// public void SetWave(float distance) => waveController.waveDistance = distance;
 	public void SetWave(float distance) => Player.Instance.mask.screenMat.SetFloat(ShaderID._WaveDistance, distance);

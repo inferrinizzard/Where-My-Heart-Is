@@ -8,7 +8,7 @@ public class Snowstorm : MonoBehaviour
 	Texture2D transitionTex = default, backgroundTex = default;
 	Material snowMat;
 	float progress = 0;
-	[SerializeField] float distance = 100;
+	public static float walkDistance = 100;
 
 	void Start()
 	{
@@ -26,14 +26,16 @@ public class Snowstorm : MonoBehaviour
 		snowMat.SetTexture("_TransitionTex", fadeSnowTex);
 		if (backgroundTex != null)
 			snowMat.SetTexture("_BackgroundTex", backgroundTex);
+
+		Player.Instance.windowEnabled = false;
 	}
 
 	void Update()
 	{
 		progress = Player.Instance.transform.position.magnitude;
-		if (distance - progress < .05)
+		if (walkDistance - progress < .05)
 			Destroy(this);
 	}
-	void FixedUpdate() => snowMat.SetFloat(ShaderID._TransitionCutoff, EaseMethods.CubicEaseIn(1 - progress / distance, 0, 1, 1));
+	void FixedUpdate() => snowMat.SetFloat(ShaderID._TransitionCutoff, EaseMethods.CubicEaseIn(1 - progress / walkDistance, -0.05f, 1f, 1));
 	void OnRenderImage(RenderTexture src, RenderTexture dest) => Graphics.Blit(src, dest, snowMat);
 }
