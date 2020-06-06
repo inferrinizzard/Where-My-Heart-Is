@@ -21,4 +21,9 @@ public class AutumnFinalBehaviour : LevelBehaviour
 	{
 		Player.Instance.hands.leftHandOn = false;;
 	}
+
+	public void AssignHeartMesh(Mesh halfHeart)
+	{
+		Player.Instance.heartWindow.GetComponent<MeshFilter>().mesh = halfHeart;
+	}
 }
