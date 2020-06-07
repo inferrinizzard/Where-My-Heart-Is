@@ -23,6 +23,8 @@ public class Prompt : MonoBehaviour
 			var hit = InteractableObject.Raycast();
 			if (hit && !player.heldObject)
 				SetText(hit.prompt);
+			else if (player.heldObject is CanvasObject && (player.heldObject as CanvasObject).inRange)
+				SetText(player.heldObject.prompt);
 			else if (!BridgeBehaviour.forcePrompt)
 				Disable();
 		}

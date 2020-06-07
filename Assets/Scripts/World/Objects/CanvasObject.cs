@@ -8,10 +8,9 @@ public class CanvasObject : Pickupable
 {
 	public event Action OnInteract;
 	[SerializeField] bool onEasel = true;
-	[SerializeField] Transform placeTarget;
-	// public override string prompt { get => $"Press {InputManager.InteractKey} to {(onEasel ? "Enter" : (inRange ? "Place" : "Hold"))} Canvas"; }
-	public override string prompt { get => $"Press {InputManager.InteractKey} to {(onEasel ? "Enter" : "Hold")} Canvas"; }
-	bool inRange = false;
+	[SerializeField] Transform placeTarget = default;
+	public override string prompt { get => $"Press {InputManager.InteractKey} to {(onEasel ? "Enter" : (inRange ? "Place" : "Hold"))} Canvas"; }
+	public bool inRange { get => (transform.position - placeTarget.position).sqrMagnitude < player.playerReach * player.playerReach / 4; }
 
 	public override void Interact()
 	{
@@ -27,7 +26,7 @@ public class CanvasObject : Pickupable
 		}
 		else
 		{
-			if (active && (inRange = (transform.position - placeTarget.position).sqrMagnitude < player.playerReach * player.playerReach / 4))
+			if (active && inRange)
 			{
 				PutDown();
 				transform.parent = placeTarget;

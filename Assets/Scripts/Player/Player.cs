@@ -206,8 +206,8 @@ public class Player : Singleton<Player>, IStateMachine
 			Rotate();
 			AdjustGravity();
 
-			if (State == null)
-				prompt.UpdateText(); // non physics
+			// if (State == null)
+			prompt.UpdateText(); // non physics
 			Die();
 		}
 	}
@@ -330,9 +330,7 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		var hit = InteractableObject.Raycast();
 		if (heldObject || hit is Pickupable)
-		{
 			PickUp(!heldObject, hit as Pickupable);
-		}
 		else if (hit)
 			hit.Interact();
 	}
@@ -340,14 +338,10 @@ public class Player : Singleton<Player>, IStateMachine
 	private void PickUp(bool pickingUp, Pickupable obj)
 	{
 		if (pickingUp)
-		{
 			SetState(new PickUp(this, obj));
-		}
-		// else if (looking) { SetState(new Inspect(this)); } //unused for now
 		else
-		{
 			EndState();
-		}
+		// else if (looking) { SetState(new Inspect(this)); } //unused for now
 	}
 
 	/// <summary> Player aiming function. </summary>
@@ -379,18 +373,11 @@ public class Player : Singleton<Player>, IStateMachine
 		}
 	}
 
-	public bool IsGrounded()
-	{
-		RaycastHit ray;
-		return Physics.SphereCast(playerCollider.transform.position, 0.2f, Vector3.down, out ray, playerHeight / 2 - 0.1f);
-	}
+	public bool IsGrounded() => Physics.SphereCast(playerCollider.transform.position, 0.2f, Vector3.down, out RaycastHit ray, playerHeight / 2 - 0.1f);
 
 	public bool ValidGroundSlope()
 	{
-		RaycastHit ray;
-		Physics.SphereCast(playerCollider.transform.position, playerCollider.radius, Vector3.down, out ray, playerHeight / 2 - 0.1f);
+		Physics.SphereCast(playerCollider.transform.position, playerCollider.radius, Vector3.down, out RaycastHit ray, playerHeight / 2 - 0.1f);
 		return (Mathf.Abs(Vector3.Angle(ray.normal, Vector3.up)) < maxSlopeAngle);
 	}
-
-	// public InteractableObject RaycastInteractable() => Physics.SphereCast(cam.transform.position, .25f, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }
