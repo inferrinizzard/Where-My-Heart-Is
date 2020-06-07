@@ -27,8 +27,13 @@ public class BridgeBehaviour : LevelBehaviour
 	{
 		if (window.openingWindow && !prompt.disabled)
 			prompt.Disable();
-		if (!window.openingWindow && prompt.disabled)
-			prompt.SetText("Press Left Click to Cut");
+		if (!window.openingWindow)
+		{
+			if (prompt.disabled)
+				prompt.SetText(Player.Instance.State is Aiming ? "Press Left Click to Cut" : heartPromptText);
+			else if (Player.Instance.State is null)
+				prompt.SetText(heartPromptText);
+		}
 		if (Input.GetMouseButtonDown(0))
 			GameManager.Instance.StartCoroutine(WaitAndReprompt());
 		// prompt.SetText(heartPromptText);
