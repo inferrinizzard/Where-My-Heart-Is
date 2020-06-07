@@ -24,7 +24,6 @@ public class BirdcageNew : InteractableObject
 		FMODUnity.RuntimeManager.PlayOneShot(CageEvent);
 		AudioMaster.Instance.StopAll();
 		//distress.GetComponent<FMODUnity.StudioEventEmitter>().Stop();
-		Player.Instance.canMove = false;
 		Effects.Instance.StartFade(false, .05f, false);
 		GameManager.Instance.ChangeLevel();
 	}

@@ -21,19 +21,14 @@ public class Fade : MonoBehaviour
 		fadeMat.SetInt("_White", white ? 1 : 0);
 		if (!enabled)
 			yield break;
-		float start = Time.time;
-		bool inProgress = true;
-		while (inProgress)
+		for (var(start, step) = (Time.time, 0f); step <= time; step = Time.time - start)
 		{
 			yield return null;
-			float step = Time.time - start;
 
 			float alpha = fadingIn ? EaseMethods.CubicEaseOut(time - step, 0, 1, time) : EaseMethods.CubicEaseIn(step, 0, 1, time);
 			fadeMat.SetFloat("_Alpha", alpha);
-
-			if (step > time)
-				inProgress = false;
 		}
+		Player.Instance.playerCanRotate = true;
 	}
 
 	void OnRenderImage(RenderTexture src, RenderTexture dest)

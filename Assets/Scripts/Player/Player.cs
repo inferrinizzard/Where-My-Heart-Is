@@ -38,8 +38,6 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public float verticalVelocity;
 	/// <summary> Player's height. </summary>
 	[HideInInspector] public float playerHeight;
-	/// <summary> Whether the player can move or not. </summary>
-	[HideInInspector] public bool canMove = true;
 	/// <summary> Whether the player can rotate their camera or not. </summary>
 	[HideInInspector] public bool playerCanRotate = true;
 	/// <summary> Whether the player is crouching or not. </summary>
@@ -120,9 +118,13 @@ public class Player : Singleton<Player>, IStateMachine
 
 		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
 		Cursor.visible = false;
-		Player.VFX.StartFade(true, fadeDuration);
 
-		Initialize();
+		OnEnterScene();
+
+		// playerCanRotate = false;
+		// Player.VFX.StartFade(true, fadeDuration);
+
+		// Initialize();
 	}
 
 	public override void Initialize()
@@ -135,7 +137,6 @@ public class Player : Singleton<Player>, IStateMachine
 			transform.position = lastSpawn.position;
 			rotation = lastSpawn.eulerAngles;
 		}
-		canMove = true;
 		looking = false;
 		window.world = World.Instance;
 		window.cam = cam;
@@ -149,15 +150,8 @@ public class Player : Singleton<Player>, IStateMachine
 	public override void OnEnterScene()
 	{
 		// window.CreateFoVMesh();
-
-		// DialoguePacket packet = FindObjectOfType<DialoguePacket>();
-		// if (packet != null)
-		// {
-		// 	// DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
-		// 	StartCoroutine(GameManager.Instance.dialogue.WriteDialogue(packet.text));
-		// }
-
 		Initialize();
+		playerCanRotate = false;
 		Player.VFX.StartFade(true, fadeDuration);
 	}
 
@@ -208,12 +202,9 @@ public class Player : Singleton<Player>, IStateMachine
 	{
 		if (!GameManager.Instance.duringLoad)
 		{
-			if (canMove)
-			{
-				Move();
-				Rotate();
-				AdjustGravity();
-			}
+			Move();
+			Rotate();
+			AdjustGravity();
 
 			if (State == null)
 				prompt.UpdateText(); // non physics

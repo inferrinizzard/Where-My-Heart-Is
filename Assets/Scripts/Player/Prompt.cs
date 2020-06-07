@@ -21,19 +21,8 @@ public class Prompt : MonoBehaviour
 		if (!(player.State is Aiming))
 		{
 			var hit = InteractableObject.Raycast();
-			// if (player.heldObject is Placeable && (player.heldObject as Placeable).PlaceConditionsMet())
-			// 	SetText(player.heldObject.prompt);
-			// else 
-			if (hit && !player.heldObject && player.canMove)
-			{
+			if (hit && !player.heldObject)
 				SetText(hit.prompt);
-
-				// if (hit.TryComponent(out Placeable obj) && obj.PlaceConditionsMet())
-				// {
-				// 	Disable();
-				// 	return;
-				// }
-			}
 			else if (!BridgeBehaviour.forcePrompt)
 				Disable();
 		}
