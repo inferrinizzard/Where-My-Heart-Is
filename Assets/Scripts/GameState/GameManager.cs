@@ -25,6 +25,8 @@ public class GameManager : Singleton<GameManager>
 		pause = GetComponentInChildren<PauseMenu>();
 		dialogue = GetComponentInChildren<DialogueSystem>();
 		prompt = GetComponentInChildren<Prompt>();
+
+		DialogueText.Load();
 	}
 
 	void Start()
