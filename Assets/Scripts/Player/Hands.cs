@@ -2,14 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Hands : MonoBehaviour
 {
 	Player player;
 	Animator anim;
-	[SerializeField] float heartAnimSpeed = 5;
+	[SerializeField] float heartAnimSpeed = 1;
 	float heartAnimDuration;
 	Vector3 heartStartPos, heartStartEulers;
+	[SerializeField] AnimationCurve animCurve;
+	public bool leftHandOn
+	{
+		get => leftHand.activeSelf;
+		set
+		{
+			leftHand.SetActive(value);
+			leftArm.SetActive(value);
+		}
+	}
+
+	[SerializeField] GameObject leftHand, leftArm;
 
 	void Start()
 	{
@@ -25,12 +38,11 @@ public class Hands : MonoBehaviour
 	{
 		anim.SetBool("Aiming", true);
 
-		var heartTargetPos = new Vector3(.01f, -.5f, 1.19f); // VS GHETTO
-		var heartTargetEulers = new Vector3(0, 90, -21.5f); // VS GHETTO
+		var heartTargetPos = new Vector3(.05f, -1.6f, 1.0f); // VS GHETTO
+		var heartTargetEulers = new Vector3(0, -90, 10f); // VS GHETTO
 
-		float start = Time.time;
-		bool inProgress = true;
-		while (inProgress)
+		// anim.Play("Heart Cut");
+		for (var(start, step) = (Time.time, 0f); step <= heartAnimDuration; step = Time.time - start)
 		{
 			if (!(player.State is Aiming))
 			{
@@ -38,14 +50,13 @@ public class Hands : MonoBehaviour
 				yield break;
 			}
 			yield return null;
-			float step = Time.time - start;
 			// TODO: ease these
-			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / heartAnimDuration);
-			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTargetEulers, step / heartAnimDuration);
 
-			if (step > heartAnimDuration)
-				inProgress = false;
+			anim.speed = animCurve.Evaluate(step / heartAnimDuration);
+			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / heartAnimDuration);
+			// anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTargetEulers, step / heartAnimDuration);
 		}
+
 		(player.State as Aiming).DeferredStart();
 	}
 
@@ -56,20 +67,18 @@ public class Hands : MonoBehaviour
 		Vector3 startPos = anim.transform.localPosition;
 		Vector3 startEulers = anim.transform.localEulerAngles;
 
-		float start = Time.time;
-		bool inProgress = true;
-		while (inProgress)
+		for (var(start, step) = (Time.time, 0f); step <= time; step = Time.time - start)
 		{
 			yield return null;
-			float step = Time.time - start;
 			// TODO: ease these
 			anim.transform.localPosition = Vector3.Lerp(heartStartPos, startPos, 1 - step / time);
 			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, startEulers, 1 - step / time);
-
-			if (step > time)
-				inProgress = false;
 		}
 	}
 
-	public void ToggleHands(bool on) => anim.SetBool("Aiming", on);
+	public void ToggleHands(bool on)
+	{
+		anim.SetBool("Aiming", on);
+	}
+
 }

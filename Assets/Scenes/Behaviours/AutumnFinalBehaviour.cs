@@ -17,4 +17,13 @@ public class AutumnFinalBehaviour : LevelBehaviour
 	//     yield return new WaitForSeconds(fadeTime);
 	// }
 
+	public void HeartBreak()
+	{
+		Player.Instance.hands.leftHandOn = false;;
+	}
+
+	public void AssignHeartMesh(Mesh halfHeart)
+	{
+		Player.Instance.heartWindow.GetComponent<MeshFilter>().mesh = halfHeart;
+	}
 }
