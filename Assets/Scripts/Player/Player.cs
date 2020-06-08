@@ -329,7 +329,7 @@ public class Player : Singleton<Player>, IStateMachine
 	void Interact()
 	{
 		var hit = InteractableObject.Raycast();
-		if (heldObject || hit is Pickupable)
+		if (heldObject || (hit is Pickupable && !(hit is CanvasObject && (hit as CanvasObject).onEasel)))
 			PickUp(!heldObject, hit as Pickupable);
 		else if (hit)
 			hit.Interact();
