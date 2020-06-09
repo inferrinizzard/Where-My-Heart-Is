@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: PageFlip
-  m_Shader: {fileID: 4800000, guid: 082b3a44ded01d24095836c02943d142, type: 3}
+  m_Name: Tree Leaves 9
+  m_Shader: {fileID: 4800000, guid: 66c60465025133f4386fff14f9b2dd00, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -47,36 +47,60 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Noise:
+        m_Texture: {fileID: 2800000, guid: 20380a70eb5449b4cbc4a28fae0ae07a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Palette:
+        m_Texture: {fileID: 2800000, guid: 066813d9fdb39654c9bc86c67620b5a7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Paper:
+        m_Texture: {fileID: 2800000, guid: 35ca6b2baa9127e4f9cf0fe9edce3d4f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Ramp:
+        m_Texture: {fileID: 2800000, guid: 5de119857925a45489b0c4ec31c974ba, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Tex:
+        m_Texture: {fileID: 2800000, guid: 4679620bfb135e14297bc2a1c49cd98e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _A: 1
     - _BumpScale: 1
+    - _ColorX: 0.142
+    - _ColorY: 0.69
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
+    - _DistanceMultiplier: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
+    - _NoiseScale: 100
+    - _NoiseScaleB: 100
+    - _NoiseScaleRatio: 0.25
     - _OcclusionStrength: 1
+    - _PaperStrength: 1.25
     - _Parallax: 0.02
-    - _Progress: 0
-    - _Rho: 0.24397792
+    - _Radius: 0.432
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Theta: 0.20000044
     - _UVSec: 0
+    - _WatercolorStrength: 2.35
     - _ZWrite: 1
     m_Colors:
-    - _BottomLeft: {r: 17.305832, g: 1.7504609, b: -29.057943, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 0.2028302, b: 0.2028302, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
