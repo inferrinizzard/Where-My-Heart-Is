@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
@@ -8,15 +9,32 @@ public class MainMenu : MonoBehaviour
     public GameObject mainMenuUI;
     /// <summary> Local instance of options menu canvas objects. </summary>
     public GameObject optionsMenuUI;
+    /// <summary> Local instance of credits menu canvas objects. </summary>
+    public GameObject creditsMenuUI;
+    /// <summary> PIP raw image for displaying of game scene. </summary>
+    public RawImage pip;
+    /// <summary> Whether the main menu is active or not. </summary>
+    bool mainMenuOpen = true;
 
     void Start()
     {
-        CloseOptions(); // Make sure we start in the main menu.
+        OpenMainMenu();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) CloseOptions();
+        if (Input.GetKeyDown(KeyCode.Escape) && mainMenuOpen) OpenMainMenu();
+    }
+
+    /// <summary> Returns to the main menu. </summary>
+    public void OpenMainMenu()
+    {
+        pip.texture = GameManager.Instance.pause.pip.texture;
+
+        optionsMenuUI.GetComponent<OptionsMenu>().RefreshSettings();
+        mainMenuUI.SetActive(true);
+        optionsMenuUI.SetActive(false);
+        creditsMenuUI.SetActive(false);
     }
 
     /// <summary> Opens the options menu and closes other menus. </summary>
@@ -24,13 +42,26 @@ public class MainMenu : MonoBehaviour
     {
         mainMenuUI.SetActive(false);
         optionsMenuUI.SetActive(true);
+        creditsMenuUI.SetActive(false);
     }
 
-    /// <summary> Closes the options menu and displays the main menu. </summary>
-    public void CloseOptions()
+    /// <summary> Opens the credits menu and closes other menus. </summary>
+    public void OpenCredits()
     {
-        mainMenuUI.SetActive(true);
+        mainMenuUI.SetActive(false);
         optionsMenuUI.SetActive(false);
+        creditsMenuUI.SetActive(true);
+    }
+    
+    /// <summary> Starts the game. </summary>
+    public void Play()
+    {
+        mainMenuUI.SetActive(false);
+        optionsMenuUI.SetActive(false);
+        creditsMenuUI.SetActive(false);
+        mainMenuOpen = false;
+        GameManager.Instance.pause.MainMenuEnd();
+        OpenSketchbook.PlayCameraSetup();
     }
 
     /// <summary> Quits the game. </summary>

@@ -37,6 +37,7 @@ public class GameManager : Singleton<GameManager>
 
 		levelOrder.Start();
 		test?.StartBehaviors();
+		pause.Init();
 	}
 
 	void Update() => CustomUpdate?.Invoke();

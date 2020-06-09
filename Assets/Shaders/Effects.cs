@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Effects : MonoBehaviour
 {
-	Fade fadeController;
+	[HideInInspector] public Fade fadeController;
 	bool dissolveOn = false;
 	[HideInInspector] public bool maskOn = false;
 

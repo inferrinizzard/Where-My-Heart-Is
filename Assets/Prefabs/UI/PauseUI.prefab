@@ -5639,6 +5639,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textSizeSlider: {fileID: 3241445501331081778}
   textSizeText: {fileID: 9189823624314142207}
+  textToggle: {fileID: 6964051770713288247}
+  dialogueObject: {fileID: 4819228583523087020}
 --- !u!1 &4735614490404074411
 GameObject:
   m_ObjectHideFlags: 0
@@ -6051,7 +6053,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -960, y: -639.83124}
+  m_AnchoredPosition: {x: 0, y: -261.15}
   m_SizeDelta: {x: 1000, y: 200}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &5110508410698989105
@@ -6872,7 +6874,18 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2604442268483282820}
+        m_MethodName: SetTextToggle
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 1
 --- !u!1 &5237692837125650991
 GameObject:

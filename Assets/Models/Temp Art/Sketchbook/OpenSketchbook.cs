@@ -29,6 +29,10 @@ public class OpenSketchbook : MonoBehaviour
     Quaternion lastRotation;
     /// <summary> Target rotation of the camera for lerp. </summary>
     Quaternion targetRotation;
+    /// <summary> Instance of main menu camera. </summary>
+    private static GameObject mainMenuCamera;
+    /// <summary> Instance of intro level camera. </summary>
+    private static GameObject introCamera;
 
     private void Start()
     {
@@ -42,9 +46,11 @@ public class OpenSketchbook : MonoBehaviour
         // Set camera lerp position and rotation
         targetPosition = new Vector3(0.75f, 6f, 0f);
         targetRotation.eulerAngles = new Vector3(90f, 0f, -180f);
+
+        MainMenuCameraSetup();
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         // Reset these for the lerp
         transitionTime += Time.deltaTime;
@@ -56,12 +62,9 @@ public class OpenSketchbook : MonoBehaviour
 
         // Fade in the main menu UI elements
         if (mainMenuFade && mainMenuUI.alpha < 1.0) mainMenuUI.alpha += Time.deltaTime;
-    }
 
-    private void LateUpdate()
-    {
         // Camera lerp
-        if(opened)
+        if (opened)
         {
             cam.transform.position = Vector3.Lerp(lastPosition, targetPosition, transitionTime / cameraAnimationTime);
             cam.transform.rotation = Quaternion.Lerp(lastRotation, targetRotation, transitionTime / cameraAnimationTime);
@@ -82,8 +85,26 @@ public class OpenSketchbook : MonoBehaviour
     private IEnumerator FadeInUI()
     {
         yield return new WaitForSeconds(3.0f);
-        Debug.Log("Fading in UI");
         mainMenuUI.gameObject.SetActive(true);
         mainMenuFade = true;
+    }
+
+    /// <summary> Set up the cameras for the main menu + intro scene. </summary>
+    public static void MainMenuCameraSetup()
+    {
+        introCamera = GameObject.Find("Main Camera");
+        mainMenuCamera = GameObject.Find("MainMenuCamera");
+
+        introCamera.GetComponent<Camera>().enabled = false;
+        mainMenuCamera.GetComponent<Camera>().enabled = true;
+
+        GameManager.Instance.pause.MainMenuStart();
+    }
+
+    /// <summary> Set up the cameras for the play scene directly after main menu. </summary>
+    public static void PlayCameraSetup()
+    {
+        introCamera.GetComponent<Camera>().enabled = true;
+        mainMenuCamera.GetComponent<Camera>().enabled = false;
     }
 }
