@@ -36,6 +36,8 @@ public class OptionsMenu : MonoBehaviour
         textMenu.SetActive(true);
     }
 
+    /// <summary> Calls the RefreshSettings function for all UI subgroups. </summary>
+    /// <remarks> Each call syncs the UI elements with the current values of all settings.</remarks>
     public void RefreshSettings()
     {
         controlsMenu.GetComponent<ControlsMenu>().RefreshSettings();

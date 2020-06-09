@@ -79,9 +79,10 @@ public class PauseMenu : MonoBehaviour
 		StartCoroutine(PauseRoutine());
 	}
 
+	/// <summary> Sets the pause menu elements and gameplay elements for displaying the main menu. </summary>
+	/// <remarks> pls no spaghetti </remarks>
 	public void MainMenuStart()
 	{
-		Debug.Log("opening main menu");
 		MainMenuOpen = true;
 		pauseMenuUI.SetActive(false);
 		gameplayUI.SetActive(false);
@@ -93,14 +94,16 @@ public class PauseMenu : MonoBehaviour
 		StartCoroutine(GetMainMenuPIP());
 	}
 
+	/// <summary> Ends the main menu state. </summary>
+	/// <remarks> pls no spaghetti </remarks>
 	public void MainMenuEnd()
 	{
-		Debug.Log("closing main menu");
 		MainMenuOpen = false;
 		Player.Instance.canMove = true;
 		Resume();
 	}
 
+	/// <summary> Used to set the game into a pause state. </summary>
 	IEnumerator PauseRoutine()
 	{
 		yield return StartCoroutine(GetPIP());
@@ -164,6 +167,9 @@ public class PauseMenu : MonoBehaviour
 		pip.texture = ApplyMask.Screenshot();
 	}
 
+	/// <summary> Takes a screenshot of the player's camera and applies it to a RenderTexture. </summary>
+	/// <remarks> Temporarily used for Main Menu PIP UI element. </remarks>
+	/// <remarks> pls no spaghetti </remarks>
 	public IEnumerator GetMainMenuPIP()
 	{
 		yield return new WaitForEndOfFrame();

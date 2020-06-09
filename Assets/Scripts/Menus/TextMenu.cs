@@ -11,8 +11,11 @@ public class TextMenu : MonoBehaviour
     public Slider textSizeSlider;
     /// <summary> Text to display current text size. </summary>
     public Text textSizeText;
+    /// <summary> Toggle to turn text on or off. </summary>
     public Toggle textToggle;
+    /// <summary> Element for subtitle text. </summary>
     Textbox dialogueText;
+    /// <summary> Element for dialogue system. </summary>
     DialogueSystem dialogueSystem;
 
     private void Start()
@@ -44,20 +47,14 @@ public class TextMenu : MonoBehaviour
         }
     }
 
+    /// <summary> Sets the visibility of the text based on a toggle. </summary>
     public void SetTextToggle()
     {
-        if(textToggle.isOn)
-        {
-            dialogueSystem.gameObject.SetActive(true);
-            dialogueText.gameObject.SetActive(true);
-        }
-        else
-        {
-            dialogueSystem.gameObject.SetActive(false);
-            dialogueText.gameObject.SetActive(false);
-        }
+        dialogueSystem.gameObject.SetActive(textToggle.isOn);
+        dialogueText.gameObject.SetActive(textToggle.isOn);
     }
 
+    /// <summary> Syncs the UI elements with the current values of all settings. </summary>
     public void RefreshSettings()
     {
         if (dialogueSystem)

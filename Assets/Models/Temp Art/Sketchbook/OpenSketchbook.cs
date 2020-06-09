@@ -29,8 +29,9 @@ public class OpenSketchbook : MonoBehaviour
     Quaternion lastRotation;
     /// <summary> Target rotation of the camera for lerp. </summary>
     Quaternion targetRotation;
-
+    /// <summary> Instance of main menu camera. </summary>
     private static GameObject mainMenuCamera;
+    /// <summary> Instance of intro level camera. </summary>
     private static GameObject introCamera;
 
     private void Start()
@@ -88,6 +89,7 @@ public class OpenSketchbook : MonoBehaviour
         mainMenuFade = true;
     }
 
+    /// <summary> Set up the cameras for the main menu + intro scene. </summary>
     public static void MainMenuCameraSetup()
     {
         introCamera = GameObject.Find("Main Camera");
@@ -99,6 +101,7 @@ public class OpenSketchbook : MonoBehaviour
         GameManager.Instance.pause.MainMenuStart();
     }
 
+    /// <summary> Set up the cameras for the play scene directly after main menu. </summary>
     public static void PlayCameraSetup()
     {
         introCamera.GetComponent<Camera>().enabled = true;

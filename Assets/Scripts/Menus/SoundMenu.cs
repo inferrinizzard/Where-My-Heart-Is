@@ -100,6 +100,7 @@ public class SoundMenu : MonoBehaviour
         musicInputField.text = input.ToString();
     }
 
+    /// <summary> Syncs the UI elements with the current values of all settings. </summary>
     public void RefreshSettings()
     {
         //TODO

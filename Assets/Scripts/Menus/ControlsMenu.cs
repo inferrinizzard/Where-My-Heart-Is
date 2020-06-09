@@ -180,6 +180,7 @@ public class ControlsMenu : MonoBehaviour
 		return input;
 	}
 
+	/// <summary> Syncs the UI elements with the current values of all settings. </summary>
 	public void RefreshSettings()
 	{
 		jumpButtonText.text = ParseKey(InputManager.jumpKey.ToString());

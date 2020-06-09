@@ -11,9 +11,9 @@ public class MainMenu : MonoBehaviour
     public GameObject optionsMenuUI;
     /// <summary> Local instance of credits menu canvas objects. </summary>
     public GameObject creditsMenuUI;
-
+    /// <summary> PIP raw image for displaying of game scene. </summary>
     public RawImage pip;
-
+    /// <summary> Whether the main menu is active or not. </summary>
     bool mainMenuOpen = true;
 
     void Start()
@@ -52,7 +52,8 @@ public class MainMenu : MonoBehaviour
         optionsMenuUI.SetActive(false);
         creditsMenuUI.SetActive(true);
     }
-
+    
+    /// <summary> Starts the game. </summary>
     public void Play()
     {
         mainMenuUI.SetActive(false);

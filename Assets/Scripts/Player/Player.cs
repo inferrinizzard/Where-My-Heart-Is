@@ -48,7 +48,7 @@ public class Player : Singleton<Player>, IStateMachine
 	private bool stillCrouching = false;
 	/// <summary> Whether or not the player can activate the window. </summary>
 	public bool windowEnabled = true;
-
+	/// <summary> Whether the player can move or not. </summary>
 	[HideInInspector] public bool canMove = true;
 
 	/// <summary> Reference to heart window. </summary>
