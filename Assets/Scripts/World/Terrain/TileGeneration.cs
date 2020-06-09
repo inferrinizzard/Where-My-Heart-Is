@@ -68,6 +68,7 @@ public class TileGeneration : MonoBehaviour
 			if (newTree)
 			{
 				float treeScale = Random.value / 10;
+				// Vector3 treePos = new Vector3(pos.x + transform.position.x, Mathf.Max(heightMap[(int) pos.x + 5, (int) pos.z + 5], pos.y) + 2.5f, pos.z + transform.position.z);
 				Vector3 treePos = new Vector3(pos.x + transform.position.x, pos.y + 2.5f, pos.z + transform.position.z);
 				newTree.transform.position = treePos;
 				newTree.transform.localScale += new Vector3(treeScale, treeScale, treeScale);
