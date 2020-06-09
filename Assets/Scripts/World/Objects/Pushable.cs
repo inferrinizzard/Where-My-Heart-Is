@@ -70,14 +70,14 @@ public class Pushable : InteractableObject
 	{
 		isPushing = true;
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
-		Effects.Instance.SetGlow(this, Color.white);
+		Player.VFX.SetGlow(this, Color.white);
 	}
 
 	private void StopPushing()
 	{
 		isPushing = false;
 		rb.constraints = ~RigidbodyConstraints.FreezePositionY;
-		Effects.Instance.SetGlow(this);
+		Player.VFX.SetGlow(this);
 
 		pushInstance.setParameterByName("Push Speed", 0);
 	}
@@ -160,7 +160,7 @@ public class Pushable : InteractableObject
 		{
 			inRange = true;
 			if (!this.TryComponent<OutlineObject>())
-				Effects.Instance.SetGlow(this);
+				Player.VFX.SetGlow(this);
 		}
 	}
 
@@ -182,7 +182,7 @@ public class Pushable : InteractableObject
 		{
 			inRange = false;
 			StopPushing();
-			Effects.Instance.SetGlow(null);
+			Player.VFX.SetGlow(null);
 		}
 	}
 }

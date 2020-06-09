@@ -8,8 +8,8 @@ public class SnowstormBehaviour : LevelBehaviour
 		Player.Instance.windowEnabled = false;
 		Player.Instance.cam.gameObject.AddComponent<Snowstorm>();
 	}
-	public void EnableFog() => Effects.Instance.ToggleFog(true);
-	public void DisableFog() => Effects.Instance.ToggleFog(false);
+	public void EnableFog() => Player.VFX.ToggleFog(true);
+	public void DisableFog() => Player.VFX.ToggleFog(false);
 
 	public void Exit()
 	{
