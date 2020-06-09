@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
@@ -11,6 +12,10 @@ public class MainMenu : MonoBehaviour
     /// <summary> Local instance of credits menu canvas objects. </summary>
     public GameObject creditsMenuUI;
 
+    public RawImage pip;
+
+    bool mainMenuOpen = true;
+
     void Start()
     {
         OpenMainMenu();
@@ -18,12 +23,15 @@ public class MainMenu : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) OpenMainMenu();
+        if (Input.GetKeyDown(KeyCode.Escape) && mainMenuOpen) OpenMainMenu();
     }
 
     /// <summary> Returns to the main menu. </summary>
     public void OpenMainMenu()
     {
+        pip.texture = GameManager.Instance.pause.pip.texture;
+
+        optionsMenuUI.GetComponent<OptionsMenu>().RefreshSettings();
         mainMenuUI.SetActive(true);
         optionsMenuUI.SetActive(false);
         creditsMenuUI.SetActive(false);
@@ -43,6 +51,16 @@ public class MainMenu : MonoBehaviour
         mainMenuUI.SetActive(false);
         optionsMenuUI.SetActive(false);
         creditsMenuUI.SetActive(true);
+    }
+
+    public void Play()
+    {
+        mainMenuUI.SetActive(false);
+        optionsMenuUI.SetActive(false);
+        creditsMenuUI.SetActive(false);
+        mainMenuOpen = false;
+        GameManager.Instance.pause.MainMenuEnd();
+        OpenSketchbook.PlayCameraSetup();
     }
 
     /// <summary> Quits the game. </summary>

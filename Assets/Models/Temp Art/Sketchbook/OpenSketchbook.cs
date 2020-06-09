@@ -30,6 +30,9 @@ public class OpenSketchbook : MonoBehaviour
     /// <summary> Target rotation of the camera for lerp. </summary>
     Quaternion targetRotation;
 
+    private static GameObject mainMenuCamera;
+    private static GameObject introCamera;
+
     private void Start()
     {
         lastPosition = cam.transform.position;
@@ -42,9 +45,11 @@ public class OpenSketchbook : MonoBehaviour
         // Set camera lerp position and rotation
         targetPosition = new Vector3(0.75f, 6f, 0f);
         targetRotation.eulerAngles = new Vector3(90f, 0f, -180f);
+
+        MainMenuCameraSetup();
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         // Reset these for the lerp
         transitionTime += Time.deltaTime;
@@ -56,12 +61,9 @@ public class OpenSketchbook : MonoBehaviour
 
         // Fade in the main menu UI elements
         if (mainMenuFade && mainMenuUI.alpha < 1.0) mainMenuUI.alpha += Time.deltaTime;
-    }
 
-    private void LateUpdate()
-    {
         // Camera lerp
-        if(opened)
+        if (opened)
         {
             cam.transform.position = Vector3.Lerp(lastPosition, targetPosition, transitionTime / cameraAnimationTime);
             cam.transform.rotation = Quaternion.Lerp(lastRotation, targetRotation, transitionTime / cameraAnimationTime);
@@ -84,5 +86,22 @@ public class OpenSketchbook : MonoBehaviour
         yield return new WaitForSeconds(3.0f);
         mainMenuUI.gameObject.SetActive(true);
         mainMenuFade = true;
+    }
+
+    public static void MainMenuCameraSetup()
+    {
+        introCamera = GameObject.Find("Main Camera");
+        mainMenuCamera = GameObject.Find("MainMenuCamera");
+
+        introCamera.GetComponent<Camera>().enabled = false;
+        mainMenuCamera.GetComponent<Camera>().enabled = true;
+
+        GameManager.Instance.pause.MainMenuStart();
+    }
+
+    public static void PlayCameraSetup()
+    {
+        introCamera.GetComponent<Camera>().enabled = true;
+        mainMenuCamera.GetComponent<Camera>().enabled = false;
     }
 }

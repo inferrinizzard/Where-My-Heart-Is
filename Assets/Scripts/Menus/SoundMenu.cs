@@ -99,4 +99,9 @@ public class SoundMenu : MonoBehaviour
         musicSlider.value = input;
         musicInputField.text = input.ToString();
     }
+
+    public void RefreshSettings()
+    {
+        //TODO
+    }
 }

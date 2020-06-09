@@ -12,6 +12,8 @@ public class PauseMenu : MonoBehaviour
 	[HideInInspector] public bool GameIsPaused = false;
 	/// <summary> Whether the options menu is open or not. </summary>
 	[HideInInspector] public bool OptionsMenuOpen = false;
+	/// <summary> Whether the options menu is open or not. </summary>
+	[HideInInspector] public bool MainMenuOpen = false;
 	/// <summary> Local instance of pause menu canvas objects. </summary>
 	public GameObject pauseMenuUI;
 	/// <summary> Local instance of options menu canvas objects. </summary>
@@ -23,12 +25,12 @@ public class PauseMenu : MonoBehaviour
 	/// <summary> Local instance of camera for PIP. </summary>
 	private Camera _camera;
 	/// <summary> Raw image for PIP. </summary>
-	private RawImage pip;
+	[HideInInspector] public RawImage pip;
 
-	void Start()
+	public void Init()
 	{
 		// Components for PIP
-		_camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+		_camera = Player.Instance.cam;
 		pip = GetComponentInChildren<RawImage>(true);
 
 		keySetter = GetComponentInChildren<ControlsMenu>(true);
@@ -40,12 +42,15 @@ public class PauseMenu : MonoBehaviour
 	/// <summary> Function to bind to pause input action. </summary>
 	private void PauseAction()
 	{
-		if (GameIsPaused)
-			if (OptionsMenuOpen) // Allow escape to be used to exit the options menu.
-				CloseOptions();
-			else
-				Resume();
-		else Pause();
+		if(!MainMenuOpen)
+		{
+			if (GameIsPaused)
+                if (OptionsMenuOpen) // Allow escape to be used to exit the options menu.
+                    CloseOptions();
+                else
+                    Resume();
+            else Pause();
+        }
 	}
 
 	/// <summary> Resumes the game. </summary>
@@ -70,7 +75,30 @@ public class PauseMenu : MonoBehaviour
 	/// <summary> Pauses the game. </summary>
 	void Pause()
 	{
+		optionsMenuUI.GetComponent<OptionsMenu>().RefreshSettings();
 		StartCoroutine(PauseRoutine());
+	}
+
+	public void MainMenuStart()
+	{
+		Debug.Log("opening main menu");
+		MainMenuOpen = true;
+		pauseMenuUI.SetActive(false);
+		gameplayUI.SetActive(false);
+		Time.timeScale = 1f;
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+		Player.Instance.canMove = false;
+		GameObject test = GameObject.Find("MainMenuUI");
+		StartCoroutine(GetMainMenuPIP());
+	}
+
+	public void MainMenuEnd()
+	{
+		Debug.Log("closing main menu");
+		MainMenuOpen = false;
+		Player.Instance.canMove = true;
+		Resume();
 	}
 
 	IEnumerator PauseRoutine()
@@ -134,11 +162,15 @@ public class PauseMenu : MonoBehaviour
 	{
 		yield return new WaitForEndOfFrame();
 		pip.texture = ApplyMask.Screenshot();
+	}
 
-		// pip.texture = new RenderTexture(Camera.main.pixelWidth, Camera.main.pixelHeight, 24);
-		// _camera.targetTexture = (RenderTexture) pip.texture;
-		// _camera.Render();
-		// RenderTexture.active = (RenderTexture) pip.texture;
-		// _camera.targetTexture = null; // must set to null so that the camera will also render to main display after taking screenshot
+	public IEnumerator GetMainMenuPIP()
+	{
+		yield return new WaitForEndOfFrame();
+		pip.texture = new RenderTexture(_camera.pixelWidth, _camera.pixelHeight, 24);
+		_camera.targetTexture = (RenderTexture) pip.texture;
+		_camera.Render();
+		RenderTexture.active = (RenderTexture) pip.texture;
+		_camera.targetTexture = null; // must set to null so that the camera will also render to main display after taking screenshot
 	}
 }

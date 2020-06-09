@@ -84,11 +84,11 @@ public class ControlsMenu : MonoBehaviour
 			{
 				case (int) Controls.Jump:
 					if (inputKey != KeyCode.Escape) InputManager.jumpKey = inputKey; else wasLookingForKey = true;
-					jumpButtonText.text = ParseKey(InputManager.jumpKey.ToString()); ;
+					jumpButtonText.text = ParseKey(InputManager.jumpKey.ToString());
 					break;
 				case (int) Controls.Interact:
 					if (inputKey != KeyCode.Escape) InputManager.interactKey = inputKey; else wasLookingForKey = true;
-					interactButtonText.text = ParseKey(InputManager.interactKey.ToString()); ;
+					interactButtonText.text = ParseKey(InputManager.interactKey.ToString());
 					break;
 				case (int)Controls.AltAim:
 					if (inputKey != KeyCode.Escape) InputManager.altAimKey = inputKey; else wasLookingForKey = true;
@@ -178,5 +178,15 @@ public class ControlsMenu : MonoBehaviour
 			return "R Alt";
 		}
 		return input;
+	}
+
+	public void RefreshSettings()
+	{
+		jumpButtonText.text = ParseKey(InputManager.jumpKey.ToString());
+		interactButtonText.text = ParseKey(InputManager.interactKey.ToString());
+		altAimButtonText.text = ParseKey(InputManager.altAimKey.ToString());
+
+		sensitivitySlider.value = Player.mouseSensitivity;
+		sensitivityInputField.text = Player.mouseSensitivity.ToString();
 	}
 }

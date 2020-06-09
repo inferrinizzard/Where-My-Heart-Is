@@ -49,6 +49,8 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Whether or not the player can activate the window. </summary>
 	public bool windowEnabled = true;
 
+	[HideInInspector] public bool canMove = true;
+
 	/// <summary> Reference to heart window. </summary>
 	[HideInInspector] public GameObject heartWindow;
 	/// <summary> Reference to death plane. </summary>
@@ -200,7 +202,7 @@ public class Player : Singleton<Player>, IStateMachine
 
 	void FixedUpdate()
 	{
-		if (!GameManager.Instance.duringLoad)
+		if (!GameManager.Instance.duringLoad && canMove)
 		{
 			Move();
 			Rotate();

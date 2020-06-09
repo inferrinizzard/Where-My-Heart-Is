@@ -35,4 +35,11 @@ public class OptionsMenu : MonoBehaviour
         soundMenu.SetActive(false);
         textMenu.SetActive(true);
     }
+
+    public void RefreshSettings()
+    {
+        controlsMenu.GetComponent<ControlsMenu>().RefreshSettings();
+        soundMenu.GetComponent<SoundMenu>().RefreshSettings();
+        textMenu.GetComponent<TextMenu>().RefreshSettings();
+    }
 }

@@ -12,12 +12,14 @@ public class TextMenu : MonoBehaviour
     /// <summary> Text to display current text size. </summary>
     public Text textSizeText;
     public Toggle textToggle;
-    public GameObject dialogueObject;
+    Textbox dialogueText;
     DialogueSystem dialogueSystem;
 
     private void Start()
     {
-        if (dialogueSystem != null) dialogueSystem = dialogueObject.GetComponentInChildren<DialogueSystem>(true);
+        dialogueText = GameManager.Instance.gameObject.GetComponentInChildren<Textbox>(true);
+        dialogueSystem = GameManager.Instance.gameObject.GetComponentInChildren<DialogueSystem>(true);
+        RefreshSettings();
         SetTextSizeSlider(); // Set the text at the beginning.
     }
 
@@ -44,7 +46,29 @@ public class TextMenu : MonoBehaviour
 
     public void SetTextToggle()
     {
-        if (textToggle.isOn) dialogueObject.SetActive(true);
-        else dialogueObject.SetActive(false);
+        if(textToggle.isOn)
+        {
+            dialogueSystem.gameObject.SetActive(true);
+            dialogueText.gameObject.SetActive(true);
+        }
+        else
+        {
+            dialogueSystem.gameObject.SetActive(false);
+            dialogueText.gameObject.SetActive(false);
+        }
+    }
+
+    public void RefreshSettings()
+    {
+        if (dialogueSystem)
+        {
+            if (dialogueSystem.uiText.fontSize == 40)
+                textSizeSlider.value = 0;
+            if (dialogueSystem.uiText.fontSize == 50)
+                textSizeSlider.value = 1;
+            if (dialogueSystem.uiText.fontSize == 60)
+                textSizeSlider.value = 2;
+            textToggle.isOn = dialogueSystem.gameObject.activeSelf;
+        }
     }
 }

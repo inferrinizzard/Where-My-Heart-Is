@@ -7,7 +7,7 @@ public class Effects : MonoBehaviour
 {
 	public static Effects Instance;
 
-	Fade fadeController;
+	[HideInInspector] public Fade fadeController;
 	bool dissolveOn = false;
 	[HideInInspector] public bool maskOn = false;
 
