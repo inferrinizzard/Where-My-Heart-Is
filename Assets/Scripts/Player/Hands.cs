@@ -38,8 +38,8 @@ public class Hands : MonoBehaviour
 	{
 		anim.SetBool("Aiming", true);
 
-		var heartTargetPos = new Vector3(.05f, -1.6f, 1.0f); // VS GHETTO
-		var heartTargetEulers = new Vector3(0, -90, 10f); // VS GHETTO
+		Vector3 heartTargetPos = new Vector3(.19f, -1.6f, 1.3f); // VS GHETTO
+		Vector3 heartTargetEulers = new Vector3(0.2f, -111f, 0f); // VS GHETTO
 
 		// anim.Play("Heart Cut");
 		for (var(start, step) = (Time.time, 0f); step <= heartAnimDuration; step = Time.time - start)
@@ -53,8 +53,8 @@ public class Hands : MonoBehaviour
 			// TODO: ease these
 
 			anim.speed = animCurve.Evaluate(step / heartAnimDuration);
-			anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / heartAnimDuration);
-			// anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTargetEulers, step / heartAnimDuration);
+			/*anim.transform.localPosition = Vector3.Lerp(heartStartPos, heartTargetPos, step / heartAnimDuration);
+			anim.transform.localEulerAngles = Vector3.Lerp(heartStartEulers, heartTargetEulers, step / heartAnimDuration);*/
 		}
 
 		(player.State as Aiming).DeferredStart();
