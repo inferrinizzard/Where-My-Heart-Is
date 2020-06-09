@@ -8,15 +8,25 @@ public class MainMenu : MonoBehaviour
     public GameObject mainMenuUI;
     /// <summary> Local instance of options menu canvas objects. </summary>
     public GameObject optionsMenuUI;
+    /// <summary> Local instance of credits menu canvas objects. </summary>
+    public GameObject creditsMenuUI;
 
     void Start()
     {
-        CloseOptions(); // Make sure we start in the main menu.
+        OpenMainMenu();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) CloseOptions();
+        if (Input.GetKeyDown(KeyCode.Escape)) OpenMainMenu();
+    }
+
+    /// <summary> Returns to the main menu. </summary>
+    public void OpenMainMenu()
+    {
+        mainMenuUI.SetActive(true);
+        optionsMenuUI.SetActive(false);
+        creditsMenuUI.SetActive(false);
     }
 
     /// <summary> Opens the options menu and closes other menus. </summary>
@@ -24,13 +34,15 @@ public class MainMenu : MonoBehaviour
     {
         mainMenuUI.SetActive(false);
         optionsMenuUI.SetActive(true);
+        creditsMenuUI.SetActive(false);
     }
 
-    /// <summary> Closes the options menu and displays the main menu. </summary>
-    public void CloseOptions()
+    /// <summary> Opens the credits menu and closes other menus. </summary>
+    public void OpenCredits()
     {
-        mainMenuUI.SetActive(true);
+        mainMenuUI.SetActive(false);
         optionsMenuUI.SetActive(false);
+        creditsMenuUI.SetActive(true);
     }
 
     /// <summary> Quits the game. </summary>
