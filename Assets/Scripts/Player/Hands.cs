@@ -11,7 +11,7 @@ public class Hands : MonoBehaviour
 	[SerializeField] float heartAnimSpeed = 1;
 	float heartAnimDuration;
 	Vector3 heartStartPos, heartStartEulers;
-	[SerializeField] AnimationCurve animCurve;
+	[SerializeField] AnimationCurve animCurve = default;
 	public bool leftHandOn
 	{
 		get => leftHand.activeSelf;
@@ -22,7 +22,7 @@ public class Hands : MonoBehaviour
 		}
 	}
 
-	[SerializeField] GameObject leftHand, leftArm;
+	[SerializeField] GameObject leftHand = default, leftArm = default;
 
 	void Start()
 	{
