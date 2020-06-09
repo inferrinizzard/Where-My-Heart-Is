@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary> Handles setting of various text settings associated with the text page. </summary>
@@ -16,8 +17,7 @@ public class TextMenu : MonoBehaviour
 
     private void Start()
     {
-        dialogueSystem = dialogueObject.GetComponentInChildren<DialogueSystem>(true);
-        Debug.Log(dialogueSystem);
+        if (dialogueSystem != null) dialogueSystem = dialogueObject.GetComponentInChildren<DialogueSystem>(true);
         SetTextSizeSlider(); // Set the text at the beginning.
     }
 

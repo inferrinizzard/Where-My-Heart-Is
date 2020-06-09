@@ -28,7 +28,7 @@ public class PauseMenu : MonoBehaviour
 	void Start()
 	{
 		// Components for PIP
-		_camera = Camera.main;
+		_camera = GameObject.Find("Main Camera").GetComponent<Camera>();
 		pip = GetComponentInChildren<RawImage>(true);
 
 		keySetter = GetComponentInChildren<ControlsMenu>(true);
