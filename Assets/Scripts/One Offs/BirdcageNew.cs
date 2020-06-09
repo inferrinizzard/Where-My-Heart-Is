@@ -15,7 +15,7 @@ public class BirdcageNew : InteractableObject
 	//public GameObject distress;
 	//public Image img;
 
-	public override string prompt { get => "Press E to Cage Bird"; }
+	public override string prompt { get => $"Press {InputManager.InteractKey} to Cage Bird"; }
 	public override void Interact()
 	{
 		birdcage.GetComponent<Animator>().SetBool("close", true);

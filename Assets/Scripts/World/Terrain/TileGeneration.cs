@@ -5,11 +5,10 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Generate tiles with trees and occasional door around the player
+/// Generate tiles with trees and occasional door around the Player.Instance
 /// </summary>
 public class TileGeneration : MonoBehaviour
 {
-	public GameObject player;
 	List<GameObject> myTrees = new List<GameObject>();
 
 	[SerializeField] private MeshRenderer tileRenderer = default; // Show height map of each vertex
@@ -79,7 +78,7 @@ public class TileGeneration : MonoBehaviour
 
 		myTrees.ForEach(tree =>
 		{
-			if ((tree.transform.position - player.transform.position).sqrMagnitude < 10)
+			if ((tree.transform.position - Player.Instance.transform.position).sqrMagnitude < 10)
 				tree.SetActive(false);
 		});
 
@@ -181,7 +180,7 @@ public class TileGeneration : MonoBehaviour
 		if (other.CompareTag("Player"))
 		{
 			gen.GenerateTiles(Vector2Int.FloorToInt(new Vector2(transform.position.x, transform.position.z) / GenerateInfinite.planeSize));
-			gen.DoorPos(player.transform.position.sqrMagnitude);
+			gen.DoorPos(Player.Instance.transform.position.sqrMagnitude);
 		}
 	}
 }

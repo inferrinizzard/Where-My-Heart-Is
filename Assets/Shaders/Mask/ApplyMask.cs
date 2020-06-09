@@ -152,6 +152,7 @@ public class ApplyMask : MonoBehaviour
 
 		foreach (var r in World.Instance.GetComponentsInChildren<Renderer>()) // TODO: better?
 			r.enabled = false;
+		GameObject.FindObjectOfType<Bird>().gameObject.SetActive(false);
 
 		var pageFlip = StartCoroutine(Player.Instance.GetComponentInChildren<PageFlip>(true).Flip(curSave));
 		var load = StartCoroutine(GameManager.Instance.ChangeLevelManual());
