@@ -28,6 +28,7 @@ public class Fade : MonoBehaviour
 			float alpha = fadingIn ? EaseMethods.CubicEaseOut(time - step, 0, 1, time) : EaseMethods.CubicEaseIn(step, 0, 1, time);
 			fadeMat.SetFloat("_Alpha", alpha);
 		}
+		fadeMat.SetFloat("_Alpha", fadingIn ? 0 : 1);
 		Player.Instance.playerCanRotate = true;
 	}
 

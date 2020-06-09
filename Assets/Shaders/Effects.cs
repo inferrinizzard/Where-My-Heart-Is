@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class Effects : MonoBehaviour
 {
-	public static Effects Instance;
-
 	Fade fadeController;
 	bool dissolveOn = false;
 	[HideInInspector] public bool maskOn = false;
@@ -15,7 +13,6 @@ public class Effects : MonoBehaviour
 
 	void Awake()
 	{
-		Instance = this;
 		mainCam = GetComponent<Camera>();
 		heartCam = this.GetComponentOnlyInChildren<Camera>();
 

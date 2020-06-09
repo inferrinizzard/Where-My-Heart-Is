@@ -13,6 +13,7 @@ public class BridgeBehaviour : LevelBehaviour
 	public void Init()
 	{
 		prompt = GameManager.Instance.prompt;
+		Player.Instance.windowEnabled = true;
 		window = Player.Instance.cam.GetComponent<WindowMaskAnimation>();
 	}
 	public void TutorialPrompt()

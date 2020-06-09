@@ -7,17 +7,17 @@ using UnityEngine;
 public class CanvasObject : Pickupable
 {
 	public event Action OnInteract;
-	[SerializeField] bool onEasel = true;
+	public bool onEasel = true;
 	[SerializeField] Transform placeTarget = default;
 	public override string prompt { get => $"Press {InputManager.InteractKey} to {(onEasel ? "Enter" : (inRange ? "Place" : "Hold"))} Canvas"; }
-	public bool inRange { get => (transform.position - placeTarget.position).sqrMagnitude < player.playerReach * player.playerReach / 4; }
+	public bool inRange { get => placeTarget && (transform.position - placeTarget.position).sqrMagnitude < player.playerReach * player.playerReach / 4; }
 
 	public override void Interact()
 	{
 		if (onEasel)
 		{
 			OnInteract?.Invoke();
-			StartCoroutine(Player.Instance.mask.PreTransition());
+			StartCoroutine(player.mask.PreTransition());
 			var enclippableParent = transform.GetComponentInParent<EntangledClippable>();
 			if (enclippableParent)
 				foreach (var o in enclippableParent.GetComponentsInChildren<OutlineObject>())
