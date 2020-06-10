@@ -28,6 +28,9 @@ public class ApplyMask : MonoBehaviour
 	private bool rippleInProgress;
 	private float rippleStartTime;
 
+	[FMODUnity.EventRef]
+	public string pageFlipSoundEvent;
+
 	void Start()
 	{
 		// get ref to heart world cam and assign generated RenderTexture
@@ -156,6 +159,8 @@ public class ApplyMask : MonoBehaviour
 
 		var pageFlip = StartCoroutine(Player.Instance.GetComponentInChildren<PageFlip>(true).Flip(curSave));
 		var load = StartCoroutine(GameManager.Instance.ChangeLevelManual());
+
+		FMODUnity.RuntimeManager.PlayOneShot(pageFlipSoundEvent);
 
 		yield return pageFlip;
 		yield return load;
