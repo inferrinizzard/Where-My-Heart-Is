@@ -17,14 +17,22 @@ public class MainMenu : MonoBehaviour
 	/// <summary> Whether the main menu is active or not. </summary>
 	bool mainMenuOpen = true;
 
-	void Start()
-	{
-		OpenMainMenu();
-	}
-
 	void Update()
 	{
 		if (Input.GetKeyDown(KeyCode.Escape) && mainMenuOpen) OpenMainMenu();
+	}
+
+	[FMODUnity.EventRef]
+	public string titleEvent;
+
+	[FMODUnity.EventRef]
+	public string introEvent;
+
+	void Start()
+	{
+		OpenMainMenu();
+
+		FindObjectOfType<AudioMaster>().PlaySongEvent(titleEvent);
 	}
 
 	/// <summary> Returns to the main menu. </summary>
@@ -36,6 +44,8 @@ public class MainMenu : MonoBehaviour
 		mainMenuUI.SetActive(true);
 		optionsMenuUI.SetActive(false);
 		creditsMenuUI.SetActive(false);
+		pip.texture = GameManager.Instance.pause.pip.texture;
+
 	}
 
 	/// <summary> Opens the options menu and closes other menus. </summary>
@@ -63,7 +73,11 @@ public class MainMenu : MonoBehaviour
 		mainMenuOpen = false;
 		GameManager.Instance.pause.MainMenuEnd();
 		OpenSketchbook.PlayCameraSetup();
+
+		// deactivate music event
+		FindObjectOfType<AudioMaster>().PlaySongEvent(introEvent);
 		GameManager.Instance.dialogue.PlayScript(DialogueText.texts["1_Intro"]);
+
 	}
 
 	/// <summary> Quits the game. </summary>

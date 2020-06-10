@@ -16,6 +16,8 @@ public class PlayerAudio : MonoBehaviour
 	public float dieVelocityThreshold;
 	public float dieDistanceThreshold;
 
+	public float minCutLength;
+
 	[Header("Movement Events")]
 	[FMODUnity.EventRef]
 	public string jumpLiftoffEvent;
@@ -49,6 +51,8 @@ public class PlayerAudio : MonoBehaviour
 	private bool falling = false;
 	private bool jumping = false;
 	private bool fallVoicePlayed = false;
+
+	private float timeOfLastCutStart;
 
 	private void Start()
 	{
@@ -178,11 +182,24 @@ public class PlayerAudio : MonoBehaviour
 
 	private void ApplyCut()
 	{
+		timeOfLastCutStart = Time.time;
 		FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Cut In Progress", 1);
 		cutInstance.start();
 	}
 
 	private void CompleteCut()
+	{
+		if (Time.time > timeOfLastCutStart + minCutLength)
+		{
+			SetCutToZero();
+		}
+		else
+		{
+			Invoke("SetCutToZero", timeOfLastCutStart + minCutLength - Time.time);
+		}
+	}
+
+	private void SetCutToZero()
 	{
 		FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Cut In Progress", 0);
 	}

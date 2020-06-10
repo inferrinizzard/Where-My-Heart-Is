@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Security.Policy;
 using UnityEngine;
 
 // Set door animation to play at current scene position
@@ -13,6 +13,16 @@ public class DoorController : InteractableObject
 	public GameObject blocker;
 	bool snowstormLevel = false;
 
+	public BoxCollider doorCollider;
+
+	[FMODUnity.EventRef]
+	public string doorLocked;
+
+	[FMODUnity.EventRef]
+	public string openDoor;
+
+	[FMODUnity.EventRef]
+	public string closeDoor;
 	protected override void Start()
 	{
 		base.Start();
@@ -36,10 +46,15 @@ public class DoorController : InteractableObject
 	{
 		base.Interact();
 		if (!snowstormLevel)
+		{
 			anim.Play("Locked");
+			FMODUnity.RuntimeManager.PlayOneShot(doorLocked, transform.position);
+			Debug.Log("locked door you idiot");
+		}
 		else
 		{
 			anim.Play("Opening- Slow");
+			FMODUnity.RuntimeManager.PlayOneShot(openDoor, transform.position);
 			blocker.SetActive(false);
 			foreach (Renderer r in house.GetComponentsInChildren<Renderer>())
 				foreach (Material m in r.materials)
@@ -73,6 +88,11 @@ public class DoorController : InteractableObject
 			c.enabled = true;
 
 		if (Player.Instance.playerCollider.bounds.Intersects(closeTrigger.GetComponent<Collider>().bounds))
+		{
 			anim.Play("Slam");
+			Destroy(this);
+			doorCollider.enabled = true;
+			FMODUnity.RuntimeManager.PlayOneShot(closeDoor, transform.position);
+		}
 	}
 }

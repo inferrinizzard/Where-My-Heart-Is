@@ -72,6 +72,7 @@ public class GameManager : Singleton<GameManager>
 	/// <param name="scene"> Name of scene to load  </param>
 	public static IEnumerator LoadScene(string name)
 	{
+		Player.instance.window.cutInProgress = false;
 		instance.duringLoad = true;
 		Player.Instance.OnExitScene();
 

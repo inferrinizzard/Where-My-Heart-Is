@@ -19736,16 +19736,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -19801,10 +19791,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8854909899827168894, guid: ce2e34029942daa4c845cd2ceec80c14,
+    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
-      propertyPath: tempMaterial
-      value: 
+      propertyPath: m_Name
+      value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce2e34029942daa4c845cd2ceec80c14, type: 3}
@@ -37963,10 +37953,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameIsPaused: 0
   OptionsMenuOpen: 0
+  MainMenuOpen: 0
   pauseMenuUI: {fileID: 1994840403174785818}
   optionsMenuUI: {fileID: 1994840403226207195}
   gameplayUI: {fileID: 6000096787998285488}
   keySetter: {fileID: 0}
+  pip: {fileID: 0}
+  masterValue: 80
+  sfxValue: 80
+  voiceValue: 80
+  musicValue: 80
 --- !u!224 &6000096788725734148
 RectTransform:
   m_ObjectHideFlags: 0

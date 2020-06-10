@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class MenuAudio : MonoBehaviour
 {
+    [Header("Behavior")]
+    public float sliderCooldown;
+
+
+    [Header("Events")]
+
     [FMODUnity.EventRef]
     public string mouseDown;
 
@@ -22,6 +28,14 @@ public class MenuAudio : MonoBehaviour
     [FMODUnity.EventRef]
     public string highlight;
 
+
+    private float timeOfLastSliderChange;
+
+    private void Start()
+    {
+        timeOfLastSliderChange = Time.realtimeSinceStartup;
+    }
+
     public void playMouseDown()
     {
         FMODUnity.RuntimeManager.PlayOneShot(mouseDown);
@@ -38,8 +52,12 @@ public class MenuAudio : MonoBehaviour
     }
 
     public void playMouseDragged()
-    {   
-        FMODUnity.RuntimeManager.PlayOneShot(mouseDragged);
+    {
+        if(Time.realtimeSinceStartup > timeOfLastSliderChange + sliderCooldown)
+        {
+            timeOfLastSliderChange = Time.realtimeSinceStartup;
+            FMODUnity.RuntimeManager.PlayOneShot(mouseDragged);
+        }
     }
 
     public void playPageTurn()

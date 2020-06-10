@@ -16526,7 +16526,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 9e5fae091e14ddc4f8302e418ce38d2e, type: 2}
+      objectReference: {fileID: 9100000, guid: 872e928b64097b84ca862990992e0780, type: 2}
     - target: {fileID: -4216859302048453862, guid: 1ecc58fc724a29d4abf8ef454617a27b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -16672,6 +16672,10 @@ MonoBehaviour:
   holder: {fileID: 2121552311}
   closeTrigger: {fileID: 600884716}
   blocker: {fileID: 192055914}
+  doorCollider: {fileID: 1201592813}
+  doorLocked: event:/Door/Door Locked
+  openDoor: event:/Door/Open Door
+  closeDoor: event:/Door/Close Door
 --- !u!65 &1201592813
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -23681,7 +23685,7 @@ PrefabInstance:
     - target: {fileID: 2682051114935348213, guid: c1ad9c75fb5753e4886d56e6b2740636,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.17450753
       objectReference: {fileID: 0}
     - target: {fileID: 2682051114935348213, guid: c1ad9c75fb5753e4886d56e6b2740636,
         type: 3}
@@ -23696,7 +23700,7 @@ PrefabInstance:
     - target: {fileID: 2682051114935348213, guid: c1ad9c75fb5753e4886d56e6b2740636,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.98465586
       objectReference: {fileID: 0}
     - target: {fileID: 2682051114935348213, guid: c1ad9c75fb5753e4886d56e6b2740636,
         type: 3}

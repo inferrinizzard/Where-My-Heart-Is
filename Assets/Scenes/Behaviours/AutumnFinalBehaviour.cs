@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AutumnFinalBehaviour", menuName = "Levels/Behaviours/AutumnFinalBehaviour")]
 public class AutumnFinalBehaviour : LevelBehaviour
 {
+    [FMODUnity.EventRef]
+    public string musicEvent;
+
 	// public void CloseBirdCage()
 	// {
 	//     Player.Instance.cam.gameObject.AddComponent<FadeOut>();
@@ -16,6 +19,11 @@ public class AutumnFinalBehaviour : LevelBehaviour
 	//     float fadeTime = Player.Instance.cam.gameObject.GetComponent<FadeOut>().BeginFade(1);
 	//     yield return new WaitForSeconds(fadeTime);
 	// }
+
+    public void PlayMusic()
+    {
+        FindObjectOfType<AudioMaster>().PlaySongEvent(musicEvent);
+    }
 
 	public void HeartBreak()
 	{
