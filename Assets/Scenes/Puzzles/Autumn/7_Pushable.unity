@@ -20350,10 +20350,10 @@ MonoBehaviour:
   player: {fileID: 0}
   renderers: []
   pushDistance: 4
-  pushEvent: 
-  impactEvent: 
-  maxPushSpeed: 0
-  minPushSpeed: 0
+  pushEvent: event:/Box/Push Box
+  impactEvent: event:/Box/Box Impact
+  maxPushSpeed: 4
+  minPushSpeed: 1
   groundOffsetX: 0
   groundOffsetY: 0
   groundOffsetZ: 0
@@ -50866,6 +50866,11 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5695175442755291296, guid: 2e408cfb269dae24999d2b21e62931c5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5695175442939261559, guid: 2e408cfb269dae24999d2b21e62931c5,
         type: 3}
       propertyPath: m_AnchorMin.x
@@ -50890,11 +50895,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5695175442755291296, guid: 2e408cfb269dae24999d2b21e62931c5,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5966351730224657485, guid: 2e408cfb269dae24999d2b21e62931c5,
         type: 3}
