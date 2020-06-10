@@ -17,18 +17,23 @@ public class PlayerTrigger : MonoBehaviour
 
 	private void OnTriggerEnter(Collider other)
 	{
-		if (other.tag == "Player")
-		{
-			if (flavor != "")
-			{
-				StartCoroutine(dialogueSystem.WriteDialogue(flavor));
-			}
-			OnPlayerEnter?.Invoke();
-			OnPlayerEnterID?.Invoke(this);
-			if (destroyAfterTrigger)
-			{
-				Destroy(this);
-			}
-		}
-	}
+        if (other.tag == "Player")
+        {
+            PlayerEnter(other);
+            OnPlayerEnter?.Invoke();
+            OnPlayerEnterID?.Invoke(this);
+            if (destroyAfterTrigger)
+            {
+                Destroy(this);
+            }
+        }
+    }
+
+    protected virtual void PlayerEnter(Collider other)
+    {
+        if (flavor != "")
+        {
+            StartCoroutine(dialogueSystem.WriteDialogue(flavor));
+        }
+    }
 }

@@ -6,11 +6,19 @@ public class SnowstormBehaviour : LevelBehaviour
     [FMODUnity.EventRef]
     public string musicEvent;
 
+    [FMODUnity.EventRef]
+    public string shiverEvent;
+
+    private FMOD.Studio.EventInstance shiverInstance;
+
 	public void Init()
 	{
 		Player.Instance.windowEnabled = false;
 		Player.Instance.cam.gameObject.AddComponent<Snowstorm>();
         FindObjectOfType<AudioMaster>().PlaySongEvent(musicEvent);
+
+        shiverInstance = FMODUnity.RuntimeManager.CreateInstance(shiverEvent);
+        shiverInstance.start();
 	}
 	public void EnableFog() => Player.VFX.ToggleFog(true);
 	public void DisableFog() => Player.VFX.ToggleFog(false);
@@ -18,5 +26,7 @@ public class SnowstormBehaviour : LevelBehaviour
 	public void Exit()
 	{
 		Player.Instance.windowEnabled = true;
-	}
+        shiverInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        shiverInstance.release();
+    }
 }
