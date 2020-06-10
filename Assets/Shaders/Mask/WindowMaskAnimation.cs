@@ -58,7 +58,7 @@ public class WindowMaskAnimation : MonoBehaviour
 
 					//openMat.SetFloat(cutoffID, ConcreteEaseMethods.QuadEaseOut(Time.time - rampStartTime, 0, rampTarget, rampLength));
 					openMat.SetFloat(ShaderID._MaskCutoff, rampCurve.Evaluate(Time.time - rampStartTime / rampLength) * rampTarget);
-					Graphics.Blit(applyMask.mask, rampResult, openMat);
+					Graphics.Blit(applyMask.Mask, rampResult, openMat);
 					applyMask.SetMask(rampResult);
 				}
 			}
@@ -80,7 +80,7 @@ public class WindowMaskAnimation : MonoBehaviour
 			// openMat.SetTextureOffset(ShaderID._RampTex, openMat.GetTextureOffset(ShaderID._RampTex) + Vector2.right * scrollRate * Time.deltaTime);
 
 			openMat.SetFloat(ShaderID._MaskCutoff, currentBreath);
-			Graphics.Blit(applyMask.mask, rampResult, openMat);
+			Graphics.Blit(applyMask.Mask, rampResult, openMat);
 			applyMask.SetMask(rampResult);
 		}
 	}
