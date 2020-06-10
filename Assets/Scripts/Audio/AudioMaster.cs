@@ -23,16 +23,55 @@ public class AudioMaster : Singleton<AudioMaster>
 	private FMOD.Studio.EventInstance ambientInstance;
 	private FMOD.Studio.EventInstance musicInstance;
 
+    private string nextEventName;
+    private bool playingSong;
+
 	// Start is called before the first frame update
 	void Start()
 	{
 		ambientInstance = FMODUnity.RuntimeManager.CreateInstance(AutumnAmbientEvent);
 		ambientInstance.setParameterByName("Play Song", 1);
 		ambientInstance.start();
-		StartIntroTheme();
-	}
 
-	public void StartTensionTheme()
+        playingSong = false;
+    }
+
+    public void PlaySongEvent(string eventName)
+    {
+        nextEventName = eventName;
+        if(playingSong)
+        {
+            musicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            Invoke("StartNextSong", 1);
+        }
+        else
+        {
+            StartNextSong();
+        }
+    }
+
+    private void StartNextSong()
+    {
+        musicInstance.release();
+        musicInstance = FMODUnity.RuntimeManager.CreateInstance(nextEventName);
+        musicInstance.start();
+
+        playingSong = true;
+    }
+
+    public void StopSongEvent()
+    {
+        musicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        Invoke("ReleaseSongEvent", 1);
+    }
+
+    private void ReleaseSongEvent()
+    {
+        musicInstance.release();
+        playingSong = false;
+    }
+
+    public void StartTensionTheme()
 	{
 		musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
 		musicInstance = FMODUnity.RuntimeManager.CreateInstance(TensionMusicEvent);

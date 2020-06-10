@@ -13,6 +13,10 @@ public class OpenSketchbook : MonoBehaviour
     public CanvasGroup mainMenuUI;
     /// <summary> Reference to 'press any key to start' UI element. </summary>
     public Graphic pressAnyPrompt;
+
+    [FMODUnity.EventRef]
+    public string openEvent;
+
     /// <summary> Camera lerping variable. </summary>
     float transitionTime = 0f;
     /// <summary> Animation time for the canvas lerp in frames(?). </summary>
@@ -79,6 +83,8 @@ public class OpenSketchbook : MonoBehaviour
         anim.SetTrigger("Open");
         opened = true;
         StartCoroutine(FadeInUI());
+
+        FMODUnity.RuntimeManager.PlayOneShot(openEvent);
     }
 
     /// <summary> Fades the UI elements of the main menu in. </summary>

@@ -16,6 +16,8 @@ public class PlayerAudio : MonoBehaviour
     public float dieVelocityThreshold;
     public float dieDistanceThreshold;
 
+    public float minCutLength;
+
 
     [Header("Movement Events")]
 	[FMODUnity.EventRef]
@@ -51,6 +53,8 @@ public class PlayerAudio : MonoBehaviour
     private bool jumping = false;
     private bool fallVoicePlayed = false;
 
+    private float timeOfLastCutStart;
+
 	private void Start()
 	{
 		walkInstance = FMODUnity.RuntimeManager.CreateInstance(walkEvent);
@@ -72,10 +76,11 @@ public class PlayerAudio : MonoBehaviour
         Debug.Log(player.window);
         player.GetComponent<Window>().OnCompleteCut += CompleteCut;
 
-        FMODUnity.RuntimeManager.PlayOneShot("event:/Music/Autumn 1");
-	}
+        //FMODUnity.RuntimeManager.PlayOneShot("event:/Music/Autumn 1");
 
-	private void Update()
+    }
+
+    private void Update()
 	{
         Rigidbody rigidbody = GetComponent<Rigidbody>();
 
@@ -179,11 +184,24 @@ public class PlayerAudio : MonoBehaviour
 
     private void ApplyCut()
     {
+        timeOfLastCutStart = Time.time;
         FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Cut In Progress", 1);
         cutInstance.start();
     }
 
     private void CompleteCut()
+    {
+        if(Time.time > timeOfLastCutStart + minCutLength)
+        {
+            SetCutToZero();
+        }
+        else
+        {
+            Invoke("SetCutToZero", timeOfLastCutStart + minCutLength - Time.time);
+        }
+    }
+
+    private void SetCutToZero()
     {
         FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Cut In Progress", 0);
     }

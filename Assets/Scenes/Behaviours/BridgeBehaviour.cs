@@ -6,6 +6,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BridgeBehaviour", menuName = "Levels/Behaviours/BridgeBehaviour")]
 public class BridgeBehaviour : LevelBehaviour
 {
+    [FMODUnity.EventRef]
+    public string musicEvent;
+
 	public static bool forcePrompt = false;
 	string heartPromptText = $"Press and Hold {Prompt.ParseKey(InputManager.altAimKey.ToString())} or Right Click to use Window";
 	Prompt prompt;
@@ -15,6 +18,8 @@ public class BridgeBehaviour : LevelBehaviour
 		prompt = GameManager.Instance.prompt;
 		Player.Instance.windowEnabled = true;
 		window = Player.Instance.cam.GetComponent<WindowMaskAnimation>();
+
+        FindObjectOfType<AudioMaster>().PlaySongEvent(musicEvent);
 	}
 	public void TutorialPrompt()
 	{
