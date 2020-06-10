@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 
-using FMODUnity;
-
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,8 +17,7 @@ public class BirdcageWinter : InteractableObject
 		birdcage.GetComponent<Animator>().SetBool("open", true);
 
 		Player.Instance.prompt.Disable();
-		FMODUnity.RuntimeManager.PlayOneShot(CageEvent);
-		AudioMaster.Instance.StopAll();
+		FMODUnity.RuntimeManager.PlayOneShot(CageEvent, transform.position);
 		//Player.VFX.StartFade(false, .05f, false);
 		//GameManager.Instance.ChangeLevel();
 	}
