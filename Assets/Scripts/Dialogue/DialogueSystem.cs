@@ -26,6 +26,8 @@ public class DialogueSystem : MonoBehaviour
 		}
 	}
 
+	public void TogglePause(bool pause) => currentDialogue.setPaused(pause);
+
 	public void Stop()
 	{
 		Debug.Log("stopped");

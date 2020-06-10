@@ -51,15 +51,15 @@ public class PauseMenu : MonoBehaviour
 	/// <summary> Function to bind to pause input action. </summary>
 	private void PauseAction()
 	{
-		if(!MainMenuOpen)
+		if (!MainMenuOpen)
 		{
 			if (GameIsPaused)
-                if (OptionsMenuOpen) // Allow escape to be used to exit the options menu.
-                    CloseOptions();
-                else
-                    Resume();
-            else Pause();
-        }
+				if (OptionsMenuOpen) // Allow escape to be used to exit the options menu.
+					CloseOptions();
+				else
+					Resume();
+			else Pause();
+		}
 	}
 
 	/// <summary> Resumes the game. </summary>
@@ -74,6 +74,7 @@ public class PauseMenu : MonoBehaviour
 			GameIsPaused = false;
 			Cursor.lockState = CursorLockMode.Locked;
 			Cursor.visible = false;
+			GameManager.Instance.dialogue.TogglePause(false);
 		}
 		else
 		{
@@ -85,6 +86,7 @@ public class PauseMenu : MonoBehaviour
 	void Pause()
 	{
 		optionsMenuUI.GetComponent<OptionsMenu>().RefreshSettings();
+		GameManager.Instance.dialogue.TogglePause(true);
 		StartCoroutine(PauseRoutine());
 	}
 
