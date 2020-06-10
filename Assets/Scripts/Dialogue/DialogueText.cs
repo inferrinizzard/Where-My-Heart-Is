@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class DialogueText : MonoBehaviour
 {
-	public static Dictionary<string, LevelText> autumn, winter;
+	public static Dictionary<string, LevelText> texts;
 	public struct LevelText
 	{
 		public string name, fmod;
@@ -28,16 +28,21 @@ public class DialogueText : MonoBehaviour
 
 	public static void Load()
 	{
-		(autumn, winter) =
-		Func.Lambda<List<Dictionary<string, LevelText>>,
-			(Dictionary<string, LevelText>, Dictionary<string, LevelText>) >
-			(json => (json[0], json[1]))
-			(JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>>>
-				(Resources.Load<TextAsset>("Script").text)
-				.Select(world =>
-					world.Value.Select(level =>
-						new LevelText(level.Key, level.Value["fmod"][0], level.Value["text"], level.Value["timestamps"]))
-					.ToDictionary(kvp => kvp.name, kvp => kvp)
-				).ToList());
+		texts = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<string>>>>
+			(Resources.Load<TextAsset>("Script").text)
+			.Select(level =>
+				new LevelText(level.Key, level.Value["fmod"][0], level.Value["text"], level.Value["timestamps"]))
+			.ToDictionary(kvp => kvp.name, kvp => kvp);
+		// (autumn, winter) =
+		// Func.Lambda<List<Dictionary<string, LevelText>>,
+		// 	(Dictionary<string, LevelText>, Dictionary<string, LevelText>) >
+		// 	(json => (json[0], json[1]))
+		// 	(JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>>>
+		// 		(Resources.Load<TextAsset>("Script").text)
+		// 		.Select(world =>
+		// 			world.Value.Select(level =>
+		// 				new LevelText(level.Key, level.Value["fmod"][0], level.Value["text"], level.Value["timestamps"]))
+		// 			.ToDictionary(kvp => kvp.name, kvp => kvp)
+		// 		).ToList());
 	}
 }
