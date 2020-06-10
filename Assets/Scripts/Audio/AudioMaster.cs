@@ -65,6 +65,11 @@ public class AudioMaster : Singleton<AudioMaster>
         Invoke("ReleaseSongEvent", 1);
     }
 
+    public void SetMusicParameter(string parameterName, float value)
+    {
+        musicInstance.setParameterByName(parameterName, value);
+    }
+
     private void ReleaseSongEvent()
     {
         musicInstance.release();
