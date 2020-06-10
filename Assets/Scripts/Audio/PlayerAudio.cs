@@ -18,6 +18,9 @@ public class PlayerAudio : MonoBehaviour
 
     public float minCutLength;
 
+    public float heartSurface;
+    public float realSurface;
+
 
     [Header("Movement Events")]
 	[FMODUnity.EventRef]
@@ -77,22 +80,35 @@ public class PlayerAudio : MonoBehaviour
         player.GetComponent<Window>().OnCompleteCut += CompleteCut;
 
         //FMODUnity.RuntimeManager.PlayOneShot("event:/Music/Autumn 1");
-
+        heartSurface = 1;
+        realSurface = 1;
     }
 
     private void Update()
 	{
         Rigidbody rigidbody = GetComponent<Rigidbody>();
 
-        bool raycast = Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, Mathf.Infinity, 1 << 9);
+        bool raycast = Physics.Raycast(transform.position + Vector3.down * 1.5f, Vector3.down, out RaycastHit hit, Mathf.Infinity, 1 << 9);
 
         if (raycast && hit.distance < landingDistanceThreshold)
 		{
-			if (hit.transform.TryComponent(out WalkingSurface surface))
+            /*if (hit.transform.TryComponent(out WalkingSurface surface))
 			{
 				currentSurface = surface.surface;
 				walkInstance.setParameterByName("Surface", (float) surface.surface);
 			}
+            else */
+            //Debug.Log(hit.transform.tag);
+			if(hit.transform.tag == "Heart")
+            {
+                currentSurface = (WalkingSurface.Surface) heartSurface;
+                walkInstance.setParameterByName("Surface", heartSurface);
+            }
+            else if(hit.transform.tag == "Real")
+            {
+                currentSurface = (WalkingSurface.Surface) realSurface;
+                walkInstance.setParameterByName("Surface", realSurface);
+            }
 			else
 			{
 				currentSurface = WalkingSurface.Surface.Stone;

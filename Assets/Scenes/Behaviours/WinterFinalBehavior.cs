@@ -10,5 +10,7 @@ public class WinterFinalBehavior : LevelBehaviour
         AudioMaster audioMaster = FindObjectOfType<AudioMaster>();
         audioMaster.SetMusicParameter("End", 1);
         Player.Instance.audioController.SetWindowWorld(2);
+        Player.Instance.audioController.realSurface = 3;
+        Player.Instance.audioController.heartSurface = 2;
     }
 }

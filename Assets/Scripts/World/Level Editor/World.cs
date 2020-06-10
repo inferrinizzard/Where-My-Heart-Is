@@ -121,7 +121,9 @@ public class World : MonoBehaviour
 		foreach (MeshFilter meshFilter in worldContainer.GetComponentsInChildren<MeshFilter>())
 		{
 			meshFilter.gameObject.layer = LayerMask.NameToLayer(layer);
-			if (!meshFilter.TryComponent(out MeshRenderer meshRenderer)) meshRenderer = meshFilter.gameObject.AddComponent<MeshRenderer>();
+            meshFilter.gameObject.tag = layer;
+
+            if (!meshFilter.TryComponent(out MeshRenderer meshRenderer)) meshRenderer = meshFilter.gameObject.AddComponent<MeshRenderer>();
 			if (!meshFilter.TryComponent<MeshCollider>()) meshFilter.gameObject.AddComponent<MeshCollider>();
 			ClippableObject clippableObject = meshFilter.TryComponent<ClippableObject>() ? meshFilter.GetComponent<ClippableObject>() : meshFilter.gameObject.AddComponent<ClippableObject>();
 			clippableObject.worldType = layer == "Heart" ? World.Type.Heart : World.Type.Real;

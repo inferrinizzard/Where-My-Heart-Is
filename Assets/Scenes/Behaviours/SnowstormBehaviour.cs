@@ -19,6 +19,9 @@ public class SnowstormBehaviour : LevelBehaviour
         AudioMaster audioMaster = FindObjectOfType<AudioMaster>();
         audioMaster.PlaySongEvent(musicEvent);
         audioMaster.SetWinter();
+        Player.Instance.audioController.realSurface = 3;
+        Player.Instance.audioController.heartSurface = 1;
+
 
         shiverInstance = FMODUnity.RuntimeManager.CreateInstance(shiverEvent);
         shiverInstance.start();

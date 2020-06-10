@@ -27,6 +27,7 @@ public class IntroAndMainMenu : LevelBehaviour
 
     public void DeactivateWindow()
     {
-        //Player.Instance.windowEnabled = false;
+        Player.Instance.windowEnabled = false;
+        Player.Instance.audioController.realSurface = 0;
     }
 }

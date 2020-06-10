@@ -9,19 +9,20 @@ public class SpringRoomBehaviour : LevelBehaviour
     {
         Debug.Log("hy");
         FindObjectOfType<AudioMaster>().SetSpring();
+        Player.Instance.audioController.realSurface = 3;
     }
 
 
-	// void Credits()
-	// {
-	//     Player.Instance.cam.gameObject.AddComponent<FadeOut>();
-	//     FadeOut();
-	// }
+    // void Credits()
+    // {
+    //     Player.Instance.cam.gameObject.AddComponent<FadeOut>();
+    //     FadeOut();
+    // }
 
-	// IEnumerator FadeOut()
-	// {
-	//     float fadeTime = Player.Instance.cam.gameObject.GetComponent<FadeOut>().BeginFade(1);
-	//     yield return new WaitForSeconds(fadeTime);
-	// }
+    // IEnumerator FadeOut()
+    // {
+    //     float fadeTime = Player.Instance.cam.gameObject.GetComponent<FadeOut>().BeginFade(1);
+    //     yield return new WaitForSeconds(fadeTime);
+    // }
 
 }

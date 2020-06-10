@@ -17,7 +17,9 @@ public class BridgeBehaviour : LevelBehaviour
 	{
 		prompt = GameManager.Instance.prompt;
 		Player.Instance.windowEnabled = true;
-		window = Player.Instance.cam.GetComponent<WindowMaskAnimation>();
+        Player.Instance.audioController.realSurface = 1;
+        Player.Instance.audioController.heartSurface = 2;
+        window = Player.Instance.cam.GetComponent<WindowMaskAnimation>();
 
         FindObjectOfType<AudioMaster>().PlaySongEvent(musicEvent);
 	}
