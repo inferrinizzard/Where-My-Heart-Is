@@ -31,7 +31,7 @@ public class Window : MonoBehaviour
 	[HideInInspector] public float cutStartTime;
 
 	// state management
-	private bool cutInProgress;
+	[HideInInspector] public bool cutInProgress;
 	private bool mirrorCutApplied;
 
 	public event Action OnBeginCut;
