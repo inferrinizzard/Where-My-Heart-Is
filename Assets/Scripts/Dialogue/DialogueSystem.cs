@@ -20,19 +20,20 @@ public class DialogueSystem : MonoBehaviour
 			currentDialogue.getTimelinePosition(out millis);
 			uiText.text = currentLevelText.text[timestampIndex];
 			if (timestampIndex == currentLevelText.timestamps.Count - 1)
-			{
-				Debug.Log("stopped");
-				timestampIndex = 0;
-				// currentDialogue.stop();
-				currentDialogue.release();
-				gameObject.SetActive(false);
-				millis = -1;
-				// return;
-			}
+				Stop();
 			if (millis > currentLevelText.timestamps[timestampIndex + 1] * 1000)
 				timestampIndex++;
-			// Debug.Log(millis);
 		}
+	}
+
+	public void Stop()
+	{
+		Debug.Log("stopped");
+		timestampIndex = 0;
+		currentDialogue.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+		currentDialogue.release();
+		gameObject.SetActive(false);
+		millis = -1;
 	}
 
 	public void PlayScript(DialogueText.LevelText levelText)
