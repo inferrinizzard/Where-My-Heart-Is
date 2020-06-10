@@ -81,21 +81,32 @@ public class BirdTrail : MonoBehaviour
 			for (int i = 0; i < meshes.Count; i++)
 				yield return (meshes[i], rendererPositions[i], rendererRotations[i]);
 		}
+
+        public void ReleaseMeshes()
+        {
+            meshes.ForEach(mesh => Destroy(mesh));
+        }
 	}
 
-	void Update()
+	/*void Update()
 	{
 		foreach (Ghost t in copies)
-			this.DrawCube(t.position, 1, t.rotation, Color.red, depthCheck : true);
-	}
+			this.DrawCube(t.position, 1, t.rotation, Color.blue, depthCheck : true);
+	}*/
 
 	void FixedUpdate()
 	{
 		step = ++step % length;
 		if (step == 0)
+        {
 			copies.Add(new Ghost(transform, smrs));
+        }
+
 		if (copies.Count > count)
+        {
+            copies[0].ReleaseMeshes();
 			copies.RemoveAt(0);
+        }
 
 		// if (copies.Count > 0)
 		// {
@@ -111,10 +122,11 @@ public class BirdTrail : MonoBehaviour
 		var properties = new MaterialPropertyBlock();
 		for (int i = 0; i < copies.Count; i++)
 		{
-			float step = 1f / (copies.Count - i);
-			properties.SetColor(colourID, new Color(1, 1, step, 1));
+			float step = 0.5f / (copies.Count - i);
+            //properties.SetColor(colourID, new Color(1, 1, step, 1));
+            properties.SetColor(colourID, Color.cyan);
 			foreach (var(mesh, pos, rot) in copies[i].Data())
-				birdBuffer.DrawMesh(mesh, Matrix4x4.TRS(pos, rot, transform.localScale * step), drawMat, 0, 0, properties);
+				birdBuffer.DrawMesh(mesh, Matrix4x4.TRS(pos, rot, transform.localScale * (step + 0.5f) * i), drawMat, 0, 0, properties);
 		}
 	}
 	void OnPreCull() => birdBuffer.SetGlobalTexture("_BirdMask", birdTemp);
