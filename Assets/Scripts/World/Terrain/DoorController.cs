@@ -59,6 +59,15 @@ public class DoorController : InteractableObject
 			foreach (Renderer r in house.GetComponentsInChildren<Renderer>())
 				foreach (Material m in r.materials)
 					m.renderQueue = 2000;
+			// delete the trees in an area
+			Collider[] hitColliders = Physics.OverlapSphere(transform.position, 5f);
+			foreach (Collider col in hitColliders)
+			{
+				if (col.gameObject.tag == "Tree")
+				{
+					Destroy(col.gameObject);
+				}
+			}
 		}
 	}
 
@@ -74,18 +83,11 @@ public class DoorController : InteractableObject
 	void OnTriggerEnter()
 	{
 		blocker.GetComponent<Collider>().enabled = false;
-		foreach (var c in GetComponentsInChildren<Collider>())
-		{
-			if (!c.isTrigger)
-				c.enabled = false;
-		}
 	}
 
 	void OnTriggerExit()
 	{
 		blocker.GetComponent<Collider>().enabled = true;
-		foreach (var c in GetComponentsInChildren<Collider>())
-			c.enabled = true;
 
 		if (Player.Instance.playerCollider.bounds.Intersects(closeTrigger.GetComponent<Collider>().bounds))
 		{
