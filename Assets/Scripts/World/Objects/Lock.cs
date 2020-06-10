@@ -9,9 +9,11 @@ public class Lock : MonoBehaviour
 	[HideInInspector] public int hash = 0;
 	void Start()
 	{
+		/*
 		hash = 0;
 		for (var(i, j, v) = (0, 0, 0f); i < 3; hash += (int) v)
 			for ((j, v) = (0, transform.position[i++]); v % 1 != 0 && ++j < 5; v *= 10);
+	    */
 		// this.Print(hash, transform.position.ToString("F8"));
 
 		gate = transform.GetComponentInParent<Gate>();

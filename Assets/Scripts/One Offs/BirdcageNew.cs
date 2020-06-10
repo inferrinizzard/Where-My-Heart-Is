@@ -21,7 +21,7 @@ public class BirdcageNew : InteractableObject
 		birdcage.GetComponent<Animator>().SetBool("close", true);
 
 		Player.Instance.prompt.Disable();
-		FMODUnity.RuntimeManager.PlayOneShot(CageEvent);
+		FMODUnity.RuntimeManager.PlayOneShot(CageEvent, transform.position);
 		AudioMaster.Instance.StopAll();
 		//distress.GetComponent<FMODUnity.StudioEventEmitter>().Stop();
 		Player.VFX.StartFade(false, .05f, false);

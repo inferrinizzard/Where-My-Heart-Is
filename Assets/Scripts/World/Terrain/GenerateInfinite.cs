@@ -56,7 +56,7 @@ public class GenerateInfinite : MonoBehaviour
 
 	public void DoorPos(float sqrMag)
 	{
-		if (sqrMag > (Snowstorm.walkDistance * Snowstorm.walkDistance * .8f) && !door.spawned)
+		if (sqrMag > (Snowstorm.walkDistance * Snowstorm.walkDistance * .2f) && !door.spawned)
 			door.Spawn();
 	}
 
