@@ -3928,17 +3928,32 @@ PrefabInstance:
     - target: {fileID: 4225953489059152229, guid: 1ecc58fc724a29d4abf8ef454617a27b,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.01
+      value: 0.014278736
       objectReference: {fileID: 0}
     - target: {fileID: 4225953489059152229, guid: 1ecc58fc724a29d4abf8ef454617a27b,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.01
+      value: 0.014278736
       objectReference: {fileID: 0}
     - target: {fileID: 4225953489059152229, guid: 1ecc58fc724a29d4abf8ef454617a27b,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.01
+      value: 0.014278736
+      objectReference: {fileID: 0}
+    - target: {fileID: 4225953489059152229, guid: 1ecc58fc724a29d4abf8ef454617a27b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.43821
+      objectReference: {fileID: 0}
+    - target: {fileID: 4225953489059152229, guid: 1ecc58fc724a29d4abf8ef454617a27b,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.000000034413656
+      objectReference: {fileID: 0}
+    - target: {fileID: 4225953489059152229, guid: 1ecc58fc724a29d4abf8ef454617a27b,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.085
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ecc58fc724a29d4abf8ef454617a27b, type: 3}
@@ -5416,6 +5431,9 @@ MonoBehaviour:
   holder: {fileID: 0}
   closeTrigger: {fileID: 0}
   blocker: {fileID: 0}
+  doorLocked: event:/Door/Door Locked
+  openDoor: event:/Door/Open Door
+  closeDoor: event:/Door/Close Door
 --- !u!1 &309648657
 GameObject:
   m_ObjectHideFlags: 0
