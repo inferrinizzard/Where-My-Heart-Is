@@ -89,7 +89,6 @@ public class Bird : MonoBehaviour
 	{
 		if (pathTriggers.Contains(trigger))
 		{
-			Debug.Log("start");
 			trigger.OnPlayerEnterID -= StartNextCurveID;
 			StartNextCurve();
 		}

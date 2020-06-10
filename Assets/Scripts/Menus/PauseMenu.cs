@@ -27,6 +27,15 @@ public class PauseMenu : MonoBehaviour
 	/// <summary> Raw image for PIP. </summary>
 	[HideInInspector] public RawImage pip;
 
+	/// <summary> Master volume stored value. </summary>
+	[HideInInspector] public float masterValue = 80;
+	/// <summary> SFX volume stored value. </summary>
+	[HideInInspector] public float sfxValue = 80;
+	/// <summary> Voice volume stored value. </summary>
+	[HideInInspector] public float voiceValue = 80;
+	/// <summary> Music volume stored value. </summary>
+	[HideInInspector] public float musicValue = 80;
+
 	public void Init()
 	{
 		// Components for PIP
