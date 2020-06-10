@@ -62,7 +62,7 @@ public class Bird : MonoBehaviour
 
 		if (!flying)
 			anim.SetFloat("IdleBlend", Mathf.PingPong(Time.time, 1));
-		if (curveIndex < curves.Count && curveIndex == curves.Count-1)
+		if (curveIndex < curves.Count && curveIndex >= 0)
 			if (transform.position == curves[curveIndex].Points.Last().PositionWorld)
 				ReachedEnd();
 
