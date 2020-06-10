@@ -7,36 +7,35 @@ public class PlayerAudio : MonoBehaviour
 {
 	public float landingDistanceThreshold;
 
-    public float maxWalkSpeed;
-    public float minWalkSpeed;
+	public float maxWalkSpeed;
+	public float minWalkSpeed;
 
-    public float maxFallSpeed;
-    public float minFallSpeed;
+	public float maxFallSpeed;
+	public float minFallSpeed;
 
-    public float dieVelocityThreshold;
-    public float dieDistanceThreshold;
+	public float dieVelocityThreshold;
+	public float dieDistanceThreshold;
 
-
-    [Header("Movement Events")]
+	[Header("Movement Events")]
 	[FMODUnity.EventRef]
 	public string jumpLiftoffEvent;
 
 	[FMODUnity.EventRef]
 	public string jumpLandingEvent;
 
-    [FMODUnity.EventRef]
-    public string fallEvent;
+	[FMODUnity.EventRef]
+	public string fallEvent;
 
-    [FMODUnity.EventRef]
+	[FMODUnity.EventRef]
 	public string walkEvent;
 
-    [FMODUnity.EventRef]
-    public string dieEvent;
+	[FMODUnity.EventRef]
+	public string dieEvent;
 
-    [FMODUnity.EventRef]
-    public string cutEvent;
+	[FMODUnity.EventRef]
+	public string cutEvent;
 
-    [Header("Window Events")]
+	[Header("Window Events")]
 	[FMODUnity.EventRef]
 	public string windowEvent;
 
@@ -45,11 +44,11 @@ public class PlayerAudio : MonoBehaviour
 	private FMOD.Studio.EventInstance fallInstance;
 	private FMOD.Studio.EventInstance cutInstance;
 
-    private WalkingSurface.Surface currentSurface;
+	private WalkingSurface.Surface currentSurface;
 
-    private bool falling = false;
-    private bool jumping = false;
-    private bool fallVoicePlayed = false;
+	private bool falling = false;
+	private bool jumping = false;
+	private bool fallVoicePlayed = false;
 
 	private void Start()
 	{
@@ -60,28 +59,28 @@ public class PlayerAudio : MonoBehaviour
 		windowInstance.setParameterByName("Heart World Type", 2);
 		windowInstance.start();
 
-        cutInstance = FMODUnity.RuntimeManager.CreateInstance(cutEvent);
+		cutInstance = FMODUnity.RuntimeManager.CreateInstance(cutEvent);
 
-        fallInstance = FMODUnity.RuntimeManager.CreateInstance(fallEvent);
+		fallInstance = FMODUnity.RuntimeManager.CreateInstance(fallEvent);
 
-        currentSurface = WalkingSurface.Surface.Stone;
+		currentSurface = WalkingSurface.Surface.Stone;
 
-        Player player = Player.Instance;
-        player.OnJump += JumpLiftoff;
-        player.OnApplyCut += ApplyCut;
-        Debug.Log(player.window);
-        player.GetComponent<Window>().OnCompleteCut += CompleteCut;
+		Player player = Player.Instance;
+		player.OnJump += JumpLiftoff;
+		player.OnApplyCut += ApplyCut;
+		Debug.Log(player.window);
+		player.GetComponent<Window>().OnCompleteCut += CompleteCut;
 
-        FMODUnity.RuntimeManager.PlayOneShot("event:/Music/Autumn 1");
+		// FMODUnity.RuntimeManager.PlayOneShot("event:/Music/Autumn 1");
 	}
 
 	private void Update()
 	{
-        Rigidbody rigidbody = GetComponent<Rigidbody>();
+		Rigidbody rigidbody = GetComponent<Rigidbody>();
 
-        bool raycast = Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, Mathf.Infinity, 1 << 9);
+		bool raycast = Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, Mathf.Infinity, 1 << 9);
 
-        if (raycast && hit.distance < landingDistanceThreshold)
+		if (raycast && hit.distance < landingDistanceThreshold)
 		{
 			if (hit.transform.TryComponent(out WalkingSurface surface))
 			{
@@ -94,40 +93,40 @@ public class PlayerAudio : MonoBehaviour
 				walkInstance.setParameterByName("Surface", (float) WalkingSurface.Surface.Stone);
 			}
 
-            walkInstance.setParameterByName("Velocity", Mathf.Clamp((rigidbody.velocity.magnitude - minWalkSpeed) / (maxWalkSpeed - minWalkSpeed), 0, 1));
+			walkInstance.setParameterByName("Velocity", Mathf.Clamp((rigidbody.velocity.magnitude - minWalkSpeed) / (maxWalkSpeed - minWalkSpeed), 0, 1));
 
-            fallInstance.setParameterByName("Speed", 0);
+			fallInstance.setParameterByName("Speed", 0);
 
-            if(jumping && rigidbody.velocity.y <= 0 && Player.Instance.IsGrounded())
-            {
-                JumpLanding();
-                jumping = false;
-                fallVoicePlayed = false;
-            }
+			if (jumping && rigidbody.velocity.y <= 0 && Player.Instance.IsGrounded())
+			{
+				JumpLanding();
+				jumping = false;
+				fallVoicePlayed = false;
+			}
 
-            falling = false;
-        }
-        else
-        {
+			falling = false;
+		}
+		else
+		{
 
-            if (!falling)
-            {
-                falling = true;
-                fallInstance.start();
-            }
-            walkInstance.setParameterByName("Velocity", 0);
+			if (!falling)
+			{
+				falling = true;
+				fallInstance.start();
+			}
+			walkInstance.setParameterByName("Velocity", 0);
 
-            fallInstance.setParameterByName("Speed", Mathf.Clamp((-rigidbody.velocity.y - minFallSpeed) / (maxFallSpeed - minFallSpeed), 0, 1));
+			fallInstance.setParameterByName("Speed", Mathf.Clamp((-rigidbody.velocity.y - minFallSpeed) / (maxFallSpeed - minFallSpeed), 0, 1));
 
-            if(!fallVoicePlayed && rigidbody.velocity.y < dieVelocityThreshold && 
-                (hit.distance > dieDistanceThreshold || !raycast))
-            {
-                FMODUnity.RuntimeManager.PlayOneShot(dieEvent);
-                fallVoicePlayed = true;
-            }
-        }
+			if (!fallVoicePlayed && rigidbody.velocity.y < dieVelocityThreshold &&
+				(hit.distance > dieDistanceThreshold || !raycast))
+			{
+				FMODUnity.RuntimeManager.PlayOneShot(dieEvent);
+				fallVoicePlayed = true;
+			}
+		}
 
-        walkInstance.setParameterByName("Velocity", Mathf.Clamp((GetComponent<Rigidbody>().velocity.magnitude - minWalkSpeed) / (maxWalkSpeed - minWalkSpeed), 0, 1));
+		walkInstance.setParameterByName("Velocity", Mathf.Clamp((GetComponent<Rigidbody>().velocity.magnitude - minWalkSpeed) / (maxWalkSpeed - minWalkSpeed), 0, 1));
 	}
 
 	public void SetWindowWorld(float worldIndex)
@@ -177,18 +176,18 @@ public class PlayerAudio : MonoBehaviour
 		//FMODUnity.RuntimeManager.PlayOneShot(CrouchUpEvent, transform.position);
 	}
 
-    private void ApplyCut()
-    {
-        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Cut In Progress", 1);
-        cutInstance.start();
-    }
+	private void ApplyCut()
+	{
+		FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Cut In Progress", 1);
+		cutInstance.start();
+	}
 
-    private void CompleteCut()
-    {
-        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Cut In Progress", 0);
-    }
+	private void CompleteCut()
+	{
+		FMODUnity.RuntimeManager.StudioSystem.setParameterByName("Cut In Progress", 0);
+	}
 
-    public void SetWalkingVelocity(float value)
+	public void SetWalkingVelocity(float value)
 	{
 		if (jumping)
 		{

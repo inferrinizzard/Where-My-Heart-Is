@@ -2262,7 +2262,6 @@ GameObject:
   - component: {fileID: 7587053571369636859}
   - component: {fileID: 3698368412684085914}
   - component: {fileID: 4823820141651767858}
-  - component: {fileID: 6452931271349965020}
   m_Layer: 5
   m_Name: Dialogue Text
   m_TagString: Untagged
@@ -2329,20 +2328,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Lorem ipsum dolor sit amet conseteturem adipiscing elit
---- !u!114 &6452931271349965020
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1800268629297533898}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d2be2a2885b92d4c8c3e5f14d041b08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fileName: test.json
-  uiText: {fileID: 4823820141651767858}
 --- !u!1 &1909335232171831454
 GameObject:
   m_ObjectHideFlags: 0
@@ -6491,6 +6476,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3746786156960011503}
   - component: {fileID: 5110508410698989105}
+  - component: {fileID: 5169679407296091940}
   m_Layer: 5
   m_Name: Dialogue
   m_TagString: Untagged
@@ -6527,6 +6513,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4819228583523087020}
   m_CullTransparentMesh: 0
+--- !u!114 &5169679407296091940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4819228583523087020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d2be2a2885b92d4c8c3e5f14d041b08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uiText: {fileID: 4823820141651767858}
 --- !u!1 &4835201491427654686
 GameObject:
   m_ObjectHideFlags: 0

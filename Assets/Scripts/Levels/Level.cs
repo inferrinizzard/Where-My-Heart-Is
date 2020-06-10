@@ -34,6 +34,10 @@ public class Level : ScriptableObject
 
 	public void StartBehaviors()
 	{
+		GameManager.Instance.dialogue.PlayScript(DialogueText.texts[levelName]);
+		// GameManager.Instance.GetComponentInChildren<DialogueSystem>().PlayScript(DialogueText.texts[levelName]);
+		// Debug.Log(DialogueText.texts[levelName]);
+
 		foreach (LevelBehaviour behavior in behaviours)
 			behavior.StartEvent.Invoke();
 	}

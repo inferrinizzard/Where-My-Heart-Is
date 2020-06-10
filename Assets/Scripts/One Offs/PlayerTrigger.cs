@@ -19,10 +19,10 @@ public class PlayerTrigger : MonoBehaviour
 	{
 		if (other.tag == "Player")
 		{
-			if (flavor != "")
-			{
-				StartCoroutine(dialogueSystem.WriteDialogue(flavor));
-			}
+			// if (flavor != "")
+			// {
+			// 	StartCoroutine(dialogueSystem.WriteDialogue(flavor));
+			// }
 			OnPlayerEnter?.Invoke();
 			OnPlayerEnterID?.Invoke(this);
 			if (destroyAfterTrigger)
