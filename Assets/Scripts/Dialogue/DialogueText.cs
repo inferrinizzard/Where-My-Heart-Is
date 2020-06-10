@@ -20,11 +20,7 @@ public class DialogueText : MonoBehaviour
 			this.fmod = fmod;
 			this.name = name;
 			this.text = text.ToList();
-			this.timestamps = timestamps.Select(time =>
-			{
-				var split = time.Split(':');
-				return float.Parse(split[0]) * 60 + float.Parse(split[1]);
-			}).ToList();
+			this.timestamps = timestamps.Select(time => float.Parse(time)).ToList();
 		}
 
 		public override string ToString() => $"{name} @ {fmod} Level with {text.Count} items in text and {timestamps.AsString()}";
