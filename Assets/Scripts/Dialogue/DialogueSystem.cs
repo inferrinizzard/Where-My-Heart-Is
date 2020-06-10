@@ -20,7 +20,8 @@ public class DialogueSystem : MonoBehaviour
 			currentDialogue.getTimelinePosition(out millis);
 			uiText.text = currentLevelText.text[timestampIndex];
 			if (timestampIndex == currentLevelText.timestamps.Count - 1)
-				Stop();
+				Invoke("Stop", currentLevelText.timestamps[timestampIndex]);
+			// Stop();
 			if (millis > currentLevelText.timestamps[timestampIndex + 1] * 1000)
 				timestampIndex++;
 		}

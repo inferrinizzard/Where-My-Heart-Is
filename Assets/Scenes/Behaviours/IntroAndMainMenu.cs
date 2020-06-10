@@ -20,13 +20,13 @@ public class IntroAndMainMenu : LevelBehaviour
 		//Player.VFX.fadeController.gameObject.SetActive(false);
 	}
 
-    public void ReactivateWindow()
-    {
-        Player.Instance.windowEnabled = true;
-    }
+	public void ReactivateWindow()
+	{
+		Player.Instance.windowEnabled = true;
+	}
 
-    public void DeactivateWindow()
-    {
-        //Player.Instance.windowEnabled = false;
-    }
+	public void DeactivateWindow()
+	{
+		//Player.Instance.windowEnabled = false;
+	}
 }

@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Policy;
+
 using UnityEngine;
 
 // Set door animation to play at current scene position

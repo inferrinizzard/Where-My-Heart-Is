@@ -45,9 +45,9 @@ public class MainMenu : MonoBehaviour
 
 		// pip.texture = GameManager.Instance.pause.pip.texture;
 		var pipRT = RenderTexture.GetTemporary(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
-		Player.Instance.cam.targetTexture = pipRT;
-		Player.Instance.cam.Render();
-		Player.Instance.cam.targetTexture = null;
+		Player.Instance.GetComponentInChildren<Camera>().targetTexture = pipRT;
+		Player.Instance.GetComponentInChildren<Camera>().Render();
+		Player.Instance.GetComponentInChildren<Camera>().targetTexture = null;
 
 		RenderTexture.active = pipRT;
 

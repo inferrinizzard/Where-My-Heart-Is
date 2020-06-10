@@ -18,16 +18,17 @@ public class Prompt : MonoBehaviour
 
 	public void UpdateText()
 	{
-		if (!(player.State is Aiming))
-		{
-			var hit = InteractableObject.Raycast();
-			if (hit && !player.heldObject)
-				SetText(hit.prompt);
-			else if (player.heldObject is CanvasObject && (player.heldObject as CanvasObject).inRange)
-				SetText(player.heldObject.prompt);
-			else if (!BridgeBehaviour.forcePrompt)
-				Disable();
-		}
+		if (player)
+			if (!(player.State is Aiming))
+			{
+				var hit = InteractableObject.Raycast();
+				if (hit && !player.heldObject)
+					SetText(hit.prompt);
+				else if (player.heldObject is CanvasObject && (player.heldObject as CanvasObject).inRange)
+					SetText(player.heldObject.prompt);
+				else if (!BridgeBehaviour.forcePrompt)
+					Disable();
+			}
 	}
 
 	public void SetText(string t)
