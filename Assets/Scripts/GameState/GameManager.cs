@@ -117,4 +117,11 @@ public class GameManager : Singleton<GameManager>
 		// Instance.sceneIndex--;
 		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
+
+	public void ReloadGame()
+	{
+		levelOrder.End();
+		levelOrder.Start();
+		Transition(levelOrder.Name);
+	}
 }

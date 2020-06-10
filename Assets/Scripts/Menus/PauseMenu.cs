@@ -147,6 +147,12 @@ public class PauseMenu : MonoBehaviour
 		GameManager.ReloadScene();
 	}
 
+	public void ReturnToMainMenu()
+	{
+		Resume();
+		GameManager.Instance.ReloadGame();
+	}
+
 	/// <summary> Quits the game. </summary>
 	public void Quit()
 	{
