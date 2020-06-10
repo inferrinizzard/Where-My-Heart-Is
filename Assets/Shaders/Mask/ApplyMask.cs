@@ -23,7 +23,10 @@ public class ApplyMask : MonoBehaviour
 	[SerializeField] AnimationCurve rippleCurve = default;
 
 	public RenderTexture mask;
-	RenderTexture depth;
+	public bool isHalf = false;
+	public Texture2D Mask { get => isHalf ? mHalf2D : m2D; }
+	public Texture2D m2D, mHalf2D;
+	// RenderTexture depth;
 
 	private bool rippleInProgress;
 	private float rippleStartTime;
@@ -46,12 +49,18 @@ public class ApplyMask : MonoBehaviour
 
 		mask = new RenderTexture(Screen.width, Screen.height, 16, RenderTextureFormat.Default);
 		mask.name = "Internal Mask";
+
+		m2D = new Texture2D(mask.width, mask.height);
+		m2D.name = "Mask 2D Tex";
+		mHalf2D = new Texture2D(mask.width, mask.height);
+		mHalf2D.name = "Half Mask 2D Tex";
+
 		CreateMask();
 
-		depth = new RenderTexture(Screen.width / 4, Screen.height / 4, 16, RenderTextureFormat.Default);
-		depth.name = "DepthRT";
-		depthCam.SetReplacementShader(depthReplacement, "");
-		depthCam.targetTexture = depth;
+		// depth = new RenderTexture(Screen.width / 4, Screen.height / 4, 16, RenderTextureFormat.Default);
+		// depth.name = "DepthRT";
+		// depthCam.SetReplacementShader(depthReplacement, "");
+		// depthCam.targetTexture = depth;
 
 		Shader.SetGlobalFloat("_ScreenXToYRatio", Screen.width / Screen.height);
 	}
@@ -78,6 +87,20 @@ public class ApplyMask : MonoBehaviour
 		maskCam.targetTexture = mask;
 
 		maskCam.Render();
+
+		var mask2D = new Texture2D(mask.width, mask.height);
+		RenderTexture.active = mask;
+		mask2D.ReadPixels(new Rect(0, 0, mask.width, mask.height), 0, 0);
+		mask2D.Apply();
+		m2D = Instantiate(mask2D);
+
+		for (int i = 0; i < mask.width / 2; i++)
+			for (int j = 0; j < mask.height; j++)
+				mask2D.SetPixel(i, j, Color.clear);
+		mask2D.Apply();
+		mHalf2D = Instantiate(mask2D);
+		RenderTexture.active = null;
+
 		SetMask(mask);
 
 		// remove temp cam
@@ -130,6 +153,8 @@ public class ApplyMask : MonoBehaviour
 	// 	Shader.SetGlobalTexture(ShaderID._DepthColor, depth);
 	// }
 
+	public void SetHalf(bool half) => SetMask((isHalf = half) ? mHalf2D : m2D);
+	public void SetMask(Texture2D nextMask) => Shader.SetGlobalTexture(ShaderID._Mask, nextMask);
 	public void SetMask(RenderTexture nextMask) => Shader.SetGlobalTexture(ShaderID._Mask, nextMask);
 	// {
 	// 	RenderTexture screen = RenderTexture.active;

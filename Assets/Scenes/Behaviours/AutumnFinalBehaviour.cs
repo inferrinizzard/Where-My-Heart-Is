@@ -5,8 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AutumnFinalBehaviour", menuName = "Levels/Behaviours/AutumnFinalBehaviour")]
 public class AutumnFinalBehaviour : LevelBehaviour
 {
-    [FMODUnity.EventRef]
-    public string musicEvent;
+	[FMODUnity.EventRef]
+	public string musicEvent;
 
 	// public void CloseBirdCage()
 	// {
@@ -20,10 +20,10 @@ public class AutumnFinalBehaviour : LevelBehaviour
 	//     yield return new WaitForSeconds(fadeTime);
 	// }
 
-    public void PlayMusic()
-    {
-        FindObjectOfType<AudioMaster>().PlaySongEvent(musicEvent);
-    }
+	public void PlayMusic()
+	{
+		FindObjectOfType<AudioMaster>().PlaySongEvent(musicEvent);
+	}
 
 	public void HeartBreak()
 	{
@@ -50,6 +50,6 @@ public class AutumnFinalBehaviour : LevelBehaviour
 		// Graphics.Blit(Player.Instance.mask.mask, maskRT);
 		// Player.Instance.mask.SetMask(maskRT);
 
-		// Player.Instance.mask.CreateMask();
+		Player.Instance.mask.SetHalf(true);
 	}
 }
