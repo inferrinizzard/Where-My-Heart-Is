@@ -72,8 +72,14 @@ public class PlayerAudio : MonoBehaviour
 
 		currentSurface = WalkingSurface.Surface.Stone;
 
-		//FMODUnity.RuntimeManager.PlayOneShot("event:/Music/Autumn 1");
-		heartSurface = 1;
+        Player player = Player.Instance;
+        player.OnJump += JumpLiftoff;
+        player.OnApplyCut += ApplyCut;
+        Debug.Log(player.window);
+        player.GetComponent<Window>().OnCompleteCut += CompleteCut;
+
+        //FMODUnity.RuntimeManager.PlayOneShot("event:/Music/Autumn 1");
+        heartSurface = 1;
 		realSurface = 1;
 	}
 
@@ -91,7 +97,6 @@ public class PlayerAudio : MonoBehaviour
 				walkInstance.setParameterByName("Surface", (float) surface.surface);
 			}
             else */
-			//Debug.Log(hit.transform.tag);
 			if (hit.transform.tag == "Heart")
 			{
 				currentSurface = (WalkingSurface.Surface) heartSurface;
