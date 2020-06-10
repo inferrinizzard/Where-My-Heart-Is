@@ -101,7 +101,7 @@ public class ApplyMask : MonoBehaviour
 	void OnPreRender()
 	{
 		// render depth buffer to sample from
-		RenderDepth();
+		// RenderDepth();
 
 		if (rippleInProgress)
 		{
@@ -121,11 +121,11 @@ public class ApplyMask : MonoBehaviour
 		}
 	}
 
-	public void RenderDepth()
-	{
-		depthCam.Render();
-		Shader.SetGlobalTexture(ShaderID._DepthColor, depth);
-	}
+	// public void RenderDepth()
+	// {
+	// 	depthCam.Render();
+	// 	Shader.SetGlobalTexture(ShaderID._DepthColor, depth);
+	// }
 
 	public void SetMask(RenderTexture nextMask) => Shader.SetGlobalTexture(ShaderID._Mask, nextMask);
 	// {
@@ -145,17 +145,27 @@ public class ApplyMask : MonoBehaviour
 		GameManager.Instance.pause.gameObject.SetActive(false); // TODO: not gameobject but just gameplayUI
 		yield return new WaitForEndOfFrame();
 
-		curSave = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-		curSave.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
-		curSave.Apply();
+		// curSave = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+		// curSave.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+		// curSave.Apply();
+		curSave = Screenshot();
 
 		foreach (var r in World.Instance.GetComponentsInChildren<Renderer>()) // TODO: better?
 			r.enabled = false;
+		GameObject.FindObjectOfType<Bird>()?.gameObject.SetActive(false);
 
 		var pageFlip = StartCoroutine(Player.Instance.GetComponentInChildren<PageFlip>(true).Flip(curSave));
 		var load = StartCoroutine(GameManager.Instance.ChangeLevelManual());
 
 		yield return pageFlip;
 		yield return load;
+	}
+
+	public static Texture2D Screenshot()
+	{
+		var screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+		screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+		screenshot.Apply();
+		return screenshot;
 	}
 }

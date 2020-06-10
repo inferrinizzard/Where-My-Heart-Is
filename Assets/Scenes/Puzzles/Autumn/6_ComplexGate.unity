@@ -810,7 +810,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 1
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &49608903
@@ -1697,9 +1696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b06e6ec93a7f14f980c989c5861493, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxObject: {fileID: 0}
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!114 &147857897
@@ -2484,7 +2481,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh97614
+  m_Name: pb_Mesh122414
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3104,7 +3101,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &238446675
@@ -3190,11 +3186,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: -1504981713932161579, guid: a00a982a3c9dd3846a22a8d67dbef39a,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 809b640243b7c0f4c862771539ce595c, type: 2}
     - target: {fileID: -4216859302048453862, guid: a00a982a3c9dd3846a22a8d67dbef39a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3265,6 +3256,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.4907285
       objectReference: {fileID: 0}
+    - target: {fileID: -1504981713932161579, guid: a00a982a3c9dd3846a22a8d67dbef39a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 809b640243b7c0f4c862771539ce595c, type: 2}
     - target: {fileID: 1989829087970149265, guid: a00a982a3c9dd3846a22a8d67dbef39a,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -6330,7 +6326,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &342919234
@@ -6708,7 +6703,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &374673051
@@ -10321,7 +10315,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &496504909
@@ -11272,9 +11265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b06e6ec93a7f14f980c989c5861493, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxObject: {fileID: 0}
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!114 &517958913
@@ -15660,7 +15651,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &629489543
@@ -17964,9 +17954,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b06e6ec93a7f14f980c989c5861493, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxObject: {fileID: 0}
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!114 &754752837
@@ -18291,7 +18279,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &755368972
@@ -18755,12 +18742,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5bdabc2662b6704d92049dfef88f14b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxObject: {fileID: 782668027}
   player: {fileID: 0}
-  active: 0
   renderers: []
   oldParent: {fileID: 0}
   birdTrigger: 0
+  active: 0
   dissolves: 0
 --- !u!114 &782668027
 MonoBehaviour:
@@ -18776,7 +18762,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!1001 &786406094
@@ -20125,7 +20110,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &886389624
@@ -22666,7 +22650,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &903080289
@@ -26622,7 +26605,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 1
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &1023366806
@@ -27774,11 +27756,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: mediumRock3_Zack_Spring (1)
       objectReference: {fileID: 0}
-    - target: {fileID: -1504981713932161579, guid: a00a982a3c9dd3846a22a8d67dbef39a,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 1a4304138fb6fd74dbee1592a8c6977f, type: 2}
     - target: {fileID: -4216859302048453862, guid: a00a982a3c9dd3846a22a8d67dbef39a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -27849,6 +27826,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.1513436
       objectReference: {fileID: 0}
+    - target: {fileID: -1504981713932161579, guid: a00a982a3c9dd3846a22a8d67dbef39a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1a4304138fb6fd74dbee1592a8c6977f, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a00a982a3c9dd3846a22a8d67dbef39a, type: 3}
 --- !u!4 &1036357809 stripped
@@ -31403,7 +31385,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &1187017664
@@ -32312,9 +32293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b06e6ec93a7f14f980c989c5861493, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxObject: {fileID: 0}
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!114 &1222027815
@@ -34967,7 +34946,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &1389678270
@@ -36620,6 +36598,11 @@ PrefabInstance:
       propertyPath: triggerHolder
       value: 
       objectReference: {fileID: 1086938046}
+    - target: {fileID: 5689164163903171206, guid: ff4f26a49f96f644b91a6337df60e530,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff4f26a49f96f644b91a6337df60e530, type: 3}
 --- !u!4 &1546269325 stripped
@@ -36923,7 +36906,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &1549047105
@@ -38489,7 +38471,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &1587609735
@@ -42162,7 +42143,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &1594627307
@@ -42394,7 +42374,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh98186
+  m_Name: pb_Mesh123004
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -42792,7 +42772,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
   heartObject: {fileID: 589313775}
@@ -43049,7 +43028,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
   heartObject: {fileID: 927847668}
@@ -43386,7 +43364,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh97694
+  m_Name: pb_Mesh122494
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -45169,7 +45147,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &1826952247
@@ -45280,7 +45257,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &1846033646
@@ -45396,9 +45372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b06e6ec93a7f14f980c989c5861493, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxObject: {fileID: 0}
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!114 &1849372966
@@ -46119,7 +46093,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &1997149098
@@ -46236,7 +46209,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldType: 0
   volumeless: 0
-  tiedInteractable: {fileID: 0}
   isClipped: 0
   uncutCopy: {fileID: 0}
 --- !u!64 &2018478958
@@ -46346,9 +46318,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b06e6ec93a7f14f980c989c5861493, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxObject: {fileID: 0}
   player: {fileID: 0}
-  active: 0
   renderers: []
   InteractSoundEvent: 
 --- !u!114 &2026177611
@@ -49864,7 +49834,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh97870
+  m_Name: pb_Mesh122668
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -52999,7 +52969,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a29267cff200eb04fae8bb3c6f47a8f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationAngle: 50
+  rotationAngle: 65
   rotationTime: 2
   unlockRadius: 0.5
   leftDoor: {fileID: 1662181126}
@@ -53164,11 +53134,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
     - target: {fileID: 5407968008035840465, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -53223,6 +53188,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5407968008035840471, guid: ce2e34029942daa4c845cd2ceec80c14,
+        type: 3}
+      propertyPath: m_Name
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 2279669322266762487, guid: ce2e34029942daa4c845cd2ceec80c14,
         type: 3}

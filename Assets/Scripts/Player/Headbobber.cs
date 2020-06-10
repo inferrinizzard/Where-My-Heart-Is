@@ -34,7 +34,7 @@ public class Headbobber : MonoBehaviour
 			timer = 0f;
 		}
 		// If the player is doing something, start the timer.
-		else if (!PauseMenu.GameIsPaused)
+		else if (!GameManager.Instance.pause.GameIsPaused)
 		{
 			waveslice = Mathf.Sin(timer);
 			timer += bobbingSpeed;

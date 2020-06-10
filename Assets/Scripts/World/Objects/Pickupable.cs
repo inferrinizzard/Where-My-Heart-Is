@@ -12,9 +12,11 @@ public class Pickupable : InteractableObject
 
 	protected Vector3 initialPosition;
 	protected Quaternion initialRotation;
+	/// <summary> Whether or not this is the active item </summary>
+	[HideInInspector] public bool active;
 	public bool dissolves = false;
 	Collider col;
-	public override string prompt { get => "Press E to Pick Up"; }
+	public override string prompt { get => $"Press {InputManager.InteractKey} to Pick Up"; }
 
 	protected override void Start()
 	{
@@ -22,14 +24,14 @@ public class Pickupable : InteractableObject
 		col = GetComponent<Collider>();
 	}
 
-	void Update()
-	{
-		if (active)
-		{
-			// If the object is being inspected, run Looking.
-			if (player.looking) Looking();
-		}
-	}
+	// void Update()
+	// {
+	// 	if (active)
+	// 	{
+	// 		// If the object is being inspected, run Looking.
+	// 		if (player.looking) Looking();
+	// 	}
+	// }
 
 	/// <summary> Manages behavior of the object when being inspected. </summary>
 	public void Looking()
@@ -47,8 +49,8 @@ public class Pickupable : InteractableObject
 	{
 		if (!player.heldObject)
 			PickUp();
-		else if (player.looking)
-			player.looking = false;
+		// else if (player.looking)
+		// 	player.looking = false;
 		else if (!dissolves)
 			PutDown();
 		else
@@ -67,7 +69,7 @@ public class Pickupable : InteractableObject
 		transform.parent = player.heldObjectLocation; // set the new parent to the hold object location object
 		transform.localPosition = Vector3.zero; // set the position to local zero to match the position of the hold object location target
 
-		if(birdTrigger)
+		if (birdTrigger)
 		{
 			GameObject.Find("/Bird").GetComponent<Bird>().StartNextCurve();
 		}

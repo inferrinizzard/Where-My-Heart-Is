@@ -1,28 +1,36 @@
- using System.Collections.Generic;
- using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 
- using FMODUnity;
+using FMODUnity;
 
- using UnityEngine;
+using UnityEngine;
 
- public class FlavorObject : InteractableObject
- {
- 	[FMODUnity.EventRef] public string InteractSoundEvent;
+public class FlavorObject : InteractableObject
+{
+	[FMODUnity.EventRef] public string InteractSoundEvent;
+	string flavorText = "";
+	DialogueSystem dialogue;
 
- 	public override void Interact()
- 	{
- 		base.Interact();
- 		if (InteractSoundEvent != "")
- 		{
- 			FMODUnity.RuntimeManager.PlayOneShot(InteractSoundEvent, transform.position);
- 		}
- 	}
+	protected override void Start()
+	{
+		base.Start();
+		dialogue = GameManager.Instance.dialogue;
+	}
+	public override void Interact()
+	{
+		if (flavorText != "")
+			StartCoroutine(dialogue.WriteDialogue(flavorText));
+		if (InteractSoundEvent != "")
+		{
+			FMODUnity.RuntimeManager.PlayOneShot(InteractSoundEvent, transform.position);
+		}
+	}
 
- 	void OnMouseEnter()
- 	{
- 		if (!player.heldObject && !this.TryComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
- 			Effects.Instance.SetGlow(this);
- 	}
+	void OnMouseEnter()
+	{
+		if (!player.heldObject && !this.TryComponent<OutlineObject>() && (transform.position - player.transform.position).sqrMagnitude < player.playerReach * player.playerReach)
+			Player.VFX.SetGlow(this);
+	}
 
- 	void OnMouseExit() => Effects.Instance.SetGlow(null);
- }
+	void OnMouseExit() => Player.VFX.SetGlow(null);
+}

@@ -14,25 +14,22 @@ public class Fade : MonoBehaviour
 		fadeMat = new Material(fadeShader);
 	}
 
-	public void StartFade(bool fadingIn, float duration) => StartCoroutine(FadeRoutine(fadingIn, duration));
+	// public void StartFade(bool fadingIn, float duration, bool white = true) => StartCoroutine(FadeRoutine(fadingIn, duration, white));
 
-	IEnumerator FadeRoutine(bool fadingIn, float time)
+	public IEnumerator FadeRoutine(bool fadingIn, float time, bool white)
 	{
+		fadeMat.SetInt("_White", white ? 1 : 0);
 		if (!enabled)
 			yield break;
-		float start = Time.time;
-		bool inProgress = true;
-		while (inProgress)
+		for (var(start, step) = (Time.time, 0f); step <= time; step = Time.time - start)
 		{
 			yield return null;
-			float step = Time.time - start;
 
 			float alpha = fadingIn ? EaseMethods.CubicEaseOut(time - step, 0, 1, time) : EaseMethods.CubicEaseIn(step, 0, 1, time);
 			fadeMat.SetFloat("_Alpha", alpha);
-
-			if (step > time)
-				inProgress = false;
 		}
+		fadeMat.SetFloat("_Alpha", fadingIn ? 0 : 1);
+		Player.Instance.playerCanRotate = true;
 	}
 
 	void OnRenderImage(RenderTexture src, RenderTexture dest)

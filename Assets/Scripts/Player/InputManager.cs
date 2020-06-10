@@ -14,6 +14,7 @@ public class InputManager : MonoBehaviour
 	public static KeyCode crouchKey = KeyCode.LeftShift;
 	/// <summary> KeyCode for inspecting and picking up objects. </summary>
 	public static KeyCode interactKey = KeyCode.E;
+	public static string InteractKey { get => Prompt.ParseKey(interactKey.ToString()); }
 	/// <summary> KeyCode for inspecting and picking up objects. </summary>
 	public static KeyCode altAimKey = KeyCode.LeftControl;
 	/// <summary> KeyCode for pausing the game. </summary>
@@ -66,7 +67,6 @@ public class InputManager : MonoBehaviour
 	public static event Action OnAltAimKeyHeld;
 	/// <summary> Alt Aim Key is let go. </summary>
 	public static event Action OnAltAimKeyUp;
-
 
 	//Pause Menu Key Actions
 	/// <summary> Pause Key is initially pressed down. </summary>

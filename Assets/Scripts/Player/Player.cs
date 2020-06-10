@@ -38,8 +38,6 @@ public class Player : Singleton<Player>, IStateMachine
 	[HideInInspector] public float verticalVelocity;
 	/// <summary> Player's height. </summary>
 	[HideInInspector] public float playerHeight;
-	/// <summary> Whether the player can move or not. </summary>
-	[HideInInspector] public bool canMove = true;
 	/// <summary> Whether the player can rotate their camera or not. </summary>
 	[HideInInspector] public bool playerCanRotate = true;
 	/// <summary> Whether the player is crouching or not. </summary>
@@ -50,6 +48,8 @@ public class Player : Singleton<Player>, IStateMachine
 	private bool stillCrouching = false;
 	/// <summary> Whether or not the player can activate the window. </summary>
 	public bool windowEnabled = true;
+	/// <summary> Whether the player can move or not. </summary>
+	[HideInInspector] public bool canMove = true;
 
 	/// <summary> Reference to heart window. </summary>
 	[HideInInspector] public GameObject heartWindow;
@@ -89,7 +89,7 @@ public class Player : Singleton<Player>, IStateMachine
 	// events
 	public event Action OnOpenWindow;
 	public event Action OnApplyCut;
-    public event Action OnJump;
+	public event Action OnJump;
 
 	public override void Awake()
 	{
@@ -120,9 +120,13 @@ public class Player : Singleton<Player>, IStateMachine
 
 		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
 		Cursor.visible = false;
-		Player.VFX.StartFade(true, fadeDuration);
 
-		Initialize();
+		OnEnterScene();
+
+		// playerCanRotate = false;
+		// Player.VFX.StartFade(true, fadeDuration);
+
+		// Initialize();
 	}
 
 	public override void Initialize()
@@ -135,7 +139,6 @@ public class Player : Singleton<Player>, IStateMachine
 			transform.position = lastSpawn.position;
 			rotation = lastSpawn.eulerAngles;
 		}
-		canMove = true;
 		looking = false;
 		window.world = World.Instance;
 		window.cam = cam;
@@ -149,15 +152,8 @@ public class Player : Singleton<Player>, IStateMachine
 	public override void OnEnterScene()
 	{
 		// window.CreateFoVMesh();
-
-		DialoguePacket packet = FindObjectOfType<DialoguePacket>();
-		if (packet != null)
-		{
-			// DialogueSystem dialogueSystem = FindObjectOfType<DialogueSystem>();
-			StartCoroutine(GameManager.Instance.dialogue.WriteDialogue(packet.text));
-		}
-
 		Initialize();
+		playerCanRotate = false;
 		Player.VFX.StartFade(true, fadeDuration);
 	}
 
@@ -206,17 +202,14 @@ public class Player : Singleton<Player>, IStateMachine
 
 	void FixedUpdate()
 	{
-		if (!GameManager.Instance.duringLoad)
+		if (!GameManager.Instance.duringLoad && canMove)
 		{
-			if (canMove)
-			{
-				Move();
-				Rotate();
-				AdjustGravity();
-			}
+			Move();
+			Rotate();
+			AdjustGravity();
 
-			if (State == null)
-				prompt.UpdateText(); // non physics
+			// if (State == null)
+			prompt.UpdateText(); // non physics
 			Die();
 		}
 	}
@@ -269,11 +262,11 @@ public class Player : Singleton<Player>, IStateMachine
 	/// <summary> Player jump function. </summary>
 	private void Jump()
 	{
-        if (ValidGroundSlope() && IsGrounded())
-        {
-            body.velocity = new Vector3(body.velocity.x, jumpForce, body.velocity.z);
-            OnJump?.Invoke();
-        }
+		if (ValidGroundSlope() && IsGrounded())
+		{
+			body.velocity = new Vector3(body.velocity.x, jumpForce, body.velocity.z);
+			OnJump?.Invoke();
+		}
 
 	}
 
@@ -302,7 +295,7 @@ public class Player : Singleton<Player>, IStateMachine
 			// Done exclusively on camera rotation so that movement is not hindered by looking up or down.
 			cam.transform.localEulerAngles = new Vector3(-rotation.x, 0, 0);
 
-			Shader.SetGlobalVector(ShaderID._ViewDir, cam.transform.forward.normalized);
+			// Shader.SetGlobalVector(ShaderID._ViewDir, cam.transform.forward.normalized);
 		}
 	}
 
@@ -338,10 +331,8 @@ public class Player : Singleton<Player>, IStateMachine
 	void Interact()
 	{
 		var hit = InteractableObject.Raycast();
-		if (heldObject || hit is Pickupable)
-		{
+		if (heldObject || (hit is Pickupable && !(hit is CanvasObject && (hit as CanvasObject).onEasel)))
 			PickUp(!heldObject, hit as Pickupable);
-		}
 		else if (hit)
 			hit.Interact();
 	}
@@ -349,14 +340,10 @@ public class Player : Singleton<Player>, IStateMachine
 	private void PickUp(bool pickingUp, Pickupable obj)
 	{
 		if (pickingUp)
-		{
 			SetState(new PickUp(this, obj));
-		}
-		// else if (looking) { SetState(new Inspect(this)); } //unused for now
 		else
-		{
 			EndState();
-		}
+		// else if (looking) { SetState(new Inspect(this)); } //unused for now
 	}
 
 	/// <summary> Player aiming function. </summary>
@@ -388,18 +375,11 @@ public class Player : Singleton<Player>, IStateMachine
 		}
 	}
 
-	public bool IsGrounded()
-	{
-		RaycastHit ray;
-		return Physics.SphereCast(playerCollider.transform.position, 0.2f, Vector3.down, out ray, playerHeight / 2 - 0.1f);
-	}
+	public bool IsGrounded() => Physics.SphereCast(playerCollider.transform.position, 0.2f, Vector3.down, out RaycastHit ray, playerHeight / 2 - 0.1f);
 
 	public bool ValidGroundSlope()
 	{
-		RaycastHit ray;
-		Physics.SphereCast(playerCollider.transform.position, playerCollider.radius, Vector3.down, out ray, playerHeight / 2 - 0.1f);
+		Physics.SphereCast(playerCollider.transform.position, playerCollider.radius, Vector3.down, out RaycastHit ray, playerHeight / 2 - 0.1f);
 		return (Mathf.Abs(Vector3.Angle(ray.normal, Vector3.up)) < maxSlopeAngle);
 	}
-
-	// public InteractableObject RaycastInteractable() => Physics.SphereCast(cam.transform.position, .25f, cam.transform.forward, out RaycastHit hit, playerReach, 1 << 9) ? hit.transform.GetComponent<InteractableObject>() : null;
 }

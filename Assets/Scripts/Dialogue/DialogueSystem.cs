@@ -12,7 +12,7 @@ public class DialogueSystem : MonoBehaviour
 	/// <summary> File name of the JSON to parse. </summary>
 	[SerializeField] private string fileName;
 	/// <summary> The Unity UI text object for the text to be displayed through. </summary>
-	[SerializeField] private Text uiText = default;
+	public Text uiText = default;
 
 	/// <summary> A string to hold the input text from the JSON file. </summary>
 	private string inputText;

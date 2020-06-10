@@ -6,26 +6,26 @@ using UnityEngine;
 public class Pushable : InteractableObject
 {
 	[SerializeField] float pushDistance = 4;
-	string _prompt = "Press E to Start Pushing";
-	public override string prompt { get => _prompt; set => _prompt = value; }
+	public override string prompt { get => $"Press {InputManager.InteractKey} to {(isPushing ? "Stop" : "Start")} Moving Box"; }
 
-    [Header("Audio")]
-    [FMODUnity.EventRef]
-    public string pushEvent;
-    [FMODUnity.EventRef]
-    public string impactEvent;
-    public float maxPushSpeed;
-    public float minPushSpeed;
-    public float groundOffsetX;
-    public float groundOffsetY;
-    public float groundOffsetZ;
+	[Header("Audio")]
+	[FMODUnity.EventRef]
+	public string pushEvent;
+	[FMODUnity.EventRef]
+	public string impactEvent;
+	public float maxPushSpeed;
+	public float minPushSpeed;
+	public float groundOffsetX;
+	public float groundOffsetY;
+	public float groundOffsetZ;
 
-    private Vector3 spawn;
+	private Vector3 spawn;
 	private Rigidbody rb;
 	private BoxCollider trigger;
-	private bool inRange = false, isPushing = false, isGrounded = true;
+	private bool inRange = false, isGrounded = true;
+	[HideInInspector] public bool isPushing = false;
 
-    private FMOD.Studio.EventInstance pushInstance;
+	private FMOD.Studio.EventInstance pushInstance;
 
 	protected override void Start()
 	{
@@ -38,24 +38,24 @@ public class Pushable : InteractableObject
 		trigger.isTrigger = true;
 		trigger.size = new Vector3(pushDistance, 2, pushDistance);
 
-        pushInstance = FMODUnity.RuntimeManager.CreateInstance(pushEvent);
-        FMODUnity.RuntimeManager.AttachInstanceToGameObject(pushInstance, transform, GetComponent<Rigidbody>());
-        pushInstance.start();
-        pushInstance.setParameterByName("Push Speed", 0);
-    }
+		pushInstance = FMODUnity.RuntimeManager.CreateInstance(pushEvent);
+		FMODUnity.RuntimeManager.AttachInstanceToGameObject(pushInstance, transform, GetComponent<Rigidbody>());
+		pushInstance.start();
+		pushInstance.setParameterByName("Push Speed", 0);
+	}
 
 	void Update()
 	{
 		if (transform.position.y < Player.Instance.deathPlane.transform.position.y)
 			Reset();
 
-        if(isPushing)
-        {
-            UpdateAudio();
-        }
+		if (isPushing)
+		{
+			UpdateAudio();
+		}
 
-        UpdateGrounded();
-    }
+		UpdateGrounded();
+	}
 
 	public override void Interact()
 	{
@@ -70,99 +70,97 @@ public class Pushable : InteractableObject
 	{
 		isPushing = true;
 		rb.constraints = RigidbodyConstraints.FreezeRotation;
-		prompt = "Press E to Stop Pushing";
-		Effects.Instance.SetGlow(this, Color.white);
+		Player.VFX.SetGlow(this, Color.white);
 	}
 
-    private void StopPushing()
+	private void StopPushing()
 	{
 		isPushing = false;
 		rb.constraints = ~RigidbodyConstraints.FreezePositionY;
-		prompt = "Press E to Start Pushing";
-		Effects.Instance.SetGlow(this);
+		Player.VFX.SetGlow(this);
 
-        pushInstance.setParameterByName("Push Speed", 0);
-    }
+		pushInstance.setParameterByName("Push Speed", 0);
+	}
 
-    private void UpdateAudio()
-    {
-        if(isGrounded)
-        {
-            float speed = (GetComponent<Rigidbody>().velocity.magnitude - minPushSpeed) / (maxPushSpeed - minPushSpeed);
-            speed = Mathf.Clamp(speed, 0, 1);
-            pushInstance.setParameterByName("Push Speed", speed);
-        }
-        else
-        {
-            pushInstance.setParameterByName("Push Speed", 0);
-        }
-    }
+	private void UpdateAudio()
+	{
+		if (isGrounded)
+		{
+			float speed = (GetComponent<Rigidbody>().velocity.magnitude - minPushSpeed) / (maxPushSpeed - minPushSpeed);
+			speed = Mathf.Clamp(speed, 0, 1);
+			pushInstance.setParameterByName("Push Speed", speed);
+		}
+		else
+		{
+			pushInstance.setParameterByName("Push Speed", 0);
+		}
+	}
 
-    private bool IsGrounded()
-    {
-        // opposite diagonals
-        Vector3 frontOrigin = transform.localToWorldMatrix.MultiplyPoint(new Vector3(groundOffsetX, groundOffsetY, groundOffsetZ));
-        Vector3 backOrigin = transform.localToWorldMatrix.MultiplyPoint(new Vector3(-groundOffsetX, groundOffsetY, -groundOffsetZ));
+	private bool IsGrounded()
+	{
+		// opposite diagonals
+		Vector3 frontOrigin = transform.localToWorldMatrix.MultiplyPoint(new Vector3(groundOffsetX, groundOffsetY, groundOffsetZ));
+		Vector3 backOrigin = transform.localToWorldMatrix.MultiplyPoint(new Vector3(-groundOffsetX, groundOffsetY, -groundOffsetZ));
 
-        RaycastHit hit;
+		RaycastHit hit;
 
-        if (Physics.Raycast(frontOrigin, Vector3.down, out hit, 1f))
-        {
-            if(hit.collider.gameObject.CompareTag("Untagged"))
-            {
-                return true;
-            }
-        }
+		if (Physics.Raycast(frontOrigin, Vector3.down, out hit, 1f))
+		{
+			if (hit.collider.gameObject.CompareTag("Untagged"))
+			{
+				return true;
+			}
+		}
 
-        Debug.DrawLine(frontOrigin, frontOrigin + Vector3.down, Color.red, 4);
+		Debug.DrawLine(frontOrigin, frontOrigin + Vector3.down, Color.red, 4);
 
-        if (Physics.Raycast(backOrigin, Vector3.down, out hit, 1f))
-        {
-            if (hit.collider.gameObject.CompareTag("Untagged"))
-            {
-                return true;
-            }
-        }
+		if (Physics.Raycast(backOrigin, Vector3.down, out hit, 1f))
+		{
+			if (hit.collider.gameObject.CompareTag("Untagged"))
+			{
+				return true;
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    private void UpdateGrounded()
-    {
-        if(isGrounded != IsGrounded())
-        {
-            isGrounded = !isGrounded;
-            //if we landed
-            if (isGrounded)
-            {
-                if (GetComponent<Rigidbody>().velocity.y < -0.2)
-                {
-                    Debug.Log(GetComponent<Rigidbody>().velocity.y);
-                    FMODUnity.RuntimeManager.PlayOneShotAttached(impactEvent, gameObject);
-                }
-            }
-        }
+	private void UpdateGrounded()
+	{
+		if (isGrounded != IsGrounded())
+		{
+			isGrounded = !isGrounded;
+			//if we landed
+			if (isGrounded)
+			{
+				if (GetComponent<Rigidbody>().velocity.y < -0.2)
+				{
+					Debug.Log(GetComponent<Rigidbody>().velocity.y);
+					FMODUnity.RuntimeManager.PlayOneShotAttached(impactEvent, gameObject);
+				}
+			}
+		}
 
-    }
+	}
 
-    private void Reset()
+	private void Reset()
 	{
 		transform.position = spawn;
 		rb.velocity = Vector3.zero;
 	}
 
-    /*private void OnCollisionEnter(Collision collision)
-    {
-        
-    }*/
+	/*private void OnCollisionEnter(Collision collision)
+	{
+	    
+	}*/
 
-    void OnTriggerEnter(Collider other)
+	void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("Player"))
 		{
 			inRange = true;
 			if (!this.TryComponent<OutlineObject>())
-				Effects.Instance.SetGlow(this);
+				Player.VFX.SetGlow(this);
 		}
 	}
 
@@ -184,7 +182,7 @@ public class Pushable : InteractableObject
 		{
 			inRange = false;
 			StopPushing();
-			Effects.Instance.SetGlow(null);
+			Player.VFX.SetGlow(null);
 		}
 	}
 }
