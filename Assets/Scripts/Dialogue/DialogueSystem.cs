@@ -22,7 +22,7 @@ public class DialogueSystem : MonoBehaviour
 			if (timestampIndex == currentLevelText.timestamps.Count - 1)
 				Invoke("Stop", currentLevelText.timestamps[timestampIndex]);
 			// Stop();
-			if (millis > currentLevelText.timestamps[timestampIndex + 1] * 1000)
+			if (timestampIndex < currentLevelText.timestamps.Count && millis > currentLevelText.timestamps[timestampIndex + 1] * 1000)
 				timestampIndex++;
 		}
 	}

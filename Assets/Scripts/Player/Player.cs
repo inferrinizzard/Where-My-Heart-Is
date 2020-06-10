@@ -118,8 +118,8 @@ public class Player : Singleton<Player>, IStateMachine
 		heldObjectLocation.position = cam.transform.position + cam.transform.forward * 2;
 		heldObjectLocation.parent = cam.transform;
 
-		// Cursor.lockState = CursorLockMode.Locked; // turn off cursor
-		// Cursor.visible = false;
+		Cursor.lockState = CursorLockMode.Locked; // turn off cursor
+		Cursor.visible = false;
 
 		OnEnterScene();
 

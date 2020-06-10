@@ -5,12 +5,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SpringRoomBehaviour", menuName = "Levels/Behaviours/SpringRoomBehaviour")]
 public class SpringRoomBehaviour : LevelBehaviour
 {
-    public void Init()
-    {
-        Debug.Log("hy");
-        FindObjectOfType<AudioMaster>().SetSpring();
-    }
-
+	public void Init()
+	{
+		// Debug.Log("hy");
+		Player.Instance.mask.SetHalf(false);
+		FindObjectOfType<AudioMaster>().SetSpring();
+	}
 
 	// void Credits()
 	// {
