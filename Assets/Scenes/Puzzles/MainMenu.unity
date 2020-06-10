@@ -13964,6 +13964,7 @@ MonoBehaviour:
   cam: {fileID: 915441786}
   mainMenuUI: {fileID: 1637616967}
   pressAnyPrompt: {fileID: 1456153563}
+  openEvent: event:/UI/Page Turn
 --- !u!95 &1359424588
 Animator:
   serializedVersion: 3
@@ -16648,6 +16649,8 @@ MonoBehaviour:
   optionsMenuUI: {fileID: 797029041}
   creditsMenuUI: {fileID: 1147336552}
   pip: {fileID: 1643964884}
+  titleEvent: event:/Music/Title Theme
+  introEvent: event:/Music/Intro Theme
 --- !u!225 &1637616967
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -16672,6 +16675,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 925942d3777aaad4e8cae07ffe4239d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sliderCooldown: 0.1
   mouseDown: event:/UI/Mouse Down
   mouseUp: event:/UI/Mouse Up
   mouseUpBack: event:/UI/Mouse Up Back

@@ -74,11 +74,11 @@ MonoBehaviour:
   heldObject: {fileID: 0}
   verticalVelocity: 0
   playerHeight: 0
-  canMove: 1
   playerCanRotate: 1
   crouching: 0
   looking: 0
   windowEnabled: 1
+  canMove: 1
   heartWindow: {fileID: 6145140127035620908}
   deathPlane: {fileID: 0}
   prompt: {fileID: 0}
@@ -117,19 +117,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   landingDistanceThreshold: 1
-  maxWalkSpeed: 0
-  minWalkSpeed: 0
-  maxFallSpeed: 0
-  minFallSpeed: 0
-  dieVelocityThreshold: 0
-  dieDistanceThreshold: 0
-  jumpLiftoffEvent: 
-  jumpLandingEvent: 
-  fallEvent: 
-  walkEvent: 
-  dieEvent: 
-  cutEvent: 
-  windowEvent: 
+  maxWalkSpeed: 4
+  minWalkSpeed: 1
+  maxFallSpeed: 10
+  minFallSpeed: 5
+  dieVelocityThreshold: -2
+  dieDistanceThreshold: 7
+  minCutLength: 2
+  jumpLiftoffEvent: event:/Player Movement/Jump - Liftoff
+  jumpLandingEvent: event:/Player Movement/Jump - Landing
+  fallEvent: event:/Fall
+  walkEvent: event:/Player Movement/Walking/Walking - V2
+  dieEvent: event:/Die
+  cutEvent: event:/Cut
+  windowEvent: event:/Ambient/Window
 --- !u!114 &3117186014438385119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,7 +282,7 @@ PrefabInstance:
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.17450753
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
@@ -296,7 +297,7 @@ PrefabInstance:
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.98465586
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
@@ -306,7 +307,7 @@ PrefabInstance:
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 20.1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3177498603613522796, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
         type: 3}
@@ -452,6 +453,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_CullingMask.m_Bits
       value: 8192
+      objectReference: {fileID: 0}
+    - target: {fileID: 6435255862517203345, guid: 31ce0a8a718ba094b9f6c937e3c9676c,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 31ce0a8a718ba094b9f6c937e3c9676c, type: 3}
