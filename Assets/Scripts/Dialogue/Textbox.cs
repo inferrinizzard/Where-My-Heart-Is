@@ -29,11 +29,11 @@ public class Textbox : MonoBehaviour
 
 	void Update()
 	{
-		if (Input.GetMouseButtonDown(0))
+		/*if (Input.GetMouseButtonDown(0))
 		{
 			text.text = "tekbkusjndksdks"; // advance text here
 			SetTextbox();
-		}
+		}*/
 		(transform as RectTransform).sizeDelta = new Vector2(text.preferredWidth + padding * 2, text.preferredHeight + padding * 2);
 	}
 }

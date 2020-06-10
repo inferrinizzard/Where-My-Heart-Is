@@ -11,39 +11,22 @@ public class DialogueSystem : MonoBehaviour
 	public Text uiText = default;
 	FMOD.Studio.EventInstance currentDialogue;
 	DialogueText.LevelText currentLevelText;
-	int millis = -1, timestampIndex = 0;
-
-	void Update()
-	{
-		if (millis > -1)
-		{
-			currentDialogue.getTimelinePosition(out millis);
-			uiText.text = currentLevelText.text[timestampIndex];
-			if (timestampIndex == currentLevelText.timestamps.Count - 1)
-				Invoke("Stop", currentLevelText.timestamps[timestampIndex]);
-			// Stop();
-			if (timestampIndex < currentLevelText.timestamps.Count && millis > currentLevelText.timestamps[timestampIndex + 1] * 1000)
-				timestampIndex++;
-		}
-	}
 
 	public void TogglePause(bool pause) => currentDialogue.setPaused(pause);
 
 	public void Stop()
 	{
-		Debug.Log("stopped");
-		timestampIndex = 0;
 		currentDialogue.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
 		currentDialogue.release();
 		gameObject.SetActive(false);
-		millis = -1;
 	}
 
 	public void PlayScript(DialogueText.LevelText levelText)
 	{
+        Stop();
 		gameObject.SetActive(true);
 		currentLevelText = levelText;
-		GameManager.Instance.StartCoroutine(WaitAndPlay());
+        GameManager.Instance.StartCoroutine(WaitAndPlay());
 	}
 
 	IEnumerator WaitAndPlay(float time = 1)
@@ -51,7 +34,19 @@ public class DialogueSystem : MonoBehaviour
 		currentDialogue = FMODUnity.RuntimeManager.CreateInstance(currentLevelText.fmod);
 		yield return new WaitForSeconds(time);
 		currentDialogue.start();
-		millis = 0;
-		// FMODUnity.RuntimeManager.PlayOneShot(levelText.fmod);
+
+        for(int i = 0; i < currentLevelText.timestamps.Count; i++)
+        {
+            StartCoroutine(SetText(currentLevelText.text[i], currentLevelText.timestamps[i], currentLevelText));
+        }
 	}
+
+    IEnumerator SetText(string text, float delay, DialogueText.LevelText currText)
+    {
+        yield return new WaitForSeconds(delay);
+        if(currText.text[0] == currentLevelText.text[0])
+        {
+            uiText.text = text;
+        }
+    }
 }
