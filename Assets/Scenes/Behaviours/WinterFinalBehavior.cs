@@ -7,6 +7,8 @@ public class WinterFinalBehavior : LevelBehaviour
 {
     public void Init()
     {
-        FindObjectOfType<AudioMaster>().SetMusicParameter("End", 1);
+        AudioMaster audioMaster = FindObjectOfType<AudioMaster>();
+        audioMaster.SetMusicParameter("End", 1);
+        Player.Instance.audioController.SetWindowWorld(2);
     }
 }

@@ -137,6 +137,7 @@ public class PlayerAudio : MonoBehaviour
 
 	public void SetWindowWorld(float worldIndex)
 	{
+        Debug.Log("setting world to " + worldIndex);
 		windowInstance.setParameterByName("Heart World Type", worldIndex);
 	}
 

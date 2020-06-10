@@ -8,10 +8,13 @@ public class AudioMaster : Singleton<AudioMaster>
 	[FMODUnity.EventRef]
 	public string AutumnAmbientEvent;
 
-	[FMODUnity.EventRef]
-	public string WinterAmbientEvent;
+    [FMODUnity.EventRef]
+    public string WinterAmbientEvent;
 
-	[FMODUnity.EventRef]
+    [FMODUnity.EventRef]
+    public string SpringAmbientEvent;
+
+    [FMODUnity.EventRef]
 	public string TensionMusicEvent;
 
 	[FMODUnity.EventRef]
@@ -78,21 +81,21 @@ public class AudioMaster : Singleton<AudioMaster>
 
     public void StartTensionTheme()
 	{
-		musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+		musicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
 		musicInstance = FMODUnity.RuntimeManager.CreateInstance(TensionMusicEvent);
 		musicInstance.start();
 	}
 
 	public void StartIntroTheme()
 	{
-		musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+		musicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
 		musicInstance = FMODUnity.RuntimeManager.CreateInstance(IntroMusicEvent);
 		musicInstance.start();
 	}
 
 	public void StartMainTheme()
 	{
-		musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+		musicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
 		musicInstance = FMODUnity.RuntimeManager.CreateInstance(MainThemeEvent);
 		musicInstance.start();
 	}
@@ -109,21 +112,21 @@ public class AudioMaster : Singleton<AudioMaster>
 
 	public void SetWinter()
 	{
-		ambientInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+		ambientInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
 		ambientInstance = FMODUnity.RuntimeManager.CreateInstance(WinterAmbientEvent);
 		ambientInstance.start();
 	}
 
 	public void StopAll()
 	{
-		ambientInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-		musicInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+		ambientInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+		musicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
 	}
 
 	public void SetSpring()
 	{
-		ambientInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-		ambientInstance = FMODUnity.RuntimeManager.CreateInstance(WinterAmbientEvent);
+		ambientInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+		ambientInstance = FMODUnity.RuntimeManager.CreateInstance(SpringAmbientEvent);
 		ambientInstance.start();
 	}
 
