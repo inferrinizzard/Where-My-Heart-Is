@@ -13,7 +13,7 @@ public class Textbox : MonoBehaviour
 
 	void Start()
 	{
-		text = transform.parent.GetComponentInChildren<DialogueSystem>().GetComponent<Text>();
+		text = transform.parent.GetComponentInChildren<Text>();
 		image = GetComponent<Image>();
 
 		SetTextbox();

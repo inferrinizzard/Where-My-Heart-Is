@@ -18,8 +18,8 @@ public class FlavorObject : InteractableObject
 	}
 	public override void Interact()
 	{
-		if (flavorText != "")
-			StartCoroutine(dialogue.WriteDialogue(flavorText));
+		// if (flavorText != "")
+		// 	StartCoroutine(dialogue.WriteDialogue(flavorText));
 		if (InteractSoundEvent != "")
 		{
 			FMODUnity.RuntimeManager.PlayOneShot(InteractSoundEvent, transform.position);

@@ -22,11 +22,12 @@ public class GameManager : Singleton<GameManager>
 	public override void Awake()
 	{
 		base.Awake();
-		pause = GetComponentInChildren<PauseMenu>();
-		dialogue = GetComponentInChildren<DialogueSystem>();
+		pause = GetComponentInChildren<PauseMenu>(true);
+		dialogue = GetComponentInChildren<DialogueSystem>(true);
 		prompt = GetComponentInChildren<Prompt>(true);
 
 		DialogueText.Load();
+		Debug.Log(DialogueText.texts.AsString());
 	}
 
 	void Start()

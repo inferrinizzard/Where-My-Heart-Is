@@ -88,6 +88,8 @@ public class MainMenu : MonoBehaviour
 
 		// deactivate music event
 		FindObjectOfType<AudioMaster>().PlaySongEvent(introEvent);
+		GameManager.Instance.dialogue.PlayScript(DialogueText.texts["1_Intro"]);
+
 	}
 
 	/// <summary> Quits the game. </summary>
