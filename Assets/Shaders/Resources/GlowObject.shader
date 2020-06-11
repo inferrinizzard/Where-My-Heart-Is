@@ -33,7 +33,7 @@ Shader "Outline/GlowObject"
 			}
 
 			float4 frag(v2f i) : COLOR {
-				float4 outColour = 1 - _Color;
+				float4 outColour = _Color;
 				if(_Heart) outColour.a = 0.5;
 				if(!_Occlude) return outColour;
 				// decode depth texture info
