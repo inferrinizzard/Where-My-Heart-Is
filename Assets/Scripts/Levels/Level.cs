@@ -35,8 +35,14 @@ public class Level : ScriptableObject
 	public void StartBehaviors()
 	{
 		if (SceneManager.sceneCount == 1 && SceneManager.GetActiveScene().name != "1_Intro")
+        {
+            Debug.Log(levelName);
 			if (DialogueText.texts.TryGetValue(levelName, out DialogueText.LevelText level))
+            {
+                Debug.Log(level);
 				GameManager.Instance.dialogue.PlayScript(level);
+            }
+        }
 		// GameManager.Instance.GetComponentInChildren<DialogueSystem>().PlayScript(DialogueText.texts[levelName]);
 		// Debug.Log(DialogueText.texts[levelName]);
 
@@ -46,7 +52,7 @@ public class Level : ScriptableObject
 
 	public void EndBehaviours()
 	{
-		GameManager.Instance.dialogue.Stop();
+		//GameManager.Instance.dialogue.Stop();
 		foreach (LevelBehaviour behaviour in behaviours)
 			behaviour.EndEvent.Invoke();
 	}

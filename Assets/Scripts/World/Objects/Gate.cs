@@ -76,11 +76,12 @@ public class Gate : MonoBehaviour
 			}
 		}
 
+		if (locks.Count == 0)
+			StartCoroutine(OpenGate(rotationAngle, rotationTime));
+
 		Destroy(destroy.realLock?.gameObject);
 		Destroy(destroy.heartLock?.gameObject);
 
-		if (locks.Count == 0)
-			StartCoroutine(OpenGate(rotationAngle, rotationTime));
 	}
 
 	IEnumerator OpenGate(float angle, float time)
